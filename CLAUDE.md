@@ -111,7 +111,7 @@ Target role profile: Principal AI Platform Architect / AI Security Engineer
 - [x] Build ingestion pipeline (scrape → chunk → vectorize → Neo4j) — 1,146 total chunks
 - [x] Build Atlas RAG - Knowledge Retrieval n8n workflow (end-to-end working)
 - [x] Add conversation history support to workflow
-- [ ] Create GitHub repo (private)
+- [x] Create GitHub repo (private)
 - [ ] Set up Vercel project (fresh)
 
 ### Phase 2 — Learning Course (Tier 1: Beginner)
