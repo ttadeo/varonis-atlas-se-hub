@@ -1,0 +1,73 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the ""We Already Have Wiz"" Objection
+
+This is a great opportunity to reframe the conversation around **scope**, not quality. Wiz is a strong product — the issue is that AI-SPM is a feature add-on for them, not a purpose-built platform.
+
+---
+
+### Acknowledge First
+
+> *""Wiz is an excellent cloud security platform, and their AI-SPM capabilities make sense as an extension of what they do well. We're not here to replace Wiz.""*
+
+---
+
+### Then Reframe the Gap
+
+**What Wiz actually covers for AI:**
+- Cloud AI asset discovery (AWS/Azure/GCP models and endpoints)
+- AI-BOM with graph correlation to data paths
+- Misconfiguration detection for cloud-hosted AI resources
+
+**What that leaves completely unaddressed:**
+
+| Gap | What Atlas Does |
+|-----|----------------|
+| AI in your codebase | Scans GitHub/GitLab repos, Jupyter notebooks, Python dependency files |
+| Runtime threats | AI Gateway sits **inline**, blocking/redacting malicious prompts in real time |
+| Policy enforcement | WARN, BLOCK, MODIFY guardrails on prompts and responses |
+| Compliance automation | Automated mapping to OWASP LLM Top 10, NIST AI RMF, EU AI Act |
+| Vendor AI tools | Third-party AI risk management (TPRM) |
+| Adversarial testing | LLM pen testing for prompt injection and jailbreak vulnerabilities |
+| Shadow AI / employee usage | AI usage discovery via Cloudflare LogPush / ZTNA integration |
+
+---
+
+### The Closing Frame
+
+> *""Wiz does **cloud AI posture**. Atlas does **full AI lifecycle security** — inventory beyond cloud, runtime protection, automated compliance, and third-party risk. These aren't the same scope, and most mature security teams end up needing both.""*
+
+---
+
+### Key Soundbite to Leave Behind
+
+**""Wiz tells you what AI assets you have in the cloud. Atlas protects what those AI assets actually do — and finds the ones Wiz can't see.""**",1.0,1.0,0.667,1.0,0.889
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","## Atlas Competitive Categories
+
+The retrieved documentation confirms that Atlas faces competition across **three distinct categories**, and that identifying the correct category is key to the right positioning response — however, **the specific names and differentiation details for each category were not included in the retrieved context provided**.
+
+---
+
+## What I Can Tell You
+
+The documentation explicitly states:
+
+> *""Understanding which category a competitor falls into determines the right positioning response.""*
+
+This suggests the competitive playbook is **category-driven**, meaning your positioning should shift depending on which type of competitor you're up against (e.g., cloud security posture tools vs. AI SPM tools vs. network/proxy-focused vendors).
+
+The document title references **Wiz, Cisco, Microsoft, and AI SPM Tools** as the named competitors — which hints at the three categories likely being something like:
+- **Cloud/Posture Management** (Wiz)
+- **Network/Traffic Inspection** (Cisco)
+- **Platform/Ecosystem Plays** (Microsoft)
+
+...but I **won't present that as fact** since the actual category definitions weren't surfaced in the retrieved chunks.
+
+---
+
+## Recommended Next Steps
+
+1. **Pull the full competitive positioning document** — ask your Atlas enablement team or search for the complete ""How to Win"" guide
+2. **Reach out to Chris Brown or Jonathan Kofman** for the latest competitive narratives
+3. Ask me a more specific question (e.g., *""How does Atlas compete against Wiz specifically?""*) — a targeted retrieval may surface the right content
+
+Would you like me to help position Atlas against a specific competitor you're facing in an active deal?",0.333,0.333,0.667,1.0,0.444

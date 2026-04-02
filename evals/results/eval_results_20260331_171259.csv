@@ -1,0 +1,82 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+5,AI Inventory & AI Usage,check_question,"A CISO asks: how do I know if employees are using unauthorized AI tools like personal ChatGPT accounts? Which Atlas application answers this, and how?","## Detecting Unauthorized AI Tool Usage
+
+The **AI Usage application** is the direct answer to this question.
+
+---
+
+### How It Works
+
+The AI Usage application monitors which AI services employees are accessing by leveraging **ZTNA telemetry** — it inspects network traffic patterns to identify connections to known AI service endpoints (ChatGPT, Claude, Gemini, etc.).
+
+This catches the scenarios the AI Gateway **cannot** — specifically when employees bypass sanctioned tooling entirely:
+
+- Personal ChatGPT accounts on corporate network
+- Consumer-tier AI services that were never configured to route through the Gateway
+- Shadow AI adoption happening outside IT's knowledge
+
+---
+
+### What the Security Team Can Do With This
+
+Once AI Usage surfaces unauthorized access, the security team has two response options:
+
+| Action | Description |
+|--------|-------------|
+| **Quarantine/Block** | Restrict access to the unsanctioned AI service via ZTNA controls |
+| **Redirect** | Ensure sanctioned alternatives route through the AI Gateway where guardrails are enforced |
+
+---
+
+### The Two-Layer Defense — Key CISO Talking Point
+
+These two mechanisms are **complementary, not redundant**:
+
+- **AI Gateway** = inline protection for *sanctioned* tools routing through the proxy
+- **AI Usage** = discovery and governance for *unsanctioned* tools that bypass the Gateway entirely
+
+> The gap the AI Gateway can't cover is exactly what AI Usage is designed to close. A complete AI security posture requires both.
+
+---
+
+**Good follow-up question for the CISO:** *""Do you have visibility today into which AI services your employees are actively using?""* — this typically opens the door to a discovery conversation around AI Usage.",1.0,1.0,0.611,0.87
+5,AI Inventory & AI Usage,follow_up,How does Atlas discover AI models and libraries in a customer's cloud environment?,"## How Atlas Discovers AI Models and Libraries
+
+Atlas uses **multiple automated discovery mechanisms** — no manual cataloging required. Here's the breakdown:
+
+---
+
+### 1. Cloud Account Scanning (Primary Method)
+Connect a cloud account and Atlas scans it automatically, **repeating nightly**.
+
+| Provider | What Gets Discovered |
+|---|---|
+| **AWS** | SageMaker resources, S3-stored models, other AI services |
+| **Azure** | Azure ML, Azure OpenAI deployments, subscriptions |
+| **Google Cloud** | Vertex AI, GCP-hosted models |
+| **IBM WatsonX** | WatsonX projects and models |
+| **Databricks** | Workspaces, models, notebooks |
+
+**AWS specifically** uses a CloudFormation stack that creates a **read-only IAM role** — Atlas never needs write access.
+
+---
+
+### 2. Code Repository Scanning
+Atlas scans repositories **nightly** to discover AI libraries and dependencies in code — catching new additions as they're added, not weeks later.
+
+---
+
+### 3. Hosted Service Integration (OpenAI)
+Link an OpenAI account directly and Atlas inventories:
+- Models (including fine-tuned)
+- Assistants, Files, Vector Stores
+- Fine-Tuning Jobs, CustomGPTs
+
+This is particularly valuable for surfacing **shadow AI assets** the security team didn't know existed.
+
+---
+
+### SE Positioning Tip
+> Lead with the question: **""Do you know what AI models and libraries are running in your environment today?""**
+
+Most customers answer **no** — and that's your opening. Cloud account scanning gives them the answer automatically, often revealing assets that were never formally cataloged or approved.",1.0,1.0,0.788,0.929

@@ -1,0 +1,301 @@
+{
+  "name": "Atlas RAG - Knowledge Retrieval",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atlas-rag-query",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -352,
+        -240
+      ],
+      "id": "964c88eb-b1cc-478a-a2cb-e8d711438587",
+      "name": "Webhook",
+      "webhookId": "10f56968-8567-4b5e-8e16-99cd07bad7b0"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\": \"text-embedding-3-small\", \"input\": {{ JSON.stringify($json.body.question) }}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -128,
+        -240
+      ],
+      "id": "240803cc-17a1-4176-9be7-39b58f682880",
+      "name": "Embed Question",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lgILDx4ml8xXy6yX",
+          "name": "Header Auth account"
+        },
+        "openAiApi": {
+          "id": "QKOKask5bV39Hn2N",
+          "name": "OpenAI - Atlas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://uncompendious-unpurchased-shanita.ngrok-free.dev/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={{ $json.requestBody }}\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        320,
+        -240
+      ],
+      "id": "4b1da22d-aab4-4d8d-a9da-aa1a18b034e9",
+      "name": "Vector Search Neo4j",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lgILDx4ml8xXy6yX",
+          "name": "Header Auth account"
+        },
+        "httpBasicAuth": {
+          "id": "kENlY4V8sLKJinYH",
+          "name": "Neo4j-Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $json.results[0].data;\n\nconst chunks = results.map(row => {\n  const cols = row.row;\n  return {\n    heading: cols[0],\n    text: cols[1],\n    title: cols[2],\n    section: cols[3],\n    url: cols[4],\n    score: cols[5]\n  };\n});\n\nconst context = chunks\n  .map(c => `## ${c.title} â ${c.heading}\\n${c.text}`)\n  .join('\\n\\n---\\n\\n');\n\nreturn [{\n  json: {\n    context,\n    chunks,\n    question: $('Webhook').first().json.body.question\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        544,
+        -240
+      ],
+      "id": "5fc6a0f0-43e8-480a-adb6-4206a35885ae",
+      "name": "Build Context"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "ROTATE_THIS_KEY"
+            },
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "=json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={{ JSON.stringify($json) }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        992,
+        -240
+      ],
+      "id": "d6abd8a6-73a9-4d90-b731-a1d74b39015a",
+      "name": "Claude - Generate Answer"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1440,
+        -240
+      ],
+      "id": "e9d2b728-e3a2-46ab-a6c3-7b55f6eed81e",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const context = $input.first().json.context || '';\nconst question = $input.first().json.question || '';\nconst history = $('Webhook').first().json.body.history || [];\n\nconst messages = [\n  ...history,\n  {\n    role: \"user\",\n    content: \"Context from Atlas documentation: \" + context.replace(/\\n/g, ' ') + \" Question: \" + question\n  }\n];\n\nreturn [{\n  json: {\n    model: \"claude-sonnet-4-6\",\n    max_tokens: 1024,\n    system: `You are an expert Varonis Atlas AI Security Platform advisor helping Sales Engineers configure Atlas for their customers.\n\nRETRIEVAL GROUNDING RULES:\n- You will be provided with retrieved documentation context for each question\n- Always prioritize and cite information from the provided context\n- If the context covers the topic, base your answer primarily on it\n- Only supplement with general knowledge when the context is clearly insufficient\n- If the context does not cover the topic at all, say so explicitly before answering\n- Never present information as fact if it contradicts the provided context\n\nCRITICAL ARCHITECTURAL CONTEXT:\n- AI applications do not \"integrate with\" Atlas in the traditional sense\n- Instead, applications connect THROUGH Atlas by pointing their LLM API calls at the Atlas AI Gateway proxy URL instead of directly at the LLM provider (OpenAI, Anthropic, etc.)\n- The AI Gateway is a proxy â any application that makes LLM API calls can use it by simply changing its endpoint URL\n- When someone asks how to \"connect\" or \"integrate\" an app with Atlas, the answer is always: configure the app to route its LLM traffic through the AI Gateway\n\nBEHAVIOR GUIDELINES:\n- For integration questions, redirect toward AI Gateway configuration and ask what LLM the app is calling\n- Use the provided documentation context as your primary source\n- When context is thin, apply architectural reasoning and ask clarifying questions\n- Be concise and SE-focused â your audience is technical sales staff, not developers\n\nUse the documentation context provided with each question to give accurate, specific answers.`,\n    messages: messages\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        768,
+        -240
+      ],
+      "id": "01325675-82a9-4cd6-b969-7d91a2838a8e",
+      "name": "Prepare Claude Input"
+    },
+    {
+      "parameters": {
+        "jsCode": "const embedding = $('Embed Question').first().json.data[0].embedding;\n\nconst body = JSON.stringify({\n  statements: [{\n    statement: \"CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 5, $embedding) YIELD node, score RETURN node.heading AS heading, node.text AS text, node.title AS title, node.section AS section, node.url AS url, score\",\n    parameters: { embedding: embedding }\n  }]\n});\n\nreturn [{ json: { requestBody: body } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        -240
+      ],
+      "id": "80175aaa-9486-43c5-bccf-0e72a6c763be",
+      "name": "Prepare Neo4j Query"
+    },
+    {
+      "parameters": {
+        "jsCode": "const claudeResponse = $input.first().json;\nconst answer = claudeResponse.content[0].text;\nconst previousMessages = $('Prepare Claude Input').first().json.messages;\nconst history = [...previousMessages, { role: \"assistant\", content: answer }];\n\nreturn [{ json: { answer, history } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1216,
+        -240
+      ],
+      "id": "bd4cde5e-fe51-4213-a190-6ed10146ac84",
+      "name": "Format Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Embed Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embed Question": {
+      "main": [
+        [
+          {
+            "node": "Prepare Neo4j Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Search Neo4j": {
+      "main": [
+        [
+          {
+            "node": "Build Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Context": {
+      "main": [
+        [
+          {
+            "node": "Prepare Claude Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude - Generate Answer": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Claude Input": {
+      "main": [
+        [
+          {
+            "node": "Claude - Generate Answer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Neo4j Query": {
+      "main": [
+        [
+          {
+            "node": "Vector Search Neo4j",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "719b6afe-5031-40d5-8120-9349db5684d4",
+  "meta": {
+    "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
+  },
+  "id": "cwBMmFLSMvm3uDus",
+  "tags": []
+}

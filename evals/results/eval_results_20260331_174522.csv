@@ -1,0 +1,65 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+8,AI 360 Dashboard,check_question,"A CISO asks for a single dashboard showing their organization's complete AI risk posture. What do you show them in Atlas, and what key risk categories does it surface?","## Show Them AI 360
+
+The **AI 360 Dashboard** is exactly what you demo for this conversation. It's purpose-built as a single-pane-of-glass for complete AI risk posture — both **AI you consume and AI you develop**.
+
+---
+
+## Key Risk Categories to Walk Through
+
+| Section | What It Shows the CISO |
+|---|---|
+| **AI Safety Score** | Single headline number with trend across last 3 quarters — their ""are we getting better or worse?"" metric |
+| **Vulnerable AI Resources** | CVSS-scored vulnerabilities by severity — where to prioritize remediation |
+| **AI Compliance Overview** | Posture mapped to **MITRE ATLAS and OWASP** frameworks with progress percentages |
+| **Issues by Severity** | Trend view across all risk sources — inventory, gateway blocks, compliance gaps, pen tests |
+| **Shadow AI & Unprotected Assets** | Surfaced in the AI Inventory widget — the stuff they *don't* know about |
+| **Riskiest AI/ML Resources** | Top 20 resources by open issue count, broken down by critical/high/medium/low |
+| **GenAI App Activity** | 90-day usage trend — connects directly to the data leakage conversation |
+
+---
+
+## Key CISO Talking Points
+
+**Lead with the question the docs suggest:**
+> *""Do you know what your developers, sales reps, and HR team are pasting into AI tools today?""*
+
+Most CISOs answer **no** — and that's exactly what the Shadow AI and GenAI Activity widgets make visible.
+
+**For regulated industries** (financial services, healthcare, legal): frame the dashboard not just as a security view, but as the **audit trail and enforcement evidence** regulators require. The Issues by Severity trend and Compliance Overview are your proof points here.
+
+---
+
+## Demo Tip
+The dashboard is **hierarchy-aware** — show them that they can scope the view to the entire organization, a specific business unit, or a single project. This makes it relevant for both the CISO and individual team leads, which is useful for multi-stakeholder deals.",1.0,1.0,0.815,0.938
+8,AI 360 Dashboard,follow_up,How does AI 360 aggregate data from across the Atlas platform?,"## AI 360 Data Aggregation
+
+**Honest answer based on the provided context:** The retrieved documentation doesn't go into specific detail about *how* AI 360 aggregates data internally across the Atlas platform — the context only describes AI 360 at a high level as a visibility dashboard for AI-related risks, usage, issues, and policies.
+
+---
+
+### What the Context Does Tell Us
+
+AI 360 surfaces data across these domains:
+- **Usage** — AI tool and LLM consumption activity
+- **Issues** — Risk findings related to AI adoption
+- **Policies** — Policy violations or safe adoption guardrails
+- **Risk visibility** — Consolidated view of AI-related organizational risk
+
+### What We Can Reasonably Infer (Architectural Reasoning)
+
+AI 360 likely aggregates from the core Atlas data planes:
+| Source | Data Contributed |
+|--------|-----------------|
+| **AI Inventory** | Discovered models, libraries, endpoints, notebooks |
+| **AI Gateway** | LLM traffic, prompt/response activity, policy enforcement events |
+| **AI Usage Monitoring** | Which users/apps are calling which LLMs |
+| **Policy Engine** | Violations, alerts, enforcement actions |
+
+---
+
+### Recommended Next Step
+
+For a precise, demo-ready answer, I'd recommend pulling the **AI 360 architecture section** from Atlas internal docs or checking with your Atlas SE team lead — this is a common ""how does it all fit together"" question customers ask during platform walkthroughs.
+
+Want me to help frame AI 360 for a specific customer use case instead?",0.667,0.333,0.417,0.472

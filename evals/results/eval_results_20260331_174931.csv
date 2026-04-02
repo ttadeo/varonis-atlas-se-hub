@@ -1,0 +1,59 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+8,AI 360 Dashboard,check_question,"A CISO asks for a single dashboard showing their organization's complete AI risk posture. What do you show them in Atlas, and what key risk categories does it surface?","## Show Them AI 360
+
+AI 360 is purpose-built for exactly this conversation. It's Atlas's unified risk dashboard that aggregates findings from every Atlas module into a single live view — no manual correlation required.
+
+---
+
+## Key Risk Categories It Surfaces
+
+| Risk Category | What It Shows |
+|---|---|
+| **AI Safety Score** | Single headline metric for overall AI security posture, with a 3-quarter trend line |
+| **AI Inventory** | Total AI resources — including **Shadow AI** (unsanctioned) and **Unprotected AI** (missing controls) |
+| **Vulnerable AI Resources** | CVEs, model vulnerabilities, cloud misconfigs — severity-ranked for prioritization |
+| **AI Compliance Overview** | Adherence percentages across frameworks (OWASP, NIST, etc.) |
+| **GenAI App Activity** | 90 days of daily request volume — shows the *scale* of AI usage in their environment |
+| **Top MITRE ATLAS / OWASP Risks** | Actual findings mapped to industry frameworks — toggleable between the two |
+| **Riskiest AI Resources** | Up to 20 resources ranked by open issue count, broken out by severity |
+
+---
+
+## Key SE Talking Points
+
+**Lead with the AI Safety Score** — it's the single number that answers ""how are we doing?"" and the trend line shows whether posture is improving or degrading.
+
+**Shadow AI and Unprotected AI counts** are typically eye-opening for CISOs — most organizations genuinely don't know the full scope of AI in use.
+
+**The MITRE ATLAS / OWASP mapping is board-ready** — if the CISO needs to report up or prepare for an audit, this gives them a recognized framework anchor.
+
+---
+
+## Important Caveat to Set Expectations
+
+AI 360 aggregates data from other Atlas modules — it doesn't generate its own. The dashboard is only as complete as what's been connected:
+
+- **AI Inventory sections** require linked cloud accounts, code repos, or AI services
+- **GenAI App Activity** requires AI Gateway or AI Usage to be configured
+- **Compliance data** requires AI Compliance module input
+
+The first conversation after showing this dashboard should be: *""Let's make sure all your sources are connected so this view reflects your full environment.""*",1.0,1.0,0.767,0.922
+8,AI 360 Dashboard,follow_up,How does AI 360 aggregate data from across the Atlas platform?,"## How AI 360 Aggregates Data Across Atlas
+
+AI 360 is Atlas's **unified risk dashboard** — it doesn't generate its own data. Instead, it acts as an aggregation layer that pulls findings from every other Atlas module into a single view.
+
+### Data Sources by Dashboard Section
+
+| Dashboard Section | Source Module |
+|---|---|
+| **AI Safety Score** | Computed across all organizations/projects using findings from **all modules** |
+| **AI Inventory Summary** | AI Inventory — cloud accounts, code repos, hosted services |
+| **Vulnerable AI Resources** | AI SPM — library CVEs, model vulnerabilities, cloud misconfigs |
+| **AI Compliance Overview** | AI Compliance — OWASP, NIST, and other framework adherence |
+| **Issues by Severity** | Aggregated from **all modules** that generate issues |
+| **GenAI App Activity** | AI Usage + AI Gateway — 90 days of daily request counts |
+| **Top MITRE ATLAS / OWASP Risks** | Cross-mapped from all findings to MITRE ATLAS & OWASP LLM Top 10 |
+| **Riskiest AI Resources** | AI Inventory + AI SPM — up to 20 resources ranked by open issues |
+
+### Key SE Talking Point
+AI 360 is the **executive and program-level view** — it's only as rich as the modules that feed it. The more Atlas modules a customer has deployed (Inventory, SPM, Compliance, Gateway, Usage), the more complete and actionable the AI 360 dashboard becomes. This is a strong argument for **full platform adoption** over point solutions.",1.0,1.0,0.8,0.933

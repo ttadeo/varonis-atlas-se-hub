@@ -1,0 +1,75 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the Wiz Objection
+
+**The short answer:** Wiz does cloud AI *posture*. Atlas does full AI lifecycle *security*. They are not the same scope.
+
+---
+
+### Acknowledge, Then Reframe
+
+Start by validating Wiz — it's a strong CNAPP and their AI-SPM is a logical extension of what they already do well. But that's exactly the point: **it's an extension of a cloud security product, not a purpose-built AI security platform.**
+
+---
+
+### What Wiz AI-SPM Actually Covers
+
+| Wiz Does This | Notes |
+|---|---|
+| Cloud AI asset discovery (AWS/Azure/GCP) | Models and endpoints only |
+| AI-BOM with graph correlation | Data path visibility |
+| Misconfiguration detection | Cloud-hosted AI resources |
+
+**That's posture management. It's static and cloud-scoped.**
+
+---
+
+### Where Atlas Goes Further — The Gap List
+
+These are capabilities Wiz simply does not have:
+
+- **Codebase Scanning** — finds AI in GitHub/GitLab repos, Jupyter notebooks, Python dependency files. Shadow AI lives here too, not just in the cloud.
+- **Runtime Protection** — the AI Gateway sits *inline*, blocking and redacting malicious prompts in real time before they hit the LLM
+- **Guardrails** — WARN, BLOCK, or MODIFY actions on both prompts and responses
+- **AI Compliance Automation** — mapped to OWASP LLM Top 10, NIST AI RMF, and EU AI Act out of the box
+- **TPRM** — third-party AI risk management for vendor tools your org is consuming
+- **LLM Pen Testing** — adversarial testing for prompt injection and jailbreak vulnerabilities
+
+---
+
+### The Closing Line
+
+> *""Wiz tells you what AI assets exist in your cloud. Atlas tells you what's happening to them at runtime, whether your developers are building risky AI in code, whether your vendor AI tools are compliant, and actively blocks attacks. Ask your Wiz rep to demo runtime prompt blocking — they can't.""*
+
+---
+
+**Displacement play or co-exist?** In most deals, Atlas and Wiz can **co-exist** — Wiz owns cloud posture broadly, Atlas owns AI security end-to-end. That's often an easier conversation than a rip-and-replace.",1.0,1.0,0.6,1.0,0.867
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","## Atlas Competitive Categories
+
+The retrieved documentation confirms that Atlas faces competition across **three distinct categories**, and that understanding which category a competitor falls into determines the correct positioning response — however, **the specific categories and differentiation details were not included in the retrieved context provided**.
+
+---
+
+## What I Can Tell You
+
+The documentation explicitly states:
+
+> *""Atlas faces competition across three distinct categories. Understanding which category a competitor falls into determines the right positioning response.""*
+
+The competitors mentioned by name in the section header are:
+- **Wiz**
+- **Cisco**
+- **Microsoft**
+- **AI SPM Tools** (as a category)
+
+---
+
+## Recommended Next Steps
+
+Since the detailed competitive breakdown wasn't returned in this retrieval, I'd suggest:
+
+1. **Pull the full competitive positioning doc** — ask your Atlas enablement team or check the internal knowledge base for the complete ""How to Win Against Wiz, Cisco, Microsoft, and AI SPM Tools"" article
+2. **Reach out to Chris Brown or Jonathan Kofman** — they're already cited in the FAQ as the go-to contacts for customer narratives and likely competitive positioning support as well
+
+---
+
+**Do you want me to help frame competitive positioning based on Atlas's architecture** (AI Gateway proxy model, data-centric approach, etc.) while you track down the full doc? I can reason through likely differentiation angles in the meantime.",0.333,0.333,0.708,1.0,0.458

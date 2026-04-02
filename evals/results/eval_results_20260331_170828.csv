@@ -1,0 +1,71 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+2,Atlas Architecture Overview,check_question,Why does Atlas run the proxy on the customer plane rather than in Varonis infrastructure?,"## Why Atlas Runs the Proxy on the Customer Plane
+
+This is a **fundamental architectural decision** rooted in the core threat model Atlas is designed to solve.
+
+---
+
+### The Core Contradiction It Avoids
+
+Atlas exists to prevent sensitive data from leaving an organization's environment without authorization. If the proxy ran on Varonis infrastructure, you'd be **solving a data leakage problem by routing all prompts through a third-party vendor's network** — which directly contradicts the goal.
+
+---
+
+### How the Two-Plane Architecture Addresses This
+
+| Concern | How It's Addressed |
+|---|---|
+| **Data sovereignty** | Prompt content never leaves the customer's environment to reach Varonis |
+| **Regulatory compliance** | Audit logs and inspection happen within the customer's own boundary |
+| **Trust model** | Varonis manages policy configuration but **never touches data plane traffic** |
+| **Vendor risk** | Customers don't have to trust Varonis with PHI, PII, source code, or credentials |
+
+---
+
+### The CISO Conversation
+
+When a CISO asks *""but now I'm routing everything through Varonis""* — the answer is: **you're not.**
+
+> The Gateway runs in **your AWS account**. Varonis controls policy configuration from the SaaS control plane, but actual prompt traffic stays inside your environment.
+
+---
+
+### Strong Qualifying Question to Use
+
+> *""Where does your current LLM traffic go today?""*
+
+Most customers **have no idea** — which immediately reinforces why data plane isolation matters and creates a strong opening for the Atlas value proposition.",1.0,1.0,0.917,0.972
+2,Atlas Architecture Overview,follow_up,What is the difference between the control plane and the customer plane in Atlas?,"## Atlas Architecture: Control Plane vs. Data Plane
+
+> **Note:** The correct terminology is **Control Plane** and **Data Plane** (not ""customer plane"") — these are the two architectural layers in Atlas.
+
+---
+
+## Quick Summary
+
+| | **Control Plane** | **Data Plane** |
+|---|---|---|
+| **Location** | Varonis-managed | Customer's own AWS VPC |
+| **Manages** | Everything | N/A — no separate management interface |
+| **Key Functions** | AI Inventory, SPM scanning, GRC/compliance, SIEM integrations, Guardrail rule evaluation | AI Gateway (proxy), Observability/logging |
+| **Stores sensitive data?** | No — Guardrail evaluation traffic is processed but **not stored** | Potentially yes — depends on logging config |
+| **Customer configurable retention?** | No | Controlled per-project via AI Observability → Configuration |
+
+---
+
+## Key Points for Customer Conversations
+
+### Data Sovereignty / Compliance
+- The **AI Gateway and Observability layer live entirely in the customer's AWS environment** — LLM traffic never leaves their VPC unless they've explicitly configured otherwise.
+- Sensitive prompt/response data logged by the observability layer **stays on the data plane**, inside the customer's org.
+
+### Guardrail Caveat ⚠️
+- When Guardrail policies are active, LLM activity is **sent to the control plane for rule evaluation** — but is **not stored**. This is a common concern to get ahead of in compliance-sensitive deals.
+- Varonis is actively working to move rule processing to the data plane in a future release.
+
+### Management
+- All configuration and management of data plane components is done **through the control plane** — there is no direct customer-accessible management interface on the data plane itself.
+
+---
+
+**Bottom line for customers:** The data plane is where their sensitive AI traffic lives; the control plane is the brain that manages everything. The architecture is specifically designed to keep sensitive data within the customer's environment.",1.0,1.0,0.727,0.909

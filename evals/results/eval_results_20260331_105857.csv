@@ -1,0 +1,97 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+1,What is Varonis Atlas?,check_question,"In your own words, what is the main security problem that Atlas is designed to solve?","## Atlas's Core Security Problem
+
+Atlas is designed to solve a fundamental tension in enterprise AI adoption: **organizations are rapidly consuming and building AI systems faster than they can secure them.**
+
+Here's the specific problem landscape Atlas addresses:
+
+### The Challenge
+When employees and applications start using LLMs and AI tools, several dangerous gaps open up simultaneously:
+
+- **Visibility gap** — Security teams have no idea what AI tools are being used (""shadow AI""), what data is flowing through them, or what the actual attack surface looks like
+- **Control gap** — LLM traffic flows directly to providers like OpenAI or Anthropic with no interception point for policy enforcement, threat detection, or data loss prevention
+- **Compliance gap** — Existing frameworks (MITRE ATLAS, OWASP, CVSS) apply to AI, but organizations have no tooling to measure or demonstrate adherence
+- **Risk gap** — AI-specific attacks like prompt injection, jailbreaks, and model vulnerabilities aren't caught by traditional security controls
+
+### What Atlas Does About It
+Atlas inserts itself into AI workflows — primarily via the **AI Gateway proxy** — to create an observation and enforcement layer that didn't previously exist. Everything flowing through becomes visible, scoreable, and controllable without requiring developers to rebuild their applications.
+
+---
+
+**SE Takeaway for customer conversations:** The pitch is essentially *""You're already adopting AI. Atlas makes sure that adoption doesn't become your next breach headline.""* It's the security control plane for AI that traditional tools weren't built to provide.",1.0,0.333,0.5,0.611
+1,What is Varonis Atlas?,follow_up,Can you give me a real-world example of data leakage through an AI tool?,"## Real-World AI Data Leakage Example
+
+Here's a concrete scenario that plays out frequently in enterprise environments:
+
+---
+
+### The Scenario: Developer + ChatGPT
+
+A developer is debugging a slow SQL query. They paste the query into ChatGPT for help — but the query contains:
+- **Customer PII** (names, emails, account IDs)
+- **Internal schema structure** (table names, relationships)
+- **Potentially regulated data** (financial records, health info)
+
+That data is now **transmitted to OpenAI's infrastructure**, outside your DLP controls, outside your data residency requirements, and potentially used in model training (depending on account settings).
+
+**The developer didn't intend to cause a breach. They just wanted to fix a bug.**
+
+---
+
+### How Atlas Addresses This
+
+| Risk | Atlas Capability |
+|------|-----------------|
+| Developer used unsanctioned AI tool | **AI Usage** detects ChatGPT access via ZTNA integration |
+| PII sent in the prompt | **AI Gateway PII Guardrail** with tokenization can redact before it leaves |
+| No visibility into what was shared | **AI Monitor / Observability** logs prompt content for review |
+| No policy enforcement | **Sanctioned/Unsanctioned LLM management** can block or alert |
+
+---
+
+### The SE Angle
+
+When talking to prospects, this scenario resonates because:
+- It's **accidental**, not malicious — hard to prevent with traditional security tools
+- It bypasses **CASB/DLP** that wasn't built for LLM traffic
+- It's happening **right now** in their org, whether they know it or not
+
+> Good discovery question: *""Do you know which AI tools your developers are using today, and what data they're sending?""*",1.0,0.0,0.125,0.375
+1,What is Varonis Atlas?,follow_up,What is the difference between AI Inventory and AI Usage?,"## AI Inventory vs. AI Usage — Key Differences
+
+These are two distinct Atlas applications that complement each other but serve different purposes:
+
+---
+
+### AI Inventory
+**Purpose:** Catalog and govern the AI *assets/resources* your organization uses in AI development and deployment.
+
+- Tracks things like LLM endpoints, models, libraries, API keys, frameworks (e.g., LangChain instances)
+- Resources are organized by **technology** and **type** (LLM Endpoint, AI Software, AI Model, etc.)
+- Generates **issues** for shadow AI (unreviewed/unsanctioned resources) and **unprotected AI** (resources missing available protections like an AI Gateway)
+- Think of it as your **AI asset register** — what do we have, is it reviewed, is it protected?
+
+---
+
+### AI Usage
+**Purpose:** Monitor and control *who is using* AI services, *how*, and enforce policy on that usage.
+
+- Shows which employees are accessing AI services, from which apps, and how frequently
+- Pulls data from ZTNA systems + curated global AI service lists + specific integrations (e.g., Microsoft Copilot)
+- Lets you **sanction or unsanction** AI services and LLMs, including **quarantine policies** enforced through the AI Gateway
+- Think of it as your **AI access governance layer** — who's using what, should they be, and can we block/quarantine it?
+
+---
+
+### The Simple SE Framing:
+
+| | AI Inventory | AI Usage |
+|---|---|---|
+| **Focus** | Assets & resources | User behavior & access |
+| **Key question** | What AI do we have? | Who's using AI, and should they be? |
+| **Action** | Review, sanction, protect resources | Sanction/unsanction services, quarantine LLMs |
+| **Data source** | Discovery scans, manual entry | ZTNA, integrations, AI Gateway |
+
+---
+
+**Worth noting for demos:** These apps work together — Inventory identifies *what* needs governance, Usage enforces *who* can access it. The AI Gateway is the enforcement mechanism that connects both.",1.0,1.0,0.778,0.926

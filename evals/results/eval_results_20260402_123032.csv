@@ -1,0 +1,67 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+7,AI Observability & Audit Trail,check_question,"A customer's legal team wants a complete audit trail of every prompt sent to their AI chatbot for the past 90 days. Which Atlas component provides this, and where is that data stored?","## Atlas AI Observability — Audit Trail for Legal/Compliance
+
+**The component they need is AI Observability**, and here's the key data sovereignty point your legal team will care about:
+
+---
+
+### What Provides It
+**AI Observability** logs every prompt and response flowing through the Atlas AI Gateway, creating a complete, immutable record of all AI interactions — including full prompt text, model responses, guardrail actions taken, and metadata (timestamps, user identifiers, model endpoints, token counts).
+
+---
+
+### Where the Data Lives
+| Storage Tier | Location | Retention |
+|---|---|---|
+| Searchable Index | OpenSearch, inside **customer's own AWS VPC** | **3 months (default)** |
+| Archive | S3, inside **customer's own AWS account** | **6 months (default)** |
+
+The 3-month default index retention **fully covers the 90-day window** the legal team is asking about.
+
+---
+
+### Critical Point for Legal Teams
+> **Varonis has zero access to this data.** It resides entirely within the customer's cloud environment. Varonis manages the software; the customer owns the data.
+
+This is a meaningful differentiator for regulated industries where data residency and third-party access are audit concerns.
+
+---
+
+### Retention is Adjustable
+Both tiers can be modified on request:
+- **Shorter** — for customers with data minimization obligations
+- **Longer** — for customers with compliance mandates requiring extended audit history (e.g., financial services, healthcare)
+
+---
+
+**SE Tip:** If the customer has compliance requirements beyond 6 months, lead with the S3 archive adjustability — that's your negotiating room before they push back on default retention limits.",1.0,1.0,0.905,1.0,0.968
+7,AI Observability & Audit Trail,follow_up,"What is the default data retention period for the AI Observability layer, and can it be changed?","## AI Observability — Default Data Retention
+
+Based directly on the Atlas documentation:
+
+### Default Retention Policy
+
+| Storage Layer | Default Retention |
+|--------------|-------------------|
+| **OpenSearch Index** (searchable) | **3 months** |
+| **S3 / Raw files** (archive) | **6 months** |
+
+---
+
+### Is It Configurable?
+
+**Yes** — both retention periods can be modified. The process is:
+- Contact your **Account Manager** to request a change
+- Can go **shorter** (customers wanting to minimize data footprint) or **longer** (customers with compliance/legal requirements)
+
+---
+
+### Key SE Talking Points
+
+- **Data sovereignty**: The observability layer runs inside the **customer's own AWS account/VPC** — Varonis has zero access to the stored prompts and responses
+- **Compliance angle**: For customers with 12-month audit requirements (SOX, HIPAA, etc.), simply request extended retention through their AM
+- **Legal/eDiscovery angle**: The 6-month S3 archive means raw prompt/response logs are available well beyond the 90-day searchable window — useful for legal hold conversations
+
+---
+
+> 💡 **SE tip**: If a prospect's legal or compliance team asks about audit trail completeness, the 6-month S3 retention is often the right answer — it covers most regulatory lookback windows out of the box, with the option to extend if needed.",1.0,1.0,0.667,1.0,0.889

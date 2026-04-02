@@ -1,0 +1,102 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+18,Advanced Capstone,check_question,"You're in a final technical review with the CISO and their security architect. The architect asks: when a guardrail fires and blocks a prompt, does that blocked prompt get sent to Varonis? And who in our organization can see the content of blocked prompts? Give your complete answer.","## Answering the Architect's Two-Part Question
+
+---
+
+### Part 1: Does Varonis See Blocked Prompts?
+
+**No. Varonis has zero access to the content of blocked prompts — or any prompts.**
+
+Here's why, architecturally:
+
+The AI Gateway **runs in your AWS account** — it's your data plane. When a guardrail fires and blocks a prompt, that evaluation happens **inside your environment**. The prompt never leaves your infrastructure to reach Varonis.
+
+Varonis operates a **SaaS control plane** that pushes policy configuration *to* your Gateway — but that's a one-way policy sync, not a data channel. Prompt content, including blocked prompts, stays in your data plane. Varonis is not in the data path.
+
+> **The clean answer for the architect:** ""The Gateway is in your AWS account. The block decision happens there. Varonis receives telemetry about *the fact that* a block occurred — policy metadata — but not the prompt content itself.""
+
+---
+
+### Part 2: Who in Their Org Can See Blocked Prompt Content?
+
+This is where I'd want to clarify with the customer before answering definitively, but the framing should be:
+
+- Access to prompt logs is governed by **their own AWS account controls** — IAM policies, CloudWatch access, etc.
+- Atlas provides visibility and audit capabilities through the control plane UI, but what is surfaced there (metadata vs. full content) is a configuration and permissions question worth validating against current Atlas logging specs
+
+**I'd recommend following up** to confirm exactly what fields are exposed in the Atlas dashboard vs. what remains only in the customer's own log storage — that's a spec-level detail I want to verify rather than assert.
+
+---
+
+### The Competitive Framing to Land With the CISO
+
+> *""Most of your LLM traffic today has no visibility at all — and it's going directly to OpenAI or Anthropic with no inspection. Atlas gives you control and audit capability without Varonis ever touching your data. That's the architecture.""*
+
+Ask them: **""Do you know where your LLM traffic is going today?""** — that question usually reframes the entire trust conversation.",1.0,0.333,0.6,0.644
+18,Advanced Capstone,follow_up,A global financial services firm needs to demonstrate AI governance to their board within 90 days and has EU operations. Walk through the Atlas deployment plan including how data residency is handled.,"# Atlas Deployment Plan: Global Financial Services — 90-Day Board Readiness
+
+## Addressing EU Data Residency First (Critical for FinServ)
+
+Based on the documentation, Atlas supports **EU Central (Frankfurt)** as a dedicated deployment region. For this customer:
+
+- **EU operations** → tenant provisioned in **EU Central (Frankfurt)**
+- **US operations** → tenant provisioned in **US East 1 or US West 2**
+- This means EU data stays in Frankfurt, satisfying GDPR data residency requirements out of the box
+
+> ⚠️ **SE Note:** Confirm with your Atlas technical contact whether this customer needs a single multi-region tenant or separate tenant instances per region. This is an important scoping question before you commit to an architecture.
+
+---
+
+## 90-Day Board Readiness Roadmap
+
+### Phase 1 — Days 1–30: Visibility & Inventory
+**Goal: Know what AI is in use**
+
+| Action | Atlas Capability |
+|---|---|
+| Deploy AI Gateway proxy for known LLM traffic | AI Gateway (route apps through proxy URL) |
+| Discover shadow AI / unmanaged AI apps | AI Inventory |
+| Baseline current AI risk posture | AI 360 Dashboard |
+
+Board deliverable: *""Here is every AI asset in our environment.""*
+
+---
+
+### Phase 2 — Days 31–60: Controls & Policy Enforcement
+**Goal: Prove AI is governed**
+
+| Action | Atlas Capability |
+|---|---|
+| Define and enforce guardrails (data leakage, prompt injection, etc.) | Guardrail Enforcement |
+| Map existing controls to regulatory frameworks (EU AI Act, DORA, etc.) | AI Compliance |
+| Establish audit logging for all LLM interactions | AI Observability |
+
+Board deliverable: *""Here are the controls we've implemented and the frameworks they satisfy.""*
+
+---
+
+### Phase 3 — Days 61–90: Audit Trail & Reporting
+**Goal: Demonstrate ongoing governance**
+
+| Action | Atlas Capability |
+|---|---|
+| Pull compliance mapping reports for board presentation | AI Compliance |
+| Show complete audit trail of AI interactions | AI Observability |
+| Present enterprise risk posture in executive view | AI 360 Dashboard |
+
+Board deliverable: *""Here is our ongoing governance program with audit evidence.""*
+
+---
+
+## Key Qualification Questions for Your Discovery
+
+1. **Which LLMs are they calling?** (OpenAI, Azure OpenAI, Anthropic?) — determines AI Gateway routing configuration
+2. **Single tenant or multi-region tenant?** — impacts how EU/US data flows are separated
+3. **Which regulatory frameworks matter most?** — EU AI Act, DORA, GDPR, SOX? Prioritizes AI Compliance mapping
+4. **Do they have existing AI inventory?** — determines Phase 1 effort
+5. **Who owns the board presentation?** — CISO, CRO, or CDO? Shapes how you frame the AI 360 dashboard output
+
+---
+
+## SE Coaching Note
+The Frankfurt region availability is a **strong differentiator** for EU FinServ — lead with it early in the conversation to address data sovereignty objections before they become blockers. The 90-day timeline aligns well with Atlas's phased value delivery.",1.0,1.0,0.536,0.845

@@ -1,0 +1,65 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+7,AI Observability & Audit Trail,check_question,"A customer's legal team wants a complete audit trail of every prompt sent to their AI chatbot for the past 90 days. Which Atlas component provides this, and where is that data stored?","## Audit Trail for AI Prompts — Atlas AI Gateway
+
+### The Short Answer
+
+The **Atlas AI Gateway** is the component that provides this capability. Since it acts as a proxy for all LLM traffic, every prompt and response passing through it is logged — regardless of whether a BLOCK or MODIFY action was triggered.
+
+---
+
+### What the Documentation Tells Us
+
+From the Sales Rep use case in the provided context:
+
+> *""The AI Gateway logs all prompts and responses passing through it. Even if a BLOCK or MODIFY action is not triggered, the security team has a complete audit trail of what data was sent to which LLM endpoint, by which application, and when.""*
+
+The **AI 360 dashboard** surfaces this as a risk finding and is where the security team would go to review and investigate prompt history.
+
+---
+
+### Key Requirement: Traffic Must Route Through the Gateway
+
+⚠️ **Critical caveat for your customer conversation:**
+
+This audit trail only exists for traffic that was routed **through** the Atlas AI Gateway. If their AI chatbot is currently calling OpenAI (or another LLM) directly, there is **no historical log** in Atlas for that period.
+
+You'll want to ask:
+- Is their chatbot already proxying through the Atlas AI Gateway?
+- If not, when was it configured to do so?
+
+The 90-day lookback only covers the period **after** the Gateway was in the traffic path.
+
+---
+
+### What to Confirm with the Customer
+
+| Question | Why It Matters |
+|---|---|
+| What LLM does their chatbot call? | Confirms Gateway compatibility |
+| Is traffic currently routed through Atlas? | Determines if historical data exists |
+| What format do they need the audit trail in? | May require export/reporting discussion |
+
+---
+
+**Bottom line:** Point the legal team to the **AI 360 dashboard** for prompt audit data, but set expectations early — Atlas can only log what flows through the Gateway.",1.0,1.0,0.714,0.905
+7,AI Observability & Audit Trail,follow_up,"What is the default data retention period for the AI Observability layer, and can it be changed?","## AI Observability — Default Data Retention
+
+Based directly from the Atlas documentation:
+
+### Default Retention Policy
+| Storage Tier | Default Retention |
+|---|---|
+| **OpenSearch Index** | **3 months** |
+| **S3 / Raw Files** | **6 months** |
+
+### Can It Be Changed?
+**Yes.** Customers can request a custom retention policy — either longer or shorter than the defaults — by contacting their **Account Manager**.
+
+---
+
+### SE Context / Key Points for Customer Conversations
+
+- Both the AI Gateway and the OpenSearch Observability layer reside **on the customer's data plane** (within their own AWS VPC), so retained data never leaves their environment
+- The 6-month S3 layer gives customers a raw log archive even after the index rolls off
+- If a customer has **compliance requirements** (e.g., 1-year log retention for SOC 2, HIPAA, etc.), flag this early and direct them to their Account Manager to set expectations before deployment
+- Sensitive data in prompts/responses *can* be logged — customers should review **AI Observability → Configuration → Gateway/Firewall** settings per project to control what gets logged and at what level",1.0,1.0,0.8,0.933

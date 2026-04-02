@@ -1,0 +1,83 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+9,AI Security Posture Management,check_question,"A customer says they want to know if any of their AI Python libraries have known CVEs. Which Atlas application handles this, and how does it discover and report those vulnerabilities?","## Atlas AI Inventory — Python Library CVE Detection
+
+### The Right Application: **AI Inventory**
+
+Based on the documentation context, the **AI Inventory** application is what handles this use case, specifically through its **code scanning** capability.
+
+---
+
+### How Discovery Works
+
+**Code Scanning** is the mechanism that finds AI libraries in source repositories:
+
+- Scans **every repository nightly** — so new dependencies are caught as they're added, not weeks later
+- Targets AI libraries specifically (Python packages like `transformers`, `langchain`, `openai`, etc.)
+- Provides continuous coverage rather than point-in-time audits
+
+---
+
+### Important Caveat to Flag
+
+> ⚠️ **The provided documentation describes *discovery* of AI libraries in code repos, but doesn't explicitly detail the CVE/vulnerability reporting workflow.** I don't want to overstate what the context confirms.
+
+What the docs confirm: Atlas *finds* the libraries nightly via code scanning.
+
+What you'll want to verify with your Atlas product team:
+- How CVE matching works (does Atlas integrate with a vulnerability database like OSV, NVD, or similar?)
+- Where CVE findings surface in the UI (AI Inventory dashboard, alerts, reports?)
+- Whether remediation guidance or severity scoring is included
+
+---
+
+### SE Discovery Angle
+
+This is a strong hook for development-heavy customers. The key question to ask:
+
+> *""Does your security team currently have visibility into which AI Python packages your developers are pulling in — and whether any of them have known CVEs?""*
+
+Most will say no — and nightly code scanning is a compelling answer to that gap.",1.0,0.667,0.433,0.7
+9,AI Security Posture Management,follow_up,What is LLM penetration testing in Atlas and what does it test for?,"# LLM Penetration Testing in Atlas
+
+## What It Is
+
+Atlas AI SPM includes a built-in **LLM Pentest capability** that automates adversarial testing against LLM endpoints — both direct LLM APIs and custom application APIs that wrap LLMs. It's designed to systematically probe AI systems for security vulnerabilities before (or after) they go into production.
+
+---
+
+## What It Tests For
+
+### Test Framework
+Tests are organized via **Templates** that align to industry-standard frameworks:
+- **OWASP** (LLM Top 10)
+- **MITRE ATLAS** (AI-specific threat framework)
+
+The **Varonis Default Template** comes pre-loaded with categories from both frameworks — giving customers an immediate baseline without custom configuration.
+
+### Customization Options
+- Adjust **severity levels** per category
+- Override **evaluation mechanisms**
+- Add **custom test categories** (globally or per template)
+- Fine-tune prompts using an **observability dataset** that reflects real application traffic
+- Provide **system context** so Atlas crafts more targeted, use-case-specific attacks
+
+---
+
+## Key Differentiator for SEs to Highlight
+
+The **""Enable Active Gateway Policies""** option is a strong selling point:
+> Run the pentest *through* the AI Gateway guardrails to measure how effective your policies actually are — with built-in before/after comparison capability.
+
+This directly ties the pentest results back to Atlas's protective controls.
+
+---
+
+## Supported Targets
+- Native LLM endpoints (e.g., OpenAI, Mistral, Llama)
+- **Custom application APIs** (your app's API endpoint, not just the raw LLM)
+- Watson.x endpoints (Mistral/Llama only — Granite models not yet supported)
+
+---
+
+## Scheduling
+Tests can be run **immediately, on-demand, or on a recurring schedule** — enabling continuous security regression testing as models or prompts change.",1.0,1.0,0.556,0.852

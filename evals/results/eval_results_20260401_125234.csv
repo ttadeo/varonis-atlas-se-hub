@@ -1,0 +1,96 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+18,Advanced Capstone,check_question,"You're in a final technical review with the CISO and their security architect. The architect asks: when a guardrail fires and blocks a prompt, does that blocked prompt get sent to Varonis? And who in our organization can see the content of blocked prompts? Give your complete answer.","## Blocked Prompts — Complete Technical Answer for CISO Review
+
+---
+
+### Does the blocked prompt get sent to Varonis?
+
+**No. Varonis never receives, sees, or stores blocked prompt content.** Here's the precise data flow:
+
+1. User sends a prompt to an LLM application
+2. The Atlas AI Gateway (NGINX proxy running in **your AWS VPC**) intercepts it
+3. The prompt is sent **in-memory** to the Atlas rules orchestrator for policy evaluation
+4. The orchestrator returns a verdict — BLOCK, MODIFY, WARN, or ALLOW
+5. **The prompt data is never persisted during evaluation** — memory only, no storage
+6. If the verdict is BLOCK, the prompt is dropped at the gateway and **never forwarded to the LLM or to Varonis**
+
+The critical architectural point: **the Gateway is deployed in your AWS account.** Varonis operates the SaaS control plane to manage policy configuration, but your prompt traffic never leaves your environment.
+
+---
+
+### Who in your organization can see blocked prompt content?
+
+This is an important follow-up question to address directly. Based on the architecture:
+
+- **The prompt is processed in-memory and not stored** — so there is no persistent record of the prompt content that anyone queries after the fact
+- What **is** recorded is the **verdict and associated metadata** (policy triggered, user, timestamp, application) — this is what appears in Atlas dashboards and audit logs
+- Access to Atlas management and logging is controlled by **your organization's own IAM and Atlas role configuration**
+
+> ⚠️ **SE note:** If the architect presses on log content specifics — what metadata fields are captured in the block event — confirm with your Atlas product team, as logging granularity may vary by configuration.
+
+---
+
+### The Competitive Framing
+
+When the CISO says *""but now we're routing everything through Varonis""* — the correct response is: **you're not.** You're routing traffic through a proxy running in your own AWS account. Varonis has zero access to your data. That's a deliberate architectural guarantee, not a policy promise.
+
+**A strong qualifying question to close with:** *""Where does your LLM traffic go today?""* Most organizations don't have a clear answer — which is precisely why the data plane isolation Atlas provides is the right architectural answer.",1.0,1.0,0.783,0.928
+18,Advanced Capstone,follow_up,A global financial services firm needs to demonstrate AI governance to their board within 90 days and has EU operations. Walk through the Atlas deployment plan including how data residency is handled.,"# Atlas Deployment Plan: Global Financial Services — 90-Day Board Readiness
+
+## Data Residency First (EU Operations = Non-Negotiable)
+
+Based on the documentation, Atlas supports **EU Central (Frankfurt)** as a dedicated deployment region. For this customer:
+
+- **EU operations → EU Central tenant** — data stays in-region, satisfying GDPR and local data residency requirements
+- **US operations → US East 1 or US West 2** — depending on where their US presence is headquartered
+- These are **separate tenants**, so EU data never transits US infrastructure
+
+> ⚠️ **SE Note:** Confirm whether they need a single global tenant or regional tenants. Multi-region tenant architecture is a scoping question to resolve early. Escalate to your SE lead if the customer requires cross-region consolidated reporting — clarify what Atlas supports here before promising it.
+
+---
+
+## 90-Day Board Readiness Plan
+
+### Phase 1: Foundation (Days 1–30) — ""Know Your AI""
+| Action | Atlas Capability |
+|---|---|
+| Discover all AI assets in use | **AI Inventory** — catalog every model, app, and integration |
+| Route LLM traffic through Atlas | **AI Gateway** — point existing LLM API calls at the proxy endpoint |
+| Establish baseline risk posture | **AI 360 Dashboard** — executive-ready from day one |
+
+### Phase 2: Controls (Days 31–60) — ""Govern Your AI""
+| Action | Atlas Capability |
+|---|---|
+| Define and enforce usage policies | **Guardrails** — block policy violations in real-time |
+| Map controls to EU/financial regulations | **AI Compliance** — framework mapping (relevant for EU AI Act, DORA) |
+| Begin capturing audit trail | **AI Observability** — every interaction logged |
+
+### Phase 3: Board Presentation (Days 61–90) — ""Prove It""
+| Deliverable | Atlas Source |
+|---|---|
+| AI risk posture summary | AI 360 Dashboard export |
+| Evidence of control enforcement | Guardrail enforcement logs |
+| Regulatory framework alignment | AI Compliance mappings |
+| Complete audit trail | AI Observability reports |
+
+---
+
+## Key Talking Points for the Board Narrative
+
+1. **""We know what AI is running""** → AI Inventory
+2. **""We have controls that actively enforce policy""** → Guardrails
+3. **""We have the audit trail regulators expect""** → AI Observability
+4. **""Our EU data never leaves Frankfurt""** → Regional tenant architecture
+
+---
+
+## Discovery Questions to Ask This Customer
+
+- What LLM providers are currently in use? (OpenAI, Azure OpenAI, Anthropic?) — determines AI Gateway routing config
+- Do they have existing AI policies written, or do they need Atlas to help define them?
+- Which regulatory frameworks are most pressing? (EU AI Act, DORA, internal risk committee requirements?)
+- Is there a CISO or Chief AI Officer sponsoring this initiative, or is it board-driven top-down?
+
+---
+
+> **Bottom line for the SE:** The 90-day timeline is very achievable — Atlas is designed to deliver board-level visibility quickly. Lead with EU Central data residency to close the geographic objection, then show how AI 360 gives them exactly the executive dashboard they need to walk into that board meeting with confidence.",1.0,1.0,0.646,0.882

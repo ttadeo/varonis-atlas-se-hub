@@ -1,0 +1,74 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+2,Atlas Architecture Overview,check_question,Why does Atlas run the proxy on the customer plane rather than in Varonis infrastructure?,"## Why the Atlas Proxy Runs on the Customer Plane
+
+The answer is rooted in a fundamental architectural principle: **you can't solve a data leakage problem by routing sensitive data through a third-party vendor's network.**
+
+---
+
+### The Core Contradiction Atlas Avoids
+
+Atlas exists to prevent sensitive data from leaving an organization's environment without authorization. If the proxy ran on Varonis infrastructure, every prompt — potentially containing PHI, PII, source code, or credentials — would transit Varonis's network to get inspected. That's trading one data exposure risk for another.
+
+---
+
+### What the Customer-VPC Deployment Achieves
+
+| Concern | How It's Addressed |
+|---|---|
+| **Data sovereignty** | Prompt content never leaves the customer's environment to reach Varonis |
+| **Regulatory compliance** | Audit logs and inspection happen within the customer's own boundary |
+| **Trust model** | Varonis manages control plane policy configuration but never touches data plane traffic |
+| **Vendor risk** | Customers don't have to trust Varonis with PHI, PII, source code, or credentials |
+
+---
+
+### The Clean Separation to Emphasize in Customer Conversations
+
+- **Control plane** → Varonis-managed (policy config, rules, management UI)
+- **Data plane** → Customer-owned (actual prompt traffic, inspection, logging)
+
+Varonis configures *what* the proxy does — but **never sees the data flowing through it.**
+
+---
+
+### SE Talking Point
+
+This is a strong differentiator when customers raise vendor risk objections. The architecture is specifically designed so that **trust in Varonis is not a prerequisite** for deployment. The customer's security team retains full data custody throughout.",1.0,1.0,0.792,1.0,0.931
+2,Atlas Architecture Overview,follow_up,What is the difference between the control plane and the customer plane in Atlas?,"## Atlas Two-Plane Architecture
+
+Based on the retrieved documentation, here's the breakdown:
+
+---
+
+### The Short Answer
+**Control Plane ≠ Customer Plane** — they are the two *separate* halves of Atlas's architecture, each with a distinct role and location.
+
+---
+
+### Control Plane
+- **Managed by:** Varonis (SaaS)
+- **Purpose:** Centralized configuration, policy management, and governance
+- **Location:** Varonis infrastructure — *not* in the customer's environment
+
+### Customer Plane (= Data Plane)
+- **Managed by:** The customer
+- **Purpose:** Runtime data handling — this is where actual LLM traffic flows
+- **Location:** Deployed **inside the customer's own environment**
+
+> ⚠️ **Terminology note:** *Data Plane* and *Customer Plane* are used interchangeably in Atlas documentation — they refer to the same thing.
+
+---
+
+### Why This Architecture Matters (for Customer Conversations)
+
+This separation is the core of Atlas's **data sovereignty story**:
+
+| Concern | Answer |
+|---|---|
+| Does my data leave my environment? | No — the Customer Plane processes traffic locally |
+| Who controls policy? | You configure it via the Varonis Control Plane |
+| Compliance/residency requirements? | Customer Plane addresses them by design |
+
+---
+
+**SE Tip:** Lead with this architecture when talking to security-conscious or regulated industry customers — it directly addresses ""does Varonis see my prompts?"" concerns.",1.0,1.0,0.667,1.0,0.889

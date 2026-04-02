@@ -1,0 +1,268 @@
+[
+  {
+    "lesson_id": 1,
+    "lesson_title": "What is Varonis Atlas?",
+    "question_type": "check_question",
+    "question": "In your own words, what is the main security problem that Atlas is designed to solve?",
+    "expected_topics": ["shadow AI", "data leakage", "compliance", "AI attacks", "visibility", "governance"]
+  },
+  {
+    "lesson_id": 1,
+    "lesson_title": "What is Varonis Atlas?",
+    "question_type": "follow_up",
+    "question": "Can you give me a real-world example of data leakage through an AI tool?",
+    "expected_topics": ["sensitive data", "LLM", "prompt", "AI Gateway", "block", "detect"]
+  },
+  {
+    "lesson_id": 1,
+    "lesson_title": "What is Varonis Atlas?",
+    "question_type": "follow_up",
+    "question": "What is the difference between AI Inventory and AI Usage?",
+    "expected_topics": ["AI Inventory", "AI Usage", "shadow AI", "sanctioned", "unsanctioned", "ZTNA"]
+  },
+  {
+    "lesson_id": 2,
+    "lesson_title": "Atlas Architecture Overview",
+    "question_type": "check_question",
+    "question": "Why does Atlas run the proxy on the customer plane rather than in Varonis infrastructure?",
+    "expected_topics": ["data privacy", "customer plane", "sensitive data", "Varonis infrastructure", "prompt", "proxy"]
+  },
+  {
+    "lesson_id": 2,
+    "lesson_title": "Atlas Architecture Overview",
+    "question_type": "follow_up",
+    "question": "What is the difference between the control plane and the customer plane in Atlas?",
+    "expected_topics": ["control plane", "customer plane", "Varonis-managed", "customer-deployed", "proxy"]
+  },
+  {
+    "lesson_id": 3,
+    "lesson_title": "The AI Gateway",
+    "question_type": "check_question",
+    "question": "A customer's application currently calls https://api.openai.com/v1. What do they need to change to route traffic through Atlas?",
+    "expected_topics": ["base URL", "proxy URL", "Atlas gateway", "endpoint", "route", "change"]
+  },
+  {
+    "lesson_id": 3,
+    "lesson_title": "The AI Gateway",
+    "question_type": "follow_up",
+    "question": "What happens to a prompt when the AI Gateway applies a MODIFY action?",
+    "expected_topics": ["MODIFY", "redact", "rewrite", "prompt", "sensitive", "before"]
+  },
+  {
+    "lesson_id": 4,
+    "lesson_title": "Policy Types: WARN, BLOCK, MODIFY",
+    "question_type": "check_question",
+    "question": "A customer wants to prevent prompt injection attacks but still wants to see what was attempted. Which actions would you recommend and why?",
+    "expected_topics": ["BLOCK", "WARN", "input", "prompt injection", "audit", "log", "visibility"]
+  },
+  {
+    "lesson_id": 4,
+    "lesson_title": "Policy Types: WARN, BLOCK, MODIFY",
+    "question_type": "follow_up",
+    "question": "What is the difference between synchronous and asynchronous policy processing in Atlas?",
+    "expected_topics": ["synchronous", "asynchronous", "BLOCK", "MODIFY", "WARN", "real-time", "inline"]
+  },
+  {
+    "lesson_id": 5,
+    "lesson_title": "AI Inventory & AI Usage",
+    "question_type": "check_question",
+    "question": "A CISO asks: how do I know if employees are using unauthorized AI tools like personal ChatGPT accounts? Which Atlas application answers this, and how?",
+    "expected_topics": ["AI Usage", "ZTNA", "shadow AI", "unsanctioned", "visibility", "employees"]
+  },
+  {
+    "lesson_id": 5,
+    "lesson_title": "AI Inventory & AI Usage",
+    "question_type": "follow_up",
+    "question": "How does Atlas discover AI models and libraries in a customer's cloud environment?",
+    "expected_topics": ["AI Inventory", "cloud", "scan", "models", "libraries", "endpoints", "discover"]
+  },
+  {
+    "lesson_id": 6,
+    "lesson_title": "Guardrails & Built-in Rules",
+    "question_type": "check_question",
+    "question": "Which Atlas rule would you recommend first for a customer worried about employees accidentally leaking sensitive data through an AI chatbot?",
+    "expected_topics": ["PII", "detection", "guardrail", "input guard", "block", "sensitive data", "DLP"]
+  },
+  {
+    "lesson_id": 6,
+    "lesson_title": "Guardrails & Built-in Rules",
+    "question_type": "follow_up",
+    "question": "What are Agentic Guardrails and why do they matter for AI workflow tools like n8n?",
+    "expected_topics": ["agentic", "guardrails", "AI agents", "workflow", "automated", "tool calls", "multi-step"]
+  },
+  {
+    "lesson_id": 6,
+    "lesson_title": "Guardrails & Built-in Rules",
+    "question_type": "follow_up",
+    "question": "What is the OWASP LLM Top 10 policy template in Atlas?",
+    "expected_topics": ["OWASP", "LLM Top 10", "template", "quick start", "prompt injection", "policy"]
+  },
+  {
+    "lesson_id": 7,
+    "lesson_title": "AI Observability & Audit Trail",
+    "question_type": "check_question",
+    "question": "A customer's legal team wants a complete audit trail of every prompt sent to their AI chatbot for the past 90 days. Which Atlas component provides this, and where is that data stored?",
+    "expected_topics": ["AI Observability", "audit trail", "OpenSearch", "customer data plane", "AWS", "logs", "prompts", "responses"]
+  },
+  {
+    "lesson_id": 7,
+    "lesson_title": "AI Observability & Audit Trail",
+    "question_type": "follow_up",
+    "question": "What is the default data retention period for the AI Observability layer, and can it be changed?",
+    "expected_topics": ["retention", "3 months", "6 months", "S3", "index", "configurable", "customer request"]
+  },
+  {
+    "lesson_id": 8,
+    "lesson_title": "AI 360 Dashboard",
+    "question_type": "check_question",
+    "question": "A CISO asks for a single dashboard showing their organization's complete AI risk posture. What do you show them in Atlas, and what key risk categories does it surface?",
+    "expected_topics": ["AI 360", "risk posture", "dashboard", "findings", "risk categories", "unified view"]
+  },
+  {
+    "lesson_id": 8,
+    "lesson_title": "AI 360 Dashboard",
+    "question_type": "follow_up",
+    "question": "How does AI 360 aggregate data from across the Atlas platform?",
+    "expected_topics": ["AI 360", "aggregate", "AI Inventory", "AI Usage", "AI Gateway", "AI SPM", "findings", "unified"]
+  },
+  {
+    "lesson_id": 9,
+    "lesson_title": "AI Security Posture Management",
+    "question_type": "check_question",
+    "question": "A customer says they want to know if any of their AI Python libraries have known CVEs. Which Atlas application handles this, and how does it discover and report those vulnerabilities?",
+    "expected_topics": ["AI SPM", "CVE", "library", "vulnerability", "scan", "issues", "posture"]
+  },
+  {
+    "lesson_id": 9,
+    "lesson_title": "AI Security Posture Management",
+    "question_type": "follow_up",
+    "question": "What is LLM penetration testing in Atlas and what does it test for?",
+    "expected_topics": ["LLM pentest", "penetration testing", "prompt injection", "jailbreak", "adversarial", "vulnerabilities", "endpoint"]
+  },
+  {
+    "lesson_id": 10,
+    "lesson_title": "AI Incidents & Issues",
+    "question_type": "check_question",
+    "question": "After deploying Atlas, a security analyst sees a new Shadow AI issue in the dashboard. What does that mean, and what are the two most likely causes?",
+    "expected_topics": ["Shadow AI", "unreviewed", "unsanctioned", "issue", "inventory", "unapproved", "resource"]
+  },
+  {
+    "lesson_id": 10,
+    "lesson_title": "AI Incidents & Issues",
+    "question_type": "follow_up",
+    "question": "How can Atlas Issues be integrated with an organization's existing security tools like Splunk or ServiceNow?",
+    "expected_topics": ["SIEM", "Splunk", "ServiceNow", "integration", "issues", "alerts", "workflow"]
+  },
+  {
+    "lesson_id": 11,
+    "lesson_title": "Compliance & TPRM",
+    "question_type": "check_question",
+    "question": "A financial services customer says they need to demonstrate AI governance controls for their upcoming SOC 2 audit. Which Atlas applications and features would you highlight, and what evidence can Atlas provide?",
+    "expected_topics": ["AI Compliance", "audit trail", "AI Observability", "guardrails", "governance", "evidence", "controls", "compliance"]
+  },
+  {
+    "lesson_id": 11,
+    "lesson_title": "Compliance & TPRM",
+    "question_type": "follow_up",
+    "question": "What is TPRM in the context of Atlas and why does it matter for AI security?",
+    "expected_topics": ["TPRM", "third party", "vendor", "risk", "AI vendors", "assessment", "supply chain"]
+  },
+  {
+    "lesson_id": 12,
+    "lesson_title": "Putting It All Together",
+    "question_type": "check_question",
+    "question": "Walk me through how you would open an Atlas conversation with a financial services CISO who tells you their developers are using AI coding assistants but the security team has no visibility into what data is being shared.",
+    "expected_topics": ["AI Usage", "AI Gateway", "data leakage", "visibility", "guardrails", "audit trail", "credentials", "PII", "discovery"]
+  },
+  {
+    "lesson_id": 12,
+    "lesson_title": "Putting It All Together",
+    "question_type": "follow_up",
+    "question": "What is the recommended Atlas deployment sequence for a new customer — which application do you start with and why?",
+    "expected_topics": ["AI Usage", "discovery", "WARN", "baseline", "AI Gateway", "guardrails", "phased", "deployment"]
+  },
+  {
+    "lesson_id": 13,
+    "lesson_title": "Prompt Data Privacy & Encryption",
+    "question_type": "check_question",
+    "question": "A CISO asks: if a guardrail fires and blocks a prompt containing employee PII, does Varonis have access to that PII? Walk me through exactly where that data goes and who can see it.",
+    "expected_topics": ["Control Plane", "Data Plane", "AES-256", "encrypted", "Prompt Reader", "RBAC", "Varonis", "access"]
+  },
+  {
+    "lesson_id": 13,
+    "lesson_title": "Prompt Data Privacy & Encryption",
+    "question_type": "follow_up",
+    "question": "What encryption and key management options does Atlas provide for stored prompt data?",
+    "expected_topics": ["AES-256", "BYOK", "AWS KMS", "customer-managed", "encryption", "key management"]
+  },
+  {
+    "lesson_id": 14,
+    "lesson_title": "Competitive Positioning",
+    "question_type": "check_question",
+    "question": "A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?",
+    "expected_topics": ["Wiz", "CSPM", "codebase", "runtime", "compliance", "TPRM", "purpose-built", "AI SPM"]
+  },
+  {
+    "lesson_id": 14,
+    "lesson_title": "Competitive Positioning",
+    "question_type": "follow_up",
+    "question": "What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?",
+    "expected_topics": ["AI TRiSM", "AI SPM", "CSPM", "runtime protection", "lifecycle", "inventory", "compliance"]
+  },
+  {
+    "lesson_id": 15,
+    "lesson_title": "Deployment Deep Dive & CI/CD",
+    "question_type": "check_question",
+    "question": "A DevOps team asks: can Atlas automatically test our LLM endpoints every time we push a code change, without requiring a manual security review? How does that work?",
+    "expected_topics": ["GitHub Action", "Azure DevOps", "CI/CD", "pen test", "LLM endpoint", "automated", "pipeline"]
+  },
+  {
+    "lesson_id": 15,
+    "lesson_title": "Deployment Deep Dive & CI/CD",
+    "question_type": "follow_up",
+    "question": "What are the three ways to deploy the Atlas AI Gateway, and when would you use each?",
+    "expected_topics": ["NGINX", "proxy", "SDK", "Python", "Kong", "Apigee", "API gateway", "Docker"]
+  },
+  {
+    "lesson_id": 16,
+    "lesson_title": "Objection Handling Masterclass",
+    "question_type": "check_question",
+    "question": "A security-conscious CTO asks: we run our AI workloads in Azure, not AWS — can Atlas even work for us? How do you answer this, and what roadmap context is relevant?",
+    "expected_topics": ["Azure", "Data Plane", "AWS", "roadmap", "Q2 2026", "cloud", "deployment"]
+  },
+  {
+    "lesson_id": 16,
+    "lesson_title": "Objection Handling Masterclass",
+    "question_type": "follow_up",
+    "question": "A customer says their AI usage is minimal and they are not ready for AI security yet. What is the recommended Atlas response to this objection?",
+    "expected_topics": ["AI Usage", "shadow AI", "unknown", "discovery", "visibility", "ZTNA", "inventory"]
+  },
+  {
+    "lesson_id": 17,
+    "lesson_title": "AI Attack Techniques & Atlas Detection",
+    "question_type": "check_question",
+    "question": "A customer's security team asks: our AI assistant has access to our internal knowledge base and customer data — how would an attacker try to abuse that, and how does Atlas catch it?",
+    "expected_topics": ["prompt injection", "agentic", "guardrails", "jailbreak", "data exfiltration", "invisible text", "semantic", "detection"]
+  },
+  {
+    "lesson_id": 17,
+    "lesson_title": "AI Attack Techniques & Atlas Detection",
+    "question_type": "follow_up",
+    "question": "What is a zero-width character attack, and which Atlas guardrail rule detects it?",
+    "expected_topics": ["invisible text", "Unicode", "zero-width", "Remove Invisible Text", "guardrail", "bypass"]
+  },
+  {
+    "lesson_id": 18,
+    "lesson_title": "Advanced Capstone",
+    "question_type": "check_question",
+    "question": "You're in a final technical review with the CISO and their security architect. The architect asks: when a guardrail fires and blocks a prompt, does that blocked prompt get sent to Varonis? And who in our organization can see the content of blocked prompts? Give your complete answer.",
+    "expected_topics": ["Control Plane", "Data Plane", "AES-256", "Prompt Reader", "RBAC", "encrypted", "Varonis", "access control"]
+  },
+  {
+    "lesson_id": 18,
+    "lesson_title": "Advanced Capstone",
+    "question_type": "follow_up",
+    "question": "A global financial services firm needs to demonstrate AI governance to their board within 90 days and has EU operations. Walk through the Atlas deployment plan including how data residency is handled.",
+    "expected_topics": ["AI Usage", "AI Inventory", "AI Gateway", "WARN", "AI Compliance", "EU", "Frankfurt", "data residency", "90 days"]
+  }
+]

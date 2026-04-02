@@ -1,0 +1,111 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+18,Advanced Capstone,check_question,"You're in a final technical review with the CISO and their security architect. The architect asks: when a guardrail fires and blocks a prompt, does that blocked prompt get sent to Varonis? And who in our organization can see the content of blocked prompts? Give your complete answer.","## Blocked Prompts: What Varonis Sees and Who in Your Org Can See Them
+
+### Does the blocked prompt get sent to Varonis?
+
+**No — definitively not.**
+
+Here's the precise data flow when a guardrail fires:
+
+1. The user's prompt is intercepted by the **Atlas AI Gateway** — an NGINX proxy running **in your own AWS VPC**, not Varonis infrastructure
+2. The prompt is sent to the Atlas rules orchestrator (Control Plane) for policy evaluation
+3. The rules orchestrator evaluates the prompt against your configured guardrail policies and returns a verdict
+4. **Critical point:** The prompt data is **never persisted during this evaluation** — it is processed entirely in-memory
+5. The BLOCK verdict is returned, and the prompt is **stopped at the gateway** — it never reaches the LLM and is never forwarded to Varonis
+
+**The architectural guarantee:** Varonis operates the policy configuration layer (SaaS Control Plane), but your prompt traffic stays inside your environment. Varonis has zero access to customer prompt data by design.
+
+> **Near-term roadmap note:** Atlas is actively moving all rules processing to the customer Data Plane entirely, which will eliminate even the in-memory evaluation path to the Control Plane.
+
+---
+
+### Who in your organization can see blocked prompt content?
+
+This is where you should redirect the conversation — because the honest answer based on current architecture is that **blocked prompts are not stored or logged with their content**, which means:
+
+- There is no interface where an admin can browse blocked prompt text
+- Visibility is limited to **metadata** (policy triggered, timestamp, user, application) rather than prompt content
+
+**This is actually a strong data minimization story for a CISO** — Atlas enforces without retaining sensitive content.
+
+---
+
+### The Framing That Lands in CISO Reviews
+
+When the architect pushes back with *""but you're routing everything through Varonis now""* — correct that framing directly:
+
+> ""You're not routing through Varonis. The Gateway is running in **your** AWS account. Varonis manages the policy configuration remotely, but the traffic never leaves your environment.""
+
+**Good follow-up question to ask them:** *""Where does your LLM traffic go today?""* — Most organizations have no answer, which is exactly why the Atlas data plane isolation is a differentiator, not a risk.",1.0,1.0,0.804,1.0,0.935
+18,Advanced Capstone,follow_up,A global financial services firm needs to demonstrate AI governance to their board within 90 days and has EU operations. Walk through the Atlas deployment plan including how data residency is handled.,"# Atlas Deployment Plan: Global Financial Services Firm
+## 90-Day Board Readiness with EU Operations
+
+---
+
+## 🏗️ Step 1: Tenant Architecture & Data Residency (Days 1–7)
+
+**EU Data Residency is supported out of the box.**
+
+Given EU operations, recommend a **dual-tenant deployment**:
+
+| Tenant | Region | Covers |
+|--------|--------|--------|
+| Primary (EU) | **EU Central — Frankfurt** | EU operations, EU staff, EU AI workloads |
+| Secondary (US) | **US East 1 or US West 2** | North American operations |
+
+**Why this matters for a FinServ board:**
+- EU tenant ensures EU LLM traffic **never leaves Frankfurt** — directly addresses GDPR data residency requirements
+- Auditors and regulators can be shown clear geographic data boundaries
+- Maps cleanly to emerging **EU AI Act** obligations for financial institutions
+
+---
+
+## 📋 Step 2: 90-Day Board Readiness Workstream
+
+### **Days 1–30: Foundation & Visibility**
+- Deploy AI Gateway proxy in both regions
+- Route all LLM API traffic through Atlas (apps point to Gateway URL instead of OpenAI/Anthropic directly)
+- Activate **AI Inventory** — discover and catalog every AI asset in use
+- Goal: Answer ""What AI are we running and where?""
+
+### **Days 31–60: Controls & Compliance Mapping**
+- Configure **guardrail enforcement** for financial services use cases (PII, financial data, prompt injection)
+- Activate **AI Compliance module** to map controls to relevant frameworks:
+  - EU AI Act
+  - DORA (Digital Operational Resilience Act)
+  - SOX (if US-listed)
+  - GDPR
+- Goal: Answer ""What controls do we have and what do they cover?""
+
+### **Days 61–90: Audit Trail & Board Reporting**
+- Enable **AI Observability** to build the full audit trail of AI interactions, policy decisions, and violations
+- Configure **AI 360 dashboard** for executive-level reporting
+- Generate board-ready materials demonstrating risk posture
+- Goal: Walk into the boardroom with a live dashboard and documented evidence
+
+---
+
+## 📊 Board Presentation Assets Atlas Enables
+
+| Board Question | Atlas Answer |
+|----------------|--------------|
+| ""What AI are we using?"" | AI Inventory |
+| ""Are we compliant?"" | AI Compliance framework mapping |
+| ""What's our risk exposure?"" | AI 360 dashboard |
+| ""Can we prove controls are working?"" | AI Observability audit trail |
+| ""Are we blocking policy violations?"" | Guardrail enforcement logs |
+
+---
+
+## ⚠️ Key Clarifying Questions for Discovery
+
+Before finalizing the plan, confirm:
+
+1. **Which LLMs are in use?** (OpenAI, Anthropic, Azure OpenAI, etc.) — determines Gateway configuration complexity
+2. **How many AI-enabled applications** are in scope for routing through the Gateway?
+3. **Which regulatory frameworks** are highest priority for the board presentation (EU AI Act vs. DORA vs. GDPR)?
+4. **Is there an existing AI inventory** or are we starting from zero discovery?
+
+---
+
+> **SE Note:** The 90-day timeline is very achievable for the governance/visibility layer. Lead with the Frankfurt tenant for EU data residency — that's typically a hard blocker for EU FinServ that Atlas resolves immediately.",1.0,1.0,0.392,1.0,0.797

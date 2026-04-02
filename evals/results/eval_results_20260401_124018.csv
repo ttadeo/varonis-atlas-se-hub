@@ -1,0 +1,79 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+16,Objection Handling Masterclass,check_question,"A security-conscious CTO asks: we run our AI workloads in Azure, not AWS — can Atlas even work for us? How do you answer this, and what roadmap context is relevant?","## Atlas Works for Azure Customers — Here's How to Frame It
+
+### Direct Answer: Yes, Atlas supports Azure AI workloads today.
+
+---
+
+### What Works Right Now
+
+Atlas is **cloud-agnostic by design**. For an Azure-first customer, that means:
+
+- **Azure OpenAI Service** — fully supported and the most common Azure AI deployment Atlas protects
+- **Azure Machine Learning endpoints** — covered
+- **Any other LLM endpoint** regardless of cloud — the AI Gateway operates as a proxy, so as long as applications are routing LLM API calls through the Atlas Gateway URL, they're protected
+
+All guardrails, AI Inventory, compliance automation (OWASP LLM Top 10, NIST AI RMF, EU AI Act), and observability capabilities work on Azure AI models exactly as they do on AWS or on-prem.
+
+---
+
+### The One Honest Roadmap Item to Disclose
+
+The **Data Plane infrastructure** currently runs on AWS. Azure-native hosting of the Data Plane is on the roadmap for **Q2 2026**.
+
+> Frame it proactively: *""If hosting every component inside Azure is a hard requirement today, that's a Q2 2026 item. In the meantime, many Azure-first customers run Atlas with a lightweight AWS footprint just for the Data Plane — the protection of your Azure workloads is fully operational regardless.""*
+
+---
+
+### If They Also Have Microsoft Defender / Copilot Security
+
+A security-conscious CTO may push back with *""we already have Defender for Cloud AI.""* The response:
+
+- Microsoft's tools cover **Microsoft AI only** — Azure OpenAI, Copilot
+- Most enterprises also have **shadow AI, third-party SaaS tools, AWS Bedrock, GCP Vertex** — none of which Defender covers
+- Atlas provides **runtime inline blocking** (BLOCK/MODIFY/WARN), adversarial **LLM pentesting**, and **TPRM** — capabilities Defender doesn't offer
+
+---
+
+### Qualifying Question to Ask the CTO
+
+> *""Is full Azure-native infrastructure hosting a hard procurement requirement, or is protecting your Azure AI workloads the primary goal?""*
+
+That answer determines whether Q2 2026 is a blocker or simply context.",1.0,1.0,0.667,0.889
+16,Objection Handling Masterclass,follow_up,A customer says their AI usage is minimal and they are not ready for AI security yet. What is the recommended Atlas response to this objection?,"## Handling the ""We're Not Ready — AI Usage Is Minimal"" Objection
+
+### Reframe the Conversation Immediately
+
+The core reframe is: **this isn't a readiness decision, it's a risk decision.** The question is never *how much AI has IT approved* — it's *how much AI is already running without anyone knowing.*
+
+---
+
+### Key Points to Land
+
+**1. Shadow AI is almost certainly already there**
+> ""Shadow AI adoption typically runs 3–5x ahead of what IT and security teams are aware of. Employees are using ChatGPT, Copilot, Grammarly, and dozens of other AI-enabled tools today — often pasting sensitive company data into them.""
+
+The exposure isn't waiting for a formal AI rollout. It's accumulating right now.
+
+**2. ""Minimal usage"" is the wrong metric**
+Intentional, IT-sanctioned AI deployment is a small slice of actual AI activity in most environments. Measuring readiness by approved deployments creates a false sense of security.
+
+**3. Waiting = accumulated risk**
+By the time an organization *feels* ready to address AI security, the exposure has already built up significantly.
+
+---
+
+### The Low-Risk Entry Point: AI Discovery & Inventory
+
+For customers who genuinely believe their AI footprint is small, the recommended play is:
+
+> **Start with Atlas AI Discovery and Inventory** — a **read-only, no-proxy** capability that maps what AI is already running in the environment.
+
+- Zero operational risk (no inline proxy required)
+- Almost always surfaces shadow AI the customer didn't know existed
+- Creates **internal urgency organically** — the data does the selling
+
+---
+
+### SE Tip
+Let the Discovery capability prove the point for you. Lead with *""Let's find out what's actually there""* rather than debating the customer's perception of their AI footprint. The results typically close the objection on their own.",1.0,1.0,0.854,0.951

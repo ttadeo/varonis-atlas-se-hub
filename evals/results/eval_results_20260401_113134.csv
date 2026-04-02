@@ -1,0 +1,93 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+11,Compliance & TPRM,check_question,"A financial services customer says they need to demonstrate AI governance controls for their upcoming SOC 2 audit. Which Atlas applications and features would you highlight, and what evidence can Atlas provide?","# Atlas for SOC 2 AI Governance — Financial Services
+
+## Why This Is a Strong Atlas Conversation
+
+SOC 2 auditors are increasingly asking about **AI usage controls** — this is no longer just a security concern, it's an audit obligation. The documentation is explicit: *""For regulated industries such as financial services... this is not just a security concern — it is a compliance obligation. Atlas provides the audit trail and enforcement controls that regulators require.""*
+
+---
+
+## Key Atlas Capabilities to Highlight
+
+### 1. 🔍 Audit Trail
+**What auditors need:** Evidence that AI usage is logged, attributable, and reviewable.
+
+**What Atlas provides:**
+- Complete logs of every prompt and response flowing through the AI Gateway
+- User-level attribution — who sent what, when, to which LLM
+- Immutable records suitable for auditor review
+
+### 2. 🚫 Enforcement Controls
+**What auditors need:** Proof that sensitive data *cannot* flow to unauthorized destinations.
+
+**What Atlas provides:**
+- Policy-based blocking of sensitive data (PII, financial data, credentials) before it reaches the LLM
+- Demonstrate that controls are **preventive**, not just detective
+
+### 3. 👁️ Visibility Across Users
+**The CISO question to pose:** *""Do you know what your developers, sales reps, and HR team are pasting into AI tools today?""*
+- Atlas answers this with dashboards and reports showing AI usage across the organization
+
+---
+
+## Evidence Package for SOC 2 Auditors
+
+| Auditor Request | Atlas Can Provide |
+|----------------|-------------------|
+| Access logs for AI systems | Full AI Gateway request logs with user identity |
+| Data handling policies | Configured DLP rules with enforcement history |
+| Incident history | Log of blocked/flagged prompts |
+| Control effectiveness | Policy enforcement metrics over time |
+
+---
+
+## Discovery Questions to Ask First
+
+1. **Which AI tools are in scope for the audit?** (ChatGPT Enterprise, Copilot, internal apps?) — these route through the AI Gateway
+2. **Are developers using LLM APIs directly?** If so, which providers — OpenAI, Anthropic, Azure OpenAI?
+3. **What specific SOC 2 Trust Service Criteria is the auditor focusing on?** (CC6 logical access, CC7 monitoring, or availability?)
+4. **Do they have any existing AI usage policies on paper** that Atlas needs to enforce technically?
+
+---
+
+## ⚠️ Honest Gap Note
+
+The retrieved documentation confirms Atlas's positioning for regulated industries and the audit trail/enforcement value, but **does not specify exact SOC 2 control mappings**. Before the customer meeting, confirm with product management which specific SOC 2 criteria Atlas controls map to — auditors will ask for that precision.",1.0,1.0,0.55,0.85
+11,Compliance & TPRM,follow_up,What is TPRM in the context of Atlas and why does it matter for AI security?,"# AI TPRM in Atlas — What It Is and Why It Matters
+
+## What It Is
+
+**AI Third Party Risk Management (TPRM)** is an Atlas application module focused specifically on AI risk introduced through your **supply chain**. It's distinct from general TPRM — it's purpose-built to address the reality that vendors and third parties are increasingly embedding AI into their products and services, often without customers having clear visibility into *how* or *what* AI is being used.
+
+---
+
+## The Core Problem It Solves
+
+When an enterprise consumes third-party products or services, **AI risk enters through the supply chain** — not just through internal AI usage. Traditional TPRM processes weren't designed to assess this. Atlas AI TPRM fills that gap.
+
+---
+
+## How It Works (The Workflow)
+
+1. **Add a Vendor** — Triggers the process via the Vendors menu
+2. **Asana project created** — Customer is invited to a structured workflow
+3. **Vendor info gathered** — You supply details manually or upload documents; Atlas extracts required info autonomously
+4. **Assessment generated** — Atlas produces an assessment and invites the vendor into the process
+5. **Vendor submits AI-BOM** — The vendor provides an **AI Bill of Materials** detailing their AI usage
+6. **Automated validation** — Atlas validates the AI-BOM and produces a **risk score + final determination**
+
+---
+
+## Why the AI-BOM Matters
+
+The **AI Bill of Materials (AI-BOM)** is the key artifact — it's the vendor's declaration of what AI technologies, models, and components are embedded in their product. This gives your customer:
+
+- Visibility into third-party AI usage
+- A structured basis for risk assessment
+- Audit-ready documentation
+
+---
+
+## SE Positioning Note
+
+This is a strong differentiator for customers in **regulated industries** (financial services, healthcare, critical infrastructure) where supply chain risk and AI governance are under increasing scrutiny from frameworks like **NIST AI RMF**, **EU AI Act**, and **SOC 2**. If a prospect is asking ""how do we govern AI we didn't build?"" — AI TPRM is the answer.",1.0,1.0,0.644,0.881

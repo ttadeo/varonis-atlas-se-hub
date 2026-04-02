@@ -1,0 +1,79 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+3,The AI Gateway,check_question,A customer's application currently calls https://api.openai.com/v1. What do they need to change to route traffic through Atlas?,"## Routing Through Atlas AI Gateway — What Changes
+
+Based on the documentation, the answer is straightforward: **one configuration change**.
+
+---
+
+### The Change
+
+| | Before | After |
+|---|---|---|
+| **Base URL** | `https://api.openai.com/v1` | `https://<YOUR-PROXY-BASE-URL>/v1` |
+| **API Key** | Same | Same (unchanged) |
+| **New Header** | — | `x-alltrue-llm-endpoint-identifier: <your-endpoint-identifier>` |
+
+---
+
+### In Practice
+
+**Direct API call:**
+```
+POST https://<YOUR-PROXY-BASE-URL>/v1/chat/completions
+Authorization: Bearer <YOUR-OPENAI-API-KEY>
+x-alltrue-llm-endpoint-identifier: <your-endpoint-identifier>
+```
+
+**If using the OpenAI Python SDK**, it's a single parameter:
+```python
+client = OpenAI(
+    api_key=os.environ.get(""OPENAI_API_KEY""),
+    base_url=""https://<YOUR-PROXY-BASE-URL>/v1""
+)
+```
+
+> **No code refactoring required** — just update where requests are pointed.
+
+---
+
+### What They Get Immediately
+
+Once traffic routes through Atlas:
+- ✅ All prompts evaluated against guardrail policies
+- ✅ BLOCK/MODIFY rules enforced inline
+- ✅ Full audit trail in the AI Observability layer
+- ✅ Policy violations surfaced as Issues in Atlas
+
+---
+
+### SE Note
+This is a strong POC accelerator — if the customer already has an OpenAI-based app, time-to-value is essentially the time it takes to swap one URL. Worth leading with this in demos.",1.0,1.0,0.583,0.861
+3,The AI Gateway,follow_up,What happens to a prompt when the AI Gateway applies a MODIFY action?,"## MODIFY Action in the Atlas AI Gateway
+
+Based on the provided documentation, here's exactly what happens when a **MODIFY** action is triggered:
+
+### Processing Flow
+
+1. A prompt is sent by the application to the **Atlas AI Gateway proxy** (instead of directly to the LLM)
+2. The proxy forwards it to the **rule orchestrator**, which evaluates applicable policy rules
+3. A policy rule with a MODIFY action is triggered
+4. The prompt is **modified first** — before it ever reaches the LLM
+5. Only the **modified version** of the prompt is forwarded to the LLM endpoint (OpenAI, Anthropic, Gemini, etc.)
+
+> The same logic applies on the **output side** — if a MODIFY rule is configured on the Output Guard, the LLM's response is modified before being returned to the client.
+
+---
+
+### Key Characteristics of MODIFY
+
+| Attribute | Detail |
+|---|---|
+| **Direction** | Can be applied to Input Guard, Output Guard, or both |
+| **Processing** | **Synchronous** — the proxy waits for modification before forwarding |
+| **LLM sees** | Only the modified/redacted content, never the original violating content |
+| **Typical use case** | Redacting sensitive data (PII, credentials) before it leaves the environment |
+
+---
+
+### SE Talking Point 💡
+MODIFY is particularly powerful for **data loss prevention** use cases — rather than blocking a user's workflow entirely, Atlas can silently redact sensitive content from the prompt, let the interaction continue, and log the event. This gives customers a **non-disruptive DLP control** for AI traffic.",1.0,1.0,0.741,0.914

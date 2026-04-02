@@ -1,0 +1,72 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+15,Deployment Deep Dive & CI/CD,check_question,"A DevOps team asks: can Atlas automatically test our LLM endpoints every time we push a code change, without requiring a manual security review? How does that work?","## Yes — Atlas Has Native CI/CD Integration for Automated LLM Security Testing
+
+This is a core Atlas capability, not a workaround. Here's how to position it:
+
+---
+
+### How It Works
+
+**Atlas integrates directly into your CI/CD pipeline** so LLM endpoint security testing happens automatically at build/deploy time — no manual security review required.
+
+**Two supported platforms out of the box:**
+- **GitHub Actions** — triggers adversarial LLM endpoint pentesting on pull requests or merge events
+- **Azure DevOps Task Extensions** — same capability for Azure-based pipelines
+
+**The workflow:**
+1. Developer pushes code / opens PR
+2. Pipeline triggers Atlas LLM Endpoint Pentesting automatically
+3. Atlas runs adversarial tests against the LLM endpoint
+4. **Deployment is gated on results** — a failed security test blocks the release before it reaches production
+
+---
+
+### What Atlas Tests For
+Atlas uses a combination of **pattern matching for known attack signatures** and an **LLM-as-a-Judge approach** for semantic analysis — catching things like prompt injection, tool poisoning, and other adversarial inputs that static analysis would miss.
+
+---
+
+### ""We Already Have an API Gateway"" Objection
+If they're running **Kong or Apigee**, Atlas integrates as a plugin — no new proxy infrastructure needed. If they can't route through a proxy at all, the **Python SDK** applies the same rules directly in application code.
+
+---
+
+### SE Follow-Up Questions to Ask
+- Are you on GitHub Actions or Azure DevOps?
+- Do you want to **gate deployments** on test results, or just get alerting?
+- Are your LLM endpoints already behind an existing API gateway (Kong/Apigee)?
+
+The key message: **shift-left security for AI — every release gets tested, not just the ones that get manually reviewed.**",1.0,1.0,0.81,0.937
+15,Deployment Deep Dive & CI/CD,follow_up,"What are the three ways to deploy the Atlas AI Gateway, and when would you use each?","## Atlas AI Gateway — Three Deployment Options
+
+Based on the documentation, here's a concise breakdown for your SE conversations:
+
+---
+
+### Option 1: Reverse Proxy (NGINX) ✅ Most Common
+**How it works:** Atlas deploys an NGINX container via Docker inside the customer's AWS VPC. Apps route LLM traffic through the proxy URL instead of calling the LLM provider directly.
+
+**Use when:**
+- No existing API gateway in place
+- Customer can redirect application traffic through a proxy
+- New deployments — fastest path to full runtime protection
+
+---
+
+### Option 2: *(Not covered in the retrieved context)*
+> ⚠️ The documentation provided doesn't include details on Option 2. I'd recommend pulling the full deployment options doc or checking with the Atlas team for the complete picture before a customer call.
+
+---
+
+### Option 3: Existing API Gateway Integration (Kong / Apigee)
+**How it works:** Kong or Apigee is configured to call the Atlas firewall API per LLM request. Atlas returns an allow/block/modify decision, and the gateway enforces it. The Atlas SDK can also be embedded directly in the gateway flow. Proxy chaining is supported for multi-layer architectures.
+
+**Use when:**
+- Customer already has a centralized API gateway
+- Enterprise environments with governed API management
+- Customer wants Atlas as a **plugin** to existing infrastructure rather than net-new infrastructure
+
+---
+
+### SE Tip
+> For most mid-market deals, lead with **Option 1 (NGINX)** — it's the fastest to deploy and easiest to demo. Save **Option 3** for enterprise accounts with mature API governance teams who will push back on adding new infrastructure.",1.0,1.0,0.867,0.956

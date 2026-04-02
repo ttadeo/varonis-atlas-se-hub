@@ -1,0 +1,67 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+10,AI Incidents & Issues,check_question,"After deploying Atlas, a security analyst sees a new Shadow AI issue in the dashboard. What does that mean, and what are the two most likely causes?","## Shadow AI Issues in Atlas
+
+A **Shadow AI issue** means Atlas has discovered an AI resource that has not been properly reviewed, approved, or assigned within the organization's AI governance process. It's Atlas flagging a governance gap — not necessarily a breach, but an unaccounted-for AI resource that needs a human decision.
+
+---
+
+## Two Most Likely Causes
+
+**Cause 1: Unreviewed Resource**
+A scan (cloud account, code repo, or hosted service) discovered a new AI resource, and no one has reviewed it yet. Atlas automatically assigns these a status of **""Unreviewed""** — and every unreviewed resource generates a Shadow AI issue until someone explicitly approves or rejects it.
+
+**Cause 2: Unsanctioned (Rejected) Resource**
+A resource was reviewed and deliberately marked as **""Rejected""** — meaning the security team decided it shouldn't be in use. It stays flagged as a Shadow AI issue until it's actually removed from the environment or re-evaluated.
+
+> There's also a third cause worth mentioning: a resource was discovered and auto-assigned to the **Default Project** but never moved to its correct project. Resources stuck in Default without proper ownership are treated as governance gaps.
+
+---
+
+## What the Analyst Should Do
+
+1. Go to **AI Inventory → Technologies tab**
+2. Find the flagged resource (status will show ""Unreviewed"")
+3. Review ownership and context
+4. **Approve** (assign to correct project) or **Reject** (initiate removal)
+5. Move it out of the Default Project if needed
+
+Once all resources within a technology are reviewed, **the Shadow AI issue resolves automatically**.",1.0,1.0,0.897,0.966
+10,AI Incidents & Issues,follow_up,How can Atlas Issues be integrated with an organization's existing security tools like Splunk or ServiceNow?,"## Atlas Integration with Splunk and ServiceNow
+
+Atlas is designed to **fit into existing security workflows** rather than replace them — issues and incidents surface in the tools your team already uses.
+
+---
+
+### Splunk (SIEM)
+
+Atlas forwards **Issues** to Splunk automatically as they're generated — guardrail violations, Shadow AI discoveries, compliance gaps, etc.
+
+**Setup:**
+1. In the **Admin Console**, define the Splunk outbound endpoint using the **HEC URL + API key**
+2. At the **project level**, select which endpoint receives which data types
+3. Atlas begins forwarding automatically from there
+
+> The Atlas SIEM endpoint is configured exactly like any other Splunk HEC integration — same fields, same format. No custom connectors needed.
+
+---
+
+### ServiceNow (Service Management)
+
+Atlas distinguishes between **Issues** (auto-generated findings) and **Incidents** (analyst-elevated issues). ServiceNow receives **Incidents**, not raw Issues.
+
+**Workflow:**
+1. Analyst reviews Issues in Atlas → clicks **""Create Incident""** or **""Associate Incident""** from the three-dot menu
+2. Atlas creates the incident and exports it to ServiceNow immediately (if configured)
+3. Incident is then **managed in ServiceNow**; Atlas maintains a **read-only view**
+
+**Setup:** Configured per project in **AI Incidents → Configuration** — select the ServiceNow endpoint and enable ""Send All Incidents""
+
+> Per-project routing means different teams can send to different ServiceNow instances.
+
+---
+
+### SE Talking Point
+
+> *""Atlas fits into your existing SOC workflows — no new triage interface. Guardrail violations and AI risk findings flow directly into Splunk and ServiceNow alongside everything else your analysts are already working.""*
+
+This is particularly strong for customers with **mature SOC operations** who are skeptical of yet another point tool.",1.0,1.0,0.833,0.944

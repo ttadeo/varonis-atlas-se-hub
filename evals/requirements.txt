@@ -1,0 +1,7 @@
+trulens-eval>=2.0.0
+trulens-providers-openai>=1.0.0
+openai>=1.30.0
+neo4j>=5.18.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+pandas>=2.0.0

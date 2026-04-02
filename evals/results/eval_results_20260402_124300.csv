@@ -1,0 +1,95 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the Wiz Objection
+
+**Core Message:** Wiz does cloud AI posture. Atlas does full AI lifecycle security. They are not the same scope.
+
+---
+
+### Validate First, Then Differentiate
+
+*""Wiz is an excellent cloud security platform — their AI-SPM is a logical extension of what they already do well. But it covers a narrow slice of what comprehensive AI security actually requires.""*
+
+---
+
+### What Wiz AI-SPM Actually Covers
+
+| Capability | Wiz |
+|---|---|
+| Cloud AI asset discovery (AWS/Azure/GCP) | ✅ |
+| AI-BOM with graph correlation | ✅ |
+| Misconfiguration detection for cloud AI resources | ✅ |
+
+That's it. Wiz is an agentless CNAPP that added AI discovery — it's a **feature**, not a purpose-built AI security platform.
+
+---
+
+### The Gaps Atlas Fills
+
+Ask the prospect: *""Does Wiz do any of these?""*
+
+- **Codebase scanning** — GitHub/GitLab repos, Jupyter notebooks, Python dependency files
+- **Runtime protection** — AI Gateway sits inline, blocking/redacting malicious prompts in real time
+- **Guardrails** — WARN, BLOCK, MODIFY actions on prompts and responses
+- **AI Compliance** — automated mapping to OWASP LLM Top 10, NIST AI RMF, EU AI Act
+- **TPRM** — third-party AI risk management for vendor AI tools
+- **LLM Pen Testing** — adversarial testing for prompt injection and jailbreak vulnerabilities
+- **Shadow AI Discovery** — finds what AI services employees are using via Cloudflare LogPush
+
+The answer to all of the above is **no**.
+
+---
+
+### The Closing Frame
+
+> *""Wiz tells you what AI assets exist in your cloud. Atlas protects your AI at runtime, enforces guardrails, automates compliance, and manages third-party risk — across cloud, code, and employee usage. You need both layers, and they don't overlap.""*
+
+---
+
+### Discovery Questions to Open the Door
+
+- *""Are your developers building AI applications in GitHub or Jupyter notebooks — outside of cloud-managed services?""*
+- *""Do you have guardrails on what employees can send to ChatGPT or other AI tools today?""*
+- *""Which compliance frameworks are you mapping your AI usage to — and how are you automating that?""*
+
+Any ""no"" or ""we're not sure"" is an Atlas conversation.",1.0,1.0,0.75,1.0,0.917
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","## Atlas Competitive Categories & Differentiation
+
+Based on the Atlas documentation, here's how to position against each competitive category:
+
+---
+
+### 1. 🔵 AI TRiSM Platforms
+**Examples:** Portal26, CalypsoAI
+
+**Their weakness:** Similar scope, but require significant integration work to deliver what Atlas provides out of the box.
+
+**Atlas wins on:** Full lifecycle coverage — inventory, runtime protection, compliance, and TPRM — in a **single, pre-integrated platform**.
+
+---
+
+### 2. 🟡 AI SPM Point Tools
+**Examples:** Wiz, CrowdStrike, Orca, Tenable, Relyance AI
+
+**Their weakness:** Cloud-focused only. They:
+- Don't scan codebases
+- Have no runtime protection gateway
+- Don't automate compliance frameworks
+- Don't manage third-party AI risk
+
+**Atlas wins on:** Doing all of the above.
+
+---
+
+### 3. 🔴 Big Vendor Bundles
+**Examples:** Cisco/Robust Intelligence, Microsoft Agent365, Palo Alto/ProtectAI, SentinelOne
+
+**Their weakness:** AI security bolted onto broad platforms — not purpose-built.
+
+**Atlas wins on:** Built from the ground up for AI security, with deeper specialization across the full lifecycle.
+
+---
+
+### 🎯 The Universal Differentiator
+> **No competitor combines full AI lifecycle coverage** (inventory → runtime protection → posture management → compliance → TPRM) **with Varonis's data visibility depth.**
+
+That pairing is the anchor for any competitive conversation.",1.0,1.0,0.697,1.0,0.899

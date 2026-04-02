@@ -1,0 +1,82 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the ""We Already Have Wiz"" Objection
+
+This is a common objection and a winnable conversation. Here's how to position it:
+
+---
+
+### The Core Response
+
+**""Wiz is a great CSPM tool — and their AI discovery is a natural extension of that. But it's a feature addition to a cloud security product, not a purpose-built AI security platform. Let me show you what the gaps look like.""**
+
+---
+
+### Key Differentiators to Highlight
+
+| Capability | Wiz | Atlas |
+|-----------|-----|-------|
+| AI asset discovery | Cloud-only | Cloud **+ codebases + agents + endpoints** |
+| Runtime protection | ❌ | ✅ AI Gateway proxy with real-time controls |
+| Prompt injection / data leakage prevention | ❌ | ✅ |
+| Compliance automation (NIST AI RMF, EU AI Act) | Limited | ✅ Purpose-built |
+| Third-party AI risk management | ❌ | ✅ |
+| Penetration testing for AI assets | ❌ | ✅ |
+
+---
+
+### The Probe Questions to Ask
+
+> *""Does Wiz tell you what your employees are pasting into ChatGPT or Copilot right now?""*
+
+> *""Can Wiz enforce guardrails at inference time — before sensitive data reaches the LLM?""*
+
+> *""How does Wiz handle your EU AI Act or NIST AI RMF compliance posture?""*
+
+Most prospects will answer **no** to all three — that's the gap Atlas fills.
+
+---
+
+### The Positioning Summary
+
+Wiz covers **cloud posture**. Atlas covers the **full AI security lifecycle** — from asset discovery and code scanning, through runtime enforcement, to compliance and third-party risk. There's some overlap at the IaaS/PaaS layer, but Atlas is purpose-built where Wiz is bolt-on.
+
+**Atlas and Wiz can coexist** — position Atlas as the AI security layer sitting on top of what Wiz already does.",1.0,1.0,0.528,0.843
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","## Atlas Competitive Landscape: Three Main Categories & Differentiation
+
+Based on the provided documentation, Atlas faces competition across three distinct market categories:
+
+---
+
+### 1. 🛡️ AI TRiSM / AI Security Point Solutions
+**Competitors:** Portal26, CalypsoAI, Lakera Guard, Robust Intelligence (Cisco)
+
+**How Atlas differentiates:**
+- These vendors each solve **one slice** of the AI security problem (shadow AI detection, inference layer protection, prompt injection, validation)
+- Atlas delivers the **full AI security lifecycle** in a single platform — inventory, runtime protection, compliance automation, and third-party risk
+- **Key SE message:** *""No other technology combines each function of the AI security lifecycle.""*
+
+---
+
+### 2. ☁️ AI-SPM / CSPM Extensions
+**Competitors:** Wiz, CrowdStrike Falcon, Orca Security, Tenable, Relyance AI
+
+**How Atlas differentiates:**
+- These tools bolt on AI discovery as an extension to an existing cloud security product
+- Atlas goes **beyond cloud** — scanning codebases, code repositories, and Jupyter notebooks, not just cloud catalogs
+- Atlas adds **runtime protection, guardrails, and compliance automation** that CSPM-derived tools don't offer
+- **Key SE message:** *""Wiz's AI capabilities are a feature addition to a CSPM product. Atlas is purpose-built.""*
+
+---
+
+### 3. 🏢 Big Platform Vendors
+**Competitors:** Palo Alto/ProtectAI, Cisco Security for AI, Microsoft Agent365
+
+**How Atlas differentiates:**
+- These vendors will leverage **massive distribution muscle** (e.g., Microsoft bundling into E7 licenses)
+- Atlas counters with **depth over breadth** — and critically, the **Varonis data security portfolio integration** gives Atlas unique visibility into the underlying data that no competitor can match
+- **Key SE message:** *""No other technology will have as good a connection into the underlying data.""*
+
+---
+
+### Bottom Line for SE Conversations
+The consistent thread across all three categories: competitors either do **one thing well** or offer AI security as a **feature within a larger platform**. Atlas is the only purpose-built, full-lifecycle AI security platform with native data security depth. When customers are evaluating multiple point tools, that's your clearest consolidation pitch.",1.0,0.0,0.7,0.567

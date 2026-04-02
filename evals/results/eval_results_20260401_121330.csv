@@ -1,0 +1,81 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+13,Prompt Data Privacy & Encryption,check_question,"A CISO asks: if a guardrail fires and blocks a prompt containing employee PII, does Varonis have access to that PII? Walk me through exactly where that data goes and who can see it.","## Where Does the Blocked PII Actually Go?
+
+This is one of the most important trust questions you'll get. Here's the precise answer:
+
+---
+
+### The Short Answer
+**No. Varonis never sees the PII.** The prompt containing employee PII never leaves the customer's environment.
+
+---
+
+### The Data Flow — Step by Step
+
+| Step | What Happens | Where |
+|------|-------------|-------|
+| 1 | Employee submits prompt containing PII | User's device |
+| 2 | Prompt routes to the Atlas AI Gateway proxy | **Customer's own AWS account** |
+| 3 | Guardrail fires, prompt is blocked | **Still inside customer's AWS account** |
+| 4 | Policy telemetry (metadata/alert signal) sent to Varonis SaaS control plane | Varonis sees **that** a block occurred — not **what** was in the prompt |
+| 5 | Raw prompt content stays in the data plane | Never transmitted to Varonis |
+
+---
+
+### The Key Architectural Point
+
+> **The Gateway is running in *your* AWS account — not Varonis's.**
+
+Varonis operates the **control plane** (policy configuration, alerting rules, dashboards) from its SaaS platform. But the **data plane** — where actual prompt traffic flows and where guardrails execute — lives entirely inside the customer's environment.
+
+This means:
+- ✅ Varonis can tell you *a* guardrail fired
+- ✅ Varonis can tell you *which policy* was triggered
+- ❌ Varonis **cannot** read the prompt content
+- ❌ Varonis **cannot** access the PII that triggered the block
+
+---
+
+### The Competitive Framing
+
+This is a **zero data access architecture by design** — not a policy promise. The PII never traverses a Varonis-controlled system, so there's nothing to audit, subpoena, or breach on Varonis's side.
+
+---
+
+### Good Follow-Up Question for the CISO
+*""Where does that same PII go today when an employee pastes it directly into ChatGPT or Copilot without any gateway in front of it?""*
+
+Most environments have **no answer** to that question — which is exactly the gap Atlas closes.",1.0,1.0,0.694,0.898
+13,Prompt Data Privacy & Encryption,follow_up,What encryption and key management options does Atlas provide for stored prompt data?,"## Atlas Encryption & Key Management for Stored Prompt Data
+
+Based on the provided documentation, here's a complete picture:
+
+---
+
+### Encryption at Rest
+All stored prompt data (in alerts, issues, and future Control Plane prompt logging) is encrypted using **AES-256 encryption at rest**.
+
+---
+
+### Key Management Options
+
+Atlas offers two models:
+
+| Option | Description | Customer Control |
+|--------|-------------|-----------------|
+| **BYOK (Bring Your Own Key)** | Customer-managed keys via AWS KMS | Full control over key rotation and access |
+| **Platform-Managed Keys** | Atlas creates and manages a dedicated key via AWS KMS | Managed by Varonis infrastructure |
+
+---
+
+### Where This Applies Today
+- **Prompts in alerts/issues** → stored in the Control Plane, protected by AES-256 + BYOK or platform-managed KMS keys
+- **Runtime prompt logs** → currently stored only in the customer's own AWS Data Plane (VPC); Varonis has **zero access**
+
+### Important Roadmap Note (Q2 2026)
+When Azure Data Plane support launches, prompt logging will move to the Control Plane — but will use the **same AES-256 + BYOK/KMS + RBAC controls** already in place today.
+
+---
+
+### SE Tip 💡
+If a customer asks *""Can Varonis read our prompts?""* — the answer is **no** under the current architecture. The one exception (policy violation alerts) is protected by encryption **and** the **Prompt Reader RBAC role**, so access is controlled even within the platform.",1.0,1.0,0.933,0.978

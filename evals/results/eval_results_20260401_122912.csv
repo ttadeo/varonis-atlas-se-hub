@@ -1,0 +1,77 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+15,Deployment Deep Dive & CI/CD,check_question,"A DevOps team asks: can Atlas automatically test our LLM endpoints every time we push a code change, without requiring a manual security review? How does that work?","## Yes — Atlas Supports CI/CD-Triggered Pentesting
+
+This is a well-documented capability, and it's a strong answer for DevOps and DevSecOps audiences.
+
+---
+
+### How It Works
+
+The Atlas documentation explicitly calls out this use case:
+
+> *""Triggering pen testing as a new version of an AI asset is released via CI/CD pipelines""*
+
+Atlas exposes **full REST and GraphQL APIs**, meaning every platform capability — including pentesting — can be automated programmatically without any manual intervention in the Atlas UI.
+
+**The basic flow:**
+
+```
+Code push → CI/CD pipeline trigger → Atlas API call → 
+LLM endpoint pentest executes → Results returned → 
+Pass/fail gate or SIEM/ticketing notification
+```
+
+---
+
+### Relevant Technical Details
+
+| Detail | Info |
+|--------|------|
+| **API type** | REST + GraphQL |
+| **REST docs** | `https://prod.alltrue-be.com/_docs/api/openapi` |
+| **GraphQL docs** | `https://prod.alltrue-be.com/_docs/docs` |
+| **Pentest mode** | LLM endpoint pentesting (runtime, adversarial prompts) |
+
+The relevant pentest mode here is **LLM endpoint pentesting** — runtime testing via adversarial prompts — as opposed to model scanning (artifact-level), which is better suited for model file analysis.
+
+---
+
+### SE Talking Point
+
+This directly addresses the **""shift-left AI security""** narrative — teams don't have to wait for a quarterly security review. Every deployment can automatically validate that the LLM endpoint hasn't regressed on security posture.
+
+---
+
+### Clarifying Questions to Ask the DevOps Team
+
+1. **What CI/CD platform are they using?** (GitHub Actions, Jenkins, GitLab, etc.) — helps frame the integration discussion
+2. **What LLM endpoint are they testing?** — Atlas tests the runtime endpoint, so you need a callable URL
+3. **Do they want a hard pipeline gate** (fail the build on findings) or **async alerting** (notify and continue)?",1.0,0.333,0.333,0.556
+15,Deployment Deep Dive & CI/CD,follow_up,"What are the three ways to deploy the Atlas AI Gateway, and when would you use each?","## Atlas AI Gateway Deployment Options
+
+The provided documentation context **does not cover AI Gateway deployment modes** specifically. The retrieved docs focus on compliance/governance FAQs, SIEM integrations, and ZTNA inbound integrations.
+
+---
+
+### What I Can Tell You Based on Architectural Reasoning
+
+As an AI Gateway proxy, Atlas typically supports deployment patterns designed to fit different network topologies and use cases. Common deployment models for AI Gateway proxies include:
+
+| Deployment Mode | Typical Use Case |
+|----------------|-----------------|
+| **Cloud-hosted (SaaS)** | Fastest to deploy; apps route traffic to Varonis-managed endpoint |
+| **Self-hosted / On-prem** | Data residency requirements, air-gapped environments, or strict egress policies |
+| **Network-layer (forward proxy)** | Intercept all outbound LLM traffic org-wide without app-level changes |
+
+---
+
+### My Recommendation
+
+Rather than risk giving you inaccurate deployment specifics, I'd suggest:
+
+1. **Check the Atlas AI Gateway configuration docs directly** — deployment topology is a critical SE demo topic
+2. **Confirm with your Atlas SE lead or product team** whether all three modes you're referencing are GA or roadmap
+
+---
+
+**Can you share more context on the three modes you're asking about?** If you have the relevant doc section, I can give you a precise, grounded answer rather than an architectural inference. For a customer conversation, you want specifics — not approximations.",1.0,0.0,0.333,0.444

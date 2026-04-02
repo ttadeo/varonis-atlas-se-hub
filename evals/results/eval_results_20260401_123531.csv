@@ -1,0 +1,69 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+16,Objection Handling Masterclass,check_question,"A security-conscious CTO asks: we run our AI workloads in Azure, not AWS — can Atlas even work for us? How do you answer this, and what roadmap context is relevant?","## Yes, Azure is Fully Supported — Here's How to Frame It
+
+**Direct Answer:** Atlas has **primary support for both AWS and Azure**, so your Azure environment is a first-class citizen, not an afterthought.
+
+---
+
+### What Atlas Does in Azure Today
+
+- **Cloud account scanning** — Atlas connects to your Azure environment with read-only permissions (scripts are executed during initial setup) to scan cloud catalogs for AI-related assets
+- **AI Inventory discovery** — Azure-hosted models, services, and AI assets get catalogued automatically, with daily scans to catch new assets as they appear
+- **Code repository integration** — Regardless of your cloud provider, Atlas scans connected repos (including Jupyter notebooks) with read/write access to support automated remediation via Pull Requests
+- **Shadow AI detection** — ZTNA/SASE log forwarding works independently of cloud provider
+
+---
+
+### Roadmap Context Worth Mentioning
+
+Atlas is actively expanding its PaaS platform coverage. **Databricks, Snowflake, and IBM WatsonX** support is rolling out — relevant if they're using any of those on top of Azure (common pattern with Azure + Databricks customers).
+
+---
+
+### How to Position It
+
+> *""Azure is one of our two primary supported platforms — you're in the core product, not a beta. As your AI footprint grows into services like Databricks or Snowflake on Azure, that coverage is coming too.""*
+
+---
+
+### Good Follow-Up Questions for the CTO
+
+1. Are you using **Azure OpenAI Service** specifically, or other Azure-native AI services? (Relevant for Gateway routing)
+2. Are you on **Databricks or Snowflake** on Azure? (Roadmap relevance)
+3. Do you have a **ZTNA/SASE solution** today? (Unlocks Shadow AI detection for the full environment)",1.0,0.667,0.528,0.731
+16,Objection Handling Masterclass,follow_up,A customer says their AI usage is minimal and they are not ready for AI security yet. What is the recommended Atlas response to this objection?,"## Handling the ""We're Not Ready for AI Security Yet"" Objection
+
+This is one of the most common — and most dangerous — objections you'll encounter. Here's how to reframe it:
+
+---
+
+### The Core Reframe: They're Already Using AI
+
+**Lead with the discovery question:**
+
+> *""Do you know what your developers, sales reps, and HR team are pasting into AI tools today?""*
+
+Most CISOs will answer **no** — and that's exactly the point. Their perception of ""minimal AI usage"" is based on **sanctioned, visible AI**. The real risk is what they can't see.
+
+---
+
+### Key Arguments to Make
+
+**1. Shadow AI is already there**
+Atlas's discovery engines scan cloud accounts, code repositories, ZTNA/SASE logs, and AI services like ChatGPT and Copilot **daily**. Customers consistently find more AI activity than they expected — tools being accessed, models being built in Jupyter notebooks, third-party partners with embedded AI.
+
+**2. The gap exists right now**
+Every day an employee pastes sensitive data into an LLM without a control in place is a day of unmitigated risk. The developer isn't being malicious — they're being productive. **Atlas sits in that gap without disrupting the workflow.**
+
+**3. Regulated industries have no ""not ready"" option**
+For customers in **financial services, healthcare, or legal**, this is a compliance obligation — not just a security best practice. Regulators require audit trails and enforcement controls that Atlas provides.
+
+---
+
+### The Recommended Close
+
+Offer an **AI Inventory scan** as a low-commitment first step:
+
+> *""Let's just find out what's actually there. You might be surprised — and if you're right that usage is minimal, you'll have the data to prove it.""*
+
+Getting them into the discovery motion often changes the conversation entirely once they see the results.",1.0,0.667,0.704,0.79

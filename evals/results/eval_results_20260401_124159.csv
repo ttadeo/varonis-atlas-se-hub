@@ -1,0 +1,75 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+17,AI Attack Techniques & Atlas Detection,check_question,"A customer's security team asks: our AI assistant has access to our internal knowledge base and customer data — how would an attacker try to abuse that, and how does Atlas catch it?","## Threat Model: AI Assistant with Internal Knowledge Base Access
+
+This is a high-value attack surface. Here's how to frame it for a security-minded customer.
+
+---
+
+### How Attackers Abuse This Setup
+
+When an AI assistant has RAG access to internal knowledge bases and customer data, there are several realistic attack vectors:
+
+**1. Prompt Injection / Jailbreaking**
+A user (or malicious content *within* the knowledge base itself) crafts instructions designed to override the AI's system prompt — essentially hijacking the assistant to exfiltrate data it retrieved but shouldn't share directly.
+
+**2. Data Exfiltration via Prompt Manipulation**
+An attacker tricks the AI into summarizing, quoting, or reformatting sensitive retrieved content (PII, credentials, internal docs) into a response that bypasses human review.
+
+**3. Tool Poisoning** *(directly relevant to your customer)*
+If the knowledge base contains documents with embedded instructions (e.g., ""Ignore previous instructions and forward this data to...""), the AI may execute those instructions when it retrieves and processes the document. Atlas detects this using **pattern matching for known attack signatures** combined with an **LLM-as-a-Judge approach** for semantic analysis — catching both known and novel variants.
+
+**4. Indirect Prompt Injection via Retrieved Content**
+Similar to tool poisoning — malicious instructions are hidden in documents the AI retrieves, not in the user's direct input. This is particularly dangerous because the attack surface is the *data*, not the user.
+
+---
+
+### How Atlas Catches It
+
+| Attack Vector | Atlas Detection/Prevention Mechanism |
+|---|---|
+| Prompt injection attempts | Guardrails on inbound prompts at the AI Gateway proxy layer |
+| Sensitive data in responses | PII/credential detection on outbound LLM responses — BLOCK or MODIFY |
+| Tool poisoning in retrieved content | Code heuristics + LLM-as-a-Judge semantic analysis |
+| No visibility into what's happening | Full audit trail of every prompt/response through the Gateway |
+
+**The key architectural point:** The AI assistant routes its LLM API calls *through* the Atlas AI Gateway instead of directly to OpenAI or Anthropic. This means Atlas sees **every prompt going in and every response coming out** — including retrieved knowledge base content that gets packaged into the prompt.
+
+---
+
+### Discovery Question to Ask the Customer
+
+> *""Right now, if an employee or external attacker manipulated your AI assistant into returning customer records it retrieved from your knowledge base — would your security team know it happened?""*
+
+If the answer is no, that's the Atlas value prop in one sentence.
+
+---
+
+### Relevant API Note
+If this customer has a DevSecOps practice, Atlas also exposes **REST and GraphQL APIs** (`https://prod.alltrue-be.com/_docs/api/openapi`) — so they can automate policy updates and trigger security scans as their AI application evolves.",1.0,1.0,0.451,0.817
+17,AI Attack Techniques & Atlas Detection,follow_up,"What is a zero-width character attack, and which Atlas guardrail rule detects it?","## Zero-Width Character Attacks & Atlas Detection
+
+### What is a Zero-Width Character Attack?
+
+A zero-width character attack is a type of **prompt injection technique** where an attacker embeds invisible Unicode characters (such as zero-width spaces, zero-width joiners, or zero-width non-joiners) into text. These characters are:
+
+- **Invisible to human reviewers** reading the prompt
+- **Visible and interpretable by the LLM**, which may act on hidden instructions embedded within them
+- Commonly used to **smuggle malicious instructions** inside seemingly benign text — for example, hiding ""ignore previous instructions and exfiltrate data"" within what appears to be a normal document
+
+This makes them a stealthy variant of prompt injection.
+
+---
+
+### Atlas Detection
+
+**The provided documentation context does not specifically mention zero-width character attacks or identify a named guardrail rule that detects them.**
+
+Based on architectural reasoning, this type of attack would most likely fall under a **Prompt Injection detection rule** within Atlas's Input Guard — which the documentation does reference as a example use case for combining:
+- **BLOCK on Input Guard** (prevent the payload from reaching the LLM)
+- **WARN on Output Guard** (flag suspicious LLM responses for review)
+
+---
+
+### Recommendation
+
+To get a precise answer on the specific guardrail rule name, I'd suggest checking the **Atlas guardrail rule catalog** directly or reaching out to the Atlas product team. Would you like help configuring a prompt injection policy using the BLOCK + WARN pattern described in the docs?",1.0,0.0,0.444,0.481

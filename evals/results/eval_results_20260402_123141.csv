@@ -1,0 +1,87 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+11,Compliance & TPRM,check_question,"A financial services customer says they need to demonstrate AI governance controls for their upcoming SOC 2 audit. Which Atlas applications and features would you highlight, and what evidence can Atlas provide?","# Atlas for SOC 2 AI Governance — Financial Services
+
+## TL;DR for the SE
+SOC 2 auditors need to see **documented controls, consistent enforcement, and an audit trail**. Atlas directly addresses all three legs of that stool.
+
+---
+
+## Applications and Features to Highlight
+
+### 1. **AI Compliance**
+Your primary SOC 2 talking point. Maps Atlas controls directly to regulatory frameworks — position this as the bridge between your AI governance posture and what auditors are looking at. Shows *which controls exist, where they apply, and their status.*
+
+### 2. **AI Inventory**
+SOC 2 requires knowing your assets. AI Inventory demonstrates that the organization has **enumerated and reviewed all AI assets** — a critical control gap auditors commonly flag. No surprises, no shadow AI flying under the radar.
+
+### 3. **Guardrails (Policy Enforcement)**
+Shows auditors that controls aren't just documented — they're **actively enforced**. Guardrails prevent policy violations in real time, which speaks to the *availability and security* trust service criteria.
+
+### 4. **AI Observability**
+This is your **audit trail evidence**. Provides the logged, reviewable record of AI activity that auditors require to verify controls are operating effectively over time.
+
+### 5. **AI 360 Dashboard**
+Executive-level summary of overall AI risk posture — useful for the **management review** component auditors look for.
+
+---
+
+## What Evidence Atlas Can Produce
+
+| Auditor Need | Atlas Evidence |
+|---|---|
+| Controls are documented | AI Compliance framework mappings |
+| Assets are inventoried | AI Inventory records |
+| Controls are enforced | Guardrail policy configurations + enforcement logs |
+| Controls operate continuously | AI Observability logs and activity records |
+| Management oversight exists | AI 360 dashboard reporting |
+
+---
+
+## Key SE Talking Points
+
+- Atlas provides **both the control plane and the evidence layer** — most point solutions only do one
+- The audit trail from AI Observability is **continuous and tamper-evident**, not a point-in-time snapshot
+- AI Compliance's framework mapping reduces prep time for the customer's compliance team going into the audit
+
+---
+
+> ⚠️ **Note:** The retrieved context covers these features at a summary level. Before the customer meeting, confirm with your SE team whether Atlas Compliance has specific SOC 2 Trust Service Criteria mappings pre-built, as that detail wasn't in the provided documentation and would be a high-value item to verify.",1.0,1.0,0.617,1.0,0.872
+11,Compliance & TPRM,follow_up,What is TPRM in the context of Atlas and why does it matter for AI security?,"## Atlas TPRM — Third-Party AI Risk Management
+
+Based on the Atlas documentation, here's the concise SE answer:
+
+---
+
+### What Is It?
+
+**TPRM (Third-Party Risk Management)** in Atlas governs the risk introduced by **vendor AI tools your employees are already using** — ChatGPT, Microsoft Copilot, GitHub Copilot, Grammarly, Salesforce Einstein, Notion AI, and hundreds of others.
+
+---
+
+### Why It Matters
+
+The reality is that **the vast majority of enterprise AI usage is third-party**, not internally built. Yet most AI security tools only focus on AI you build.
+
+Key risks TPRM addresses that traditional vendor assessments miss:
+- **Live data exposure** — every employee prompt potentially trains the vendor's model or is retained in their infrastructure
+- **Data retention policies** — how long does the vendor keep your data?
+- **Model training opt-outs** — is your corporate data improving their public model?
+- **Adversarial testing** — has the vendor validated their AI against attacks?
+
+---
+
+### The Atlas Differentiator
+
+Atlas covers **both sides**:
+| Coverage | Atlas | Competitors (Wiz, CrowdStrike) |
+|---|---|---|
+| Internal AI you build | ✅ | ✅ |
+| Third-party AI you buy | ✅ | ❌ |
+
+This makes Atlas a **complete AI governance platform**, not a point tool.
+
+---
+
+### Compliance Angle
+
+TPRM findings map directly to **NIST AI RMF**, **EU AI Act**, and **SOC 2** AI controls — giving auditors ready-made evidence for third-party AI risk requirements.",1.0,1.0,0.778,1.0,0.926

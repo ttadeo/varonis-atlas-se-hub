@@ -1,0 +1,82 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+12,Putting It All Together,check_question,Walk me through how you would open an Atlas conversation with a financial services CISO who tells you their developers are using AI coding assistants but the security team has no visibility into what data is being shared.,"## Opening an Atlas Conversation with a Financial Services CISO
+
+---
+
+### The Opening Hook
+
+Start by validating their awareness, then sharpen the risk:
+
+> *""The fact that you know your developers are using AI coding assistants is actually more than most security teams can say. But here's the harder question: **do you know what they're pasting into those tools today?** Source code, database schemas, API keys, customer data — most CISOs tell me the honest answer is no. And in financial services, that's not just a security gap — that's a compliance exposure.""*
+
+---
+
+### Why This Lands in FinServ Specifically
+
+- Regulators (SEC, FINRA, OCC) increasingly expect **data governance controls** to extend to AI tools
+- ""My developers meant well"" is not an acceptable audit response
+- The audit trail and enforcement controls regulators require **don't exist** between a developer and ChatGPT or GitHub Copilot — unless something sits in between
+
+---
+
+### The Atlas Positioning Statement
+
+> *""Atlas sits exactly in that gap — between your developers and the LLM — without disrupting their workflow. They keep using the tools they love. You get visibility, policy enforcement, and an audit trail that you can show to regulators.""*
+
+---
+
+### Key Discovery Questions to Follow With
+
+| Question | What It Surfaces |
+|---|---|
+| ""Which AI coding tools are in use — Copilot, Cursor, ChatGPT?"" | Scope of coverage needed |
+| ""Are these company-sanctioned or shadow IT?"" | Risk posture and urgency |
+| ""What data classification controls exist today?"" | Integration points with existing DLP |
+| ""Have you had any incidents or near-misses?"" | Business urgency |
+
+---
+
+### The Close on Discovery
+
+> *""What we typically find in the first 30 days of an Atlas deployment is that customers are surprised — not by one or two incidents, but by the **volume and variety** of sensitive data moving through these tools daily. The goal today is to understand if you have that same blind spot.""*
+
+---
+
+**The core narrative:** The developers aren't the problem. The **absence of a control plane** between them and the LLM is the problem. Atlas is that control plane.",1.0,1.0,0.542,0.847
+12,Putting It All Together,follow_up,What is the recommended Atlas deployment sequence for a new customer — which application do you start with and why?,"## Recommended Atlas Deployment Sequence for New Customers
+
+The documentation context speaks specifically to **policy configuration sequencing**, not application prioritization order. I'll give you the full picture, combining what the docs explicitly state with sound SE guidance.
+
+---
+
+### What the Documentation Directly Recommends
+
+**Start with asynchronous WARN rules across all guardrails** before enforcing any BLOCK policies.
+
+The rationale:
+- Creates a **baselining period** to understand what AI traffic actually looks like in that environment
+- **Zero user disruption** during rollout — traffic flows normally, Atlas just observes
+- Generates **Issues** for the security team to review
+- After baselining, **escalate high-confidence threats** (e.g., encoded injection attacks) to synchronous BLOCK
+- **Lower-confidence detections** stay in WARN for continued monitoring
+
+> This phased approach reduces false-positive risk and improves user adoption of AI governance controls.
+
+---
+
+### Application Selection Guidance
+
+The provided context doesn't specify which application to start with. As a practical SE recommendation:
+
+**Start with the application that:**
+1. Has the **highest AI usage volume** — more traffic = faster, richer baselining
+2. Is **already making LLM API calls** — lowest friction to route through the AI Gateway
+3. Has a **cooperative owner** — easier to coordinate the endpoint URL change
+
+---
+
+### Key Clarifying Question to Ask Your Customer
+
+> *""Which teams are already actively using AI tools today, and what LLM APIs are those tools calling?""*
+
+That answer determines both your **first application target** and your **AI Gateway configuration starting point**.",1.0,1.0,0.467,0.822

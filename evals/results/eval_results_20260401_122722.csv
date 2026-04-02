@@ -1,0 +1,89 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,avg_score
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the ""We Already Have Wiz"" Objection
+
+This is a common objection and actually a **good opening** — it means they're thinking about AI security. The goal is to reframe Wiz as complementary, not competitive.
+
+---
+
+### The Core Reframe
+
+**""Wiz does cloud AI posture. Atlas does full AI lifecycle security. They're not the same scope.""**
+
+Wiz is excellent at what it's built for — cloud infrastructure security. Their AI-SPM is a logical extension of that, but it's a feature addition to a CNAPP product, not a purpose-built AI security platform.
+
+---
+
+### What Wiz Actually Covers (Acknowledge It)
+
+- ✅ Cloud AI asset discovery (AWS/Azure/GCP)
+- ✅ AI-BOM with graph correlation to data paths
+- ✅ Misconfiguration detection for cloud-hosted AI resources
+
+---
+
+### What Wiz Doesn't Do (The Gap)
+
+| Capability | Wiz | Atlas |
+|---|---|---|
+| Codebase scanning (GitHub, Jupyter, Python deps) | ❌ | ✅ |
+| Runtime protection — inline prompt blocking/redaction | ❌ | ✅ |
+| Guardrails (WARN / BLOCK / MODIFY) | ❌ | ✅ |
+| Automated compliance (OWASP LLM Top 10, NIST AI RMF, EU AI Act) | ❌ | ✅ |
+| Third-party AI risk management (TPRM) | ❌ | ✅ |
+| LLM pen testing (prompt injection, jailbreak) | ❌ | ✅ |
+| Shadow AI discovery via Cloudflare LogPush | ❌ | ✅ |
+
+---
+
+### The CISO-Level Challenge
+
+Use the **AI 360 angle** to land this:
+
+> *""Can Wiz tell you, right now, what your complete AI risk posture looks like — across everything your teams are building AND using, including runtime behavior?""*
+
+If the answer is no (and it will be), that's the Atlas conversation.
+
+---
+
+### Suggested Talk Track
+
+> *""Wiz is great, and we're not here to replace it. But Wiz sees your cloud AI assets — it doesn't see the model your dev team is calling from a Jupyter notebook, it can't block a prompt injection attack in real time, and it doesn't map your AI usage to EU AI Act obligations. That's the gap Atlas fills.""*
+
+---
+
+### Bottom Line for the SE
+
+Position Wiz as **cloud posture visibility** and Atlas as **full lifecycle protection** — inventory beyond cloud, runtime enforcement, automated compliance, and vendor risk. They can run together; they don't overlap much.",1.0,1.0,0.714,0.905
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","# Atlas Competitive Categories & Differentiation
+
+Based on the retrieved documentation, the context identifies that Atlas faces competition across **three distinct categories**, but only provides detail on **two of the three** in the retrieved chunks. Here's what the docs cover:
+
+---
+
+## Category 1: AI TRiSM Platforms
+*(Similar Scope, Less Integrated)*
+
+**Key competitors:**
+- **Portal26** — GenAI adoption management, shadow AI detection, NIST FIPS certified vault. Established but narrower scope
+- **CalypsoAI** — Inference layer security (RSAC 2025 Sandbox winner), strong at inference but not a full lifecycle platform
+
+**How Atlas wins:**
+> Atlas covers the **full AI security lifecycle out-of-the-box**. These competitors require more integration work to achieve comparable coverage.
+
+---
+
+## Categories 2 & 3: ⚠️ Not in Retrieved Context
+
+The documentation references that there are **three categories total** (which likely include vendors like Wiz, Cisco, and Microsoft based on the document title), but the retrieved chunks don't include the positioning detail for those categories.
+
+**Recommendation:** Pull the full *Atlas Competitive Positioning* document for the complete breakdown on Categories 2 and 3.
+
+---
+
+## Universal Differentiator (Across All Categories)
+
+Regardless of competitor category, the core Atlas message is:
+
+> *""No other technology combines each function of the AI security lifecycle, and no other technology will have as good a connection into the underlying data thanks to the Varonis portfolio.""*
+
+This is your anchor statement in any competitive conversation.",0.667,1.0,0.583,0.75
