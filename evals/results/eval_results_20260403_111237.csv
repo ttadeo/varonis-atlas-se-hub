@@ -1,0 +1,98 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+6,Guardrails & Built-in Rules,check_question,Which Atlas rule would you recommend first for a customer worried about employees accidentally leaking sensitive data through an AI chatbot?,"## Recommended First Rule: PII Detection Guardrail
+
+For a customer worried about accidental data leakage through an AI chatbot, **start with a PII detection guardrail rule on the AI Gateway.**
+
+---
+
+### Why This First?
+
+Accidental leakage is almost always the culprit — employees copy-paste customer records, HR data, or internal documents into a chatbot prompt without thinking. PII detection catches the most common, highest-volume risk immediately.
+
+**The AI Gateway inspects every prompt inline before it reaches the LLM**, so a PII guardrail will:
+
+| Action | Use Case |
+|--------|----------|
+| **Redact** | Strip SSNs, credit card numbers, emails before the prompt is sent — user gets a response, data stays protected |
+| **Block** | Hard stop on highly sensitive content (e.g., patient records, credentials) |
+| **Log** | Capture for review without interrupting workflow — good for baselining behavior first |
+
+---
+
+### Recommended Rollout Sequence
+
+1. **Start in log/audit mode** — understand what employees are actually sending before enforcing blocks
+2. **Add redaction** for clear-cut PII categories (SSN, CC numbers, phone numbers)
+3. **Escalate to block** for credentials, secrets, or regulated data (PHI, PCI)
+
+---
+
+### Don't Overlook the Shadow AI Problem
+
+The AI Gateway only protects **managed applications routed through it**. If employees are using **personal ChatGPT accounts or consumer tools**, that traffic bypasses the Gateway entirely. For that threat vector, you'll need the **AI Usage application** via ZTNA integration to discover and govern those sessions.
+
+> **Key question to ask the customer:** Are they worried about a specific internal chatbot tool, or also about employees using consumer AI on corporate devices/networks? The answer determines whether you need Gateway-only or a dual-layer approach.",1.0,1.0,0.639,1.0,0.88
+6,Guardrails & Built-in Rules,follow_up,What are Agentic Guardrails and why do they matter for AI workflow tools like n8n?,"# Agentic Guardrails in Atlas
+
+## Why They Matter for Tools Like n8n
+
+AI workflow tools like **n8n, LangChain**, and similar orchestration platforms aren't just generating text — they're **taking real-world actions**: reading files, querying databases, calling APIs, sending emails. This fundamentally changes the risk profile compared to a simple chatbot.
+
+**The core problem:** An agent with legitimate permissions can cause real damage if manipulated — it doesn't need to ""hack"" anything, it just needs to be tricked into misusing what it already has access to.
+
+---
+
+## The Three Attack Vectors Atlas Addresses
+
+| Threat | What Happens | Example |
+|--------|-------------|---------|
+| **Prompt Injection** | Malicious instructions embedded in documents or tool outputs hijack the agent | A file the agent reads contains hidden instructions to exfiltrate data |
+| **Confused Deputy** | Agent is tricked into misusing its own legitimate permissions on behalf of an attacker | Agent forwards sensitive emails it had every right to access |
+| **Excessive Autonomy** | Agent takes actions beyond intended scope without human checkpoints | Multi-step workflow deletes records it was never meant to touch |
+
+---
+
+## What Atlas Agentic Guardrails Govern
+
+Atlas provides defense **at every stage of the agent's execution chain**:
+
+- 🔧 **Tool Selection** — controls which tools an agent is allowed to invoke
+- ✅ **Parameter Validation** — inspects parameters before they're passed to tools
+- 🚨 **Malicious Tool Detection** — identifies suspicious or unauthorized tool usage
+- 🛡️ **Behavioral Boundaries** — keeps agents within their authorized scope
+- 🔍 **Post-Execution Reflection** — reviews what the agent actually did
+
+---
+
+## Key SE Note
+
+> These guardrails are available as of **v3.1.1** and are currently in **beta** — flag this with customers who have strict production requirements. They will be tuned further based on evaluation results.
+
+For n8n specifically: since n8n makes LLM API calls, you'd route those calls **through the Atlas AI Gateway proxy**, and the agentic guardrails apply automatically to that traffic. No n8n plugin or special integration required — just point the LLM endpoint at Atlas.",1.0,1.0,0.762,1.0,0.921
+6,Guardrails & Built-in Rules,follow_up,What is the OWASP LLM Top 10 policy template in Atlas?,"## OWASP LLM Top 10 Policy Templates in Atlas
+
+Based on the provided documentation context, here's what we know:
+
+### What It Is
+Introduced in **Atlas v3.1.2**, the AI Gateway now includes **predefined policy templates** that allow users to enable recommended guardrails **with a single click** — including templates specifically aligned to the **OWASP LLM Top 10**.
+
+### Key Benefit
+Rather than manually configuring individual guardrails from scratch, these templates give you a **pre-built, best-practice starting point** for LLM security policy enforcement — significantly reducing time-to-protection.
+
+### How They Map to OWASP
+The documentation confirms at least one direct OWASP mapping in action:
+
+| Atlas Guardrail | OWASP LLM Mapping | MITRE ATLAS Mapping |
+|---|---|---|
+| Detect Topics | **LLM02 — Sensitive Information Disclosure** | AML.T0051 — LLM Prompt Injection |
+
+The **Detect Topics** guardrail uses an **LLM-as-a-Judge** approach — evaluating *semantic meaning*, not just keywords — meaning it catches obfuscated or paraphrased malicious prompts that simple pattern matching would miss.
+
+---
+
+### SE Talking Point 💡
+> *""Instead of asking your customer to build guardrail policies from zero, you can point them to the OWASP template and have meaningful protection running in minutes — aligned to an industry-recognized standard their security team already knows.""*
+
+---
+
+**Note:** The documentation context doesn't enumerate all 10 OWASP categories covered by the template. For the full template breakdown, I'd recommend pulling the v3.1.2 release notes or checking the Atlas UI directly.",1.0,1.0,0.833,1.0,0.944

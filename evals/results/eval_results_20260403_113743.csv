@@ -1,0 +1,70 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+15,Deployment Deep Dive & CI/CD,check_question,"A DevOps team asks: can Atlas automatically test our LLM endpoints every time we push a code change, without requiring a manual security review? How does that work?","## Yes — Atlas Supports Automated LLM Security Testing in CI/CD Pipelines
+
+This is a core Atlas capability. Here's how to position it for the DevOps team:
+
+---
+
+### The Core Value Proposition
+
+Atlas integrates **directly into CI/CD pipelines** so LLM endpoint security testing happens **automatically at build time** — not as a periodic, manual review cycle bolted on after the fact.
+
+This means every code push can trigger security validation of LLM endpoints **without a human in the loop**.
+
+---
+
+### How to Frame This for the DevOps Team
+
+| Traditional Approach | Atlas Approach |
+|---|---|
+| Manual security reviews on a schedule | Automated testing on every push |
+| Security bottlenecks deployment | Security runs *with* deployment |
+| Issues found late in the cycle | Issues caught at build time |
+
+---
+
+### Key Follow-Up Questions to Ask This Team
+
+To help configure this correctly, I'd want to understand:
+
+1. **What CI/CD platform are they using?** (GitHub Actions, Jenkins, GitLab CI, etc.)
+2. **Which LLM providers are their endpoints calling?** (OpenAI, Anthropic, Azure OpenAI, etc.)
+3. **Are they building internal AI apps, or consuming third-party ones?**
+4. **What does ""push"" mean in their workflow** — feature branches, PRs, merges to main?
+
+---
+
+### Important Architectural Note
+
+> ⚠️ **The documentation context provided is limited** — it confirms CI/CD integration exists but doesn't detail the specific pipeline configuration steps or pentest methodology.
+
+Before going deep on implementation specifics with this customer, I'd recommend pulling the full CI/CD integration documentation to walk through exact setup steps. What I can confirm: this is a supported, documented capability — not a workaround.
+
+Want me to help structure a demo flow around this use case?",1.0,1.0,0.467,1.0,0.822
+15,Deployment Deep Dive & CI/CD,follow_up,"What are the three ways to deploy the Atlas AI Gateway, and when would you use each?","## Atlas AI Gateway — Three Deployment Options
+
+The documentation context you've provided confirms there are three deployment modes, but unfortunately the **specific details of each mode were not included** in the retrieved content — only the section header was returned (likely a chunking/retrieval issue).
+
+---
+
+## What I Can Tell You Based on Architecture
+
+Based on standard Atlas AI Gateway deployment patterns, the three modes are typically:
+
+| Deployment Mode | Best Used When |
+|---|---|
+| **SaaS/Hosted Gateway** | Customer wants minimal infrastructure overhead; Varonis hosts the proxy endpoint |
+| **Self-Hosted (Docker/K8s)** | Customer has data residency requirements or wants the gateway inside their own network perimeter |
+| **Sidecar/Embedded** | Application-level deployment where the gateway runs alongside a specific app (common in containerized environments) |
+
+> ⚠️ **Caveat:** These descriptions are based on architectural reasoning, not the retrieved documentation. I'd recommend verifying the exact three options and their use cases against the official Atlas deployment guide before using this in a customer conversation.
+
+---
+
+## Recommended Next Steps
+
+1. **Pull the full deployment section** from the Atlas documentation to get the accurate descriptions
+2. **Ask the customer** about their constraints: cloud vs. on-prem, data residency requirements, and whether they need the gateway to be network-internal
+3. Those answers will drive which deployment option fits
+
+Would you like help framing deployment option tradeoffs for a specific customer scenario?",1.0,1.0,0.714,1.0,0.905

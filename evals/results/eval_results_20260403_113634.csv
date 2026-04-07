@@ -1,0 +1,86 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+9,AI Security Posture Management,check_question,"A customer says they want to know if any of their AI Python libraries have known CVEs. Which Atlas application handles this, and how does it discover and report those vulnerabilities?","## AI SPM — Library CVE Detection
+
+This is handled by **AI SPM (AI Security Posture Management)**, working in conjunction with **AI Inventory**.
+
+---
+
+### How It Works
+
+**Step 1 — Discovery (AI Inventory)**
+Atlas first needs to know what libraries exist. Discovery happens via:
+- **Code repository scanning**
+- **Dependency file uploads** (e.g., `requirements.txt`)
+- **Manual addition**
+
+This covers packages like LangChain, PyTorch, Transformers, and other AI/ML dependencies.
+
+**Step 2 — CVE Evaluation (AI SPM)**
+Once libraries are in inventory, AI SPM evaluates them **nightly** against known CVE databases.
+
+**Step 3 — Surfacing Results**
+- Vulnerabilities are rated **Critical / High / Medium / Low** using standard CVSS scoring
+- **Issues are automatically created** in Atlas for each affected library with details and remediation guidance
+- In the **AI Inventory Resource Details page**, each library has a **Vulnerabilities tab** showing all detected CVEs for that specific version
+
+---
+
+### SE Talking Point
+
+Hit them with this question:
+
+> *""Do you know if any of the AI libraries your developers are using have known CVEs?""*
+
+Most teams have no automated answer. AI SPM gives them one — running nightly, across every library in inventory, with no manual effort required.
+
+---
+
+### Key Follow-Up Questions for Discovery
+- How are their AI dependencies managed? Do they use `requirements.txt`, `pyproject.toml`, or another format?
+- Do their repos live in GitHub, GitLab, or another SCM? (Determines the best discovery path)
+- Are they already tracking library versions anywhere, or is this ad hoc?",1.0,1.0,0.697,1.0,0.899
+9,AI Security Posture Management,follow_up,What is LLM penetration testing in Atlas and what does it test for?,"## LLM Penetration Testing in Atlas
+
+### What It Is
+
+Atlas's LLM Pen Testing is an **active, automated adversarial testing capability** within the AI SPM module. Unlike passive scanning (e.g., library CVE checks), it actually **sends adversarial prompts to LLM endpoints** to find exploitable weaknesses before attackers do.
+
+---
+
+### What It Tests For
+
+Test categories are aligned by default to **OWASP LLM Top 10** and **MITRE ATLAS**, covering:
+
+| Test Category | Description |
+|---|---|
+| **Prompt Injection** | Can inputs manipulate the LLM's behavior or override instructions? |
+| **Jailbreak Susceptibility** | Can safety guardrails be bypassed? |
+| **Sensitive Information Disclosure** | Will the model leak PII, credentials, or system prompt details? |
+| **Excessive Agency / Tool Misuse** | Can the LLM be manipulated into misusing connected tools or taking unintended actions? |
+| **Custom Categories** | Security teams can define their own adversarial test scenarios |
+
+---
+
+### Two Test Variants
+
+- **Static tests** — predefined adversarial prompts
+- **Dynamic Generation tests** — AI-generated prompts that **adapt in real time** to discover novel attack paths beyond static test cases
+
+---
+
+### Output
+
+After a pentest completes, Atlas produces a **detailed report** suitable for:
+- Auditors
+- Internal security reviews
+- Customer-facing sharing
+
+---
+
+### CI/CD Integration
+
+Pentesting can be **embedded directly into CI/CD pipelines**, so LLM endpoints are tested automatically at build time — not just during periodic reviews.
+
+---
+
+**SE Talking Point:** This is a strong differentiator for customers building or deploying LLM-powered applications who need to demonstrate due diligence to auditors or security teams. The OWASP/MITRE alignment gives it immediate credibility in compliance conversations.",1.0,1.0,0.704,1.0,0.901
