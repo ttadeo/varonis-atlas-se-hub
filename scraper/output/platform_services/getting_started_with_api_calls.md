@@ -1,6 +1,6 @@
 ---
 title: Getting Started with API Calls
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/api
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/api
 section: platform_services
 ---
 
@@ -16,10 +16,10 @@ Create an API Role: Define a role with granular permissions that specify access 
 Create an API Key: Generate an API key that will be used to obtain an authorization token. This key should be associated with the API role you created.
 
 - 
-Invoke the JWT Token API Call: Use your API key to acquire a temporary JWT token, which will be necessary for making subsequent API calls.
+Invoke the JWT Token API Call: Use your API key to acquire a temporary JWT token, which is required for making subsequent API calls.
 
 - 
-Invoke APIs Using the JWT Token: Utilize the obtained JWT token to access and interact with the various APIs.
+Invoke APIs Using the JWT Token: Use the obtained JWT token to access and interact with the various APIs.
 
 Full API documentation can be found in the product docs under the OpenAPI API Reference (for REST APIs) and under the GraphQL API Reference.
 
@@ -38,8 +38,8 @@ Full API documentation can be found in the product docs under the OpenAPI API Re
 - From the Admin Console, click API Keys.
 - Click Add API Keys.
 - Give your API key a name and select “Custom Integrations”. Click Submit.
-- Assign the role you created in step 1 to the API key. Click on the “Roles” tab and then click on Add Roles.
-- Find your role from the list and click Submit
+- Assign the role you created in step 1 to the API key. Click on the “Roles” tab, then click Add Roles.
+- Find your role from the list and click Submit.
 
 ### Sample Execution Using Python[​](#sample-execution-using-python)
 Calling an API involves two steps:
@@ -47,9 +47,9 @@ Calling an API involves two steps:
 - Using your API key to request a JWT token.
 - Using the JWT token to call APIs.
 
-The following script is a Python example showing how to request a JWT token using the generated API key, followed by a demonstration of extracting all user info from the system. Additional details can be found in the script comments.
+The following Python script demonstrates how to request a JWT token using the generated API key, then extract all user information from the system. Additional details can be found in the script comments.
 
-ParameterDescriptionRequired`API_KEY`Environment variable containing the API key generated in the Admin console. You can also put the API key directly in the script although this is typically not recommended.Yes`API_URL`The base URL for the API endpoint on the Varonis control plane. Usually `https://api.prod.alltrue-be.com`Yes`CUSTOMER_ID`The customer ID for your tenant. Go to **Admin Console → System Settings → Company Profile → Company ID** to extract this information.Depends on the API call`api`The API you wish to execute. Note some APIs require additional info such as `customer_id` to function properly. Please refer to the API docs for specific information on supported APIs.Yes
+ParameterDescriptionRequired`API_KEY`Environment variable containing the API key generated in the Admin Console. You can also place the API key directly in the script, although this is typically not recommended.Yes`API_URL`The base URL for the API endpoint on the Varonis control plane. Usually `https://api.prod.alltrue-be.com`Yes`CUSTOMER_ID`The customer ID for your tenant. Go to **Admin Console → System Settings → Company Profile → Company ID** to extract this information.Depends on the API call`api`The API you wish to execute. Note that some APIs require additional information such as `customer_id` to function properly. Refer to the API docs for specific information on supported APIs.Yes
 The following code demonstrates a request for the JWT token, and then uses the token to run an API to extract user information from the customer tenant.
 
 ```
@@ -93,4 +93,4 @@ api = f"/v1/admin/auth0-customer/{CUSTOMER_ID}/users"
 response = make_api_request(api, token=JWT_TOKEN, method="GET")
 print(json.dumps(response, indent=2))
 
-```[PreviousIntegrations](/_docs/docs/platform_services/integration)[NextLLM Pentest Execution Workflow Using REST API](/_docs/docs/platform_services/llm_pentest)- [Preparation](#preparation)[Create the API Role](#create-the-api-role)- [Create API Key](#create-api-key)- [Sample Execution Using Python](#sample-execution-using-python)
+```[PreviousData Encryption and Key Management](/_docs/docs/platform_services/encryption)[NextLiteLLM Proxy Integration](/_docs/docs/platform_services/litellm)- [Preparation](#preparation)[Create the API Role](#create-the-api-role)- [Create API Key](#create-api-key)- [Sample Execution Using Python](#sample-execution-using-python)

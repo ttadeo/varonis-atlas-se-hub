@@ -113,6 +113,39 @@
 
 ---
 
+## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Get Pentest Connection Url
+
+**Endpoint**: `GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url`
+**Summary**: Get Pentest Connection Url
+**Tags**: inventory
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Patch Pentest Connection Url
+
+**Endpoint**: `PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url`
+**Summary**: Patch Pentest Connection Url
+**Tags**: inventory
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/inventory/llm-endpoint/dsl/specs — List Llm Endpoint Dsl Specs
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs`
@@ -295,6 +328,115 @@
 
 ---
 
+## GET /v1/inventory/tag-definitions — List all tag definitions
+
+**Endpoint**: `GET /v1/inventory/tag-definitions`
+**Summary**: List all tag definitions
+**Tags**: inventory
+
+**Responses**:
+- `200`: Successful Response
+
+---
+
+## GET /v1/inventory/resource/{resource_instance_id}/tags — Get all tags for a resource
+
+**Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/tags`
+**Summary**: Get all tags for a resource
+**Tags**: inventory
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PUT /v1/inventory/resource/{resource_instance_id}/tags — Assign or replace tags for a resource
+
+**Endpoint**: `PUT /v1/inventory/resource/{resource_instance_id}/tags`
+**Summary**: Assign or replace tags for a resource
+**Tags**: inventory
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/inventory/resource/{resource_instance_id}/tags — Remove specific tags from a resource
+
+**Endpoint**: `DELETE /v1/inventory/resource/{resource_instance_id}/tags`
+**Summary**: Remove specific tags from a resource
+**Tags**: inventory
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/tags/assign — Bulk assign tags to multiple resources
+
+**Endpoint**: `POST /v1/inventory/resources/tags/assign`
+**Summary**: Bulk assign tags to multiple resources
+**Tags**: inventory
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/tags/remove — Bulk remove tags from multiple resources
+
+**Endpoint**: `POST /v1/inventory/resources/tags/remove`
+**Summary**: Bulk remove tags from multiple resources
+**Tags**: inventory
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/inventory/tags/typeahead — Typeahead suggestions for tag values
+
+**Endpoint**: `GET /v1/inventory/tags/typeahead`
+**Summary**: Typeahead suggestions for tag values
+**Tags**: inventory
+
+**Parameters**:
+- `category` (query, required): Tag category to search
+- `prefix` (query, optional): Prefix to filter values
+- `limit` (query, optional): Max results
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/inventory/job-status/{job_id} — Get Discovery Job Status
 
 **Endpoint**: `GET /v1/inventory/job-status/{job_id}`
@@ -345,6 +487,8 @@ Returns:
 - `provider` (query, optional): 
 - `technology` (query, optional): 
 - `resource_category` (query, optional): 
+- `capabilities` (query, optional): 
+- `archetypes` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -425,6 +569,8 @@ Returns in a list format of some basic resource information: does not return the
 - `has_valid_pentest_connection_details` (query, optional): 
 - `pentest_connection_last_test_status` (query, optional): 
 - `include_issue_summaries` (query, optional): 
+- `capabilities` (query, optional): 
+- `archetypes` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -773,44 +919,6 @@ Get the active dependency files for a customer
 
 ---
 
-## POST /v1/inventory/customer/{customer_id}/resources/dependency-file — Upload Dependencies
-
-**Endpoint**: `POST /v1/inventory/customer/{customer_id}/resources/dependency-file`
-**Summary**: Upload Dependencies
-**Tags**: inventory
-
-Upload a requirements.txt, environment.yml, or Dockerfile and extract the dependencies from it.
-
-:param customer_id: The customer ID
-:param project_id: The project ID
-:param dependency_file_identifier: The identifier for the dependency file. Unique per customer.
-:param language_and_file: The language and file type combination
-:param file: The file to upload
-:param session: The SQLAlchemy database session
-:param repository_config_id: The repository config ID if the dependency file is associated with a repository
-:param file_path: The path of the file inside the configured repository
-:param display_name: Optional display name for the dependency file
-
-:return: A list of tuples containing the library name and version (if specified)
-
-**Parameters**:
-- `customer_id` (path, required): 
-- `project_id` (query, required): 
-- `language_and_file` (query, required): 
-- `dependency_file_identifier` (query, required): 
-- `display_name` (query, optional): 
-- `repository_config_id` (query, optional): ID of repository if dependency file is associated with a repository configured for code-scanning.
-- `file_path` (query, optional): Path of dependency file inside the repository configured for code-scanning.
-
-**Request Body** (required):
-- `multipart/form-data`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
 ## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file — Delete Dependency File
 
 **Endpoint**: `DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file`
@@ -925,6 +1033,7 @@ Unlink dependency files from their current project, along with all resources ass
 **Parameters**:
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
+- `technology_type` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -994,6 +1103,8 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Parameters**:
 - `resource_category` (query, optional): 
+- `capabilities` (query, optional): 
+- `archetypes` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response

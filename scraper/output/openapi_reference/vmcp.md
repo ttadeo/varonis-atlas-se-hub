@@ -366,6 +366,25 @@ and audit trails.
 
 ---
 
+## POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/batch — Add Tool Override Batch To Draft
+
+**Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/batch`
+**Summary**: Add Tool Override Batch To Draft
+**Tags**: vmcp
+
+**Parameters**:
+- `vmcp_id` (path, required): 
+- `mcp_server_resource_instance_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk — Add Tool Override Bulk To Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk`

@@ -1,6 +1,6 @@
 ---
 title: Versions Prior to V3.0.5
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/prior
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/prior
 section: platform_services
 ---
 

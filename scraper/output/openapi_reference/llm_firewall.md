@@ -18,6 +18,36 @@
 
 ---
 
+## POST /v1/llm-firewall/chat/log-batch — Log Chat Record Batch
+
+**Endpoint**: `POST /v1/llm-firewall/chat/log-batch`
+**Summary**: Log Chat Record Batch
+**Tags**: llm-firewall
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/llm-firewall/ingestion/events — Post Ingestion Events
+
+**Endpoint**: `POST /v1/llm-firewall/ingestion/events`
+**Summary**: Post Ingestion Events
+**Tags**: llm-firewall
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/llm-firewall/chat/session/{session_id} — Get Chat Session
 
 **Endpoint**: `GET /v1/llm-firewall/chat/session/{session_id}`
@@ -720,6 +750,26 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
+## GET /v1/llm-firewall/endpoint-settings — Retrieve endpoint settings by endpoint identifier (provider-agnostic)
+
+**Endpoint**: `GET /v1/llm-firewall/endpoint-settings`
+**Summary**: Retrieve endpoint settings by endpoint identifier (provider-agnostic)
+**Tags**: llm-firewall
+
+Retrieve endpoint settings. The api_provider is optional; when omitted the
+endpoint is resolved solely by endpoint_identifier.
+
+**Parameters**:
+- `endpoint_identifier` (query, optional): 
+- `api_provider` (query, optional): 
+- `x-alltrue-llm-api-headers` (header, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/llm-firewall/endpoint-settings/{api_provider} — Retrieve endpoint settings per customer and api key from cache
 
 **Endpoint**: `GET /v1/llm-firewall/endpoint-settings/{api_provider}`
@@ -732,7 +782,7 @@ other levels are optional and can be passed as query params.
 **Parameters**:
 - `api_provider` (path, required): 
 - `endpoint_identifier` (query, optional): 
-- `x-alltrue-llm-api-headers` (header, required): 
+- `x-alltrue-llm-api-headers` (header, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -1204,14 +1254,15 @@ Rollback to a particular version for a project
 
 ---
 
-## POST /v1/llm-firewall/admin/reset-endpoint-manager/customer/{customer_id} — Reset Endpoint Manager For Customer
+## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info —  Get Proxy Info For Gateway Resource
 
-**Endpoint**: `POST /v1/llm-firewall/admin/reset-endpoint-manager/customer/{customer_id}`
-**Summary**: Reset Endpoint Manager For Customer
+**Endpoint**: `GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info`
+**Summary**:  Get Proxy Info For Gateway Resource
 **Tags**: llm-firewall
 
 **Parameters**:
-- `customer_id` (path, required): 
+- `resource_instance_id` (path, required): 
+- `data_plane_account_id` (query, optional): Data plane account ID associated with the resource. If not provided, the system will attempt to infer it based on the resource.
 
 **Responses**:
 - `200`: Successful Response
@@ -1219,15 +1270,15 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info —  Get Proxy Info For Llm Endpoint Resource
+## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/guardrail-integration-config —  Get Guardrail Integration Config For Gateway Resource
 
-**Endpoint**: `GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info`
-**Summary**:  Get Proxy Info For Llm Endpoint Resource
+**Endpoint**: `GET /v1/llm-firewall/admin/resource/{resource_instance_id}/guardrail-integration-config`
+**Summary**:  Get Guardrail Integration Config For Gateway Resource
 **Tags**: llm-firewall
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
-- `data_plane_account_id` (query, optional): Data plane account ID associated with the resource. If not provided, the system will attempt to infer it based on the resource.
+- `data_plane_account_id` (query, optional): Data plane account ID associated with the resource. If not provided, configs for all registered dataplanes are returned.
 
 **Responses**:
 - `200`: Successful Response
@@ -1282,6 +1333,21 @@ Rollback to a particular version for a project
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
 - `max_options` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/llm-firewall/llm-session/{session_id} — Get User Session Detail By Session Id
+
+**Endpoint**: `GET /v1/llm-firewall/llm-session/{session_id}`
+**Summary**: Get User Session Detail By Session Id
+**Tags**: llm-firewall
+
+**Parameters**:
+- `session_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
@@ -1352,468 +1418,6 @@ Rollback to a particular version for a project
 
 ---
 
-## POST /v1/llm-firewall/chat/check-connection/{provider} — Check Connection
-
-**Endpoint**: `POST /v1/llm-firewall/chat/check-connection/{provider}`
-**Summary**: Check Connection
-**Tags**: llm-firewall
-
-**Parameters**:
-- `provider` (path, required): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/openai — Process Openai Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/openai`
-**Summary**: Process Openai Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/azure-openai — Process Azure Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/azure-openai`
-**Summary**: Process Azure Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/openai — Process Openai Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/openai`
-**Summary**: Process Openai Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/azure-openai — Process Azure Openai Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/azure-openai`
-**Summary**: Process Azure Openai Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/anthropic — Process Anthropic Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/anthropic`
-**Summary**: Process Anthropic Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/anthropic — Process Anthropic Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/anthropic`
-**Summary**: Process Anthropic Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/google — Process Gemini Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/google`
-**Summary**: Process Gemini Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/google — Process Gemini Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/google`
-**Summary**: Process Gemini Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/bedrock — Process Bedrock Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/bedrock`
-**Summary**: Process Bedrock Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/bedrock — Process Bedrock Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/bedrock`
-**Summary**: Process Bedrock Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/ibmwatsonx — Process Ibmwatsonx Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/ibmwatsonx`
-**Summary**: Process Ibmwatsonx Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/ibmwatsonx — Process Ibmwatsonx Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/ibmwatsonx`
-**Summary**: Process Ibmwatsonx Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/ibmwatsonx-ai-service — Process Ibmwatsonx Ai Service Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/ibmwatsonx-ai-service`
-**Summary**: Process Ibmwatsonx Ai Service Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/ibmwatsonx-ai-service — Process Ibmwatsonx Ai Service Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/ibmwatsonx-ai-service`
-**Summary**: Process Ibmwatsonx Ai Service Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/ibmwatsonx-assistant — Process Ibmwatsonx Assistant Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/ibmwatsonx-assistant`
-**Summary**: Process Ibmwatsonx Assistant Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/ibmwatsonx-assistant — Process Ibmwatsonx Assistant Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/ibmwatsonx-assistant`
-**Summary**: Process Ibmwatsonx Assistant Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/any — Process Flexible Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/any`
-**Summary**: Process Flexible Completions Input
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/any — Process Flexible Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/any`
-**Summary**: Process Flexible Completions Output
-**Tags**: llm-firewall
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/batch/process-input/{api_provider} — Process Batch Completions Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/batch/process-input/{api_provider}`
-**Summary**: Process Batch Completions Input
-**Tags**: llm-firewall
-
-**Parameters**:
-- `api_provider` (path, required): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `201`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/batch/process-output/{api_provider} — Process Batch Completions Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/batch/process-output/{api_provider}`
-**Summary**: Process Batch Completions Output
-**Tags**: llm-firewall
-
-**Parameters**:
-- `api_provider` (path, required): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `201`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/rules — Process Rules On Input
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/rules`
-**Summary**: Process Rules On Input
-**Tags**: llm-firewall
-
-**Parameters**:
-- `session_id` (query, required): 
-- `organization_id` (query, optional): 
-- `project_id` (query, optional): 
-- `resource_instance_id` (query, required): 
-- `endpoint_identifier` (query, optional): 
-- `llm_provider_name` (query, optional): 
-- `llm_model_name` (query, optional): 
-- `start_time` (query, optional): 
-- `src_ip_address` (query, optional): 
-- `src_hostname` (query, optional): 
-- `dest_url` (query, optional): 
-- `dest_port` (query, optional): 
-- `dest_scheme` (query, optional): 
-- `x-alltrue-llm-user-session` (header, optional): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/rules — Process Rules On Output
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/rules`
-**Summary**: Process Rules On Output
-**Tags**: llm-firewall
-
-**Parameters**:
-- `session_id` (query, required): 
-- `organization_id` (query, optional): 
-- `project_id` (query, optional): 
-- `llm_provider_name` (query, optional): 
-- `llm_model_name` (query, optional): 
-- `start_time` (query, optional): 
-- `src_ip_address` (query, optional): 
-- `src_hostname` (query, optional): 
-- `dest_url` (query, optional): 
-- `dest_port` (query, optional): 
-- `dest_scheme` (query, optional): 
-- `resource_instance_id` (query, required): 
-- `endpoint_identifier` (query, optional): 
-- `x-alltrue-llm-user-session` (header, optional): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-input/customer/{customer_id} — Process Chat Completions Input Using Customer Settings
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-input/customer/{customer_id}`
-**Summary**: Process Chat Completions Input Using Customer Settings
-**Tags**: llm-firewall
-
-Process rules according to current settings on the request.
-On the circumstance that no block/modify input actions defined in the rules,
-the request would be considered to be able to be returned immediately without waiting on the process results,
-as no change will be applied to the request.
-
-**Parameters**:
-- `customer_id` (path, required): 
-- `session_id` (query, required): 
-- `organization_id` (query, optional): 
-- `project_id` (query, optional): 
-- `resource_instance_id` (query, optional): 
-- `endpoint_identifier` (query, optional): 
-- `llm_provider_name` (query, optional): 
-- `llm_model_name` (query, optional): 
-- `start_time` (query, optional): 
-- `src_ip_address` (query, optional): 
-- `src_hostname` (query, optional): 
-- `dest_url` (query, optional): 
-- `dest_port` (query, optional): 
-- `dest_scheme` (query, optional): 
-- `quick_release` (query, optional): 
-- `x-alltrue-llm-user-session` (header, optional): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/chat/process-output/customer/{customer_id} — Process Chat Completions Output Using Customer Settings
-
-**Endpoint**: `POST /v1/llm-firewall/chat/process-output/customer/{customer_id}`
-**Summary**: Process Chat Completions Output Using Customer Settings
-**Tags**: llm-firewall
-
-Process rules according to current settings on the request.
-On the circumstance that no block/modify input actions defined in the rules,
-the request would be considered to be able to be returned immediately without waiting on the process results,
-as no change will be applied to the request.
-
-**Parameters**:
-- `customer_id` (path, required): 
-- `session_id` (query, required): 
-- `organization_id` (query, optional): 
-- `project_id` (query, optional): 
-- `resource_instance_id` (query, required): 
-- `endpoint_identifier` (query, optional): 
-- `llm_provider_name` (query, optional): 
-- `llm_model_name` (query, optional): 
-- `start_time` (query, required): 
-- `src_ip_address` (query, optional): 
-- `src_hostname` (query, optional): 
-- `dest_url` (query, optional): 
-- `dest_port` (query, optional): 
-- `dest_scheme` (query, optional): 
-- `quick_release` (query, optional): 
-- `x-alltrue-llm-user-session` (header, optional): 
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
 ## GET /v1/llm-firewall/combined-settings-all — Retrieve combined, settings for all levels
 
 **Endpoint**: `GET /v1/llm-firewall/combined-settings-all`
@@ -1858,19 +1462,16 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/combined-settings/{api_provider} — Retrieve combined settings per customer and api key from cache
+## GET /v1/gateway/logging-settings — Get Resource Logging Policy
 
-**Endpoint**: `GET /v1/llm-firewall/combined-settings/{api_provider}`
-**Summary**: Retrieve combined settings per customer and api key from cache
+**Endpoint**: `GET /v1/gateway/logging-settings`
+**Summary**: Get Resource Logging Policy
 **Tags**: llm-firewall
 
-function for all levels rules settings customer_id is a part of url,
-other levels are optional and can be passed as query params.
+Returns the explicit resource override, or null if inheriting admin defaults.
 
 **Parameters**:
-- `api_provider` (path, required): 
-- `endpoint_identifier` (query, optional): 
-- `x-alltrue-llm-api-headers` (header, required): 
+- `resource_instance_id` (query, required): 
 
 **Responses**:
 - `200`: Successful Response
@@ -1878,26 +1479,32 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## POST /v1/llm-firewall/install-staged-settings/customer/{customer_id} —  Install Staged Configs For Customer Deprecated
+## POST /v1/gateway/logging-settings — Create Resource Logging Policy
 
-**Endpoint**: `POST /v1/llm-firewall/install-staged-settings/customer/{customer_id}`
-**Summary**:  Install Staged Configs For Customer Deprecated
+**Endpoint**: `POST /v1/gateway/logging-settings`
+**Summary**: Create Resource Logging Policy
 **Tags**: llm-firewall
 
+**Parameters**:
+- `resource_instance_id` (query, required): 
+
+**Request Body** (required):
+- `application/json`
+
 **Responses**:
-- `200`: Successful Response
+- `201`: Successful Response
+- `422`: Validation Error
 
 ---
 
-## POST /v1/admin/get-secret —  Get Secret
+## PATCH /v1/gateway/logging-settings — Patch Resource Logging Policy
 
-**Endpoint**: `POST /v1/admin/get-secret`
-**Summary**:  Get Secret
-**Tags**: llm-firewall, job-manager
+**Endpoint**: `PATCH /v1/gateway/logging-settings`
+**Summary**: Patch Resource Logging Policy
+**Tags**: llm-firewall
 
-Get a secret for a customer.
-
-Returns the secret value upon completion.
+**Parameters**:
+- `resource_instance_id` (query, required): 
 
 **Request Body** (required):
 - `application/json`
@@ -1908,55 +1515,17 @@ Returns the secret value upon completion.
 
 ---
 
-## POST /v1/admin/set-secret —  Set Secret
+## DELETE /v1/gateway/logging-settings — Delete Resource Logging Policy
 
-**Endpoint**: `POST /v1/admin/set-secret`
-**Summary**:  Set Secret
-**Tags**: llm-firewall, job-manager
+**Endpoint**: `DELETE /v1/gateway/logging-settings`
+**Summary**: Delete Resource Logging Policy
+**Tags**: llm-firewall
 
-Set a secret for a customer.
-
-**Request Body** (required):
-- `application/json`
+**Parameters**:
+- `resource_instance_id` (query, required): 
 
 **Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/admin/delete-secret —  Delete Secret
-
-**Endpoint**: `POST /v1/admin/delete-secret`
-**Summary**:  Delete Secret
-**Tags**: llm-firewall, job-manager
-
-Delete a secret for a customer.
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/admin/get-parameter —  Get Parameter
-
-**Endpoint**: `POST /v1/admin/get-parameter`
-**Summary**:  Get Parameter
-**Tags**: llm-firewall, job-manager
-
-Get a parameter for a customer.
-
-Returns the parameter value upon completion.
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
+- `204`: Successful Response
 - `422`: Validation Error
 
 ---

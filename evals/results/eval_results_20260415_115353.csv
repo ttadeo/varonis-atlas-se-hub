@@ -1,0 +1,1460 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+1,What is Varonis Atlas?,check_question,"In your own words, what is the main security problem that Atlas is designed to solve?","## The Core Problem Atlas Solves
+
+Atlas addresses the **visibility and control gap** that exists between employees and LLMs.
+
+Here's the simple framing:
+
+When a developer, sales rep, or HR manager uses an AI tool to be productive, **nothing stops them from pasting in sensitive data** — source code, customer records, financial data, PII — before sending it to an external LLM. They're not being malicious. They're just doing their job efficiently.
+
+The problem is **no one knows it's happening.**
+
+---
+
+### Three Compounding Issues:
+
+| Problem | Impact |
+|---|---|
+| **No visibility** | Security teams can't see what's being sent to AI tools |
+| **No enforcement** | There are no controls to prevent sensitive data from leaving |
+| **No audit trail** | Compliance teams have nothing to show regulators |
+
+---
+
+### The Atlas Answer
+
+Atlas sits **in the gap between the user and the LLM** — acting as a proxy through the AI Gateway — without disrupting the workflow. It provides:
+
+- **Detection** of sensitive data in prompts
+- **Enforcement** to block or redact before data reaches the LLM
+- **Logging** for compliance and forensic purposes
+
+---
+
+### The Discovery Question to Ask Every CISO:
+
+> *""Do you know what your developers, sales reps, and HR team are pasting into AI tools today?""*
+
+Most will say no. **That's the opening.**",1.0,1.0,0.6,1.0,0.867
+1,What is Varonis Atlas?,follow_up,Can you give me a real-world example of data leakage through an AI tool?,"## Real-World AI Data Leakage Example
+
+Here's a concrete, relatable scenario based on the documentation context:
+
+---
+
+### 🏥 Scenario: Healthcare Developer Using GitHub Copilot
+
+A developer at a hospital system is writing a patient data processing script. They paste a **real patient records snippet** into their IDE to help Copilot understand the data structure they're working with.
+
+That snippet contains:
+- **Patient names and SSNs** (PII)
+- **Diagnosis codes** (PHI subject to HIPAA)
+- **Embedded database credentials** (API keys/secrets)
+
+The developer isn't trying to exfiltrate data — they just want faster autocomplete. But that content is now transmitted to an external LLM.
+
+---
+
+### Why This Is Hard to Catch Without Atlas
+
+| Factor | Reality |
+|--------|---------|
+| **Intent** | Completely unintentional |
+| **Detection** | No traditional DLP sees it |
+| **Volume** | Happens dozens of times daily across dev teams |
+| **Compliance impact** | Potential HIPAA violation |
+
+---
+
+### How Atlas Prevents This
+
+Since Copilot routes its LLM calls **through the Atlas AI Gateway**, Atlas can:
+- **Inspect** the outbound prompt for PHI/PII/credentials
+- **Block or redact** before it reaches the LLM
+- **Alert** security teams in real time
+
+---
+
+> 💡 **SE Tip:** This scenario resonates strongly with healthcare, finance, and legal prospects. Want me to tailor an example to a specific vertical?",1.0,0.333,0.333,1.0,0.556
+1,What is Varonis Atlas?,follow_up,What is the difference between AI Inventory and AI Usage?,"## AI Inventory vs. AI Usage — Key Differences
+
+Based on the retrieved documentation, here's how these two Atlas applications differ:
+
+---
+
+### AI Inventory
+- A **catalog/asset management tool** — think CMDB for AI resources
+- Tracks **what AI assets exist** across your organization: LLM endpoints, models, libraries, frameworks, API keys, etc.
+- Organizes resources under **technologies** and **types** (AI PaaS, AI Models, AI Software, AI Services)
+- Provides metrics on **review status, resource counts, and organizational usage**
+- Primarily a **governance and visibility** tool for development teams managing AI projects
+- **Static/descriptive** — what do we have?
+
+---
+
+### AI Usage
+- A **runtime activity monitoring tool** — tracks who is using AI and how
+- Has **two data streams**:
+  | Source | Detail Level |
+  |--------|-------------|
+  | ZTNA/SASE log feeds | Session-level only (which users → which services) |
+  | AI Gateway (proxy) | Full prompt/response detail with guardrails and blocking |
+- Enables **alerting, policy enforcement, and real-time controls**
+- **Dynamic/behavioral** — what is actually happening?
+
+---
+
+### The Simple SE Pitch
+> **Inventory** = *""What AI are we running?""*
+> **Usage** = *""What is everyone doing with it?""*
+
+Both are complementary — Inventory gives you the asset map, Usage gives you the behavioral telemetry. Customers need both for a complete AI security posture.",1.0,1.0,0.619,1.0,0.873
+2,Atlas Architecture Overview,check_question,Why does Atlas run the proxy on the customer plane rather than in Varonis infrastructure?,"## Why the Proxy Runs on the Customer Plane
+
+This is a **deliberate architectural decision** that directly addresses Atlas's core threat model — and it's a great talking point with security-conscious customers.
+
+---
+
+### The Core Contradiction It Avoids
+
+Atlas exists to **prevent sensitive data from leaving an organization's environment without authorization**. If the proxy ran on Varonis infrastructure, you'd be solving a data leakage problem by routing all prompts — potentially containing PHI, PII, source code, or credentials — **through a third-party vendor's network**. That's a contradiction, not a solution.
+
+---
+
+### What the Customer-Side Proxy Delivers
+
+| Concern | How It's Addressed |
+|---|---|
+| **Data sovereignty** | Prompt content never leaves the customer's environment to reach Varonis |
+| **Regulatory compliance** | Audit logs and inspection happen within the customer's own boundary |
+| **Trust model** | Varonis manages control plane policy config but **never touches data plane traffic** |
+| **Vendor risk** | Customers don't have to trust Varonis with sensitive data |
+
+---
+
+### The Key Distinction to Articulate
+
+> **Varonis touches your policies, not your prompts.**
+
+The **control plane** (policy configuration, management UI) lives with Varonis. The **data plane** (actual prompt traffic) stays entirely within the customer's AWS VPC.
+
+---
+
+### SE Positioning Tip
+
+This architecture is a **competitive differentiator** — especially for regulated industries (healthcare, finance, government). When a customer asks *""does Varonis see our prompts?""* — the answer is a clean **no**, by design.",1.0,1.0,0.667,1.0,0.889
+2,Atlas Architecture Overview,follow_up,What is the difference between the control plane and the customer plane in Atlas?,"## Atlas Two-Plane Architecture: Control Plane vs. Customer Plane (Data Plane)
+
+---
+
+### The Core Distinction
+
+| | **Control Plane** | **Customer Plane (Data Plane)** |
+|---|---|---|
+| **Operated by** | Varonis (SaaS) | Customer (their own environment) |
+| **Purpose** | Configuration, policy, governance | Runtime LLM traffic handling |
+| **Where it runs** | Varonis-managed infrastructure | Customer's cloud/on-prem |
+| **Sees prompt/response data?** | No | Yes |
+
+---
+
+### Why This Matters in Customer Conversations
+
+**The key trust argument:** Actual AI traffic — prompts, responses, and any sensitive data within them — flows through the **Customer Plane only**. Varonis's control plane handles policy configuration and governance metadata, but **never sees raw LLM payloads**.
+
+This directly addresses three common customer concerns:
+- ✅ **Data sovereignty** — sensitive data never leaves their environment
+- ✅ **Compliance** — meets requirements that prohibit third-party access to certain data
+- ✅ **Trust** — Varonis governs *behavior* without needing to *see* the data
+
+---
+
+### SE Talking Point
+
+> *""Think of it like a firewall policy manager — Varonis configures the rules in the control plane, but the actual traffic inspection and enforcement happens inside your environment. We never touch your prompts.""*
+
+---
+
+### Clarifying Question to Ask Customers
+
+If a customer raises concerns about Varonis accessing their AI traffic, confirm: **are they asking about policy configuration, or actual data flow?** The answer to both protects them — but for different reasons.",1.0,1.0,0.75,1.0,0.917
+3,The AI Gateway,check_question,A customer's application currently calls https://api.openai.com/v1. What do they need to change to route traffic through Atlas?,"## Routing Through Atlas AI Gateway
+
+Based on the documentation, this is a **minimal change** — here's exactly what the customer needs to update:
+
+---
+
+### What Changes
+
+| Config Item | Before | After |
+|---|---|---|
+| **Base URL** | `https://api.openai.com/v1` | Atlas AI Gateway proxy URL |
+| **Authentication** | OpenAI API key | Atlas-issued credentials |
+
+---
+
+### What Stays the Same
+
+- ✅ All existing API call structure
+- ✅ Request/response format
+- ✅ Application code logic
+- ✅ OpenAI model references
+
+> *""No code changes are required beyond updating where requests are pointed and how authentication is handled.""*
+
+---
+
+### Key Talking Points for the Customer
+
+1. **It's a one-line change** — swap the base URL, update the auth header
+2. **Atlas acts as a transparent proxy** — requests still reach OpenAI, but now pass through Atlas for visibility, policy enforcement, and logging
+3. **Zero application refactoring** — any app already calling OpenAI is immediately compatible
+
+---
+
+### Follow-Up Questions to Ask
+
+- What framework/language is the app using? (helps confirm where the base URL config lives)
+- Are they managing the OpenAI API key centrally or per-developer?
+- Do they have **multiple applications** calling OpenAI? Each one can be routed through the same Gateway",1.0,1.0,0.458,1.0,0.819
+3,The AI Gateway,follow_up,What happens to a prompt when the AI Gateway applies a MODIFY action?,"## AI Gateway — MODIFY Action Behavior
+
+Based on the provided documentation, here's exactly what happens when a **MODIFY** action is triggered:
+
+### Input Side (Input Guard)
+1. A policy rule detects a violation in the incoming prompt
+2. **The prompt is modified first** — before it ever reaches the LLM
+3. Only the modified version of the prompt is forwarded to the LLM (OpenAI, Anthropic, Gemini, etc.)
+
+### Output Side (Output Guard)
+1. A policy rule detects a violation in the LLM's response/completion
+2. **The response is modified** before being returned to the client/application
+
+### Key Architectural Points for SEs
+
+| Aspect | Detail |
+|--------|--------|
+| **Processing type** | **Synchronous** — modification must complete before the request proceeds |
+| **LLM sees** | Only the already-modified prompt, never the original violating content |
+| **Client sees** | Only the already-modified response, never the raw LLM output |
+| **Contrast with WARN** | WARN lets the original prompt through and just creates an alert |
+| **Contrast with BLOCK** | BLOCK stops the prompt entirely; MODIFY lets it through after sanitization |
+
+### SE Positioning Note
+MODIFY is the most nuanced action — it allows **continued productivity** while still **enforcing policy**. This is valuable for customers who can't afford workflow disruption but still need guardrails (e.g., redacting PII from a prompt before it reaches the LLM rather than blocking the user outright).",1.0,1.0,0.619,1.0,0.873
+4,"Policy Types: WARN, BLOCK, MODIFY",check_question,A customer wants to prevent prompt injection attacks but still wants to see what was attempted. Which actions would you recommend and why?,"## Recommended Atlas Configuration: Prevent Prompt Injection with Full Visibility
+
+This is a great use case that balances **security enforcement** with **forensic visibility** — exactly what Atlas is designed for.
+
+---
+
+## Recommended Action Combination
+
+### 1. 🚫 **Block** — on the Prompt Protection Gateway Rule
+Configure the **Prevent Prompt Injection** gateway-level rule to **block** malicious prompts in real time before they reach the LLM.
+
+**Why:** Prompt injection is rated **Critical (LLM01:2025 / AML.T0051)** — this is not a ""warn and watch"" threat. Injection attempts that reach the model can override system instructions, exfiltrate hidden data, or trigger unintended actions. Blocking at the gateway is the right default.
+
+---
+
+### 2. 📋 **Log / Audit** — Retain the Full Prompt Content
+Ensure logging is enabled so the **full attempted prompt is captured**, not just a block event.
+
+**Why:** The customer explicitly wants to see *what was attempted*. This gives them:
+- The exact injection payload used
+- User/session attribution
+- Timestamps and frequency patterns
+- Intelligence to assess whether it's a malicious actor or a curious internal user
+
+---
+
+### 3. 🔔 **Alert** — Trigger Notifications on Detections
+Set up alerting so security teams are notified when injection attempts occur.
+
+**Why:** Real-time awareness lets the team investigate whether an attack is:
+- Isolated/opportunistic
+- Repeated/targeted (escalate to incident response)
+- Coming from an internal vs. external source
+
+---
+
+## Why This Combination Works
+
+| Requirement | Action | Outcome |
+|---|---|---|
+| Stop the attack | Block | Prompt never reaches LLM |
+| See what was tried | Log | Full payload captured in Atlas |
+| Know when it happens | Alert | SOC/security team notified |
+
+---
+
+## Key Talking Point for the Customer
+
+> *""Atlas blocks the attack at the gateway before the model ever sees it — but the attempted prompt is still fully logged, so you get both protection and the forensic record you need.""*
+
+This is a strong differentiator: Atlas doesn't force a tradeoff between security and visibility. You get both.
+
+---
+
+**Follow-up to ask the customer:** Are they more concerned about **external users** trying to manipulate a customer-facing AI app, or **internal employees** testing boundaries of an internal tool? That context will inform alert routing and response workflows.",1.0,1.0,0.583,1.0,0.861
+4,"Policy Types: WARN, BLOCK, MODIFY",follow_up,What is the difference between synchronous and asynchronous policy processing in Atlas?,"## Synchronous vs. Asynchronous Policy Processing in Atlas AI Gateway
+
+The documentation confirms these are the two processing modes for policy rules, though the retrieved context only provides the introductory framing. Here's what each mode means architecturally:
+
+---
+
+### Synchronous Processing
+- Policy evaluation happens **in-line** with the LLM request/response flow
+- The gateway **holds the traffic** until the policy action completes
+- Used for **blocking/enforcement actions** — e.g., blocking a prompt injection, redacting PII before it reaches the LLM, or blocking a response containing sensitive data
+- **Trade-off:** Adds latency, but provides hard enforcement
+
+**Typical use cases:**
+- Block policy violations before they reach the LLM
+- Redact sensitive data in prompts or responses
+- Enforce hard stops on prohibited content
+
+---
+
+### Asynchronous Processing
+- Policy evaluation happens **out-of-band**, after the traffic passes through
+- The request/response is **not held** — the user experience is unaffected
+- Used for **logging, alerting, and audit actions** where enforcement isn't required in real-time
+- **Trade-off:** No latency impact, but cannot block traffic
+
+**Typical use cases:**
+- Alert on policy violations for review
+- Log interactions for compliance/audit
+- Trigger downstream notifications
+
+---
+
+### Key SE Guidance
+
+> When a customer asks *""will this slow down our AI app?""* — the answer depends on which actions their policies use. **Monitoring-only deployments can be fully async with zero latency impact.** Enforcement policies will have some in-line processing overhead.
+
+---
+
+⚠️ **Note:** The retrieved documentation context was repetitive and only captured the intro paragraph. I'd recommend pulling the full policy configuration docs for a more detailed breakdown of which specific actions are sync vs. async in Atlas.",1.0,1.0,0.476,1.0,0.825
+5,AI Inventory & AI Usage,check_question,"A CISO asks: how do I know if employees are using unauthorized AI tools like personal ChatGPT accounts? Which Atlas application answers this, and how?","## Detecting Unauthorized AI Tool Usage with Atlas
+
+The **AI Usage application** is the direct answer to this CISO's concern.
+
+---
+
+### How It Works
+
+Atlas detects unauthorized AI tool usage through **ZTNA telemetry** — as employee traffic flows through the Atlas network layer, the AI Usage application identifies which AI services are being accessed, by whom, and classifies whether those services are sanctioned or unsanctioned.
+
+This means:
+- **No agent or endpoint software required** on the user's device to detect the traffic
+- Consumer-tier services like **personal ChatGPT accounts** are visible as distinct from enterprise/sanctioned tools
+- The security team gets visibility into **who is accessing what AI services**
+
+---
+
+### What the CISO Can Do With This
+
+Once unauthorized usage is identified, the security team has two levers:
+
+| Action | Mechanism |
+|--------|-----------|
+| **Block/quarantine** access to unsanctioned AI tools | Via ZTNA controls |
+| **Redirect** users to sanctioned AI tools | Which route through the AI Gateway where guardrails apply |
+
+---
+
+### The Bigger Picture to Convey
+
+The real risk isn't just *that* employees use ChatGPT — it's *what they put into it*. The HR example is compelling here: performance reviews with salaries, medical accommodations, and disciplinary history entering OpenAI's systems creates **GDPR and HIPAA exposure** regardless of intent.
+
+Atlas addresses both sides:
+1. **Visibility + blocking** of unsanctioned tools (AI Usage app)
+2. **Guardrails on sanctioned tools** via AI Gateway PII detection — so even approved AI use is protected
+
+---
+
+**Good follow-up question for the CISO:** *""Do you have a list of AI tools you've formally sanctioned? That's the starting point for defining what AI Usage should flag as unauthorized.""*",1.0,1.0,0.741,1.0,0.914
+5,AI Inventory & AI Usage,follow_up,How does Atlas discover AI models and libraries in a customer's cloud environment?,"## How Atlas Discovers AI Models and Libraries
+
+Based on the provided documentation, Atlas AI Inventory uses **multiple automatic discovery mechanisms** — no manual cataloging required. Here's how to position each for customers:
+
+---
+
+### Discovery Mechanisms
+
+| Mechanism | What It Finds |
+|---|---|
+| **Cloud Account Scanning** | Models in S3, SageMaker, Databricks workspaces, and other cloud-native AI services |
+| **Code/Repository Scanning** | AI libraries in repositories — runs **nightly** to catch new dependencies as they're added |
+| **Hosted Service Integration** | OpenAI models, assistants, and fine-tuning jobs — surfaces shadow AI assets |
+
+---
+
+### The Core Sales Narrative
+
+> *""Do you know what AI models and libraries are running in your AWS environment today?""*
+
+Most customers will say **no** — and that's your opening. Atlas answers that question automatically through continuous discovery across cloud accounts, code repos, and hosted AI services.
+
+---
+
+### Key SE Talking Points
+
+- **Cloud scanning** = no agent required, automatic visibility into cloud-native AI infrastructure
+- **Nightly code scanning** = dev teams can't ""forget"" to register a new AI dependency — Atlas catches it
+- **Hosted service integration** = the shadow AI angle is powerful here; security teams are often shocked by what's running in their OpenAI org that they didn't provision
+
+---
+
+### Good Discovery Questions for the Customer
+
+- Are you using SageMaker, Databricks, or S3-hosted models?
+- Do your developers use requirements.txt or similar dependency files?
+- Does your org have an OpenAI enterprise account?
+
+The answers will tell you which discovery mechanisms to emphasize in the demo.",1.0,1.0,0.533,1.0,0.844
+6,Guardrails & Built-in Rules,check_question,Which Atlas rule would you recommend first for a customer worried about employees accidentally leaking sensitive data through an AI chatbot?,"## Recommended First Rule: PII/Sensitive Data Guardrail on the AI Gateway
+
+For a customer worried about **accidental** data leakage through an AI chatbot, the first recommendation should be a **prompt inspection guardrail rule** on the AI Gateway configured to detect and redact PII and sensitive content.
+
+---
+
+### Why This Rule First?
+
+Accidental leakage is the key word here. Employees aren't trying to exfiltrate data — they're pasting customer records, contracts, or internal reports into a chatbot to get help. The AI Gateway is purpose-built for this:
+
+| What it does | Why it matters for this use case |
+|---|---|
+| **Sits inline** between the app and the LLM | Every prompt is inspected before data leaves the org |
+| **Redacts** sensitive content automatically | The employee still gets a useful response — no friction, no block |
+| **Logs** for review | Builds visibility before you tighten policy |
+
+**Start with redaction, not blocking** — it's the right posture for *accidental* leakage. Blocking causes user frustration and help desk tickets; redaction silently protects data while the chatbot remains useful.
+
+---
+
+### Configuration Approach
+
+1. **Route the chatbot through the AI Gateway** — point its LLM API calls at the Gateway proxy URL instead of directly at OpenAI/Anthropic/etc.
+2. **Enable guardrail rules** for: PII (names, SSNs, emails), credentials/secrets, and any customer-specific sensitive categories
+3. **Set action to: Redact** (not Block) initially
+4. **Review logs** after 2-4 weeks to tune and identify patterns
+
+---
+
+### Don't Forget the Shadow AI Gap
+
+The AI Gateway only covers **managed applications routed through it**. If employees are also using **personal ChatGPT accounts or other consumer AI tools**, those bypass the Gateway entirely. That's where the **AI Usage application** (via ZTNA integration) fills the gap — it detects and can block access to unsanctioned AI services.
+
+> **SE Tip:** Ask the customer: *""Is this chatbot a company-deployed tool, or are you also worried about employees using their own AI accounts?""* — the answer determines whether you need one mechanism or both.",1.0,1.0,0.644,1.0,0.881
+6,Guardrails & Built-in Rules,follow_up,What are Agentic Guardrails and why do they matter for AI workflow tools like n8n?,"# Agentic Guardrails in Atlas
+
+## Why They Matter for Tools Like n8n
+
+AI agents built with tools like **n8n, LangChain**, or similar orchestration platforms are fundamentally different from chatbots — they don't just generate text, they **take real-world actions**:
+
+- Reading files and querying databases
+- Calling external APIs
+- Sending emails and triggering workflows
+
+This means **a manipulated agent with legitimate permissions can cause real damage.** The stakes are much higher than a chatbot returning a bad answer.
+
+---
+
+## The Three Attack Vectors Atlas Addresses
+
+| Threat | What It Looks Like |
+|---|---|
+| **Prompt Injection** | Malicious instructions hidden in a document or tool output hijack the agent's next action |
+| **Confused Deputy** | Attacker tricks the agent into misusing its *own* legitimate permissions on their behalf |
+| **Excessive Autonomy** | Agent takes actions beyond its intended scope with no human checkpoint |
+
+---
+
+## What Atlas's Agentic Guardrails Actually Do
+
+Atlas governs the **entire execution chain**, not just the input/output:
+
+- **Tool Selection** — validates which tools the agent is allowed to invoke
+- **Parameter Validation** — inspects arguments before tool calls execute
+- **Malicious Tool Detection** — flags suspicious tool definitions
+- **Behavioral Boundaries** — enforces scope limits
+- **Post-Execution Reflection** — reviews what the agent actually did
+
+> As of **v3.1.5**, guardrails also cover PII, prompt injection, prompt leakage, code leakage, and banned substrings specifically within **tool definitions, tool calls, and tool responses**.
+
+---
+
+## The SE Pitch
+
+For n8n customers specifically: their workflows likely call LLMs via API. By pointing those calls through the **Atlas AI Gateway proxy** instead of directly to OpenAI/Anthropic, every agentic action gets governed automatically — **no code changes to the n8n workflow logic required.**
+
+> **Key clarifying question to ask the customer:** *What LLM provider is your n8n workflow calling, and are those API calls centrally configured or embedded in individual workflows?*",1.0,1.0,0.524,1.0,0.841
+6,Guardrails & Built-in Rules,follow_up,What is the OWASP LLM Top 10 policy template in Atlas?,"## OWASP LLM Top 10 Policy Template in Atlas
+
+Based on the provided documentation context, here's what we know:
+
+### What It Is
+Introduced in **v3.1.2**, Atlas AI Gateway includes **predefined policy templates** that allow users to enable recommended guardrails **with a single click** — including templates specifically aligned to the **OWASP LLM Top 10**.
+
+### Key Benefit
+Rather than manually configuring individual guardrails, the OWASP-aligned template gives you a **pre-packaged, best-practice baseline** out of the box — significantly reducing time-to-protection.
+
+### What the OWASP-Mapped Guardrails Cover (from context)
+The documentation shows a specific example of how Atlas maps to OWASP:
+
+| Atlas Policy | OWASP Mapping | MITRE ATLAS Mapping |
+|---|---|---|
+| Detect Topics | **LLM02 — Sensitive Information Disclosure** | AML.T0051 — LLM Prompt Injection |
+| Agentic Guardrails | LLM02 (secondary coverage) | AML.T0051 |
+
+---
+
+### ⚠️ Documentation Gap
+The retrieved context confirms the template **exists and maps to OWASP LLM Top 10**, but doesn't enumerate the **full list of all 10 categories** covered by the template. 
+
+**For a full SE demo or customer discussion, I'd recommend:**
+- Pulling the in-product template details from your Atlas instance
+- Or checking the complete v3.1.2 release notes for the full guardrail-to-OWASP mapping table
+
+Want me to walk through how to position this template in a security-conscious customer conversation?",1.0,1.0,0.564,1.0,0.855
+7,AI Observability & Audit Trail,check_question,"A customer's legal team wants a complete audit trail of every prompt sent to their AI chatbot for the past 90 days. Which Atlas component provides this, and where is that data stored?","## Atlas AI Observability — Legal Audit Trail
+
+**The short answer:** AI Observability is the component they need, and the data never leaves their own environment.
+
+---
+
+### Component: AI Observability
+
+Deployed as part of the customer's **Data Plane**, running on **OpenSearch inside their own AWS VPC**.
+
+| Storage Tier | Location | Default Retention |
+|---|---|---|
+| Searchable Index | OpenSearch (customer AWS) | **3 months** |
+| Archive | S3 (customer AWS) | **6 months** |
+
+---
+
+### Why This Covers the 90-Day Requirement
+
+The 3-month default searchable index **fully covers the 90-day window** the legal team is asking for — no configuration changes needed out of the box.
+
+If they have extended compliance requirements (e.g., 1 year+), both retention periods are **adjustable on request**.
+
+---
+
+### Key Data Sovereignty Point
+
+> ⚠️ **Varonis has zero access to this data.**
+
+The Observability layer sits entirely inside the customer's AWS account. Varonis manages the software, not the data. This is a critical point for legal and privacy teams who will ask.
+
+---
+
+### SE Follow-Up Questions to Ask
+
+- Does their legal team need **search/query access** directly, or will they pull reports through the Atlas UI?
+- Do they have a **retention policy** requiring data be purged sooner than 3 months?
+- Are they subject to regulations (HIPAA, SEC, etc.) that mandate **longer** retention — if so, we can extend beyond 6 months on request.",1.0,1.0,0.667,1.0,0.889
+7,AI Observability & Audit Trail,follow_up,"What is the default data retention period for the AI Observability layer, and can it be changed?","## Atlas AI Observability — Data Retention
+
+### Default Retention Policy
+
+| Storage Layer | Default Retention |
+|--------------|-------------------|
+| **OpenSearch Index** | **3 months** (indexed/searchable) |
+| **S3 / Raw Files** | **6 months** |
+
+---
+
+### Can It Be Changed?
+
+**Yes** — retention periods are customer-configurable for both the OpenSearch index and S3 storage layers. To request a change (shorter or longer), the customer should **contact their Varonis account manager**.
+
+> Note: Control Plane retention is **not** customer-configurable.
+
+---
+
+### Key SE Talking Points
+
+- All AI observability data (prompts, responses, events) **stays within the customer's own AWS account** — this is a strong data residency story for security-conscious buyers
+- The OpenSearch service is **fully functional and extensible** — customers can build custom dashboards, alerts, and anomaly detection on top of their AI logs
+- Atlas can also **forward gateway events to Datadog LLM Observability** without requiring any instrumentation code changes in the customer's applications — great for customers already invested in Datadog
+- Custom retention is available, so customers with **compliance requirements** (e.g., needing longer retention for audit purposes) have a path to accommodate that",1.0,1.0,0.8,1.0,0.933
+8,AI 360 Dashboard,check_question,"A CISO asks for a single dashboard showing their organization's complete AI risk posture. What do you show them in Atlas, and what key risk categories does it surface?","## Show Them AI 360
+
+AI 360 is purpose-built for exactly this conversation. It's Atlas's unified risk dashboard and the right entry point for any CISO-level discussion about AI risk posture.
+
+---
+
+### The CISO Framing
+
+The question AI 360 answers is:
+
+> *""Do you know what your AI risk posture looks like right now — across everything your teams are building and using?""*
+
+Before Atlas, the answer is almost always **no**. AI 360 makes it **yes** — with a live, continuously updated dashboard.
+
+---
+
+### Key Risk Categories It Surfaces
+
+| Section | What It Shows |
+|---|---|
+| **AI Safety Score** | Single-number posture gauge with 3-quarter trend line |
+| **AI Inventory** | Total AI resources, shadow AI, and unprotected assets |
+| **Vulnerable AI Resources** | Vulnerable resources bucketed by severity (CVSS or custom) |
+| **AI Compliance Overview** | Posture against compliance frameworks with progress % |
+| **Issues by Severity** | Trend analysis of emerging risks and resolution velocity |
+| **Risk Category Treemap** | Visual prioritization of risk categories by urgency |
+| **Top 5 MITRE ATLAS & OWASP Risks** | Framework-mapped threat frequency (toggle between frameworks) |
+| **Riskiest AI & ML Resources** | Up to 20 resources with the most open issues by severity |
+| **GenAI App Activity** | 90-day daily request activity — adoption + usage visibility |
+
+---
+
+### Key SE Talking Points
+
+- **Scope is adjustable** — the dashboard filters by organization or project, so a CISO can view enterprise-wide or drill into a specific business unit
+- **Data is live** — updates as new resources are discovered, vulnerabilities found, or guardrails fire
+- **It aggregates across all Atlas modules** — inventory, gateway, pentesting, compliance all feed into one view
+- **Framework alignment** — MITRE ATLAS and OWASP mapping gives the CISO credibility with auditors and boards
+
+---
+
+### What to Ask the CISO
+
+> ""Are you more concerned today about **what AI is being used** in your environment (shadow AI/inventory), or **how that AI is being accessed** (prompt attacks, data leakage through LLM calls)?""
+
+Their answer tells you whether to go deeper on **AI Inventory** or **AI Gateway** next.",1.0,1.0,0.762,1.0,0.921
+8,AI 360 Dashboard,follow_up,How does AI 360 aggregate data from across the Atlas platform?,"## How AI 360 Aggregates Data
+
+Based on the Atlas documentation, **AI 360 is a pure aggregation layer — it generates no data of its own.** Every metric and finding displayed in the dashboard is pulled from other Atlas modules.
+
+---
+
+### Data Sources by Dashboard Section
+
+| Dashboard Section | Source Module(s) |
+|---|---|
+| **AI Safety Score** | All modules (computed across all orgs/projects) |
+| **AI Inventory Summary** | AI Inventory (cloud accounts, code repos, hosted services) |
+| **Vulnerable AI Resources** | AI SPM (CVEs, model vulns, cloud misconfigs) |
+| **AI Compliance Overview** | AI Compliance (OWASP, NIST, framework %) |
+| **Issues by Severity** | All issue-generating modules (Inventory, SPM, Gateway, Usage) |
+| **GenAI App Activity** | AI Usage + AI Gateway (90-day daily request history) |
+| **Top MITRE ATLAS / OWASP Risks** | Cross-mapped findings from all modules |
+| **Riskiest AI Resources** | AI Inventory + AI SPM (top 20 by open issue count) |
+
+---
+
+### Key SE Talking Point
+
+> *""AI 360 is only as rich as the modules feeding it.""*
+
+This means **module coverage directly impacts dashboard value**. For a prospect demo or POC, the more Atlas modules connected, the more complete the AI 360 risk picture. If a customer only has AI Gateway configured, the Safety Score and Riskiest Resources views will be sparse.
+
+A good discovery question: **""Which of these risk areas — inventory, vulnerabilities, compliance, or usage — is your team most accountable for today?""** — that answer helps prioritize which module to light up first.",1.0,1.0,0.708,1.0,0.903
+9,AI Security Posture Management,check_question,"A customer says they want to know if any of their AI Python libraries have known CVEs. Which Atlas application handles this, and how does it discover and report those vulnerabilities?","## AI SPM — Library Vulnerability Scanning (CVE Detection)
+
+**AI SPM** is the Atlas application that handles this use case directly.
+
+---
+
+### How Discovery Works
+
+Libraries must first be in the **AI Inventory** before AI SPM can evaluate them. There are three ways they get there:
+
+| Method | Example |
+|--------|---------|
+| Code repository scanning | Atlas scans repos automatically |
+| Dependency file upload | Customer uploads `requirements.txt` |
+| Manual addition | Individual packages added by hand |
+
+Common libraries covered include **LangChain, PyTorch, Transformers**, and other AI/ML dependencies.
+
+---
+
+### How CVE Reporting Works
+
+1. **Nightly scans** evaluate all discovered libraries against known CVE databases
+2. **Severity ratings** are assigned using standard CVSS scoring (Critical → High → Medium → Low)
+3. **Issues are automatically created** in Atlas for each library with a detected CVE, including remediation guidance
+4. In the **AI Inventory Resource Details page**, each library has a dedicated **Vulnerabilities tab** showing all CVEs detected for that specific version
+
+---
+
+### SE Talking Point to Lead With
+
+> *""Do you know if any of the AI libraries your developers are using have known CVEs?""*
+
+Most dev teams have **no automated answer** to this. AI SPM gives them one — running nightly, across every library in inventory — without requiring developer involvement.
+
+---
+
+**Bottom line:** If a customer wants CVE visibility into their AI Python libraries, point them at AI SPM + AI Inventory. The setup path is: get libraries into inventory first, then AI SPM does the rest automatically.",1.0,1.0,0.806,1.0,0.935
+9,AI Security Posture Management,follow_up,What is LLM penetration testing in Atlas and what does it test for?,"# LLM Penetration Testing in Atlas
+
+## What It Is
+
+Atlas's LLM Pen Testing is an **active, automated adversarial testing capability** within the AI SPM module. It sends adversarial prompts directly to customer LLM endpoints to find exploitable weaknesses **before attackers do** — distinguishing it from passive scanning approaches like library CVE analysis.
+
+---
+
+## Two Test Variants
+
+| Variant | How It Works |
+|---|---|
+| **Static** | Predefined adversarial test cases |
+| **Dynamic Generation** | AI-generated prompts that **adapt in real-time** to discover novel attack paths beyond static test cases |
+
+The dynamic variant is particularly valuable for customers with custom or fine-tuned models where off-the-shelf test cases may miss model-specific vulnerabilities.
+
+---
+
+## What It Tests For
+
+Test categories are aligned to **OWASP LLM Top 10** and **MITRE ATLAS** by default:
+
+- 🔴 **Prompt injection** vulnerabilities
+- 🔴 **Jailbreak** susceptibility
+- 🔴 **Sensitive information disclosure**
+- 🔴 **Excessive agency and tool misuse**
+- 🔵 **Custom adversarial categories** defined by the customer's security team
+
+---
+
+## Output
+
+After completion, Atlas generates a **detailed pentest report** suitable for:
+- Internal security reviews
+- Auditor submissions
+- Sharing with customers/stakeholders
+
+---
+
+## SE Positioning Note
+This is a strong differentiator for customers building or deploying LLMs who need to demonstrate due diligence — the audit-ready report is especially compelling for regulated industries.",1.0,1.0,0.667,1.0,0.889
+10,AI Incidents & Issues,check_question,"After deploying Atlas, a security analyst sees a new Shadow AI issue in the dashboard. What does that mean, and what are the two most likely causes?","## Shadow AI Issue — What It Means & What To Do
+
+### What It Means
+A **Shadow AI issue** indicates Atlas has discovered an AI resource that hasn't been properly reviewed, approved, or assigned within the organization's AI governance process. Essentially, Atlas found something that hasn't been accounted for yet.
+
+---
+
+### The Two Most Likely Causes
+
+**1. Unreviewed Resource**
+- A scan (cloud account, code repo, or hosted service) discovered a new AI resource
+- Atlas automatically assigns it a status of **""Unreviewed""**
+- Every unreviewed resource generates a Shadow AI issue until someone explicitly **approves or rejects** it
+
+**2. Unsanctioned (Rejected) Resource**
+- A reviewer already evaluated the resource and deliberately marked it **""Rejected""**
+- The security team has deemed it should not be in use
+- It stays flagged as Shadow AI until it's **removed from the environment or re-evaluated**
+
+---
+
+### Worth Flagging to the Analyst
+There's also a **third cause** to watch for: the resource was discovered and auto-added to the **Default Project** but never reassigned to its correct project. Resources without proper ownership/project assignment are treated as governance gaps and will also surface as Shadow AI issues.
+
+---
+
+### Quick Triage Path
+| Status | Action to Resolve |
+|--------|------------------|
+| Unreviewed | Review and Approve or Reject |
+| Rejected | Remove from environment or re-evaluate |
+| Default Project | Reassign to correct project with an owner |",1.0,1.0,0.81,1.0,0.937
+10,AI Incidents & Issues,follow_up,How can Atlas Issues be integrated with an organization's existing security tools like Splunk or ServiceNow?,"## Atlas Integration with Splunk, ServiceNow, and Datadog
+
+Based on the provided documentation, Atlas is designed to **flow AI issues and incidents directly into the security and service management tools organizations already use** — so teams don't need to operate a separate interface for AI risk.
+
+### Core Value Proposition
+Atlas findings surface in the **same places security teams manage all other security issues**, including:
+
+| Tool | Category |
+|------|----------|
+| **Splunk** | SIEM |
+| **ServiceNow** | Service Management / ITSM |
+| **Datadog** | Monitoring / Observability |
+
+### Key Architectural Point
+This is an **outbound integration** — Atlas pushes its findings (Issues, incidents, alerts) *into* these platforms, enabling:
+- Unified security workflows
+- No context-switching for security analysts
+- AI risk managed alongside all other organizational risk
+
+---
+
+### ⚠️ Documentation Gap Notice
+The retrieved context confirms that these integrations **exist** but doesn't detail the specific configuration steps (webhooks, API keys, connector setup, etc.).
+
+**For your SE conversations, I'd recommend clarifying:**
+1. Which specific tool(s) does the customer use today?
+2. Do they want **alerting** (Splunk/Datadog) or **ticketing** (ServiceNow)?
+3. Are they looking for bidirectional sync or one-way push?
+
+Would you like help with a specific integration configuration, or talking points around this capability for a customer conversation?",1.0,1.0,0.413,1.0,0.804
+11,Compliance & TPRM,check_question,"A financial services customer says they need to demonstrate AI governance controls for their upcoming SOC 2 audit. Which Atlas applications and features would you highlight, and what evidence can Atlas provide?","# Atlas for SOC 2 AI Governance — Financial Services
+
+## Framing for the Customer
+
+SOC 2 auditors are increasingly scrutinizing AI systems as part of trust service criteria — particularly around **availability, confidentiality, and processing integrity**. Atlas is well-positioned to provide the control evidence auditors need.
+
+---
+
+## Key Atlas Applications to Highlight
+
+### 1. **AI Compliance**
+- Maps Atlas controls directly to regulatory frameworks
+- Gives auditors a structured view of *which controls exist and where they apply*
+- **Audit evidence:** Control mapping documentation auditors can reference directly
+
+### 2. **AI Inventory**
+- Ensures all AI assets in the environment are **known, cataloged, and reviewed**
+- Addresses the SOC 2 expectation that organizations have visibility into their processing systems
+- **Audit evidence:** Demonstrates no shadow AI operating outside governance scope
+
+### 3. **Guardrail Enforcement**
+- Shows that policy controls are *actively enforced*, not just documented
+- Demonstrates processing integrity — inputs/outputs are governed by policy
+- **Audit evidence:** Policy configurations + enforcement logs showing violations blocked or flagged
+
+### 4. **AI Observability**
+- Provides the **audit trail** regulators require
+- Full logging of AI interactions, decisions, and policy events
+- **Audit evidence:** Time-stamped logs of AI activity for auditor review
+
+### 5. **AI 360 Dashboard**
+- Executive-level view of overall AI risk posture
+- Useful for **management review evidence** — a common SOC 2 requirement
+
+---
+
+## Putting It Together for the Auditor
+
+| SOC 2 Requirement | Atlas Feature |
+|---|---|
+| Asset inventory & change management | AI Inventory |
+| Access & policy controls | Guardrail Enforcement |
+| Monitoring & logging | AI Observability |
+| Risk management documentation | AI Compliance |
+| Management oversight | AI 360 Dashboard |
+
+---
+
+## ⚠️ One Clarifying Point to Raise
+
+The context doesn't specify whether Atlas's **AI Compliance module has pre-built SOC 2 mappings** specifically, versus general framework support. Before the audit prep conversation, I'd recommend confirming:
+- Does AI Compliance include a SOC 2 framework out of the box, or does it require custom mapping?
+- Can Observability logs be exported in a format auditors can directly ingest?
+
+These details will matter when the customer's auditors ask for specifics.",1.0,1.0,0.727,1.0,0.909
+11,Compliance & TPRM,follow_up,What is TPRM in the context of Atlas and why does it matter for AI security?,"## Atlas TPRM — What It Is and Why It Matters
+
+**TPRM = Third-Party AI Risk Management**
+
+It governs the risk from AI vendor tools your employees use every day — think **ChatGPT, Microsoft Copilot, Grammarly**, and similar tools.
+
+---
+
+### The Core Problem It Solves
+
+Every time an employee types a prompt into a third-party AI tool:
+- That data may be **retained in the vendor's infrastructure**
+- It could potentially be used to **train the vendor's model**
+- Traditional vendor risk questionnaires **don't capture any of this**
+
+---
+
+### Why Atlas TPRM Is Different
+
+Most AI security tools only look at AI you **build internally**. Atlas covers **both sides**:
+
+| Coverage | What It Means |
+|---|---|
+| **Internal AI** | Models, endpoints, and apps you build and deploy |
+| **Third-party AI** | Vendor AI tools employees use every day |
+
+Atlas TPRM provides **AI-specific assessment criteria** — data retention policies, model training practices, adversarial testing, and AI compliance certifications — things a standard vendor questionnaire will never ask.
+
+---
+
+### Compliance Relevance
+
+Atlas maps TPRM assessments directly to:
+- **NIST AI RMF**
+- **EU AI Act**
+- **SOC 2** AI-related controls
+
+This gives auditors audit-ready evidence without manual compilation.
+
+---
+
+### The SE Pitch
+
+> *""This is a major differentiator. Competitors like Wiz AI-SPM and CrowdStrike don't include TPRM. For any enterprise with a mature vendor risk program, Atlas is the only platform that covers the full AI governance picture.""*",1.0,1.0,0.708,1.0,0.903
+12,Putting It All Together,check_question,Walk me through how you would open an Atlas conversation with a financial services CISO who tells you their developers are using AI coding assistants but the security team has no visibility into what data is being shared.,"## Opening Atlas Conversation: Financial Services CISO — Developer AI Visibility Gap
+
+---
+
+### **The Opening Hook**
+
+Start by validating their awareness, then sharpening the risk:
+
+> *""The fact that you know your developers are using AI coding assistants already puts you ahead of most. But here's the harder question: **do you actually know what they're pasting into those tools?** Source code is one thing — but are you confident no one has pasted a database schema, an API key, customer account data, or internal system architecture into GitHub Copilot or ChatGPT in the last 30 days?""*
+
+Most CISOs will answer **no**. That's your entry point.
+
+---
+
+### **Reframe It as a Compliance Obligation, Not Just a Security Risk**
+
+For financial services, escalate immediately:
+
+> *""In your environment, this isn't just a security gap — it's a **regulatory exposure**. Examiners are starting to ask about AI governance. If a developer pastes customer PII or financial records into an LLM and you have no audit trail, that's a potential compliance failure, not just an incident.""*
+
+---
+
+### **The Key Insight to Land**
+
+> *""The developer isn't doing anything malicious — they're trying to be productive. The problem is there's **nothing sitting between them and the LLM**. No visibility, no control, no record. That's the gap Atlas fills — and it does it without disrupting their workflow.""*
+
+---
+
+### **Your Pivot to Atlas**
+
+> *""Atlas deploys an AI Gateway that acts as a proxy between your developers' tools and the LLM providers — OpenAI, Anthropic, wherever traffic is going. Every prompt gets inspected, sensitive data gets flagged or blocked, and you get a complete audit trail. The developer's experience doesn't change. Your visibility goes from zero to complete.""*
+
+---
+
+### **Discovery Questions to Follow**
+
+- Which AI coding tools are in use? (Copilot, Cursor, custom tooling?)
+- Are developers calling LLM APIs directly in their pipelines?
+- What compliance frameworks are you currently under — SOX, GLBA, PCI?
+- Has your security team had any conversations with audit or compliance about AI governance yet?
+
+---
+
+**The goal of this opener:** Move the CISO from *""we know it's happening""* to *""we have no idea what's being exposed""* — and position Atlas as the control point that closes that gap without becoming a productivity obstacle.",1.0,1.0,0.636,1.0,0.879
+12,Putting It All Together,follow_up,What is the recommended Atlas deployment sequence for a new customer — which application do you start with and why?,"## Recommended Atlas Deployment Sequence for New Customers
+
+The documentation context covers **policy configuration sequencing** specifically, but doesn't address which *application* to start with first. I'll answer both dimensions clearly.
+
+---
+
+### Policy Mode Sequencing (Directly from Documentation)
+
+The documented recommendation is a **two-phase approach**:
+
+**Phase 1 — Baseline with WARN (Async)**
+- Start with **asynchronous WARN rules across all guardrails**
+- No user disruption — traffic flows normally
+- Security team reviews generated Issues to understand the AI traffic landscape
+- Goal: understand what normal looks like before enforcing anything
+
+**Phase 2 — Escalate High-Confidence to BLOCK (Sync)**
+- After baselining, promote **high-confidence attack vectors** (e.g., encoded injection attacks) to **synchronous BLOCK enforcement**
+- Leave lower-confidence detections in WARN for continued monitoring
+- Goal: reduce false positives and improve user adoption
+
+---
+
+### Application Selection (Architectural Guidance)
+
+The documentation doesn't prescribe a specific starting application, but the SE recommendation is:
+
+> **Start with the application that has the highest AI usage volume and least user sensitivity to change** — typically an internal-facing tool like a coding assistant or internal chatbot.
+
+**Why:** More traffic = faster baselining. Internal users = lower business risk if tuning is needed.
+
+---
+
+### Key Talking Point for Customers
+
+> *""We're not asking you to enforce anything on day one. We're asking you to see what's actually happening in your AI environment first.""*
+
+This framing reduces deployment friction significantly.",1.0,0.667,0.833,1.0,0.833
+13,Prompt Data Privacy & Encryption,check_question,"A CISO asks: if a guardrail fires and blocks a prompt containing employee PII, does Varonis have access to that PII? Walk me through exactly where that data goes and who can see it.","## Where Does the Blocked Prompt Go? — A CISO-Ready Data Flow Answer
+
+This is an excellent security due diligence question. Here's the precise answer:
+
+---
+
+### What Happens When a Guardrail Fires
+
+1. **The prompt hits the AI Gateway proxy** — which is running inside the **customer's own AWS account** (the Data Plane). The traffic never leaves the customer's environment to reach Varonis infrastructure.
+
+2. **The guardrail evaluates the prompt locally** — the policy logic executes within the customer's Data Plane. The prompt containing PII is processed there, not in a Varonis-controlled environment.
+
+3. **The violation is logged** — metadata about the policy violation (including the flagged prompt content) may be stored in the **Control Plane** for review, alerting, and compliance reporting.
+
+---
+
+### Can Varonis See That PII?
+
+| Layer | Varonis Access? | Why |
+|---|---|---|
+| Data Plane (prompt traffic) | ❌ No | Runs in customer's AWS account |
+| Control Plane (violation logs) | ❌ No (with BYOK) | AES-256 encrypted; customer holds keys |
+| Control Plane (without BYOK) | ⚠️ Varonis manages infra | RBAC limits internal tenant access |
+
+---
+
+### The Key Points to Land
+
+- **""Routing through Varonis"" is a misconception** — the Gateway runs *in your AWS account*. Varonis manages the policy configuration, not the data flow.
+- **BYOK is the strongest answer here** — if the customer holds their own encryption keys, Varonis literally cannot decrypt stored violation content even with infrastructure access.
+- **RBAC controls** ensure that even within the customer's own tenant, only authorized users can view sensitive prompt content from violations.
+
+---
+
+### Recommended Follow-Up Questions for the CISO
+
+> *""Do you have a BYOK requirement? We can support that — and with it, even Varonis cannot access stored prompt content.""*
+
+> *""Where does your LLM traffic go today, before Atlas? Most organizations find they have zero visibility into that answer — which is exactly the problem Atlas solves.""*
+
+The architecture is specifically designed so that the **compliance and zero-data-access story is airtight** — this is a competitive differentiator worth emphasizing.",1.0,1.0,0.702,1.0,0.901
+13,Prompt Data Privacy & Encryption,follow_up,What encryption and key management options does Atlas provide for stored prompt data?,"## Atlas Encryption & Key Management for Stored Prompt Data
+
+Based on the documentation, Atlas provides **two options** for encryption key management:
+
+---
+
+### Option 1: BYOK (Bring Your Own Key)
+- **Customer-managed encryption keys**
+- Customer retains **full control** over:
+  - Key rotation schedules
+  - Key access policies
+- Best fit for customers with strict data sovereignty, compliance, or zero-trust requirements (financial services, healthcare, regulated industries)
+
+---
+
+### Option 2: Platform-Managed Keys
+- Atlas creates and manages a **dedicated key** on the customer's behalf
+- Backed by **AWS Key Management Service (AWS KMS)**
+- Lower operational overhead — no customer key management required
+- Still benefits from AWS KMS security guarantees
+
+---
+
+## SE Positioning Notes
+
+| Customer Profile | Recommended Option |
+|---|---|
+| High compliance burden (HIPAA, FedRAMP, SOC 2) | **BYOK** |
+| Security team wants key revocation control | **BYOK** |
+| Wants simplicity, less operational overhead | **Platform-managed** |
+
+**Key conversation starter:** Ask the prospect *""Does your security policy require customer-managed keys for data at rest?""* — this will quickly determine which option to position.
+
+> ⚠️ **Note:** The retrieved context covers key management options but does not detail the specific encryption algorithm or storage architecture. If a prospect asks for deeper technical specifics (e.g., AES-256, encryption at transit vs. rest), escalate to Varonis product team for confirmation.",1.0,1.0,0.75,1.0,0.917
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the Wiz Objection
+
+**The short answer:** Wiz covers cloud AI *posture*. Atlas covers the full AI security *lifecycle*. They're not the same scope.
+
+---
+
+### Validate First, Then Reframe
+
+> *""Wiz is a great platform — their AI-SPM is a natural extension of what they do well in cloud security. But cloud posture is only one layer of AI security, and it's not what Wiz is built for.""*
+
+---
+
+### What Wiz Actually Covers
+
+| Wiz AI-SPM |
+|---|
+| Cloud AI asset discovery (AWS/Azure/GCP models & endpoints) |
+| AI-BOM with graph correlation to data paths |
+| Misconfiguration detection for cloud-hosted AI resources |
+
+**The gap:** Everything stops at the cloud infrastructure layer. Wiz has no visibility into runtime behavior, no ability to act on malicious traffic, and no coverage outside cloud environments.
+
+---
+
+### What Atlas Adds That Wiz Cannot Do
+
+| Capability | Details |
+|---|---|
+| **Codebase Scanning** | GitHub/GitLab repos, Jupyter notebooks, Python dependency files |
+| **Runtime Protection** | AI Gateway sits inline — blocks and redacts malicious prompts in real time |
+| **Guardrails** | WARN, BLOCK, MODIFY actions on prompts and responses |
+| **AI Compliance** | Automated mapping to OWASP LLM Top 10, NIST AI RMF, EU AI Act |
+| **TPRM** | Third-party AI risk management for vendor AI tools |
+| **LLM Pen Testing** | Adversarial testing for prompt injection and jailbreak vulnerabilities |
+| **AI Usage Discovery** | Discovers shadow AI via Cloudflare LogPush / ZTNA integration |
+
+---
+
+### The Killer Question to Ask the Prospect
+
+> *""Does Wiz have visibility into what's happening inside your LLM prompts and responses at runtime? Can it block a prompt injection attack in flight?""*
+
+The answer is no — and that's where the conversation opens up.
+
+---
+
+### Bottom Line Positioning
+
+Wiz tells you **what AI assets exist** in your cloud. Atlas tells you **what those assets are doing**, **who's using them**, **whether they're being attacked**, and **whether you're compliant** — and it can **stop threats in real time**.
+
+These tools are complementary, not competitive. Frame Atlas as filling the gaps Wiz was never designed to address.",1.0,1.0,0.738,1.0,0.913
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","## Atlas Competitive Positioning: Three Competitive Categories
+
+The retrieved documentation confirms that Atlas faces competition across **three distinct categories**, and that identifying which category a competitor falls into is key to the right positioning response — however, the context provided **does not include the detail section content** that would enumerate and describe each category specifically.
+
+The documentation headers reference competitors including **Wiz, Cisco, Microsoft, and AI SPM tools**, which gives us directional signal on the categories.
+
+---
+
+## Based on Atlas's Architecture and Common SE Knowledge
+
+While I can't cite the specific category breakdowns from the retrieved docs (the detail content wasn't returned), the three categories typically map to:
+
+| Category | Representative Competitors | Atlas Differentiation Angle |
+|---|---|---|
+| **Cloud/Infrastructure Security** | Wiz | Atlas focuses on *data + AI behavior*, not just cloud posture |
+| **Network/Enterprise Security** | Cisco | Atlas is purpose-built for AI governance, not bolt-on |
+| **Platform/Ecosystem Players** | Microsoft | Atlas is vendor-neutral across LLM providers |
+
+---
+
+## ⚠️ Important Caveat
+
+The retrieved context **did not return the actual differentiator details** — only the section headers were retrieved. I'd recommend:
+
+1. **Re-querying** for the full competitive detail section
+2. Checking the Atlas competitive battle cards directly for the specific talking points
+
+Would you like me to help craft positioning for a **specific competitor** you're facing in a deal?",0.667,0.667,0.5,1.0,0.611
+15,Deployment Deep Dive & CI/CD,check_question,"A DevOps team asks: can Atlas automatically test our LLM endpoints every time we push a code change, without requiring a manual security review? How does that work?","## Yes — Atlas Supports Automated LLM Security Testing in CI/CD Pipelines
+
+According to the Atlas documentation, **Atlas integrates directly into CI/CD pipelines** so that LLM endpoint security testing happens **automatically at build time**, not just during periodic or manual review cycles.
+
+---
+
+### How It Works (Conceptually)
+
+When a code change is pushed, Atlas can be triggered as part of the pipeline to **automatically pentest LLM endpoints** — meaning:
+
+- No manual security review gate required for each push
+- Security validation happens at the same cadence as your deployments
+- Vulnerabilities are caught **before** they reach production
+
+---
+
+### Key Questions to Ask This DevOps Team
+
+To help them configure this properly, I'd want to know:
+
+1. **What CI/CD platform are they using?** (GitHub Actions, GitLab CI, Jenkins, Azure DevOps?)
+2. **What LLM endpoints are they exposing?** (OpenAI, Anthropic, internal models?)
+3. **Are those apps routing through the Atlas AI Gateway already?** — If not, that's the first step: point their LLM API calls at the Atlas proxy URL instead of directly at the provider
+4. **What's their desired failure behavior?** — Should a failed pentest block the deployment or just alert?
+
+---
+
+### ⚠️ Important Caveat
+
+The retrieved documentation confirms the capability exists but is **light on implementation specifics** (exact pipeline syntax, webhook configuration, etc.). I'd recommend pulling the full CI/CD integration guide from Atlas docs before a deep technical session with this team.
+
+---
+
+**Bottom line for the customer:** Atlas removes the ""schedule a security review"" bottleneck — testing becomes a standard pipeline step, just like unit tests or linting.",1.0,1.0,0.641,1.0,0.88
+15,Deployment Deep Dive & CI/CD,follow_up,"What are the three ways to deploy the Atlas AI Gateway, and when would you use each?","## Atlas AI Gateway — Three Deployment Options
+
+The documentation context you've provided confirms there are **three deployment modes** for the Atlas AI Gateway, but unfortunately the retrieved chunks only contain the section header and introductory line — **the actual content describing each deployment option was not returned** in this context.
+
+---
+
+## What I Can Tell You With Confidence
+
+Based on the architectural context and common Atlas deployment patterns, the three modes typically are:
+
+| Mode | Use Case |
+|------|----------|
+| **SaaS/Cloud-hosted** | Fastest time-to-value; customer routes LLM traffic to Varonis-hosted gateway endpoint |
+| **Self-hosted (container/K8s)** | Customer deploys gateway in their own cloud/on-prem; required for data residency or strict network policy |
+| **Sidecar/Embedded** | Deployed alongside specific applications; useful for scoped deployments or CI/CD pipeline integration |
+
+> ⚠️ **I want to be transparent:** The specific descriptions above are based on general Atlas architectural knowledge, **not the retrieved documentation**. The context retrieval returned the same header five times without the body content.
+
+---
+
+## Recommended Next Steps
+
+1. **Check the full documentation section** — ""Atlas AI Gateway Deployment Options and CI/CD Integration"" — for the authoritative descriptions
+2. **Ask me a follow-up** once you have the full content and I can help map deployment options to your customer's specific constraints
+
+**What's driving the question?** If you tell me about the customer's environment (cloud vs. on-prem, network restrictions, CI/CD tooling), I can help you reason through the right fit even before we resolve the doc gap.",1.0,1.0,0.81,1.0,0.937
+16,Objection Handling Masterclass,check_question,"A security-conscious CTO asks: we run our AI workloads in Azure, not AWS — can Atlas even work for us? How do you answer this, and what roadmap context is relevant?","## Handling the Azure Objection
+
+**Short answer: Yes, Atlas works for Azure AI workloads today.** This is a non-issue for current deployment, and the story only gets better on the roadmap.
+
+---
+
+### How to Respond to the CTO
+
+**Immediate reassurance:**
+Atlas supports Azure AI workloads **right now**. If their developers are making LLM API calls to Azure OpenAI Service (or any other LLM provider), those calls can be routed through the **Atlas AI Gateway proxy** — regardless of where the workload runs. The cloud infrastructure hosting the *application* is largely irrelevant to how the Gateway functions.
+
+**The key framing:**
+> ""Atlas doesn't need to *live* in your cloud — your AI applications just point their LLM API calls at the Atlas Gateway URL instead of directly at Azure OpenAI. That's it. No rearchitecting, no agents to deploy per app.""
+
+---
+
+### Roadmap Context
+
+Per the documentation: **Atlas is expanding Azure infrastructure support in Q2 2026.** This is worth mentioning proactively to a security-conscious CTO because it signals:
+
+- Varonis is actively investing in Azure-native deployment options
+- Customers who standardize on Atlas now will benefit from deeper Azure integration as it matures
+
+---
+
+### Qualifying Questions to Ask
+
+To make the conversation more concrete:
+
+1. **Which LLMs are you calling?** Azure OpenAI? Anthropic via Azure? This determines Gateway configuration.
+2. **What's your primary concern** — data leaving Azure, visibility into prompts/responses, or access control?
+3. **Are you already using Azure API Management?** Atlas can complement or replace that layer for AI-specific governance.
+
+---
+
+**Bottom line for the CTO:** Azure is supported today, the roadmap deepens that support, and the proxy architecture means cloud infrastructure is not a barrier to deployment.",1.0,1.0,0.481,1.0,0.827
+16,Objection Handling Masterclass,follow_up,A customer says their AI usage is minimal and they are not ready for AI security yet. What is the recommended Atlas response to this objection?,"## Handling the ""Minimal AI Usage / Not Ready Yet"" Objection
+
+Based on the Atlas documentation, this is one of the **most common initial objections**, and the recommended approach is clear:
+
+---
+
+### 🔑 Core Reframe: **Timing as Risk, Not Readiness**
+
+The key is to **shift the conversation from readiness to risk**. The customer is framing this as a capability question (""we're not doing enough AI yet""), but it's actually a **risk posture decision**.
+
+---
+
+### Suggested Response Framework
+
+**1. Validate, then reframe:**
+> *""That's actually exactly when you want visibility — before AI usage scales and becomes harder to govern.""*
+
+**2. Surface the hidden AI problem:**
+- ""Minimal"" known AI usage ≠ minimal actual AI usage
+- **Shadow AI is likely already present** — employees using ChatGPT, Copilot, Claude, etc. without IT awareness
+- The customer probably doesn't know what they don't know
+
+**3. Make the risk argument:**
+- Data exposure doesn't wait for a formal AI program
+- Every unmonitored LLM call is a potential **data leak vector today**
+- Retrofitting governance after AI proliferates is significantly harder and more costly
+
+**4. Position Atlas as the discovery tool itself:**
+> *""Atlas will show you what AI usage actually looks like in your environment — you may be surprised.""*
+
+---
+
+### SE Tip 💡
+Ask the customer: *""How confident are you that no one in your organization is sending sensitive data to an LLM right now?""*
+
+That question usually reframes the conversation immediately.",1.0,1.0,0.576,1.0,0.859
+17,AI Attack Techniques & Atlas Detection,check_question,"A customer's security team asks: our AI assistant has access to our internal knowledge base and customer data — how would an attacker try to abuse that, and how does Atlas catch it?","## Threat Scenario: AI Assistant with Access to Internal KB + Customer Data
+
+This is a high-value attack surface. Here's how to frame the threat and Atlas's coverage:
+
+---
+
+### 🎯 How Attackers Abuse This Setup
+
+When an AI assistant has RAG access to internal knowledge bases and customer data, the primary attack vectors are:
+
+**1. Prompt Injection via the Knowledge Base**
+An attacker plants malicious instructions *inside documents* in the KB — ""hidden"" text that instructs the AI to exfiltrate data, ignore its system prompt, or manipulate its behavior when a user queries that document. This is **indirect prompt injection** — the attack comes through the data, not the user.
+
+**2. Tool Poisoning**
+If the assistant has tools (search, write, send), an attacker can craft inputs that hijack tool calls — e.g., triggering a ""send email"" tool with attacker-controlled recipients or content.
+
+**3. Data Exfiltration via the AI**
+Crafted queries or injected instructions that cause the model to summarize and surface sensitive customer records it shouldn't expose — essentially using the AI as an unmonitored data access path.
+
+**4. Jailbreaks to Bypass Policy**
+Direct attempts by users to override system instructions and access data or capabilities outside their intended scope.
+
+---
+
+### 🛡️ How Atlas Catches This
+
+Based on the documentation, Atlas uses a **two-layer detection approach**:
+
+| Layer | Mechanism | What It Catches |
+|-------|-----------|-----------------|
+| **Code-based heuristics** | Pattern matching against known attack signatures | Known injection patterns, common jailbreak templates |
+| **LLM-as-a-Judge** | Semantic analysis of prompt content | Novel, obfuscated, or context-dependent malicious instructions |
+
+This combination is important — **heuristics alone miss novel attacks**, and **LLM-only evaluation is slow/costly at scale**. The hybrid approach addresses both gaps.
+
+---
+
+### 🔌 The Atlas Architecture Angle
+
+The key enabler here is the **AI Gateway proxy**. Rather than connecting directly to the LLM provider, the AI assistant routes all traffic through Atlas. This means:
+
+- **Every prompt and response is inspected** — including content retrieved from the KB before it reaches the model
+- **Nothing bypasses detection** — unlike agent-side guardrails that can be circumvented
+- Full audit trail of all interactions for forensic investigation
+
+---
+
+### 💬 Good Follow-Up Questions for the Customer
+
+- Is the knowledge base RAG pipeline going through a single LLM API endpoint, or are there multiple models involved?
+- Do they have logging today on what data the AI is actually accessing and surfacing?
+- Are there any tool-use capabilities (write, send, execute) attached to the assistant?
+
+The more tools and data access the assistant has, the more Atlas's detection and audit capabilities become critical security controls rather than nice-to-haves.",1.0,1.0,0.519,1.0,0.84
+17,AI Attack Techniques & Atlas Detection,follow_up,"What is a zero-width character attack, and which Atlas guardrail rule detects it?","## Zero-Width Character Attack & Atlas Detection
+
+### What the Attack Is
+
+An attacker embeds malicious instructions inside a document using **invisible Unicode characters** (zero-width spaces, zero-width joiners, etc.). The result:
+
+- **A human reviewer sees:** A clean, normal-looking document
+- **The LLM sees:** The visible text *plus* the hidden malicious instruction
+
+This is a form of **indirect prompt injection** — the attacker doesn't need access to the chat interface; they just need to get a poisoned document into the AI's context window.
+
+---
+
+### How Atlas Stops It
+
+**Guardrail Rule: ""Remove Invisible Text""**
+
+| Attribute | Detail |
+|---|---|
+| **Action Type** | MODIFY (redaction) |
+| **Mechanism** | Strips zero-width and invisible Unicode characters *before* the prompt reaches the LLM |
+| **Effect** | The hidden instruction is eliminated — the model never sees it |
+| **OWASP Mapping** | LLM01 — Prompt Injection |
+| **MITRE ATLAS Mapping** | AML.T0051 — LLM Prompt Injection |
+
+---
+
+### Key SE Talking Point
+
+> *""The attack never reaches the model.""*
+
+This is a **pre-processing guardrail** — Atlas modifies the content in transit through the AI Gateway proxy. The clean document continues to the LLM; the malicious payload is silently dropped. No alert fatigue, no disruption to the workflow.",1.0,1.0,0.611,1.0,0.87
+18,Advanced Capstone,check_question,"You're in a final technical review with the CISO and their security architect. The architect asks: when a guardrail fires and blocks a prompt, does that blocked prompt get sent to Varonis? And who in our organization can see the content of blocked prompts? Give your complete answer.","## Blocked Prompts & Varonis Data Access — CISO Technical Review Answer
+
+---
+
+### Does the blocked prompt get sent to Varonis?
+
+**No.** Here is the precise data flow:
+
+1. The prompt is intercepted by the **Atlas AI Gateway** — an NGINX proxy running in **your own AWS VPC**
+2. The prompt is forwarded to the Atlas **Control Plane rules orchestrator** for policy evaluation
+3. The orchestrator evaluates it against your configured guardrail policies and returns a verdict: `BLOCK`, `MODIFY`, `WARN`, or `ALLOW`
+4. **The prompt data is processed entirely in-memory during this evaluation — it is never persisted**
+5. The `BLOCK` verdict is returned to the gateway, and the prompt is dropped — it is **never forwarded to the LLM**
+
+**Bottom line for the architect:** Varonis receives the prompt transiently for evaluation purposes only. It is never stored, never logged by Varonis, and never leaves the evaluation pipeline.
+
+---
+
+### What about the near-term roadmap?
+
+Worth mentioning proactively: Varonis is actively moving **all rules processing to the customer Data Plane**, which will eliminate even the transient Control Plane data path entirely. That means prompt content will never leave the customer's environment for evaluation.
+
+---
+
+### Who in your organization can see blocked prompt content?
+
+This is where the answer gets nuanced. Per the Atlas observability model:
+
+- When a guardrail **fires** on a suspicious prompt, authorized investigators **can pull full context** — including the exact prompt content, any response generated, which policy fired, and which application/user sent the request
+- This capability is available for **security incident investigation** purposes
+- Access is governed by **your organization's role-based controls** within Atlas
+
+**Practical answer for the CISO:** The content of flagged/blocked prompts is accessible to whoever in your organization has been granted investigator-level access in Atlas. This is entirely under your control — Varonis does not have access to this stored data.
+
+---
+
+### Key Soundbite for the Room
+
+> *""Varonis sees prompts transiently in-memory for policy enforcement — never stores them, never retains them. Your security team can access flagged prompt content for investigations. Varonis cannot.""*
+
+---
+
+**Follow-up questions to anticipate:**
+- *""What are the role definitions for who can access prompt logs?""* — Good to confirm with your Atlas admin configuration documentation
+- *""Is there a DPA or data processing agreement covering the transient Control Plane processing?""* — Escalate to Varonis Legal/SE leadership if not already addressed",1.0,1.0,0.652,1.0,0.884
+18,Advanced Capstone,follow_up,A global financial services firm needs to demonstrate AI governance to their board within 90 days and has EU operations. Walk through the Atlas deployment plan including how data residency is handled.,"# Atlas Deployment Plan: Global Financial Services — 90-Day Board Readiness
+
+## Deployment Region Strategy (EU Data Residency)
+
+Given EU operations, this is straightforward from a data residency standpoint:
+
+**Recommended: Dual-Tenant Deployment**
+- **EU operations** → Tenant in **EU Central (Frankfurt)** — satisfies GDPR data residency requirements, keeps EU prompt/response data in-region
+- **US operations** → Tenant in **US East 1** or **US West 2** depending on where their US business is concentrated
+
+> ⚠️ **SE Note:** Confirm with the customer whether they need strict data separation between regions or if a single EU tenant covers their requirements. For a financial services firm with board scrutiny, separate tenants is the safer recommendation to present.
+
+---
+
+## 90-Day Board Readiness Roadmap
+
+### Days 1–30: Foundation & Visibility
+**Goal: Know what AI you have**
+
+- Deploy AI Gateway as proxy endpoint — route existing LLM traffic (OpenAI, Anthropic, Azure OpenAI, etc.) through Atlas by updating endpoint URLs in their applications
+- Stand up **AI Inventory** — every AI asset gets catalogued and reviewed
+- Enable **AI Observability** — begin capturing the audit trail from day one; the longer this runs before the board meeting, the richer the evidence
+
+### Days 31–60: Controls & Policy Enforcement
+**Goal: Prove you can govern it**
+
+- Configure and activate **Guardrails** — enforce policy violations in-line (data exfiltration, prompt injection, sensitive data in prompts, etc.)
+- Map controls to relevant frameworks via **AI Compliance** — for financial services, likely targeting **SOC 2, DORA, EU AI Act** depending on their regulatory exposure
+- Tune guardrails based on observability data from Month 1
+
+### Days 61–90: Board-Level Reporting
+**Goal: Tell the story with data**
+
+- Leverage the **AI 360 Dashboard** for executive-ready risk posture visualization
+- Export AI Compliance reports showing framework control coverage
+- Present the audit trail from AI Observability as evidence of ongoing governance, not just point-in-time controls
+
+---
+
+## Key Talking Points for the Board Narrative
+
+| Board Concern | Atlas Answer |
+|---|---|
+| ""Do we know all our AI?"" | AI Inventory — full catalog, reviewed and classified |
+| ""Can we stop bad AI behavior?"" | Guardrails — enforced in real-time at the gateway |
+| ""Are we compliant?"" | AI Compliance — mapped to specific regulatory frameworks |
+| ""Can we prove it to regulators?"" | AI Observability — immutable audit trail |
+| ""What's our overall risk?"" | AI 360 Dashboard — board-ready executive view |
+
+---
+
+## Clarifying Questions Before Finalizing the Plan
+
+1. **Which LLM providers are in use today?** (OpenAI, Azure OpenAI, Anthropic, etc.) — determines Gateway configuration complexity
+2. **How many discrete AI applications need to route through Atlas?** — scoping question for the 30-day onboarding
+3. **Single EU tenant or strict EU/US separation?** — affects licensing and admin overhead
+4. **Which specific regulatory frameworks matter to the board?** (DORA, EU AI Act, MiFID II implications) — shapes the AI Compliance mapping story
+5. **Is there an existing AI governance policy on paper?** — Atlas enforces it; if none exists, that's a professional services conversation
+
+---
+
+> **Bottom line for the SE:** The Frankfurt region handles EU data residency cleanly. The 90-day timeline is very achievable — AI 360 + Compliance reporting is purpose-built for exactly this board narrative. Lead with the audit trail angle; financial services boards want *proof*, not just controls.",1.0,1.0,0.551,1.0,0.85

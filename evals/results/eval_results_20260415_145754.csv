@@ -1,0 +1,111 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+1,What is Varonis Atlas?,check_question,"In your own words, what is the main security problem that Atlas is designed to solve?","## The Core Problem Atlas Solves
+
+**The gap between users and LLMs has no control plane.**
+
+When an employee — a developer, sales rep, HR manager — wants to be productive, they naturally reach for AI tools. They paste in code, customer data, financial records, HR files. **They're not being malicious. They're doing their job.** But there is nothing sitting between them and the LLM to:
+
+- See what's being sent
+- Enforce policies on sensitive data
+- Create an audit trail
+- Block or redact when necessary
+
+---
+
+## The One Question That Lands with CISOs
+
+> *""Do you know what your developers, sales reps, and HR team are pasting into AI tools today?""*
+
+**Most CISOs answer no.** That gap in visibility is the problem — and Atlas closes it.
+
+---
+
+## Why This Matters Beyond Security
+
+For **regulated industries** — financial services, healthcare, legal — this isn't just a risk conversation. It's a **compliance obligation**. Regulators increasingly expect:
+
+- Audit trails for sensitive data handling
+- Demonstrable enforcement controls
+- Documented governance of AI usage
+
+Atlas provides all three.
+
+---
+
+## The SE Framing
+
+Atlas doesn't slow anyone down or change how people work. It sits **in the gap** — between the user and the LLM — providing visibility and control **without disrupting the workflow.** That's the key differentiator.",1.0,1.0,0.714,1.0,0.905
+1,What is Varonis Atlas?,follow_up,Can you give me a real-world example of data leakage through an AI tool?,"## Real-World Example: Sales Rep + AI Writing Tool
+
+Here's a concrete scenario documented in Atlas:
+
+---
+
+### The Scenario
+A **sales representative** uses an AI writing tool to draft a customer proposal. To get a polished output, they paste in:
+
+- Customer name
+- Contract value
+- Discount structure
+- Competitive positioning notes
+
+If that writing tool calls an **external LLM directly** (bypassing any controls), all of that confidential deal information **leaves the organization with zero logging or enforcement**. No alert fires. No record exists. The data is just gone.
+
+---
+
+### Why This Is So Common
+This kind of leakage is almost always **unintentional** — the rep isn't trying to exfiltrate data, they're just trying to work faster. That's what makes AI data leakage uniquely difficult to address with traditional DLP approaches.
+
+---
+
+### How Atlas Prevents It
+When the AI writing tool is routed **through the Atlas AI Gateway proxy**:
+
+| Capability | What Happens |
+|---|---|
+| **Logging** | Every prompt is captured — who sent it, what app, which LLM, when |
+| **Detection** | Financial data and deal info is flagged as sensitive |
+| **Enforcement** | BLOCK or MODIFY actions can stop the data from leaving |
+| **Visibility** | Risk findings surface in the **AI 360 dashboard** |
+
+---
+
+### The Key Takeaway for Prospects
+> *""Even if you don't block anything on day one, Atlas gives you the audit trail to know what sensitive data is being sent to which AI tools — and by whom.""*
+
+That visibility alone is often enough to start the conversation. Want me to walk through how to configure the Gateway policy for this type of financial data scenario?",1.0,1.0,0.641,1.0,0.88
+1,What is Varonis Atlas?,follow_up,What is the difference between AI Inventory and AI Usage?,"## AI Inventory vs. AI Usage — Key Differences
+
+These are two distinct Atlas applications serving different purposes:
+
+---
+
+### AI Inventory — *What you have*
+- A **catalog/asset management** tool for tracking AI resources across your organization
+- Covers anything used in AI **development**: LLM endpoints, models, libraries, frameworks, API keys, etc.
+- Resources are organized by **technology and type** (AI PaaS, AI Models, AI Software, AI Services)
+- Provides a dashboard showing resource counts, organizational usage, and **review status**
+- Think of it as your **AI asset register** — static visibility into what AI technologies exist in your environment
+
+---
+
+### AI Usage — *What's happening*
+- Focused on **runtime activity** — who is using AI tools and how
+- Two visibility modes:
+  - **Browser-based / Internet AI services** — session-level data via ZTNA/SASE log feeds (e.g., who accessed ChatGPT)
+  - **GenAI prompt/response activity** — detailed monitoring via the AI Gateway proxy, SDK, or existing API gateways
+- Supports **active controls**: alerting, blocking, policy enforcement
+- Think of it as your **AI activity monitor** — dynamic visibility into AI consumption in real time
+
+---
+
+### SE Summary Framing
+
+| | AI Inventory | AI Usage |
+|---|---|---|
+| Focus | Assets & resources | Activity & behavior |
+| Data type | Catalog/metadata | Sessions & prompts |
+| Controls | Review/governance | Block/alert/policy |
+| Analogy | Asset Management DB | SIEM for AI traffic |
+
+A customer needs **both** — Inventory to govern what exists, Usage to monitor what's happening.",1.0,1.0,0.667,1.0,0.889

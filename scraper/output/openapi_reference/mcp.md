@@ -172,6 +172,23 @@ Test connection using provided parameters without saving
 
 ---
 
+## POST /v1/mcp/servers/connection-dependency —  Create Mcp Server Access Dependency
+
+**Endpoint**: `POST /v1/mcp/servers/connection-dependency`
+**Summary**:  Create Mcp Server Access Dependency
+**Tags**: mcp, inventory
+
+Create an ACCESSES dependency between an MCP connection and MCP server
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## POST /v1/mcp/servers/{mcp_server_config_id}/discover —  Run Mcp Discovery
 
 **Endpoint**: `POST /v1/mcp/servers/{mcp_server_config_id}/discover`
@@ -200,6 +217,7 @@ Get a paginated list of resources discovered by this MCP server
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 - `resource_type` (query, optional): Filter by resource type
+- `search` (query, optional): Search by resource name
 - `page` (query, optional): 
 - `per_page` (query, optional): 
 

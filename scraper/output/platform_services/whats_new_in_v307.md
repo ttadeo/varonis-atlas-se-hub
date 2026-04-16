@@ -1,6 +1,6 @@
 ---
 title: What's New in V3.0.7
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/307
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/307
 section: platform_services
 ---
 
@@ -25,10 +25,10 @@ TPRM now supports full process flows and questionnaires for managing the AI veri
 
 ## Documentation[​](#documentation)
 
-- Added Kong integration documentations.
+- Added Kong integration documentation.
 - Enhancements to AI 360 documentation.
 - GraphQL API documentation.
 
 ## Admin Console[​](#admin-console)
-Invite user replaces user creation as a more secure method to add a user that sets their own password.
+Invite User replaces user creation as a more secure method to add users who set their own passwords.
 [PreviousWhat's New in V3.0.8](/_docs/docs/platform_services/308)[NextWhat's New in V3.0.6](/_docs/docs/platform_services/306)- [Admin console invitations](#admin-console-invitations)- [Inventory](#inventory)- [New TPRM module](#new-tprm-module)- [Documentation](#documentation)- [Admin Console](#admin-console)

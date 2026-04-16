@@ -16,17 +16,18 @@
 
 ---
 
-## POST /v1/data-plane/dns-record —  Register Dns Record
+## GET /v1/data-plane/registrations/azure/{subscription_id}/arm-template —  Get Customer Plane Arm Template
 
-**Endpoint**: `POST /v1/data-plane/dns-record`
-**Summary**:  Register Dns Record
+**Endpoint**: `GET /v1/data-plane/registrations/azure/{subscription_id}/arm-template`
+**Summary**:  Get Customer Plane Arm Template
 **Tags**: data-plane, admin
 
-**Request Body** (required):
-- `application/json`
+**Parameters**:
+- `subscription_id` (path, required): 
+- `resource_group_name` (query, required): Azure resource group name
 
 **Responses**:
-- `201`: Successful Response
+- `200`: Successful Response
 - `422`: Validation Error
 
 ---

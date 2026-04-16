@@ -1,6 +1,6 @@
 ---
 title: What's New in V3.0.13
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/3013
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/3013
 section: platform_services
 ---
 
@@ -9,7 +9,7 @@ section: platform_services
 - [](/_docs/)- Release Notes- What's New in V3.0.13# What's New in V3.0.13
 Release Date: August 1, 2025
 
-Agentic Discovery – Added a new code scanning tool for Agentic Discovery. Discover Agents, sub-agents and tools from code repositories.
+Agentic Discovery – Added a new code scanning tool for Agentic Discovery. Discover agents, sub-agents, and tools from code repositories.
 
 Admin Console – Added ability to delete organizations and projects.
 

@@ -109,6 +109,24 @@ Get the status of a job that was initiated to create a compliance audit.
 
 ---
 
+## POST /v1/control-plane/compliance/update-issue-status/{issue_id} — Update Compliance Issue Status
+
+**Endpoint**: `POST /v1/control-plane/compliance/update-issue-status/{issue_id}`
+**Summary**: Update Compliance Issue Status
+**Tags**: compliance
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/control-plane/compliance/policy-documents — Get Compliance Policy Docs
 
 **Endpoint**: `GET /v1/control-plane/compliance/policy-documents`
@@ -501,6 +519,36 @@ This endpoint retrieves a list of missing policy documents that are required und
 
 ---
 
+## POST /v1/control-plane/compliance/suggested-response/action — Apply Suggested Response Action Endpoint
+
+**Endpoint**: `POST /v1/control-plane/compliance/suggested-response/action`
+**Summary**: Apply Suggested Response Action Endpoint
+**Tags**: compliance
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/compliance/suggested-response/{suggested_response_id}/attachment — Download Suggested Response Attachment
+
+**Endpoint**: `GET /v1/control-plane/compliance/suggested-response/{suggested_response_id}/attachment`
+**Summary**: Download Suggested Response Attachment
+**Tags**: compliance
+
+**Parameters**:
+- `suggested_response_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## POST /v1/control-plane/compliance/unlink-policy-document — Unlink Policy Document
 
 **Endpoint**: `POST /v1/control-plane/compliance/unlink-policy-document`
@@ -512,6 +560,36 @@ This endpoint retrieves a list of missing policy documents that are required und
 
 **Responses**:
 - `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/compliance/analyze-additional-document — Analyze Additional Document
+
+**Endpoint**: `POST /v1/control-plane/compliance/analyze-additional-document`
+**Summary**: Analyze Additional Document
+**Tags**: compliance
+
+**Request Body** (required):
+- `multipart/form-data`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/control-plane/compliance/additional-document/{additional_document_id} — Delete Additional Document
+
+**Endpoint**: `DELETE /v1/control-plane/compliance/additional-document/{additional_document_id}`
+**Summary**: Delete Additional Document
+**Tags**: compliance
+
+**Parameters**:
+- `additional_document_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
 - `422`: Validation Error
 
 ---
@@ -764,10 +842,55 @@ Create compliance atlas policies in the database.
 
 **Endpoint**: `POST /v2/compliance/policy-builder/detail-response`
 **Summary**: Create Detail Response
-**Tags**: compliance, compliance
+**Tags**: compliance
 
 **Request Body** (required):
 - `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/compliance/policy-builder/prefill-status/{policy_template_id} — Get Prefill Status
+
+**Endpoint**: `GET /v2/compliance/policy-builder/prefill-status/{policy_template_id}`
+**Summary**: Get Prefill Status
+**Tags**: compliance
+
+**Parameters**:
+- `policy_template_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v2/compliance/policy-builder/suggested-response/action — Apply Policy Builder Suggested Response Action Endpoint
+
+**Endpoint**: `POST /v2/compliance/policy-builder/suggested-response/action`
+**Summary**: Apply Policy Builder Suggested Response Action Endpoint
+**Tags**: compliance
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/compliance/policy-builder/suggested-response/{suggested_response_id}/attachment — Download Policy Builder Suggested Response Attachment Endpoint
+
+**Endpoint**: `GET /v2/compliance/policy-builder/suggested-response/{suggested_response_id}/attachment`
+**Summary**: Download Policy Builder Suggested Response Attachment Endpoint
+**Tags**: compliance
+
+**Parameters**:
+- `suggested_response_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response

@@ -1,0 +1,312 @@
+---
+title: Technical Overview — Varonis Atlas and ISO 42001
+url: https://varonis.highspot.com/items/69d501b387baa60bf047b80a
+section: competitive
+---
+
+# Technical Overview — Varonis Atlas and ISO 42001
+
+The links in this menu move focus to different parts of the page. To navigate within this menu, use the arrow keys. To exit this menu press the escape key or tab key.
+Press OPT + / to open this menu
+Press OPT + / to open this menu
+Skip to Content
+Skip to Info Panel
+Skip to Header
+Technical Overview — Varonis Atlas and ISO 42001
+Sales Collateral
+PDF
+Added 1 week ago
+Share Externally
+0/0
+Slide
+1
+(Current Slide)
+Slide
+2
+(Current Slide)
+Slide
+3
+(Current Slide)
+Slide
+4
+(Current Slide)
+Slide
+5
+(Current Slide)
+Slide
+6
+(Current Slide)
+Slide
+7
+(Current Slide)
+1 of 7
+ZOOM
+WHAT IS AN AIMS?
+
+Certifiable international
+
+standard for governing AIMS
+
+Applies to organizations
+
+developing, deploying,
+
+operating, or consuming AI
+
+Technology
+‑
+agnostic,
+
+applying equally to custom
+
+models, third
+‑
+party AI,
+
+embedded AI, etc.
+
+INTRODUCTION
+
+Varonis Atlas is purpose
+‑
+built to operationalize large
+
+portions of ISO/IEC 42001 by providing the technical
+
+controls, evidence, and continuous monitoring required
+
+to run an effective Artificial Intelligence Management
+
+System (AIMS) at enterprise scale.
+
+Atlas contributes to ISO 42001 compliance in two
+
+complementary ways:
+
+1
+.
+Directly
+ 
+— by implementing technical controls and
+
+system behaviors explicitly required by ISO 42001
+
+2
+.
+Indirectly
+ 
+— by enabling organizations to execute
+
+AIMS governance processes led by people and
+
+policies
+
+In review, Varonis Atlas is an end
+‑
+to
+‑
+end AI security
+
+platform designed to help organizations discover,
+
+understand, and control every AI system they build or run
+
+across the enterprise. Atlas secures the full AI security
+
+lifecycle—from discovery and posture management to
+
+runtime protection and compliance—by tying AI behavior
+
+directly to the sensitive data it can access.
+
+This paper maps Atlas capabilities to relevant ISO/IEC
+
+42001 clauses and controls, clarifying where Atlas fits
+
+within an AIMS and how it supports certification
+
+readiness.
+
+See Varonis Atlas in action
+
+VARONIS ATLAS AND ISO/IEC 42001
+
+Enabling and Operationalizing an AI Management System (AIMS)
+
+ISO/IEC 42001 defines an
+
+Artificial Intelligence
+
+Management System (AIMS)
+
+as a governance framework
+
+for managing AI risk across
+
+the full AI lifecycle. An AIMS is
+
+not a single technology or
+
+platform; it is a coordinated
+
+system of people, processes,
+
+and supporting technologies.
+
+ISO/IEC 42001:2023
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+ 
+\
+www.varonis.com | 1.877.292.8767
+
+T
+he following eight capabilities create a complete AI security platform for ISO compliance.
+
+AI Inventory
+ 
+– Continuously discovers and inventories all AI systems, including sanctioned, custom,
+
+embedded, and shadow AI, with full context on data access and actions.
+
+AI Security Posture Management (AI
+‑
+SPM)
+ 
+– Assesses AI systems for vulnerabilities,
+
+misconfigurations, and data exposure across code, models, prompts, and dependencies.
+
+AI Pen Testing
+ 
+– Actively stress tests live AI systems using adversarial prompts to uncover issues
+
+like prompt injection and jailbreaks.
+
+AI Runtime Guardrails
+ 
+– Enforces real
+‑
+time policies via an AI gateway to prevent sensitive data
+
+leakage and block malicious or noncompliant behavior.
+
+AI Compliance and Governance
+ 
+– Maps AI systems to frameworks such as the EU AI Act and NIST
+
+AI RMF with audit
+‑
+ready, evidence
+‑
+based reporting.
+
+AI Third
+‑
+Party Risk Management (AI TPRM)
+ 
+– Manages and continuously reassesses risk from
+
+external AI vendors and services across the supply chain.
+
+AI Activity Monitoring
+ 
+– Provides end
+‑
+to
+‑
+end visibility into prompts, responses, agent actions, data
+
+access, and guardrail decisions in production.
+
+AI Detection & Response (AIDR)
+ 
+– Detects and responds to malicious or unsafe AI behavior in real
+
+time, with alerts, inline blocking, and SIEM/SOAR integration.
+Description
+The content is a detailed overview of Varonis Atlas and how it supports compliance with ISO/IEC 42001. Atlas is purpose-built to operationalize large portions of ISO/IEC 42001 by providing the technical controls, evidence, and continuous monitoring required to run an effective Artificial Intelligence Management System (AIMS) at enterprise scale. The platform integrates technical controls and governance processes to facilitate accountability and operationalize AI governance at an enterprise scale.
+Details
+Viewed
+112
+times
+Downloaded
+31
+times
+Shared externally
+17
+times
+Reviews
+Write a Review
+Recommended
+How Varonis Atlas Enables ISO/IEC 42001 Compliance
+Content type:
+Web Link
+Added 1d
+Sales Slides — Varonis Atlas AI Security Platform
+Content type:
+PowerPoint
+Updated 2 weeks ago
+Varonis Atlas Case Study - Cresta
+Content type:
+PDF
+Added 2w
+Varonis Atlas AI Security Platform
+Content type:
+Page
+Updated 1 week ago
+Blog — Varonis Launches Atlas to Secure AI and the Data That Powers It
+Content type:
+Web Link
+Added 4w
+Press Release — Varonis Launches Atlas to Secure AI and the Data That Powers It
+Content type:
+Web Link
+Added 4w
+Atlas AI Demo Script - Click Track
+Content type:
+PDF
+Updated 1 hour ago
+Varonis Atlas: AI Security Platform Demo
+Content type:
+Web Link
+Added 4w

@@ -1,6 +1,6 @@
 ---
 title: What's New in V3.0.10
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/3010
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/3010
 section: platform_services
 ---
 

@@ -1,0 +1,75 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+14,Competitive Positioning,check_question,A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?,"## Handling the Wiz Objection
+
+**Lead with validation, then reframe the scope:**
+
+""Wiz is a great tool — and their AI-SPM is a natural extension of what they do well. But what they do well is **cloud posture**. That's a slice of AI security, not the whole picture.""
+
+---
+
+## What Wiz Covers (Acknowledge It)
+
+| Capability | Wiz |
+|---|---|
+| Cloud AI asset discovery (AWS/Azure/GCP) | ✅ |
+| AI-BOM with graph correlation | ✅ |
+| Misconfiguration detection for cloud AI resources | ✅ |
+
+---
+
+## Where Atlas Goes Beyond Wiz (The Gap)
+
+| Capability | Wiz | Atlas |
+|---|---|---|
+| Codebase scanning (GitHub, Jupyter, Python deps) | ❌ | ✅ |
+| Runtime protection — inline blocking/redaction | ❌ | ✅ |
+| Guardrails (WARN / BLOCK / MODIFY) | ❌ | ✅ |
+| Automated compliance (OWASP LLM Top 10, NIST AI RMF, EU AI Act) | ❌ | ✅ |
+| Third-party AI risk management (TPRM) | ❌ | ✅ |
+| LLM Pen Testing (prompt injection, jailbreaks) | ❌ | ✅ |
+| Shadow AI discovery via Cloudflare LogPush | ❌ | ✅ |
+
+---
+
+## The Closing Reframe
+
+> **""Wiz tells you what AI exists in your cloud. Atlas protects what that AI does — at runtime, in your code, across vendors, and in real time. They're not the same scope.""**
+
+---
+
+## Good Discovery Questions to Ask
+
+- *""Does Wiz detect AI being used in your GitHub repos or Jupyter notebooks?""*
+- *""Can Wiz block a malicious prompt before it reaches your LLM?""*
+- *""How are you mapping your AI usage to EU AI Act or NIST AI RMF requirements today?""*
+
+These questions naturally surface the gaps without being combative about Wiz.",1.0,1.0,0.667,1.0,0.889
+14,Competitive Positioning,follow_up,"What are the three main competitive categories Atlas faces, and how does Atlas differentiate from each?","## Atlas Competitive Positioning: The Three Competitive Categories
+
+The retrieved documentation confirms that Atlas faces competition across **three distinct categories**, and that identifying the correct category is key to the right positioning response — however, the context provided **does not include the detail** on what those three categories are or the specific differentiation points for each.
+
+The documentation titles suggest a more detailed section exists (""— Detail"") but that content was not returned in the retrieval.
+
+---
+
+### What I'd Recommend
+
+To get the full competitive breakdown, check the Atlas documentation for the section titled:
+
+> **""Atlas Competitive Positioning — How to Win Against Wiz, Cisco, Microsoft, and AI SPM Tools""**
+
+That section should cover positioning against:
+- **Wiz** (likely cloud security / CSPM positioning)
+- **Cisco** (likely network security / AI governance)
+- **Microsoft** (likely data security / Purview overlap)
+- **AI SPM tools** (likely point solutions for AI security posture)
+
+---
+
+### Need This Now for a Deal?
+
+If you're prepping for a competitive situation, tell me:
+1. **Which competitor** are you up against?
+2. **What's the customer's primary concern** (data security, AI governance, compliance, etc.)?
+
+I can help you build a targeted response using architectural reasoning and any available context, even if the full competitive doc isn't loading correctly. 🎯",0.333,0.667,0.5,1.0,0.5

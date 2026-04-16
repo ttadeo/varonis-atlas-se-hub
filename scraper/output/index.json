@@ -1,7 +1,7 @@
 [
   {
     "title": "Platform and Applications Overview",
-    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#__docusaurus_skipToContent_fallback",
+    "url": "https://playground.alltrue-be.com/_docs/docs/overview/platform_and_applications#__docusaurus_skipToContent_fallback",
     "section": "overview",
     "path": "overview/platform_and_applications#__docusaurus_skipToContent_fallback",
     "status": "success",
@@ -9,7 +9,7 @@
   },
   {
     "title": "Platform and Applications Overview",
-    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications",
+    "url": "https://playground.alltrue-be.com/_docs/docs/overview/platform_and_applications",
     "section": "overview",
     "path": "overview/platform_and_applications",
     "status": "success",
@@ -17,7 +17,7 @@
   },
   {
     "title": "Platform and Applications Overview",
-    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#",
+    "url": "https://playground.alltrue-be.com/_docs/docs/overview/platform_and_applications#",
     "section": "overview",
     "path": "overview/platform_and_applications#",
     "status": "success",
@@ -25,7 +25,7 @@
   },
   {
     "title": "Architecture Overview",
-    "url": "https://prod.alltrue-be.com/_docs/docs/overview/architecture",
+    "url": "https://playground.alltrue-be.com/_docs/docs/overview/architecture",
     "section": "overview",
     "path": "overview/architecture",
     "status": "success",
@@ -33,7 +33,7 @@
   },
   {
     "title": "Organizations and Projects Overview",
-    "url": "https://prod.alltrue-be.com/_docs/docs/overview/orgs_and_projects",
+    "url": "https://playground.alltrue-be.com/_docs/docs/overview/orgs_and_projects",
     "section": "overview",
     "path": "overview/orgs_and_projects",
     "status": "success",
@@ -41,7 +41,7 @@
   },
   {
     "title": "GUI Overview",
-    "url": "https://prod.alltrue-be.com/_docs/docs/overview/gui_navigation",
+    "url": "https://playground.alltrue-be.com/_docs/docs/overview/gui_navigation",
     "section": "overview",
     "path": "overview/gui_navigation",
     "status": "success",
@@ -49,7 +49,7 @@
   },
   {
     "title": "AI 360",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_360",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_360",
     "section": "applications",
     "path": "applications/ai_360",
     "status": "success",
@@ -57,7 +57,7 @@
   },
   {
     "title": "AI Inventory",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_inventory",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_inventory",
     "section": "applications",
     "path": "applications/ai_inventory",
     "status": "success",
@@ -65,7 +65,7 @@
   },
   {
     "title": "AI Usage",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_usage",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_usage",
     "section": "applications",
     "path": "applications/ai_usage",
     "status": "success",
@@ -73,31 +73,39 @@
   },
   {
     "title": "AI SPM",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_spm",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_spm",
     "section": "applications",
     "path": "applications/ai_spm",
     "status": "success",
     "file": "applications/ai_spm.md"
   },
   {
-    "title": "AI Gateway",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_gateway",
+    "title": "AI Runtime Protection",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_gateway",
     "section": "applications",
     "path": "applications/ai_gateway",
     "status": "success",
-    "file": "applications/ai_gateway.md"
+    "file": "applications/ai_runtime_protection.md"
   },
   {
-    "title": "AI Monitor",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_monitor",
+    "title": "AI MCP",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_mcp",
+    "section": "applications",
+    "path": "applications/ai_mcp",
+    "status": "success",
+    "file": "applications/ai_mcp.md"
+  },
+  {
+    "title": "AI Investigation",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_monitor",
     "section": "applications",
     "path": "applications/ai_monitor",
     "status": "success",
-    "file": "applications/ai_monitor.md"
+    "file": "applications/ai_investigation.md"
   },
   {
     "title": "AI Compliance",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_compliance",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_compliance",
     "section": "applications",
     "path": "applications/ai_compliance",
     "status": "success",
@@ -105,7 +113,7 @@
   },
   {
     "title": "AI Observability",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_observability",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_observability",
     "section": "applications",
     "path": "applications/ai_observability",
     "status": "success",
@@ -113,7 +121,7 @@
   },
   {
     "title": "AI Incidents",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_incidents",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_incidents",
     "section": "applications",
     "path": "applications/ai_incidents",
     "status": "success",
@@ -121,7 +129,7 @@
   },
   {
     "title": "AI TPRM",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_tprm",
+    "url": "https://playground.alltrue-be.com/_docs/docs/applications/ai_tprm",
     "section": "applications",
     "path": "applications/ai_tprm",
     "status": "success",
@@ -129,7 +137,7 @@
   },
   {
     "title": "Onboarding",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/onboarding",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/onboarding",
     "section": "platform_services",
     "path": "platform_services/onboarding",
     "status": "success",
@@ -137,7 +145,7 @@
   },
   {
     "title": "Admin Console",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/admin_console",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/admin_console",
     "section": "platform_services",
     "path": "platform_services/admin_console",
     "status": "success",
@@ -145,23 +153,47 @@
   },
   {
     "title": "Integrations",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/integration",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/integration",
     "section": "platform_services",
     "path": "platform_services/integration",
     "status": "success",
     "file": "platform_services/integrations.md"
   },
   {
+    "title": "Data Encryption and Key Management",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/encryption",
+    "section": "platform_services",
+    "path": "platform_services/encryption",
+    "status": "success",
+    "file": "platform_services/data_encryption_and_key_management.md"
+  },
+  {
     "title": "Getting Started with API Calls",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/api",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/api",
     "section": "platform_services",
     "path": "platform_services/api",
     "status": "success",
     "file": "platform_services/getting_started_with_api_calls.md"
   },
   {
+    "title": "LiteLLM Proxy Integration",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/litellm",
+    "section": "platform_services",
+    "path": "platform_services/litellm",
+    "status": "success",
+    "file": "platform_services/litellm_proxy_integration.md"
+  },
+  {
+    "title": "Microsoft Copilot Studio Integration",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/copilot_studio",
+    "section": "platform_services",
+    "path": "platform_services/copilot_studio",
+    "status": "success",
+    "file": "platform_services/microsoft_copilot_studio_integration.md"
+  },
+  {
     "title": "LLM Pentest Execution Workflow Using REST API",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/llm_pentest",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/llm_pentest",
     "section": "platform_services",
     "path": "platform_services/llm_pentest",
     "status": "success",
@@ -169,23 +201,55 @@
   },
   {
     "title": "Using Quarantining APIs from Kong Konnect",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/kong",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/kong",
     "section": "platform_services",
     "path": "platform_services/kong",
     "status": "success",
     "file": "platform_services/using_quarantining_apis_from_kong_konnect.md"
   },
   {
+    "title": "MCP Security Handbook",
+    "url": "https://playground.alltrue-be.com/_docs/docs/handbooks/mcp_security_handbook",
+    "section": "handbooks",
+    "path": "handbooks/mcp_security_handbook",
+    "status": "success",
+    "file": "handbooks/mcp_security_handbook.md"
+  },
+  {
+    "title": "AI Investigation Handbook",
+    "url": "https://playground.alltrue-be.com/_docs/docs/handbooks/ai_investigation_handbook",
+    "section": "handbooks",
+    "path": "handbooks/ai_investigation_handbook",
+    "status": "success",
+    "file": "handbooks/ai_investigation_handbook.md"
+  },
+  {
     "title": "GraphQL API Reference",
-    "url": "https://prod.alltrue-be.com/_docs/docs/",
+    "url": "https://playground.alltrue-be.com/_docs/docs/",
     "section": "",
     "path": "",
     "status": "success",
     "file": "/graphql_api_reference.md"
   },
   {
+    "title": "What's New in V3.1.6",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/316",
+    "section": "platform_services",
+    "path": "platform_services/316",
+    "status": "success",
+    "file": "platform_services/whats_new_in_v316.md"
+  },
+  {
+    "title": "What's New in V3.1.5",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/315",
+    "section": "platform_services",
+    "path": "platform_services/315",
+    "status": "success",
+    "file": "platform_services/whats_new_in_v315.md"
+  },
+  {
     "title": "What's New in V3.1.4",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/314",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/314",
     "section": "platform_services",
     "path": "platform_services/314",
     "status": "success",
@@ -193,7 +257,7 @@
   },
   {
     "title": "What's New in V3.1.3",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/313",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/313",
     "section": "platform_services",
     "path": "platform_services/313",
     "status": "success",
@@ -201,7 +265,7 @@
   },
   {
     "title": "What's New in V3.1.2",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/312",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/312",
     "section": "platform_services",
     "path": "platform_services/312",
     "status": "success",
@@ -209,7 +273,7 @@
   },
   {
     "title": "What's New in V3.1.1",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/311",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/311",
     "section": "platform_services",
     "path": "platform_services/311",
     "status": "success",
@@ -217,7 +281,7 @@
   },
   {
     "title": "What's New in V3.1.0",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/310",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/310",
     "section": "platform_services",
     "path": "platform_services/310",
     "status": "success",
@@ -225,7 +289,7 @@
   },
   {
     "title": "What's New in V3.0.14",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/3014",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/3014",
     "section": "platform_services",
     "path": "platform_services/3014",
     "status": "success",
@@ -233,7 +297,7 @@
   },
   {
     "title": "What's New in V3.0.13",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/3013",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/3013",
     "section": "platform_services",
     "path": "platform_services/3013",
     "status": "success",
@@ -241,7 +305,7 @@
   },
   {
     "title": "What's New in V3.0.12",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/3012",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/3012",
     "section": "platform_services",
     "path": "platform_services/3012",
     "status": "success",
@@ -249,7 +313,7 @@
   },
   {
     "title": "What's New in V3.0.11",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/3011",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/3011",
     "section": "platform_services",
     "path": "platform_services/3011",
     "status": "success",
@@ -257,7 +321,7 @@
   },
   {
     "title": "What's New in V3.0.10",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/3010",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/3010",
     "section": "platform_services",
     "path": "platform_services/3010",
     "status": "success",
@@ -265,7 +329,7 @@
   },
   {
     "title": "What's New in V3.0.9",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/309",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/309",
     "section": "platform_services",
     "path": "platform_services/309",
     "status": "success",
@@ -273,7 +337,7 @@
   },
   {
     "title": "What's New in V3.0.8",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/308",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/308",
     "section": "platform_services",
     "path": "platform_services/308",
     "status": "success",
@@ -281,7 +345,7 @@
   },
   {
     "title": "What's New in V3.0.7",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/307",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/307",
     "section": "platform_services",
     "path": "platform_services/307",
     "status": "success",
@@ -289,7 +353,7 @@
   },
   {
     "title": "What's New in V3.0.6",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/306",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/306",
     "section": "platform_services",
     "path": "platform_services/306",
     "status": "success",
@@ -297,7 +361,7 @@
   },
   {
     "title": "What's New in V3.0.5",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/305",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/305",
     "section": "platform_services",
     "path": "platform_services/305",
     "status": "success",
@@ -305,7 +369,7 @@
   },
   {
     "title": "Versions Prior to V3.0.5",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/prior",
+    "url": "https://playground.alltrue-be.com/_docs/docs/platform_services/prior",
     "section": "platform_services",
     "path": "platform_services/prior",
     "status": "success",

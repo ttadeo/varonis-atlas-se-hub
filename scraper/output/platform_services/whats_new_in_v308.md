@@ -1,6 +1,6 @@
 ---
 title: What's New in V3.0.8
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/308
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/308
 section: platform_services
 ---
 
@@ -10,7 +10,7 @@ section: platform_services
 Release Date: May 8, 2025
 
 - Code Scanning Configuration Bulk Actions (test, reassign, delete multiple repositories)
-- Content Type Gateway Rule (mark other content types as disallowed)
+- Content Type Runtime Rule (mark other content types as disallowed)
 - AI Management System Policy Builder Template (ISO)
 - Statement of Applicability Policy Builder Template (ISO)
 - AI Service Provider TPRM Vendor Assessment

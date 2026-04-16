@@ -1299,6 +1299,37 @@ category policy.
 
 ---
 
+## GET /v1/shadow-ai/issue-policy — Get the issue policy for the customer
+
+**Endpoint**: `GET /v1/shadow-ai/issue-policy`
+**Summary**: Get the issue policy for the customer
+**Tags**: posture-management
+
+Gets the customers current shadow AI policy.
+If the policy does not exist in the database, gets a default.
+
+**Responses**:
+- `200`: Successful Response
+
+---
+
+## PUT /v1/shadow-ai/issue-policy — Update the shadow ai issue policy for a customer
+
+**Endpoint**: `PUT /v1/shadow-ai/issue-policy`
+**Summary**: Update the shadow ai issue policy for a customer
+**Tags**: posture-management
+
+Updates the shadow AI issue policy for a customer.
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## POST /v2/posture-management/model-scanning/update-job-results — Update Model Scanning Job Queue Results
 
 **Endpoint**: `POST /v2/posture-management/model-scanning/update-job-results`

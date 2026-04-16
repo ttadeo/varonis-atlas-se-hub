@@ -90,28 +90,13 @@ Create a report for vendor TPRM
 
 ---
 
-## POST /v1/report/export/issues — Export Issues
-
-**Endpoint**: `POST /v1/report/export/issues`
-**Summary**: Export Issues
-**Tags**: report
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/report/export — Export Data
+## POST /v1/report/export — Export Data Async
 
 **Endpoint**: `POST /v1/report/export`
-**Summary**: Export Data
+**Summary**: Export Data Async
 **Tags**: report
 
-Generic export endpoint that handles all export types
+Async export endpoint — returns a job ID to poll via GET /v1/report/job-status/{job_id}.
 
 **Request Body** (required):
 - `application/json`

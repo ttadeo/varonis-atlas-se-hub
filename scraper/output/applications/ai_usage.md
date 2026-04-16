@@ -1,26 +1,26 @@
 ---
 title: AI Usage
-url: https://prod.alltrue-be.com/_docs/docs/applications/ai_usage
+url: https://playground.alltrue-be.com/_docs/docs/applications/ai_usage
 section: applications
 ---
 
 # AI Usage
 
 - [](/_docs/)- Applications- AI UsageOn this page# AI Usage
-The AI Usage application help you manage what AI services your employees use. Get a complete view of all services being used, by whom, from what applications as well as the frequency of usage. Manage sanctiopned and unsanctioned use of AI services and of LLMs. Use this to ensure that unsanctioned AI services are not used and, if you place additional security controls when using these AI services, that these controls are not bypassed. The system collects usage information from ZTNA systems in order to know what is being accessed within the organization and then compares it with curated lists of AI services around the world. Certain specific integrations pull usage data from other applications such as Microsoft Copilot. And finally, you can manage access to LLMs through the built-in AI Gateway or through third party AI gateways by sanctioning/unsanctioning access to LLMs and quarantining the use of certain LLMs.
+The AI Usage application helps you manage which AI services your employees use. Get a complete view of all services being used, by whom, from which applications, and how frequently. Manage sanctioned and unsanctioned use of AI services and LLMs. Use this to ensure that unsanctioned AI services are not used and, if you have placed additional security controls on these AI services, that those controls are not bypassed. The system collects usage information from ZTNA systems to determine what is being accessed within the organization, then compares it with curated lists of AI services around the world. Certain integrations pull usage data from other applications such as Microsoft Copilot. Finally, you can manage access to LLMs through the built-in AI Runtime Protection or through third-party AI gateways by sanctioning or unsanctioning access to LLMs and quarantining the use of certain LLMs.
 
 ## Dashboard[​](#dashboard)
-View all AI services you consume over the Internet from AI service providers, plus LLMs you consume and that are monitored by the observability layer (the AI Gateway).
+View all AI services you consume over the Internet from AI service providers, plus LLMs you consume that are monitored by the observability layer (the AI Runtime Protection).
 
 Select the Overall Dashboard or a specific dashboard such as the OpenAI dashboard or the Microsoft Copilot dashboard. Specify additional filters to control what data is displayed.
 
 Toggle between views by users or applications in the various widgets.
 
 ## Users[​](#users)
-Use the users list to see all users accessing AI services with a breakdown of what AI services they are using. For each user hover your mouse over the "# GenAI App" blue text and a tooltip will give you a list of services used.
+Use the users list to see all users accessing AI services, with a breakdown of which AI services they are using. For each user, hover your mouse over the "# GenAI App" blue text to see a tooltip listing the services used.
 
 ## Policies[​](#policies)
-Define what AI services are sanctioned and which are unsanctioned. For each item click on View in Inventory to get more details.
+Define which AI services are sanctioned and which are unsanctioned. For each item, click View in Inventory to get more details.
 
 ## Quarantine Policy for LLM Endpoints[​](#quarantine-policy-for-llm-endpoints)
 The LLM Endpoint Quarantine Policy allows you to control which LLM endpoints are permitted for use across your organization. This policy is managed from the AI Usage policies page, where you can toggle the policy on or off and manage the sanction status of individual LLM endpoints.
@@ -83,7 +83,7 @@ Example responses:
 {"sanctioned": true, "message": "Skipped validation due to system issue"}
 
 ```
-You control what LLMs are snactioned/unsanctioned by enabling LLM endpoints quarantining policy and sanctioning/approving LLMs on the AI Usage -&gt; Policies page:
+You control which LLMs are sanctioned or unsanctioned by enabling the LLM endpoint quarantine policy and sanctioning/approving LLMs on the AI Usage -&gt; Policies page:
 
 ## Issues[​](#issues)
 View all issues such as usage of unsanctioned services.

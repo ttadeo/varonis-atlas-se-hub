@@ -145,21 +145,6 @@
 
 ---
 
-## POST /v1/control-plane/tprm/upload-bom — Upload Bom
-
-**Endpoint**: `POST /v1/control-plane/tprm/upload-bom`
-**Summary**: Upload Bom
-**Tags**: tprm
-
-**Request Body** (required):
-- `multipart/form-data`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
 ## PUT /v1/control-plane/tprm/update-resource-status — Update Resource Status
 
 **Endpoint**: `PUT /v1/control-plane/tprm/update-resource-status`
@@ -246,21 +231,6 @@
 
 **Responses**:
 - `204`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/control-plane/tprm/asana-user-exists — Asana User Exists
-
-**Endpoint**: `POST /v1/control-plane/tprm/asana-user-exists`
-**Summary**: Asana User Exists
-**Tags**: tprm, internal
-
-**Request Body** (required):
-- `application/json`
-
-**Responses**:
-- `200`: Successful Response
 - `422`: Validation Error
 
 ---
@@ -467,7 +437,7 @@
 **Tags**: tprm
 
 **Request Body** (required):
-- `application/json`
+- `multipart/form-data`
 
 **Responses**:
 - `200`: Successful Response
@@ -482,7 +452,7 @@
 **Tags**: tprm
 
 **Request Body** (required):
-- `application/json`
+- `multipart/form-data`
 
 **Responses**:
 - `200`: Successful Response
@@ -513,6 +483,66 @@
 
 **Parameters**:
 - `service_audit_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v2/tprm/external/upload-bom — Upload Bom
+
+**Endpoint**: `POST /v2/tprm/external/upload-bom`
+**Summary**: Upload Bom
+**Tags**: tprm
+
+**Request Body** (required):
+- `multipart/form-data`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/tprm/bom/{service_audit_id}/exists — Check Bom Exists
+
+**Endpoint**: `GET /v2/tprm/bom/{service_audit_id}/exists`
+**Summary**: Check Bom Exists
+**Tags**: tprm, internal
+
+**Parameters**:
+- `service_audit_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v2/tprm/suggested-response/action — Apply Tprm Suggested Response Action Endpoint
+
+**Endpoint**: `POST /v2/tprm/suggested-response/action`
+**Summary**: Apply Tprm Suggested Response Action Endpoint
+**Tags**: tprm
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/tprm/suggested-response/{suggested_response_id}/attachment — Download Tprm Suggested Response Attachment Endpoint
+
+**Endpoint**: `GET /v2/tprm/suggested-response/{suggested_response_id}/attachment`
+**Summary**: Download Tprm Suggested Response Attachment Endpoint
+**Tags**: tprm
+
+**Parameters**:
+- `suggested_response_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response

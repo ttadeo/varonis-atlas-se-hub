@@ -41,21 +41,47 @@ Raises:
 **Summary**: Get Users For Organization
 **Tags**: admin, all-roles
 
-Retrieve all users for a specific Organization (Customer) from Auth0.
+Retrieve internal (non-guest) users for a specific Organization (Customer) from Auth0.
 
-This endpoint fetches all users associated with the given organization (customer) from Auth0.
+This endpoint fetches internal users associated with the given organization.
+Guest users are excluded. Use GET /{customer_id}/guest-users for guest users.
 
 Args:
-    customer_id (str): The ID of the customer (organization) to get users for.
-    token (str): The Auth0 management API token.
-    user_has_internal_role (bool): Whether the user is an internal user.
-    session (Session): The SQLAlchemy session.
+    customer_id: The ID of the customer (organization) to get users for.
+    token: The Auth0 management API token.
+    user_has_internal_role: Whether the requesting user is an AllTrue internal user.
+    session: The SQLAlchemy session.
 
 Returns:
-    dict: A list of users associated with the organization.
+    list[dict]: List of internal users.
 
-Raises:
-    HTTPException: If there's an error in retrieving users for the organization.
+**Parameters**:
+- `customer_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/admin/auth0-customer/{customer_id}/guest-users — Get Guest Users For Organization
+
+**Endpoint**: `GET /v1/admin/auth0-customer/{customer_id}/guest-users`
+**Summary**: Get Guest Users For Organization
+**Tags**: admin, all-roles
+
+Retrieve guest/external users for a specific Organization (Customer) from Auth0.
+
+This endpoint fetches users with guest roles (e.g., GuestUser) associated with
+the given organization. Use GET /{customer_id}/users for internal users.
+
+Args:
+    customer_id: The ID of the customer (organization) to get guest users for.
+    token: The Auth0 management API token.
+    session: The SQLAlchemy session.
+
+Returns:
+    list[dict]: List of guest users.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -117,6 +143,27 @@ Get a user's information in Auth0 within a specific organization.
 
 **Responses**:
 - `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id}/reset-mfa — Reset User Mfa
+
+**Endpoint**: `DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id}/reset-mfa`
+**Summary**: Reset User Mfa
+**Tags**: admin
+
+Reset MFA for a user in Auth0.
+
+Deletes all authentication methods for the specified user,
+requiring them to re-enroll in MFA on their next login.
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `user_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
 - `422`: Validation Error
 
 ---
@@ -207,9 +254,14 @@ Get a user's information in Auth0 within a specific organization.
 **Tags**: admin, support-access, list-grants
 
 List all support access grants for a customer.
+Optionally filter by active status using ?active=active or ?active=inactive.
+
+**Parameters**:
+- `active` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
+- `422`: Validation Error
 
 ---
 
@@ -227,6 +279,42 @@ Revoke a specific support access grant by its ID.
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
+
+---
+
+## GET /v1/admin/audit-logs — List Audit Logs
+
+**Endpoint**: `GET /v1/admin/audit-logs`
+**Summary**: List Audit Logs
+**Tags**: admin
+
+**Parameters**:
+- `offset` (query, optional): 
+- `limit` (query, optional): 
+- `start_time` (query, optional): 
+- `end_time` (query, optional): 
+- `user_ids` (query, optional): 
+- `roles` (query, optional): 
+- `search_str` (query, optional): 
+- `methods` (query, optional): 
+- `paths` (query, optional): 
+- `order_field` (query, optional): 
+- `ascending_order` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/admin/audit-logs/paths — List Audit Log Paths
+
+**Endpoint**: `GET /v1/admin/audit-logs/paths`
+**Summary**: List Audit Log Paths
+**Tags**: admin
+
+**Responses**:
+- `200`: Successful Response
 
 ---
 
@@ -855,6 +943,67 @@ Note: This is a temporary solution, and we may refine it in the future.
 
 ---
 
+## GET /v1/admin/invitations — List Invitations
+
+**Endpoint**: `GET /v1/admin/invitations`
+**Summary**: List Invitations
+**Tags**: admin
+
+Lists pending invitations for the customer's Auth0 organization.
+
+Wraps the Auth0 Management API `GET /api/v2/organizations/{id}/invitations` endpoint.
+
+**Parameters**:
+- `per_page` (query, optional): 
+- `page` (query, optional): 
+- `include_totals` (query, optional): 
+- `invitation_id` (query, optional): Filter by invitation ID
+- `sort` (query, optional): Field to sort by, e.g. 'created_at:1' or 'created_at:-1'
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/admin/invitations/{invitation_id} — Get Invitation
+
+**Endpoint**: `GET /v1/admin/invitations/{invitation_id}`
+**Summary**: Get Invitation
+**Tags**: admin
+
+Retrieves a pending invitation by ID.
+
+Wraps the Auth0 Management API `GET /api/v2/organizations/{id}/invitations/{invitationId}` endpoint.
+
+**Parameters**:
+- `invitation_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/admin/invitations/{invitation_id} — Delete Invitation
+
+**Endpoint**: `DELETE /v1/admin/invitations/{invitation_id}`
+**Summary**: Delete Invitation
+**Tags**: admin
+
+Deletes a pending invitation by ID.
+
+Wraps the Auth0 Management API `DELETE /api/v2/organizations/{id}/invitations/{invitationId}` endpoint.
+
+**Parameters**:
+- `invitation_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## POST /v1/admin/current-user/assign-pending-organizations-and-projects — Assign Pending Organizations And Projects To User
 
 **Endpoint**: `POST /v1/admin/current-user/assign-pending-organizations-and-projects`
@@ -1188,14 +1337,14 @@ Get permissions for the current user based on the token payload
 **Summary**: Get Customer Roles
 **Tags**: admin
 
-Retrieve all roles from DB for a specific customer, including both default and custom roles.
+Retrieve internal (non-guest) roles from DB for a specific customer, including both default and custom roles.
 
 Args:
-    customer_id (UUID): The unique identifier of the customer.
-    session (Session): The database session.
+    customer_id: The unique identifier of the customer.
+    session: The database session.
 
 Returns:
-    List[RoleResponse]: A list of all roles (default and custom) for the customer,
+    List[RoleResponse]: Internal roles (default and custom) for the customer,
                                 with a boolean flag indicating if the role is custom.
 
 **Parameters**:
@@ -1235,6 +1384,29 @@ Response:
 
 **Responses**:
 - `201`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/admin/customers/{customer_id}/guest-roles — Get Customer Guest Roles
+
+**Endpoint**: `GET /v1/admin/customers/{customer_id}/guest-roles`
+**Summary**: Get Customer Guest Roles
+**Tags**: admin
+
+Retrieve guest/external roles (e.g., GuestUser).
+
+Args:
+    session: The database session.
+
+Returns:
+    List[RoleResponse]: Guest roles.
+
+**Parameters**:
+- `customer_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
 - `422`: Validation Error
 
 ---
@@ -1547,6 +1719,81 @@ Returns the external secret manager details upon completion.
 
 ---
 
+## POST /v1/admin/bulk/invitations — Bulk Invite Users
+
+**Endpoint**: `POST /v1/admin/bulk/invitations`
+**Summary**: Bulk Invite Users
+**Tags**: admin
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/admin/bulk/delete-users — Bulk Delete Users
+
+**Endpoint**: `POST /v1/admin/bulk/delete-users`
+**Summary**: Bulk Delete Users
+**Tags**: admin
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/admin/bulk/assign-roles — Bulk Assign Roles
+
+**Endpoint**: `POST /v1/admin/bulk/assign-roles`
+**Summary**: Bulk Assign Roles
+**Tags**: admin
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/admin/bulk/assign-projects — Bulk Assign Projects
+
+**Endpoint**: `POST /v1/admin/bulk/assign-projects`
+**Summary**: Bulk Assign Projects
+**Tags**: admin
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/admin/bulk/assign-organizations — Bulk Assign Organizations
+
+**Endpoint**: `POST /v1/admin/bulk/assign-organizations`
+**Summary**: Bulk Assign Organizations
+**Tags**: admin
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/notification-settings/customer —  Get Customer Notification Settings
 
 **Endpoint**: `GET /v1/notification-settings/customer`
@@ -1630,5 +1877,31 @@ Delete the notification settings (restoring the default) for the tokens user.
 
 **Responses**:
 - `200`: Successful Response
+
+---
+
+## GET /v1/gateway/logging-defaults — Get Admin Logging Defaults
+
+**Endpoint**: `GET /v1/gateway/logging-defaults`
+**Summary**: Get Admin Logging Defaults
+**Tags**: admin
+
+**Responses**:
+- `200`: Successful Response
+
+---
+
+## PATCH /v1/gateway/logging-defaults — Patch Admin Logging Defaults
+
+**Endpoint**: `PATCH /v1/gateway/logging-defaults`
+**Summary**: Patch Admin Logging Defaults
+**Tags**: admin
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
 
 ---

@@ -673,20 +673,20 @@ This semantic priority ordering ensures consistent visualization with bad tags a
 
 Get use case breakdown by alert severity levels.
 
-Now operates over ALL LLM_ENDPOINT resources for the customer.
-NO_ISSUES represents LLM_ENDPOINT resources without unresolved AI_GOVERNANCE_ALERT issues.
+Now operates over ALL resources with PROMPT_ANALYSIS capability for the customer.
+NO_ISSUES represents resources with PROMPT_ANALYSIS capability without unresolved AI_GOVERNANCE_ALERT issues.
 
 **Severity Categories:**
 - **CRITICAL**: Use cases with active critical alerts requiring immediate attention
 - **HIGH**: Use cases with high-priority alerts needing prompt resolution
 - **MEDIUM**: Use cases with moderate alerts for routine monitoring
 - **LOW**: Use cases with minor alerts or warnings
-- **NO_ISSUES**: Use cases with no active alerts (includes all LLM_ENDPOINT resources without issues)
+- **NO_ISSUES**: Use cases with no active alerts (includes all resources with PROMPT_ANALYSIS capability without issues)
 
 **Key Changes (v8.0):**
-- Now includes ALL LLM_ENDPOINT resources, not just those with firewall sessions
-- NO_ISSUES = total LLM_ENDPOINT resources - resources with unresolved AI_GOVERNANCE_ALERT issues
-- enabled_scanners_only parameter is DEPRECATED and ignored for complete LLM_ENDPOINT coverage
+- Now includes ALL resources with PROMPT_ANALYSIS capability, not just those with firewall sessions
+- NO_ISSUES = total resources with PROMPT_ANALYSIS capability - resources with unresolved AI_GOVERNANCE_ALERT issues
+- enabled_scanners_only parameter is DEPRECATED and ignored for complete PROMPT_ANALYSIS coverage
   (previously restricted to endpoints with evaluations; now covers all endpoints for comprehensive visibility)
 
 **Use Cases:**
@@ -697,7 +697,7 @@ NO_ISSUES represents LLM_ENDPOINT resources without unresolved AI_GOVERNANCE_ALE
 
 **Response Structure:**
 - **severity_breakdown**: Count of use cases per severity level
-- **total_use_cases**: Total number of LLM_ENDPOINT resources (not just monitored ones)
+- **total_use_cases**: Total number of resources with PROMPT_ANALYSIS capability (not just monitored ones)
 - **last_updated**: Timestamp of data freshness for cache management
 
 **Parameters**:
@@ -705,7 +705,7 @@ NO_ISSUES represents LLM_ENDPOINT resources without unresolved AI_GOVERNANCE_ALE
 - `project_id` (query, optional): Filter by project ID
 - `last_request_after` (query, optional): Only include endpoints with activity after this date (ISO 8601 format or date-only)
 - `last_request_before` (query, optional): Only include endpoints with activity before this date (ISO 8601 format or date-only)
-- `enabled_scanners_only` (query, optional): DEPRECATED: Ignored to ensure complete LLM_ENDPOINT coverage
+- `enabled_scanners_only` (query, optional): DEPRECATED: Ignored to ensure complete PROMPT_ANALYSIS coverage
 
 **Responses**:
 - `200`: Successful Response
@@ -962,11 +962,254 @@ instead of permanent deletion, allowing easy re-enablement later.
 
 ---
 
+## GET /v2/ai-governance/governance-alert-policies — Get Governance Alerts
+
+**Endpoint**: `GET /v2/ai-governance/governance-alert-policies`
+**Summary**: Get Governance Alerts
+**Tags**: ai-governance, alerting
+
+List governance alert policies for a specific dashboard.
+
+A dashboard is identified by (customer, resource_instance, rule_type, direction, granularity).
+Returns all alert policies configured on that dashboard.
+
+**Parameters**:
+- `resource_instance_id` (query, required): Resource instance ID
+- `rule_type` (query, required): Governance rule type
+- `direction` (query, required): Input or Output direction
+- `granularity` (query, required): Metric time-window granularity: 5min, hour, day, week, or month
+- `page` (query, optional): Page number (1-based)
+- `per_page` (query, optional): Results per page
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v2/ai-governance/governance-alert-policies — Create Governance Alert
+
+**Endpoint**: `POST /v2/ai-governance/governance-alert-policies`
+**Summary**: Create Governance Alert
+**Tags**: ai-governance, alerting
+
+Create a new governance alert policy.
+
+Always creates a new policy row — multiple policies can exist on the same dashboard
+with different thresholds and severities.
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/ai-governance/governance-alert-policies/{policy_id} — Update Governance Alert
+
+**Endpoint**: `PATCH /v2/ai-governance/governance-alert-policies/{policy_id}`
+**Summary**: Update Governance Alert
+**Tags**: ai-governance, alerting
+
+Update an existing governance alert policy.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v2/ai-governance/governance-alert-policies/{policy_id} — Delete Governance Alert
+
+**Endpoint**: `DELETE /v2/ai-governance/governance-alert-policies/{policy_id}`
+**Summary**: Delete Governance Alert
+**Tags**: ai-governance, alerting
+
+Delete a governance alert policy.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/performance/alert-policies — Get Performance Alerts
+
+**Endpoint**: `GET /v2/ai-governance/performance/alert-policies`
+**Summary**: Get Performance Alerts
+**Tags**: ai-governance, alerting
+
+List performance alert policies for a specific dashboard.
+
+A dashboard is identified by (customer, resource_instance, metric_name, granularity).
+Returns all alert policies configured on that dashboard.
+
+**Parameters**:
+- `resource_instance_id` (query, required): Resource instance ID
+- `metric_name` (query, required): Performance metric name
+- `granularity` (query, required): Metric time-window granularity: 5min, hour, day, week, or month
+- `page` (query, optional): Page number (1-based)
+- `per_page` (query, optional): Results per page
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v2/ai-governance/performance/alert-policies — Create Performance Alert
+
+**Endpoint**: `POST /v2/ai-governance/performance/alert-policies`
+**Summary**: Create Performance Alert
+**Tags**: ai-governance, alerting
+
+Create a new performance alert policy.
+
+Always creates a new policy row — multiple policies can exist on the same dashboard
+with different thresholds and severities.
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/performance/issues — List Performance Issues
+
+**Endpoint**: `GET /v2/ai-governance/performance/issues`
+**Summary**: List Performance Issues
+**Tags**: ai-governance, alerting
+
+List performance issues (AI_PERFORMANCE_ALERT type).
+
+Returns issues created by the performance alert evaluation ETL,
+with alert counts for each issue.
+
+**Parameters**:
+- `organization_id` (query, optional): Filter by organization ID
+- `project_id` (query, optional): Filter by project ID
+- `search` (query, optional): Search by metric name or resource display name
+- `statuses` (query, optional): Filter by issue statuses
+- `severities` (query, optional): Filter by severity levels
+- `metric_names` (query, optional): Filter by metric names (e.g. latency_ms)
+- `resource_instance_id` (query, optional): Filter by resource instance ID
+- `page` (query, optional): Page number (1-based)
+- `per_page` (query, optional): Results per page
+- `orderBy` (query, optional): 
+- `sortOrder` (query, optional): 
+- `order` (query, optional): 
+- `order_by` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/ai-governance/performance/issues/{issue_id} — Update Performance Issue
+
+**Endpoint**: `PATCH /v2/ai-governance/performance/issues/{issue_id}`
+**Summary**: Update Performance Issue
+**Tags**: ai-governance, alerting
+
+Update a performance issue (e.g. close/reopen).
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/performance/issues/{issue_id}/alerts — List Performance Issue Alerts
+
+**Endpoint**: `GET /v2/ai-governance/performance/issues/{issue_id}/alerts`
+**Summary**: List Performance Issue Alerts
+**Tags**: ai-governance, performance
+
+Get paginated alerts for a specific performance issue.
+
+**Parameters**:
+- `issue_id` (path, required): 
+- `page` (query, optional): 
+- `page_size` (query, optional): 
+- `status` (query, optional): 
+- `severity` (query, optional): 
+- `order` (query, optional): 
+- `order_by` (query, optional): 
+- `start_date` (query, optional): 
+- `end_date` (query, optional): 
+- `timezone` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/ai-governance/performance-alerts/{policy_id} — Update Performance Alert
+
+**Endpoint**: `PATCH /v2/ai-governance/performance-alerts/{policy_id}`
+**Summary**: Update Performance Alert
+**Tags**: ai-governance, alerting
+
+Update an existing performance alert policy.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v2/ai-governance/performance-alerts/{policy_id} — Delete Performance Alert
+
+**Endpoint**: `DELETE /v2/ai-governance/performance-alerts/{policy_id}`
+**Summary**: Delete Performance Alert
+**Tags**: ai-governance, alerting
+
+Delete a performance alert policy.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v2/ai-governance/issues — Get Ai Governance Issues
 
 **Endpoint**: `GET /v2/ai-governance/issues`
 **Summary**: Get Ai Governance Issues
 **Tags**: ai-governance, alerting
+
+TODO (xiaochen): remove this api
 
 Get AI governance issues with enhanced filtering and toggle between data sources.
 
@@ -1044,6 +1287,44 @@ and incidents array for comprehensive issue context and workflow support.
 - `organization_id` (query, optional): Filter by organization ID
 - `project_id` (query, optional): Filter by project ID
 - `use_issues_table` (query, optional): Use Issue table (true) or AiGovernanceAlert table (false, legacy)
+- `search` (query, optional): Search by rule display name or resource display name
+- `statuses` (query, optional): Filter by issue statuses
+- `severities` (query, optional): Filter by severity levels
+- `rule_types` (query, optional): Filter by rule types
+- `resource_instance_id` (query, optional): 
+- `resource_instance_ids` (query, optional): Filter by multiple resource instance IDs
+- `page` (query, optional): Page number (1-based)
+- `per_page` (query, optional): Results per page
+- `orderBy` (query, optional): 
+- `sortOrder` (query, optional): 
+- `order` (query, optional): 
+- `order_by` (query, optional): 
+- `start_date` (query, optional): 
+- `end_date` (query, optional): 
+- `timezone` (query, optional): 
+
+**Request Body** (optional):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/governance-issues — Get Ai Governance Issues V2
+
+**Endpoint**: `GET /v2/ai-governance/governance-issues`
+**Summary**: Get Ai Governance Issues V2
+**Tags**: ai-governance, alerting
+
+Get AI governance issues (governance-scoped).
+
+Same as /issues but always uses the Issue table (no legacy toggle).
+
+**Parameters**:
+- `organization_id` (query, optional): Filter by organization ID
+- `project_id` (query, optional): Filter by project ID
 - `search` (query, optional): Search by rule display name or resource display name
 - `statuses` (query, optional): Filter by issue statuses
 - `severities` (query, optional): Filter by severity levels
@@ -1200,92 +1481,329 @@ have many associated alerts over time.
 
 ---
 
-## POST /v2/ai-governance/alerting/evaluate — Evaluate Alerting Policies
+## GET /v2/ai-governance/governance/requests/search — Governance Requests Search
 
-**Endpoint**: `POST /v2/ai-governance/alerting/evaluate`
-**Summary**: Evaluate Alerting Policies
-**Tags**: ai-governance, alerting
+**Endpoint**: `GET /v2/ai-governance/governance/requests/search`
+**Summary**: Governance Requests Search
+**Tags**: ai-governance, governance
 
-Manually trigger alerting policy evaluation for a specified time window.
+Search governance-tagged requests. See /requests/search for full docs.
 
-This endpoint evaluates all active alerting policies against current governance
-metrics for the specified time window, functioning like the ETL job but callable
-on-demand for testing, debugging, or immediate alert generation.
+**Parameters**:
+- `resource_instance_id` (query, optional): 
+- `rule_type` (query, optional): 
+- `governance_tag` (query, optional): 
+- `direction` (query, optional): 
+- `start_date` (query, optional): 
+- `end_date` (query, optional): 
+- `timezone` (query, optional): 
+- `page` (query, optional): 
+- `per_page` (query, optional): 
 
-**Evaluation Process:**
-1. **Policy Discovery**: Retrieve all active alerting policies for the customer
-2. **Metrics Calculation**: Calculate current governance rates for the time window
-3. **Threshold Evaluation**: Compare current rates against absolute and relative thresholds
-4. **Alert Generation**: Create alerts when thresholds are violated (unless dry_run=true)
-5. **Result Summary**: Return evaluation results with details for each policy
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
 
-**Time Window Configuration:**
-- **Default**: 1 hour ago to now if no times specified
-- **Custom range**: Specify start_time and end_time for specific periods
-- **Timezone handling**: All times processed in UTC for consistency
+---
 
-**Threshold Logic:**
-- **Absolute**: `current_rate >= absolute_threshold`
-- **Relative**: `current_rate >= (1 + relative_threshold/100) * 30_day_average`
-- **Both**: Either absolute OR relative threshold violation triggers alert
+## GET /v2/ai-governance/governance/timeseries — Governance Timeseries
 
-**Filtering Options:**
-- **resource_instance_id**: Evaluate policies for specific resource only
-- **rule_type**: Evaluate specific governance rule type (e.g., SentimentRule)
-- **direction**: Evaluate Input or Output direction policies only
-- **dry_run**: Preview what alerts would be generated without creating them
+**Endpoint**: `GET /v2/ai-governance/governance/timeseries`
+**Summary**: Governance Timeseries
+**Tags**: ai-governance, governance
 
-**Alert Severity Assignment:**
-Alert severity is determined by the severity level configured on the alerting policy.
-When thresholds are violated, generated alerts inherit the policy's severity level:
-- **CRITICAL**: Highest priority violations requiring immediate attention
-- **HIGH**: Important violations requiring prompt action
-- **MEDIUM**: Standard violations requiring timely review
-- **LOW**: Minor violations for awareness and tracking
+Governance timeseries data. See /dashboard/timeseries for full docs.
 
-**Use Cases:**
-- **Development testing**: Test alerting configuration with dry_run=true
-- **Manual monitoring**: Trigger evaluation outside scheduled ETL job
-- **Incident investigation**: Evaluate specific time periods for alert patterns
-- **Configuration validation**: Verify threshold settings produce expected alerts
-- **Troubleshooting**: Debug why alerts were or weren't generated
+**Parameters**:
+- `resource_instance_id` (query, optional): 
+- `start_date` (query, required): 
+- `end_date` (query, required): 
+- `timezone` (query, optional): 
+- `interval` (query, optional): 
+- `granularity` (query, optional): 
+- `rule_type` (query, optional): 
+- `governance_tag` (query, optional): 
+- `governance_target` (query, optional): 
+- `direction` (query, optional): 
 
-**Response Details:**
-Each evaluation result includes:
-- **Policy context**: Rule type, direction, resource, thresholds
-- **Current metrics**: Calculated rate and 30-day average for context
-- **Evaluation outcome**: Whether thresholds were violated
-- **Alert details**: Alert ID and severity if alert was generated
-- **Evaluation reasoning**: Why alert was or wasn't triggered
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
 
-**Performance Notes:**
-This endpoint performs governance metric calculations and database operations
-similar to the ETL job, so response times may vary based on data volume and
-time window size. Larger time windows and broader scopes will take longer.
+---
 
-**Integration Examples:**
-```python
-# Test alerting for last hour
-POST /ai-governance/alerting/evaluate
-{
-    "dry_run": true
-}
+## GET /v2/ai-governance/governance/filter-options — Governance Filter Options
 
-# Evaluate specific resource for custom time window
-POST /ai-governance/alerting/evaluate
-{
-    "start_time": "2024-01-15T10:00:00Z",
-    "end_time": "2024-01-15T11:00:00Z",
-    "resource_instance_id": "uuid",
-    "dry_run": false
-}
-```
+**Endpoint**: `GET /v2/ai-governance/governance/filter-options`
+**Summary**: Governance Filter Options
+**Tags**: ai-governance, governance
+
+Governance filter options. See /dashboard/filter-options for full docs.
+
+**Parameters**:
+- `resource_instance_id` (query, optional): Optional resource instance ID to filter results
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/governance/issues — Governance Issues
+
+**Endpoint**: `GET /v2/ai-governance/governance/issues`
+**Summary**: Governance Issues
+**Tags**: ai-governance, governance
+
+Governance issues list. See /governance-issues for full docs.
+
+**Parameters**:
+- `organization_id` (query, optional): Filter by organization ID
+- `project_id` (query, optional): Filter by project ID
+- `search` (query, optional): Search by rule display name or resource display name
+- `statuses` (query, optional): Filter by issue statuses
+- `severities` (query, optional): Filter by severity levels
+- `rule_types` (query, optional): Filter by rule types
+- `resource_instance_id` (query, optional): 
+- `resource_instance_ids` (query, optional): Filter by multiple resource instance IDs
+- `page` (query, optional): Page number (1-based)
+- `per_page` (query, optional): Results per page
+- `orderBy` (query, optional): 
+- `sortOrder` (query, optional): 
+- `order` (query, optional): 
+- `order_by` (query, optional): 
+- `start_date` (query, optional): 
+- `end_date` (query, optional): 
+- `timezone` (query, optional): 
+
+**Request Body** (optional):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/governance/alert-policies — Governance Alert Policies List
+
+**Endpoint**: `GET /v2/ai-governance/governance/alert-policies`
+**Summary**: Governance Alert Policies List
+**Tags**: ai-governance, governance
+
+List governance alert policies for a specific dashboard.
+
+A dashboard is identified by (customer, resource_instance, rule_type, direction, granularity).
+Returns all alert policies configured on that dashboard.
+
+**Parameters**:
+- `resource_instance_id` (query, required): Resource instance ID
+- `rule_type` (query, required): Governance rule type
+- `direction` (query, required): Input or Output direction
+- `granularity` (query, required): Metric time-window granularity: 5min, hour, day, week, or month
+- `page` (query, optional): Page number (1-based)
+- `per_page` (query, optional): Results per page
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v2/ai-governance/governance/alert-policies — Governance Alert Policies Create
+
+**Endpoint**: `POST /v2/ai-governance/governance/alert-policies`
+**Summary**: Governance Alert Policies Create
+**Tags**: ai-governance, governance
+
+Create a new governance alert policy.
+
+Always creates a new policy row — multiple policies can exist on the same dashboard
+with different thresholds and severities.
 
 **Request Body** (required):
 - `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/ai-governance/governance/alert-policies/{policy_id} — Governance Alert Policies Update
+
+**Endpoint**: `PATCH /v2/ai-governance/governance/alert-policies/{policy_id}`
+**Summary**: Governance Alert Policies Update
+**Tags**: ai-governance, governance
+
+Update an existing governance alert policy.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v2/ai-governance/governance/alert-policies/{policy_id} — Governance Alert Policies Delete
+
+**Endpoint**: `DELETE /v2/ai-governance/governance/alert-policies/{policy_id}`
+**Summary**: Governance Alert Policies Delete
+**Tags**: ai-governance, governance
+
+Delete a governance alert policy.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/ai-governance/governance/issues/{issue_id} — Governance Issue Update
+
+**Endpoint**: `PATCH /v2/ai-governance/governance/issues/{issue_id}`
+**Summary**: Governance Issue Update
+**Tags**: ai-governance, governance
+
+Update a governance issue (e.g. close/reopen).
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/governance/issues/{issue_id}/alerts — Governance Issue Alerts
+
+**Endpoint**: `GET /v2/ai-governance/governance/issues/{issue_id}/alerts`
+**Summary**: Governance Issue Alerts
+**Tags**: ai-governance, governance
+
+Get paginated alerts for a specific governance issue.
+
+**Parameters**:
+- `issue_id` (path, required): 
+- `page` (query, optional): 
+- `page_size` (query, optional): 
+- `status` (query, optional): 
+- `severity` (query, optional): 
+- `order` (query, optional): 
+- `order_by` (query, optional): 
+- `start_date` (query, optional): 
+- `end_date` (query, optional): 
+- `timezone` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/performance/timeseries — Performance Timeseries
+
+**Endpoint**: `GET /v2/ai-governance/performance/timeseries`
+**Summary**: Performance Timeseries
+**Tags**: ai-governance, performance
+
+Performance timeseries data. See /dashboard/performance/timeseries for full docs.
+
+**Parameters**:
+- `metric` (query, optional): 
+- `start_date` (query, required): 
+- `end_date` (query, required): 
+- `interval` (query, optional): 
+- `resource_instance_id` (query, required): 
+- `timezone_str` (query, optional): 
+- `timezone` (query, optional): 
+- `series` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/ai-governance/performance/requests/search — Performance Requests Search
+
+**Endpoint**: `GET /v2/ai-governance/performance/requests/search`
+**Summary**: Performance Requests Search
+**Tags**: ai-governance, performance
+
+Drill down from a performance alert into individual LLM requests.
+
+Returns requests within a time range sorted by the specified metric
+(worst offenders first by default). Includes governance tags,
+input/output previews, and threshold comparison.
+
+Accepts either start_date/end_date (new) or bucket_start/bucket_end (legacy).
+
+**Parameters**:
+- `resource_instance_id` (query, required): 
+- `start_date` (query, optional): 
+- `end_date` (query, optional): 
+- `timezone` (query, optional): 
+- `direction` (query, optional): 
+- `bucket_start` (query, optional): 
+- `bucket_end` (query, optional): 
+- `metric_name` (query, optional): 
+- `aggregator` (query, optional): 
+- `sort_order` (query, optional): 
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/ai-governance/performance/alert-policies/{policy_id} — Performance Alert Policy Update
+
+**Endpoint**: `PATCH /v2/ai-governance/performance/alert-policies/{policy_id}`
+**Summary**: Performance Alert Policy Update
+**Tags**: ai-governance, performance
+
+Update a performance alert policy. See /performance-alerts/{id} for full docs.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v2/ai-governance/performance/alert-policies/{policy_id} — Performance Alert Policy Delete
+
+**Endpoint**: `DELETE /v2/ai-governance/performance/alert-policies/{policy_id}`
+**Summary**: Performance Alert Policy Delete
+**Tags**: ai-governance, performance
+
+Delete a performance alert policy. See /performance-alerts/{id} for full docs.
+
+**Parameters**:
+- `policy_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
 - `422`: Validation Error
 
 ---

@@ -13,7 +13,7 @@ from playwright.async_api import async_playwright
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-BASE_URL = "https://prod.alltrue-be.com"
+BASE_URL = "https://playground.alltrue-be.com"
 DOCS_BASE = f"{BASE_URL}/_docs/docs"
 LOGIN_URL = f"{BASE_URL}"
 OUTPUT_DIR = Path(__file__).parent / "output"

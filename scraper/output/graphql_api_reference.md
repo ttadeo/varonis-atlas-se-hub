@@ -1,6 +1,6 @@
 ---
 title: GraphQL API Reference
-url: https://prod.alltrue-be.com/_docs/docs/
+url: https://playground.alltrue-be.com/_docs/docs/
 section: 
 ---
 
@@ -75,4 +75,4 @@ Below you'll find our embedded GraphiQL explorer powered by Strawberry. This int
 - Access autocomplete suggestions based on the schema
 - Explore available types, queries, and mutations
 
-- V1 API (Default)- V2 API (Preview)[PreviousUsing Quarantining APIs from Kong Konnect](/_docs/docs/platform_services/kong)[NextWhat's New in V3.1.4](/_docs/docs/platform_services/314)- [About Our GraphQL API](#about-our-graphql-api)[API Versions](#api-versions)- [Making Requests](#making-requests)- [Interactive GraphQL Explorer](#interactive-graphql-explorer)
+- V1 API (Default)- V2 API (Preview)[PreviousAI Investigation Handbook](/_docs/docs/handbooks/ai_investigation_handbook)[NextWhat's New in V3.1.6](/_docs/docs/platform_services/316)- [About Our GraphQL API](#about-our-graphql-api)[API Versions](#api-versions)- [Making Requests](#making-requests)- [Interactive GraphQL Explorer](#interactive-graphql-explorer)

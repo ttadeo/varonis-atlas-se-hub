@@ -44,12 +44,11 @@ to filter by multiple values. Empty arrays or omitted parameters return all matc
 - Combine with `governance_target` to specify input/output/both filtering
 - When `governance_target=both` without `governance_tag`, returns requests with tags in input OR output (OR logic)
 
-**Response Aggregation (v7.0):**
-The response includes aggregated counts of rule types and action types across all returned requests:
-- `rule_type_counts`: Dictionary mapping rule type names to their occurrence counts in the filtered results
-- `action_type_counts`: Dictionary mapping action type names to their occurrence counts in the filtered results
-- Example: `{"rule_type_counts": {"SentimentRule": 15, "FIREWALL": 8}, "action_type_counts": {"BLOCK": 12, "ALERT": 11}}`
-- Shows which rule types were triggered and which actions were taken in your filtered dataset
+**Response Tags (v7.1):**
+Each request returns directional governance tags:
+- `input_tags`: Array of objects like `{ "tag_label": "..." }` from input evaluations
+- `output_tags`: Array of objects like `{ "tag_label": "..." }` from output evaluations
+- `ATTRIBUTE` actions are excluded from `input_actions` and `output_actions`
 
 **Examples:**
 - Single provider: `?llm_provider_name=openai`
@@ -393,10 +392,13 @@ Permanently removes the dataset and its metadata (does not affect the underlying
 **Summary**: Get Dataset Requests Route
 **Tags**: capture-replay
 
-Get all firewall requests associated with a capture replay dataset.
+Get paginated firewall requests associated with a capture replay dataset.
 
-Returns detailed information about each request, including content, timestamps, and metadata.
-Supports pagination via page and per_page query parameters.
+Response shape aligns with `GET /v2/capture-replay/customer/{customer_id}/requests/search`:
+returns compact request rows with `input_actions`/`output_actions` and directional
+governance tags (`input_tags` and `output_tags`).
+
+Legacy governance summary fields are omitted from this list endpoint.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID

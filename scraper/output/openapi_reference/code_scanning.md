@@ -179,6 +179,67 @@ Add a repository.
 
 ---
 
+## PUT /v1/code-scanning/repositories/bulk_project_assignments — Bulk Update Repository Project Assignments
+
+**Endpoint**: `PUT /v1/code-scanning/repositories/bulk_project_assignments`
+**Summary**: Bulk Update Repository Project Assignments
+**Tags**: code-scanning
+
+Bulk update project assignments for multiple repositories.
+
+All specified repositories will be updated to belong to exactly the projects
+specified in project_ids. Each repository is processed independently - if one
+fails, others will still be updated.
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/code-scanning/repositories/with-projects — Add Repository Config With Projects
+
+**Endpoint**: `POST /v1/code-scanning/repositories/with-projects`
+**Summary**: Add Repository Config With Projects
+**Tags**: code-scanning
+
+Add a repository with support for multiple project assignments.
+
+This endpoint allows you to create a repository and assign it to multiple projects
+at creation time. Specify the list of project IDs you want the repository to belong to.
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PUT /v1/code-scanning/repositories/{repository_config_id}/projects — Update Repository Project Assignments
+
+**Endpoint**: `PUT /v1/code-scanning/repositories/{repository_config_id}/projects`
+**Summary**: Update Repository Project Assignments
+**Tags**: code-scanning
+
+Update a repository's project assignments and/or other attributes.
+
+**Parameters**:
+- `repository_config_id` (path, required): 
+
+**Request Body** (required):
+- `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## PUT /v1/code-scanning/customer/{customer_id}/repositories/{repository_config_id}/unlink-from-project — Unlink Repository Config
 
 **Endpoint**: `PUT /v1/code-scanning/customer/{customer_id}/repositories/{repository_config_id}/unlink-from-project`

@@ -10,13 +10,35 @@ import json
 from pathlib import Path
 from playwright.async_api import async_playwright
 
-BASE_URL = "https://prod.alltrue-be.com"
+BASE_URL = "https://playground.alltrue-be.com"
 OPENAPI_URL = f"{BASE_URL}/_docs/api/openapi"
 OUTPUT_DIR = Path(__file__).parent / "output" / "openapi_reference"
 
 
 async def login_and_get_spec(page):
     """Navigate to OpenAPI page, login if needed, extract the spec."""
+
+    # Intercept network responses to capture the spec body as the SPA fetches it
+    intercepted_spec_url = None
+    intercepted_spec_body = None
+
+    async def handle_response(response):
+        nonlocal intercepted_spec_url, intercepted_spec_body
+        if intercepted_spec_body:
+            return
+        url = response.url
+        if any(kw in url for kw in ["openapi", "swagger", "spec", "/external"]):
+            try:
+                body = await response.text()
+                if body and not body.strip().startswith("<") and len(body) > 1000:
+                    intercepted_spec_url = url
+                    intercepted_spec_body = body
+                    print(f"Intercepted spec response from: {url} ({len(body)} bytes)")
+            except Exception:
+                pass
+
+    page.on("response", handle_response)
+
     print(f"Navigating to {OPENAPI_URL}...")
     await page.goto(OPENAPI_URL)
     await page.wait_for_load_state("networkidle")
@@ -30,10 +52,18 @@ async def login_and_get_spec(page):
             timeout=120000
         )
         await page.wait_for_load_state("networkidle")
+        # Navigate back to OpenAPI page after login so SPA loads the spec
+        print("Navigating back to OpenAPI page after login...")
         await page.goto(OPENAPI_URL)
         await page.wait_for_load_state("networkidle")
 
-    await page.wait_for_timeout(3000)
+    # Wait for SPA to hydrate and fetch the spec
+    print("Waiting for SPA to load spec...")
+    await page.wait_for_timeout(6000)
+    try:
+        await page.wait_for_load_state("networkidle", timeout=15000)
+    except Exception:
+        pass
 
     # Save debug snapshot
     debug_dir = OUTPUT_DIR / "debug"
@@ -43,43 +73,49 @@ async def login_and_get_spec(page):
     (debug_dir / "openapi_page.html").write_text(html, encoding="utf-8")
     print(f"Debug snapshot saved to {debug_dir}")
 
-    # Try to find the raw OpenAPI spec URL in the page source
-    spec_url = None
-    patterns = [
-        r'"url"\s*:\s*"([^"]*\.(?:json|yaml|yml)[^"]*)"',
-        r"spec-url=['\"]([^'\"]+)['\"]",
-        r"url:\s*['\"]([^'\"]+\.(?:json|yaml|yml)[^'\"]*)['\"]",
-        r'href="([^"]*openapi[^"]*\.(?:json|yaml))"',
+    # Use intercepted response body if we caught it
+    if intercepted_spec_body:
+        return intercepted_spec_url, html, intercepted_spec_body
+
+    # Try clicking the Download button — the href will contain the spec URL
+    print("Trying Download button...")
+    try:
+        download_link = await page.query_selector("a[download], a[href*='.json'], a[href*='.yaml']")
+        if download_link:
+            href = await download_link.get_attribute("href")
+            if href:
+                if href.startswith("/"):
+                    href = BASE_URL + href
+                print(f"Found spec via Download button: {href}")
+                return href, html, None
+    except Exception:
+        pass
+
+    # Try common spec paths as fallback
+    host = BASE_URL.replace("https://", "")
+    api_host = f"https://api.{host}"
+    candidates = [
+        f"{api_host}/openapi/external",
+        f"{BASE_URL}/_docs/api/openapi.json",
+        f"{BASE_URL}/_docs/api/openapi.yaml",
+        f"{BASE_URL}/api/openapi.json",
+        f"{BASE_URL}/openapi.json",
     ]
-    for pattern in patterns:
-        match = re.search(pattern, html, re.IGNORECASE)
-        if match:
-            spec_url = match.group(1)
-            if spec_url.startswith("/"):
-                spec_url = BASE_URL + spec_url
-            print(f"Found spec URL: {spec_url}")
-            break
+    print("Trying common spec paths...")
+    for candidate in candidates:
+        try:
+            response = await page.request.get(candidate)
+            if response.status == 200:
+                body = await response.text()
+                if body.strip().startswith("<"):
+                    print(f"  Skipping {candidate} — returned HTML")
+                    continue
+                print(f"Found spec at: {candidate}")
+                return candidate, html, None
+        except Exception:
+            pass
 
-    # Try common spec paths if not found in page
-    if not spec_url:
-        candidates = [
-            f"{BASE_URL}/_docs/api/openapi.json",
-            f"{BASE_URL}/_docs/api/openapi.yaml",
-            f"{BASE_URL}/api/openapi.json",
-            f"{BASE_URL}/openapi.json",
-        ]
-        print("Spec URL not found in page source, trying common paths...")
-        for candidate in candidates:
-            try:
-                response = await page.request.get(candidate)
-                if response.status == 200:
-                    spec_url = candidate
-                    print(f"Found spec at: {spec_url}")
-                    break
-            except Exception:
-                pass
-
-    return spec_url, html
+    return None, html, None
 
 
 def parse_openapi_spec(spec: dict) -> list[dict]:
@@ -173,24 +209,32 @@ async def main():
         page = await context.new_page()
 
         try:
-            spec_url, page_html = await login_and_get_spec(page)
+            spec_url, page_html, spec_body = await login_and_get_spec(page)
 
             if spec_url:
-                # Fetch the raw spec
                 print(f"\nFetching spec from {spec_url}...")
-                response = await page.request.get(spec_url)
-                if response.status == 200:
-                    content_type = response.headers.get("content-type", "")
-                    raw = await response.text()
 
+                if spec_body:
+                    # Already captured via response interception
+                    raw = spec_body
+                    print(f"Using intercepted spec body ({len(raw)} bytes)")
+                else:
+                    # Navigate the browser to the spec URL so auth cookies are sent
+                    await page.goto(spec_url)
+                    await page.wait_for_load_state("networkidle", timeout=15000)
+                    raw = await page.evaluate("() => document.body.innerText")
+
+                if not raw or raw.strip().startswith("<"):
+                    print("Failed to fetch spec — got HTML instead of JSON/YAML")
+                else:
                     # Save raw spec
-                    ext = "yaml" if "yaml" in spec_url or "yaml" in content_type else "json"
+                    ext = "yaml" if "yaml" in spec_url else "json"
                     spec_file = OUTPUT_DIR / f"openapi_spec.{ext}"
                     spec_file.write_text(raw, encoding="utf-8")
                     print(f"Raw spec saved to {spec_file}")
 
-                    # Parse and save as markdown chunks
-                    if ext == "json" or "json" in content_type:
+                    # Parse spec
+                    if ext == "json":
                         spec = json.loads(raw)
                     else:
                         try:
@@ -223,8 +267,6 @@ async def main():
                     index_file = OUTPUT_DIR / "index.json"
                     index_file.write_text(json.dumps(chunks, indent=2), encoding="utf-8")
                     print(f"\n✓ {len(chunks)} endpoint chunks saved to {OUTPUT_DIR}")
-                else:
-                    print(f"Failed to fetch spec: HTTP {response.status}")
             else:
                 print("\nCould not find OpenAPI spec URL automatically.")
                 print("Check the debug snapshot to inspect the page structure:")

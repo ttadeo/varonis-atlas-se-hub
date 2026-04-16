@@ -8,7 +8,7 @@ from pathlib import Path
 
 SPEC_FILE  = Path("output/openapi_reference/openapi_spec.json")
 OUTPUT_DIR = Path("output/openapi_reference")
-DOCS_URL   = "https://prod.alltrue-be.com/_docs/api/openapi"
+DOCS_URL   = "https://playground.alltrue-be.com/_docs/api/openapi"
 
 # Tags we care about for Atlas learning platform (skip internal/infra tags)
 SKIP_TAGS = {"internal", "no-auth", "worker", "data-plane"}

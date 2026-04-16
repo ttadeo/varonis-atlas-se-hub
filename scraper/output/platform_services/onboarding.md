@@ -1,6 +1,6 @@
 ---
 title: Onboarding
-url: https://prod.alltrue-be.com/_docs/docs/platform_services/onboarding
+url: https://playground.alltrue-be.com/_docs/docs/platform_services/onboarding
 section: platform_services
 ---
 
@@ -19,7 +19,7 @@ When you first log in, the system will automatically guide you through the Onboa
 Each step in the Onboarding Wizard can be completed later within the application, or you can contact your account manager to reset the Onboarding Wizard at any time.
 
 ## Install the Data Plane[​](#install-the-data-plane)
-The next step in the onboarding process is to install the Data Plane, which is necessary for enabling the TRiSM Hub's AI Observability and AI Gateway features. You have two options for installation:
+The next step in the onboarding process is to install the Data Plane, which is necessary for enabling the TRiSM Hub's AI Observability and AI Runtime Protection features. You have two options for installation:
 
 - Varonis Managed: If you prefer Varonis to manage the Data Plane, contact your account manager and click the "Skip this for now" button. Varonis will handle the installation and connect the Data Plane to your account automatically.
 - Self-Managed: If you choose to install the Data Plane on your AWS account, you have two setup options, both of which rely on AWS CloudFormation:
@@ -34,7 +34,8 @@ The installation process can take up to 30 minutes. You can either wait and clic
 If you choose to proceed without waiting and the installation fails, you will be notified in the application, and your account manager will contact you to assist with reattempting the installation. You can also reattempt the Data Plane setup later from the admin console.
 
 At any time, you may click "Skip this for now" to continue with the onboarding process.
-To learn more about the Data Plane, refer to the [Architecture Overview](/_docs/docs/overview/architecture) .
+
+To learn more about the Data Plane, refer to the [Architecture Overview](/_docs/docs/overview/architecture).
 
 ## Link Cloud Accounts[​](#link-cloud-accounts)
 The next step in the onboarding process prompts you to link your cloud accounts, which support your AI projects. The TRiSM Hub will run discovery on your connected accounts to identify AI resources used by your projects. The system supports discovery on multiple platforms, including AWS, Google Cloud Platform (GCP), Microsoft Azure, IBM WatsonX, and Databricks.
@@ -64,7 +65,7 @@ For more detailed guidance on how organizations work, refer to the [Organization
 ## Define AI Projects[​](#define-ai-projects)
 In this step, you are prompted to define AI projects within the platform. Each AI project represents a specific AI system or application, allowing you to organize and manage your AI resources effectively. Defining projects helps you apply tailored policies, run compliance audits, and monitor specific AI systems separately from others.
 
-By creating distinct projects for each AI system, you can customize gateway rules, access controls, and compliance settings based on the unique needs of each system. This also allows you to track and manage issues, technology inventories, and logs at the project level.
+By creating distinct projects for each AI system, you can customize runtime protection, access controls, and compliance settings based on the unique needs of each system. This also allows you to track and manage issues, technology inventories, and logs at the project level.
 
 You can create multiple projects by clicking the add symbol (+) to add more. There is no limit on the number of projects that you can create.
 
