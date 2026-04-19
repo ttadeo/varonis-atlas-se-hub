@@ -148,6 +148,12 @@ export default function MeetingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId = "se_default"; // Will be replaced by real auth user ID later
+  const broadcastRef = useRef<BroadcastChannel | null>(null);
+
+  useEffect(() => {
+    broadcastRef.current = new BroadcastChannel("atlas-quick-response");
+    return () => broadcastRef.current?.close();
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -368,9 +374,7 @@ export default function MeetingPage() {
       }
 
       // Broadcast to second monitor
-      const channel = new BroadcastChannel("atlas-quick-response");
-      channel.postMessage({ question, answer: data.answer, confidence: data.confidence });
-      channel.close();
+      broadcastRef.current?.postMessage({ question, answer: data.answer, confidence: data.confidence });
 
     } catch (err) {
       setMessages((prev) => [
