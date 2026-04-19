@@ -251,6 +251,42 @@ How to end the meeting and propose clear next steps appropriate for a ${ctx.meet
 Write the script to be practical and immediately usable — not generic. Every section should reflect the specific customer profile above.`;
 }
 
+function buildCallGuidePrompt(ctx: MeetingContext): string {
+  return `You are an expert Varonis Atlas AI Security Sales Engineer. Generate a complete call guide for the following customer meeting.
+
+MEETING DETAILS:
+- Customer Industry: ${ctx.industry}
+- Meeting Type: ${ctx.meetingType}
+- People in the room: ${ctx.attendees || "Not specified"}
+- Known concerns / objections: ${ctx.knownConcerns || "None specified"}
+
+Search the Atlas knowledge base to ensure accuracy on product features, capabilities, and terminology before writing the guide.
+
+Generate a practical, immediately usable call guide with the following sections:
+
+## Opening — How to Start the Call
+What to say in the first 2 minutes to establish credibility, set the agenda, and build rapport with this specific audience.
+
+## Discovery Questions
+6–8 targeted questions for this specific customer (based on their industry and known concerns). For each question, include:
+- The question itself
+- Why you're asking it (what you're trying to uncover)
+
+## Key Talking Points
+The 3–4 most important things to communicate about Atlas for this customer profile. What problems does Atlas solve that are most relevant to their industry?
+
+## Objection Handling
+For each known concern listed above, provide a direct, confident response an Atlas SE would give. If no concerns are listed, use the most common objections for this industry.
+
+## Qualification Criteria
+What signals during this call indicate a strong opportunity vs. a poor fit? What questions reveal budget, authority, need, and timeline for this customer type?
+
+## Close & Next Steps
+How to end the call and propose clear next steps appropriate for a ${ctx.meetingType}.
+
+Write the guide to be specific to this customer profile — not generic. Every section should reflect their industry, meeting type, and known concerns.`;
+}
+
 // ─── Session save ─────────────────────────────────────────────────────────────
 
 async function saveInteraction(
@@ -370,6 +406,7 @@ export async function POST(req: NextRequest) {
       userId = "anonymous",
       saveSession = false,
       generateScript = false,
+      generateCallGuide = false,
       demoLength = "30",
       sessionName = "",
       sessionDescription = "",
@@ -383,6 +420,7 @@ export async function POST(req: NextRequest) {
       userId: string;
       saveSession: boolean;
       generateScript: boolean;
+      generateCallGuide: boolean;
       demoLength: string;
       sessionName: string;
       sessionDescription: string;
@@ -458,6 +496,43 @@ export async function POST(req: NextRequest) {
         isScript: true,
         sessionId: activeSessionId,
       });
+    }
+
+    // ── Call guide generation path ───────────────────────────────────────────
+    if (generateCallGuide && meetingContext) {
+      const [docsGeneral, docsDiscovery] = await Promise.all([
+        searchAtlasDocs(`${meetingContext.industry} AI security ${meetingContext.meetingType}`),
+        searchAtlasDocs(`Atlas discovery questions objection handling value proposition`),
+      ]);
+
+      const ragContext = `ATLAS KNOWLEDGE BASE (use this to ensure accuracy):\n\n${docsGeneral}\n\n---\n\n${docsDiscovery}`;
+      const callGuidePrompt = buildCallGuidePrompt(meetingContext);
+
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 8192,
+        system: buildSystemPrompt(meetingContext),
+        messages: [{ role: "user" as const, content: `${ragContext}\n\n---\n\n${callGuidePrompt}` }],
+      });
+
+      const guideAnswer = response.content
+        .filter((b) => b.type === "text")
+        .map((b) => (b as Anthropic.Messages.TextBlock).text)
+        .join("");
+
+      if (!guideAnswer.trim()) {
+        return NextResponse.json({ error: "Call guide generation returned empty content." }, { status: 500 });
+      }
+
+      let activeSessionId = sessionId;
+      if (saveSession && meetingContext) {
+        if (!activeSessionId) {
+          activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
+        }
+        await saveInteraction(activeSessionId, `Generate a call guide for this ${meetingContext.meetingType}.`, guideAnswer, "claude-sonnet-4-6", false, true);
+      }
+
+      return NextResponse.json({ answer: guideAnswer, model: "claude-sonnet-4-6", isScript: true, sessionId: activeSessionId });
     }
 
     // ── Model selection ──────────────────────────────────────────────────────

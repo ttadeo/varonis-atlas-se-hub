@@ -365,6 +365,63 @@ export default function MeetingPage() {
     }
   }
 
+  async function generateCallGuide() {
+    if (!contextLocked || generatingScript) return;
+    setGeneratingScript(true);
+
+    const guideMsg: Message = {
+      role: "user",
+      content: `Generate a call guide for this ${context.meetingType}.`,
+    };
+    setMessages((prev) => [...prev, guideMsg]);
+
+    try {
+      const res = await fetch("/api/meeting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: "",
+          history,
+          attachments: [],
+          meetingContext: context,
+          sessionId,
+          userId,
+          saveSession: isSaving,
+          sessionName,
+          sessionDescription,
+          generateCallGuide: true,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "API error");
+
+      const assistantMsg: Message = {
+        role: "assistant",
+        content: data.answer,
+        model: data.model,
+        isScript: true,
+      };
+      setMessages((prev) => [...prev, assistantMsg]);
+      setSessionScripts((prev) => [...prev, assistantMsg]);
+      setHistory((prev) => [
+        ...prev,
+        { role: "user", content: guideMsg.content },
+        { role: "assistant", content: data.answer },
+      ]);
+      if (data.sessionId && !sessionId) {
+        setSessionId(data.sessionId);
+        setSessionSaved(true);
+      }
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `Error generating call guide: ${String(err)}` },
+      ]);
+    } finally {
+      setGeneratingScript(false);
+    }
+  }
+
   // ── Sessions panel ─────────────────────────────────────────────────────────
 
   async function loadSessions() {
@@ -583,10 +640,10 @@ export default function MeetingPage() {
             </div>
           )}
 
-          {/* Demo script controls */}
+          {/* Demo / Call Guide controls */}
           <div className="mt-6 space-y-3">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Demo
+              Generate
             </p>
             <label className="flex items-center justify-between cursor-pointer">
               <span className="text-xs text-gray-400">Demo Required</span>
@@ -598,7 +655,7 @@ export default function MeetingPage() {
               </button>
             </label>
 
-            {demoRequired && (
+            {demoRequired ? (
               <>
                 <div>
                   <label className="text-xs text-gray-400 mb-1 block">Demo Length</label>
@@ -621,6 +678,14 @@ export default function MeetingPage() {
                   {generatingScript ? "Generating…" : "Generate Demo Script"}
                 </button>
               </>
+            ) : (
+              <button
+                disabled={!contextLocked || generatingScript}
+                onClick={generateCallGuide}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+              >
+                {generatingScript ? "Generating…" : "Generate Call Guide"}
+              </button>
             )}
           </div>
 
