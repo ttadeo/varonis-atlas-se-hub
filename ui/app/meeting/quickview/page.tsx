@@ -19,17 +19,39 @@ export default function QuickViewPage() {
   const [flash, setFlash] = useState(false);
 
   useEffect(() => {
-    function onStorage(e: StorageEvent) {
-      if (e.key !== "atlas-quick-response" || !e.newValue) return;
+    let lastTs = 0;
+
+    function applyPayload(raw: string | null) {
+      if (!raw) return;
       try {
-        const payload: QuickPayload = JSON.parse(e.newValue);
+        const payload: QuickPayload & { ts?: number } = JSON.parse(raw);
+        if ((payload.ts ?? 0) <= lastTs) return;
+        lastTs = payload.ts ?? Date.now();
         setCurrent(payload);
         setFlash(true);
         setTimeout(() => setFlash(false), 600);
       } catch {}
     }
+
+    // Hydrate immediately in case answer was sent before popup opened
+    applyPayload(localStorage.getItem("atlas-quick-response"));
+
+    // Primary: storage event (fires in other windows when localStorage changes)
+    function onStorage(e: StorageEvent) {
+      if (e.key !== "atlas-quick-response") return;
+      applyPayload(e.newValue);
+    }
     window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
+
+    // Fallback poll every 800ms (covers cases where storage event doesn't fire)
+    const poll = setInterval(() => {
+      applyPayload(localStorage.getItem("atlas-quick-response"));
+    }, 800);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+      clearInterval(poll);
+    };
   }, []);
 
   const badgeColor = current?.confidence
