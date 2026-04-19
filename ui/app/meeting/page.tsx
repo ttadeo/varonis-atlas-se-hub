@@ -153,6 +153,15 @@ export default function MeetingPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // ── Sync meeting context to localStorage so the pop-out can use it ──────────
+  useEffect(() => {
+    if (!contextLocked) return;
+    localStorage.setItem(
+      "atlas-meeting-session",
+      JSON.stringify({ context, sessionId, userId })
+    );
+  }, [contextLocked, context, sessionId, userId]);
+
   // ── Eager session creation when toggle is turned on with locked context ────
   useEffect(() => {
     if (!isSaving || !contextLocked || sessionId || sessionSaved) return;
