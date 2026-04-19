@@ -22,12 +22,20 @@ interface Attachment {
   preview?: string; // object URL for images
 }
 
+interface Confidence {
+  score: number;
+  label: string;
+  reason: string;
+}
+
 interface Message {
   role: "user" | "assistant";
   content: string;
   attachmentNames?: string[];
   model?: string;
   isScript?: boolean;
+  isQuickResponse?: boolean;
+  confidence?: Confidence;
 }
 
 interface SavedSession {
@@ -130,6 +138,11 @@ export default function MeetingPage() {
   const [loadingSessions, setLoadingSessions] = useState(false);
   const [drawerTab, setDrawerTab] = useState<"sessions" | "scripts">("sessions");
   const [sessionScripts, setSessionScripts] = useState<Message[]>([]);
+
+  // Quick Response state
+  const [quickMode, setQuickMode] = useState(false);
+  const [quickInput, setQuickInput] = useState("");
+  const [quickLoading, setQuickLoading] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -306,6 +319,66 @@ export default function MeetingPage() {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
+    }
+  }
+
+  // ── Quick Response ─────────────────────────────────────────────────────────
+
+  async function sendQuickResponse() {
+    const question = quickInput.trim();
+    if (!question || quickLoading || !contextLocked) return;
+    setQuickLoading(true);
+
+    const userMsg: Message = { role: "user", content: question, isQuickResponse: true };
+    setMessages((prev) => [...prev, userMsg]);
+    setQuickInput("");
+
+    try {
+      const res = await fetch("/api/meeting", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question,
+          history: [],
+          attachments: [],
+          meetingContext: context,
+          sessionId,
+          userId,
+          saveSession: isSaving,
+          sessionName,
+          sessionDescription,
+          quickResponse: true,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "API error");
+
+      const assistantMsg: Message = {
+        role: "assistant",
+        content: data.answer,
+        model: data.model,
+        isQuickResponse: true,
+        confidence: data.confidence,
+      };
+      setMessages((prev) => [...prev, assistantMsg]);
+
+      if (data.sessionId && !sessionId) {
+        setSessionId(data.sessionId);
+        setSessionSaved(true);
+      }
+
+      // Broadcast to second monitor
+      const channel = new BroadcastChannel("atlas-quick-response");
+      channel.postMessage({ question, answer: data.answer, confidence: data.confidence });
+      channel.close();
+
+    } catch (err) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `Error: ${String(err)}`, isQuickResponse: true },
+      ]);
+    } finally {
+      setQuickLoading(false);
     }
   }
 
@@ -912,6 +985,30 @@ export default function MeetingPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {/* Mode toggle */}
+            <div className="flex items-center bg-gray-800 border border-gray-700 rounded-lg p-0.5">
+              <button
+                onClick={() => setQuickMode(false)}
+                className={`text-xs px-3 py-1.5 rounded-md transition-colors ${!quickMode ? "bg-blue-600 text-white" : "text-gray-400 hover:text-gray-200"}`}
+              >
+                Chat
+              </button>
+              <button
+                onClick={() => setQuickMode(true)}
+                className={`text-xs px-3 py-1.5 rounded-md transition-colors ${quickMode ? "bg-green-600 text-white" : "text-gray-400 hover:text-gray-200"}`}
+              >
+                ⚡ Quick Answer
+              </button>
+            </div>
+            {quickMode && (
+              <button
+                onClick={() => window.open("/meeting/quickview", "_blank", "width=900,height=600,menubar=no,toolbar=no,location=no")}
+                className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 transition-colors"
+                title="Open on second monitor"
+              >
+                ⬡ Pop Out
+              </button>
+            )}
             <button
               onClick={openSessionsDrawer}
               className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 transition-colors"
@@ -1015,8 +1112,30 @@ export default function MeetingPage() {
                   )}
                 </div>
 
+                {/* Confidence badge for quick responses */}
+                {msg.role === "assistant" && msg.isQuickResponse && msg.confidence && (
+                  <div className="flex items-center gap-2 px-1">
+                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
+                      msg.confidence.score >= 85
+                        ? "bg-green-900 text-green-300"
+                        : msg.confidence.score >= 60
+                        ? "bg-yellow-900 text-yellow-300"
+                        : "bg-red-900 text-red-300"
+                    }`}>
+                      {msg.confidence.score >= 85 ? "✓" : msg.confidence.score >= 60 ? "~" : "!"} {msg.confidence.label} ({msg.confidence.score})
+                    </span>
+                    <p className="text-xs text-gray-600 truncate max-w-xs">{msg.confidence.reason}</p>
+                    <button
+                      onClick={() => navigator.clipboard.writeText(msg.content)}
+                      className="text-xs text-gray-500 hover:text-gray-300 ml-auto shrink-0"
+                    >
+                      Copy
+                    </button>
+                  </div>
+                )}
+
                 {/* Model badge + script button */}
-                {msg.role === "assistant" && (
+                {msg.role === "assistant" && !msg.isQuickResponse && (
                   <div className="flex items-center gap-3 px-1">
                     {msg.model && (
                       <p className="text-xs text-gray-600">via {msg.model}</p>
@@ -1047,91 +1166,98 @@ export default function MeetingPage() {
 
         {/* Input area */}
         <div className="border-t border-gray-800 px-6 py-4">
-          {/* Attachment error */}
-          {attachError && (
-            <p className="text-xs text-red-400 mb-2">{attachError}</p>
-          )}
-
-          {/* Attachment chips */}
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {attachments.map((att, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-1.5 bg-gray-800 border border-gray-700 rounded-lg px-2 py-1"
+          {quickMode ? (
+            /* ── Quick Answer input ── */
+            <div className="max-w-4xl mx-auto space-y-2">
+              <div className="flex gap-3">
+                <textarea
+                  className="flex-1 bg-gray-800 border border-green-800 text-gray-100 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-600 placeholder-gray-500"
+                  rows={2}
+                  placeholder={contextLocked ? "Type the customer's question for an instant 3-sentence answer…" : "Set meeting context first…"}
+                  value={quickInput}
+                  onChange={(e) => setQuickInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      sendQuickResponse();
+                    }
+                  }}
+                />
+                <button
+                  onClick={sendQuickResponse}
+                  disabled={quickLoading || !quickInput.trim() || !contextLocked}
+                  className="bg-green-600 hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-3 text-sm font-medium transition-colors shrink-0"
                 >
-                  {att.preview ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={att.preview}
-                      alt={att.name}
-                      className="w-6 h-6 rounded object-cover"
-                    />
-                  ) : (
-                    <span className="text-sm">📄</span>
-                  )}
-                  <div className="text-xs">
-                    <p className="text-gray-200 max-w-32 truncate">{att.name}</p>
-                    <p className="text-gray-500">{formatBytes(att.size)}</p>
-                  </div>
-                  <button
-                    onClick={() => removeAttachment(i)}
-                    className="text-gray-500 hover:text-gray-300 ml-1 text-xs"
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
+                  {quickLoading ? "…" : "⚡ Answer"}
+                </button>
+              </div>
+              <p className="text-center text-xs text-gray-600">
+                3-sentence live answer · LLM confidence scored · Broadcasts to Pop Out window
+              </p>
             </div>
+          ) : (
+            /* ── Chat input ── */
+            <>
+              {attachError && (
+                <p className="text-xs text-red-400 mb-2">{attachError}</p>
+              )}
+              {attachments.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {attachments.map((att, i) => (
+                    <div key={i} className="flex items-center gap-1.5 bg-gray-800 border border-gray-700 rounded-lg px-2 py-1">
+                      {att.preview ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={att.preview} alt={att.name} className="w-6 h-6 rounded object-cover" />
+                      ) : (
+                        <span className="text-sm">📄</span>
+                      )}
+                      <div className="text-xs">
+                        <p className="text-gray-200 max-w-32 truncate">{att.name}</p>
+                        <p className="text-gray-500">{formatBytes(att.size)}</p>
+                      </div>
+                      <button onClick={() => removeAttachment(i)} className="text-gray-500 hover:text-gray-300 ml-1 text-xs">✕</button>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="flex gap-3 max-w-4xl mx-auto">
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={attachments.length >= MAX_FILES}
+                  className="text-gray-400 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-xl hover:bg-gray-800 transition-colors shrink-0"
+                  title="Attach image or PDF (max 4)"
+                >
+                  📎
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => { if (e.target.files) handleFiles(e.target.files); e.target.value = ""; }}
+                />
+                <textarea
+                  className="flex-1 bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500"
+                  rows={1}
+                  placeholder={contextLocked ? "Ask anything about Atlas, analyze an attachment, prep for objections…" : "Set meeting context in the sidebar first…"}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                />
+                <button
+                  onClick={sendMessage}
+                  disabled={loading || !input.trim()}
+                  className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-3 text-sm font-medium transition-colors shrink-0"
+                >
+                  Send
+                </button>
+              </div>
+              <p className="text-center text-xs text-gray-600 mt-2">
+                Enter to send · Shift+Enter for new line · Images use GPT-4o · PDFs use Claude
+              </p>
+            </>
           )}
-
-          <div className="flex gap-3 max-w-4xl mx-auto">
-            {/* Attachment button */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={attachments.length >= MAX_FILES}
-              className="text-gray-400 hover:text-gray-200 disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-xl hover:bg-gray-800 transition-colors shrink-0"
-              title="Attach image or PDF (max 4)"
-            >
-              📎
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*,application/pdf"
-              multiple
-              className="hidden"
-              onChange={(e) => {
-                if (e.target.files) handleFiles(e.target.files);
-                e.target.value = "";
-              }}
-            />
-
-            <textarea
-              className="flex-1 bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500"
-              rows={1}
-              placeholder={
-                contextLocked
-                  ? "Ask anything about Atlas, analyze an attachment, prep for objections…"
-                  : "Set meeting context in the sidebar first…"
-              }
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-
-            <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-3 text-sm font-medium transition-colors shrink-0"
-            >
-              Send
-            </button>
-          </div>
-
-          <p className="text-center text-xs text-gray-600 mt-2">
-            Enter to send · Shift+Enter for new line · Images use GPT-4o · PDFs use Claude
-          </p>
         </div>
       </div>
     </div>

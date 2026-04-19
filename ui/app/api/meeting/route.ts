@@ -287,6 +287,78 @@ How to end the call and propose clear next steps appropriate for a ${ctx.meeting
 Write the guide to be specific to this customer profile — not generic. Every section should reflect their industry, meeting type, and known concerns.`;
 }
 
+// ─── Quick Response ───────────────────────────────────────────────────────────
+
+function buildQuickResponsePrompt(
+  question: string,
+  ctx: MeetingContext,
+  atlasDocs: string,
+  pastSessions: string
+): string {
+  return `You are an expert Varonis Atlas AI Security Sales Engineer in a LIVE customer meeting. Answer the question below in exactly 3 sentences — no more.
+
+MEETING CONTEXT:
+- Industry: ${ctx.industry}
+- Meeting Type: ${ctx.meetingType}
+- Attendees: ${ctx.attendees || "Not specified"}
+- Known concerns: ${ctx.knownConcerns || "None"}
+
+ATLAS KNOWLEDGE BASE:
+${atlasDocs}
+
+PAST SE INTERACTIONS ON SIMILAR QUESTIONS:
+${pastSessions}
+
+CUSTOMER QUESTION: ${question}
+
+RULES:
+- Exactly 3 sentences. No bullet points. No headers.
+- Sentence 1: Direct answer to the question.
+- Sentence 2: One specific Atlas capability or proof point that supports the answer.
+- Sentence 3: A bridge to next step or follow-up action.
+- Use plain language an SE can say out loud right now.
+- Never say "based on the documentation" or similar — just answer.`;
+}
+
+async function judgeQuickResponse(
+  question: string,
+  answer: string,
+  atlasDocs: string
+): Promise<{ score: number; label: string; reason: string }> {
+  const prompt = `You are evaluating whether an AI-generated answer to a customer question is factually grounded and accurate based on the provided Atlas documentation.
+
+CUSTOMER QUESTION: ${question}
+
+AI ANSWER: ${answer}
+
+ATLAS DOCUMENTATION USED:
+${atlasDocs.slice(0, 3000)}
+
+Score the answer from 0 to 100 based on:
+- Is the answer factually supported by the documentation? (50 pts)
+- Is it specific to Atlas (not generic AI security)? (25 pts)
+- Is it accurate and not misleading? (25 pts)
+
+Respond with valid JSON only — no markdown, no explanation outside the JSON:
+{"score": <number>, "reason": "<one sentence explaining the score>"}`;
+
+  const response = await anthropic.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 256,
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const raw = (response.content[0] as Anthropic.Messages.TextBlock).text.trim();
+  try {
+    const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    const score: number = parsed.score ?? 0;
+    const label = score >= 85 ? "High Confidence" : score >= 60 ? "Moderate Confidence" : "Low Confidence";
+    return { score, label, reason: parsed.reason ?? "" };
+  } catch {
+    return { score: 0, label: "Low Confidence", reason: "Could not evaluate answer." };
+  }
+}
+
 // ─── Session save ─────────────────────────────────────────────────────────────
 
 async function saveInteraction(
@@ -295,7 +367,9 @@ async function saveInteraction(
   answer: string,
   modelUsed: string,
   hadAttachments: boolean,
-  isScript = false
+  isScript = false,
+  isQuickResponse = false,
+  confidenceScore: number | null = null
 ) {
   const embeddingRes = await openai.embeddings.create({
     model: "text-embedding-3-small",
@@ -316,6 +390,8 @@ async function saveInteraction(
          model_used: $modelUsed,
          had_attachments: $hadAttachments,
          is_script: $isScript,
+         is_quick_response: $isQuickResponse,
+         confidence_score: $confidenceScore,
          embedding: $embedding,
          created_at: datetime()
        })
@@ -328,6 +404,8 @@ async function saveInteraction(
         modelUsed,
         hadAttachments,
         isScript,
+        isQuickResponse,
+        confidenceScore,
         embedding,
       }
     );
@@ -407,6 +485,7 @@ export async function POST(req: NextRequest) {
       saveSession = false,
       generateScript = false,
       generateCallGuide = false,
+      quickResponse = false,
       demoLength = "30",
       sessionName = "",
       sessionDescription = "",
@@ -421,6 +500,7 @@ export async function POST(req: NextRequest) {
       saveSession: boolean;
       generateScript: boolean;
       generateCallGuide: boolean;
+      quickResponse: boolean;
       demoLength: string;
       sessionName: string;
       sessionDescription: string;
@@ -436,6 +516,45 @@ export async function POST(req: NextRequest) {
         sessionDescription || undefined
       );
       return NextResponse.json({ sessionId: newSessionId });
+    }
+
+    // ── Quick Response path ──────────────────────────────────────────────────
+    if (quickResponse && meetingContext && question.trim()) {
+      const [atlasDocs, pastSessions] = await Promise.all([
+        searchAtlasDocs(`${question} ${meetingContext.industry}`),
+        searchPastSessions(question),
+      ]);
+
+      const qrPrompt = buildQuickResponsePrompt(question, meetingContext, atlasDocs, pastSessions);
+
+      const qrResponse = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 512,
+        messages: [{ role: "user", content: qrPrompt }],
+      });
+
+      const answer = qrResponse.content
+        .filter((b) => b.type === "text")
+        .map((b) => (b as Anthropic.Messages.TextBlock).text)
+        .join("").trim();
+
+      const confidence = await judgeQuickResponse(question, answer, atlasDocs);
+
+      let activeSessionId = sessionId;
+      if (saveSession) {
+        if (!activeSessionId) {
+          activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
+        }
+        await saveInteraction(activeSessionId, question, answer, "claude-sonnet-4-6", false, false, true, confidence.score);
+      }
+
+      return NextResponse.json({
+        answer,
+        model: "claude-sonnet-4-6",
+        isQuickResponse: true,
+        confidence,
+        sessionId: activeSessionId,
+      });
     }
 
     // ── Demo script generation path ──────────────────────────────────────────
