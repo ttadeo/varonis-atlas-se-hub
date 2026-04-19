@@ -109,7 +109,7 @@ export default function QuickViewPage() {
   // ── Send a question from the popup ───────────────────────────────────────────
   async function sendQuestion() {
     const question = input.trim();
-    if (!question || loading || !meetingSession) return;
+    if (!question || loading) return;
     setLoading(true);
     setInput("");
     setMessages((prev) => [...prev, { role: "user", content: question }]);
@@ -122,10 +122,10 @@ export default function QuickViewPage() {
           question,
           history: [],
           attachments: [],
-          meetingContext: meetingSession.context,
-          sessionId: meetingSession.sessionId,
-          userId: meetingSession.userId,
-          saveSession: !!meetingSession.sessionId,
+          meetingContext: meetingSession?.context ?? null,
+          sessionId: meetingSession?.sessionId ?? null,
+          userId: meetingSession?.userId ?? "se_default",
+          saveSession: !!meetingSession?.sessionId,
           quickResponse: true,
         }),
       });
@@ -249,13 +249,13 @@ export default function QuickViewPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendQuestion()}
-            disabled={loading || !hasContext}
-            placeholder={hasContext ? "Type the customer's question…" : "Lock context in main window first…"}
+            disabled={loading}
+            placeholder="Type the customer's question…"
             className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:border-green-700 disabled:opacity-40"
           />
           <button
             onClick={sendQuestion}
-            disabled={loading || !input.trim() || !hasContext}
+            disabled={loading || !input.trim()}
             className="bg-green-700 hover:bg-green-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-5 py-3 rounded-xl text-sm transition-colors"
           >
             {loading ? "…" : "Answer"}
