@@ -1128,11 +1128,11 @@ export default function MeetingPage() {
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${
                       msg.confidence.score >= 85
                         ? "bg-green-900 text-green-300"
-                        : msg.confidence.score >= 60
+                        : msg.confidence.score >= 70
                         ? "bg-yellow-900 text-yellow-300"
                         : "bg-red-900 text-red-300"
                     }`}>
-                      {msg.confidence.score >= 85 ? "✓" : msg.confidence.score >= 60 ? "~" : "!"} {msg.confidence.label} ({msg.confidence.score})
+                      {msg.confidence.score >= 85 ? "✓" : msg.confidence.score >= 70 ? "~" : "!"} {msg.confidence.label} ({msg.confidence.score})
                     </span>
                     <p className="text-xs text-gray-600 truncate max-w-xs">{msg.confidence.reason}</p>
                     <button

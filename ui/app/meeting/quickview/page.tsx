@@ -30,13 +30,13 @@ interface MeetingSession {
 
 function confidenceBadgeClass(score: number) {
   if (score >= 85) return "bg-green-500/20 text-green-300 border-green-700";
-  if (score >= 60) return "bg-yellow-500/20 text-yellow-300 border-yellow-700";
+  if (score >= 70) return "bg-yellow-500/20 text-yellow-300 border-yellow-700";
   return "bg-red-500/20 text-red-300 border-red-700";
 }
 
 function confidenceBorderClass(score: number) {
   if (score >= 85) return "border-green-700/50";
-  if (score >= 60) return "border-yellow-700/50";
+  if (score >= 70) return "border-yellow-700/50";
   return "border-red-700/50";
 }
 
@@ -201,7 +201,7 @@ export default function QuickViewPage() {
                 {msg.confidence && (
                   <div className="flex items-center gap-2 mb-3">
                     <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${confidenceBadgeClass(msg.confidence.score)}`}>
-                      {msg.confidence.score >= 85 ? "✓" : msg.confidence.score >= 60 ? "~" : "!"}{" "}
+                      {msg.confidence.score >= 85 ? "✓" : msg.confidence.score >= 70 ? "~" : "!"}{" "}
                       {msg.confidence.label} · {msg.confidence.score}/100
                     </span>
                     {msg.fromMain && (
