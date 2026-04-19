@@ -1,0 +1,782 @@
+import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
+import neo4j from "neo4j-driver";
+import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+interface Attachment {
+  name: string;
+  mediaType: string;
+  data: string; // base64
+  size: number; // bytes
+}
+
+interface MeetingContext {
+  industry: string;
+  meetingType: string;
+  attendees: string;
+  knownConcerns: string;
+}
+
+interface ConversationMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+// ─── Clients ──────────────────────────────────────────────────────────────────
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+function getNeo4jDriver() {
+  return neo4j.driver(
+    process.env.NEO4J_URI!,
+    neo4j.auth.basic(process.env.NEO4J_USER!, process.env.NEO4J_PASSWORD!),
+    { maxConnectionPoolSize: 1 } // serverless-safe
+  );
+}
+
+// ─── Tool: search_atlas_docs ──────────────────────────────────────────────────
+
+async function searchAtlasDocs(query: string, section?: string): Promise<string> {
+  const embeddingRes = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: query,
+  });
+  const embedding = embeddingRes.data[0].embedding;
+
+  const driver = getNeo4jDriver();
+  const session = driver.session();
+  try {
+    const sectionFilter = section ? "AND node.section = $section" : "";
+    const result = await session.run(
+      `CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 8, $embedding)
+       YIELD node, score
+       WHERE score > 0.45 ${sectionFilter}
+       RETURN node.heading AS heading, node.text AS text,
+              node.title AS title, node.section AS section,
+              node.url AS url, score
+       ORDER BY score DESC`,
+      { embedding, section: section ?? null }
+    );
+
+    if (result.records.length === 0) {
+      return "No relevant Atlas documentation found for this query.";
+    }
+
+    return result.records
+      .map((r) => {
+        const score = (r.get("score") as number).toFixed(3);
+        return `[${r.get("title")} › ${r.get("heading")}] (relevance: ${score})\n${r.get("text")}`;
+      })
+      .join("\n\n---\n\n");
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}
+
+// ─── Tool: search_past_sessions ───────────────────────────────────────────────
+
+async function searchPastSessions(query: string): Promise<string> {
+  const embeddingRes = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: query,
+  });
+  const embedding = embeddingRes.data[0].embedding;
+
+  const driver = getNeo4jDriver();
+  const session = driver.session();
+  try {
+    // Search both session summaries and individual interaction questions
+    const result = await session.run(
+      `CALL db.index.vector.queryNodes('interaction_embeddings', 6, $embedding)
+       YIELD node AS interaction, score
+       WHERE score > 0.5
+       MATCH (s:MeetingSession)-[:HAD]->(interaction)
+       RETURN interaction.question AS question,
+              interaction.answer AS answer,
+              s.customer_industry AS industry,
+              s.meeting_type AS meetingType,
+              s.created_at AS date,
+              score
+       ORDER BY score DESC`,
+      { embedding }
+    );
+
+    if (result.records.length === 0) {
+      return "No similar past meeting sessions found.";
+    }
+
+    return result.records
+      .map((r) => {
+        const date = r.get("date")
+          ? new Date(r.get("date")).toLocaleDateString()
+          : "Unknown date";
+        return `[Past session: ${r.get("industry")} · ${r.get("meetingType")} · ${date}]\nQuestion: ${r.get("question")}\nAnswer: ${r.get("answer")}`;
+      })
+      .join("\n\n---\n\n");
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}
+
+// ─── Tool executor ────────────────────────────────────────────────────────────
+
+async function executeTool(
+  name: string,
+  input: Record<string, string>
+): Promise<string> {
+  if (name === "search_atlas_docs") {
+    return searchAtlasDocs(input.query, input.section);
+  }
+  if (name === "search_past_sessions") {
+    return searchPastSessions(input.query);
+  }
+  return `Unknown tool: ${name}`;
+}
+
+// ─── Tool definitions for Anthropic ──────────────────────────────────────────
+
+const TOOLS: Anthropic.Messages.Tool[] = [
+  {
+    name: "search_atlas_docs",
+    description:
+      "Search the Atlas AI Security knowledge base for product documentation, feature details, deployment guidance, competitive positioning, and technical specs. Use this for any Atlas-related question.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        query: {
+          type: "string",
+          description: "The search query — be specific for better results",
+        },
+        section: {
+          type: "string",
+          description:
+            "Optional: filter by section. Valid values: applications, overview, platform_services, competitive, faq, openapi_reference",
+        },
+      },
+      required: ["query"],
+    },
+  },
+  {
+    name: "search_past_sessions",
+    description:
+      "Search past SE meeting sessions for similar customer questions, objections, or scenarios. Use this when the SE references a past interaction or wants to know how similar situations were handled.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        query: {
+          type: "string",
+          description:
+            "The question or concern to search for in past sessions",
+        },
+      },
+      required: ["query"],
+    },
+  },
+];
+
+// ─── System prompt builder ────────────────────────────────────────────────────
+
+function buildSystemPrompt(ctx: MeetingContext | null): string {
+  const contextBlock = ctx
+    ? `
+MEETING CONTEXT:
+- Customer Industry: ${ctx.industry}
+- Meeting Type: ${ctx.meetingType}
+- People in the room: ${ctx.attendees}
+- Known concerns / objections: ${ctx.knownConcerns || "None specified"}
+
+Tailor every answer to this customer profile. Reference their industry, the meeting type, and address their known concerns directly when relevant.
+`
+    : "";
+
+  return `You are an expert Varonis Atlas AI Security advisor helping a Sales Engineer prepare for or run a customer meeting.
+
+You have access to the complete Atlas knowledge base and past SE meeting sessions via tools. Always search the knowledge base before answering technical questions — do not rely on memory alone.${contextBlock}
+Your job:
+- Answer technical Atlas questions accurately using the knowledge base
+- Surface relevant past SE experiences when helpful
+- Analyze any customer materials shared (screenshots, documents, diagrams)
+- Help the SE anticipate and handle objections
+- Be concise, direct, and confident — your audience is technical sales staff
+
+RESPONSE STYLE:
+- Answer directly and confidently
+- Never say "based on the retrieved documentation" or similar framing — just answer
+- Be SE-focused: skip developer-level detail unless asked
+- If attachments are present, analyze them first before answering
+- Match the depth of the answer to the question — short questions get short answers`;
+}
+
+function buildScriptPrompt(ctx: MeetingContext, demoLength: string): string {
+  return `You are an expert Varonis Atlas AI Security Sales Engineer. Generate a complete, timed demo script for the following customer meeting.
+
+MEETING DETAILS:
+- Customer Industry: ${ctx.industry}
+- Meeting Type: ${ctx.meetingType}
+- People in the room: ${ctx.attendees || "Not specified"}
+- Known concerns / objections: ${ctx.knownConcerns || "None specified"}
+- Total demo time: ${demoLength} minutes
+
+Search the Atlas knowledge base to ensure accuracy on product features, capabilities, and terminology before writing the script.
+
+Generate a professional demo script with the following sections. Each section must show its time allocation clearly (e.g. "5 min"):
+
+## Opening — Agenda & Framing
+How to open the meeting for this specific audience. What to say to establish credibility and set expectations.
+
+## Discovery Questions
+3–5 targeted questions to ask this specific customer (based on their industry and known concerns) to uncover pain before diving into the demo.
+
+## Demo Flow
+Break the demo into timed segments that total ${demoLength} minutes. For each segment:
+- What to show (specific Atlas feature or application)
+- What to say (talking points, not a script word-for-word)
+- The key value message for this audience
+
+## The "Wow Moment"
+The single most impactful thing to show this customer given their profile. Why it will resonate specifically with them.
+
+## Objection Handling
+For each known concern listed above, provide a direct response Atlas SE would give. If no concerns are listed, use the most common objections for this industry.
+
+## Close & Next Steps
+How to end the meeting and propose clear next steps appropriate for a ${ctx.meetingType}.
+
+Write the script to be practical and immediately usable — not generic. Every section should reflect the specific customer profile above.`;
+}
+
+// ─── Session save ─────────────────────────────────────────────────────────────
+
+async function saveInteraction(
+  sessionId: string,
+  question: string,
+  answer: string,
+  modelUsed: string,
+  hadAttachments: boolean,
+  isScript = false
+) {
+  const embeddingRes = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: question,
+  });
+  const embedding = embeddingRes.data[0].embedding;
+
+  const driver = getNeo4jDriver();
+  const session = driver.session();
+  try {
+    await session.run(
+      `MATCH (s:MeetingSession {id: $sessionId})
+       CREATE (i:Interaction {
+         id: $id,
+         session_id: $sessionId,
+         question: $question,
+         answer: $answer,
+         model_used: $modelUsed,
+         had_attachments: $hadAttachments,
+         is_script: $isScript,
+         embedding: $embedding,
+         created_at: datetime()
+       })
+       CREATE (s)-[:HAD]->(i)`,
+      {
+        sessionId,
+        id: randomUUID(),
+        question,
+        answer,
+        modelUsed,
+        hadAttachments,
+        isScript,
+        embedding,
+      }
+    );
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}
+
+async function createSession(
+  userId: string,
+  ctx: MeetingContext,
+  name?: string,
+  description?: string
+): Promise<string> {
+  const sessionId = randomUUID();
+  const summary = `${ctx.meetingType} with ${ctx.industry} customer. Attendees: ${ctx.attendees}. Concerns: ${ctx.knownConcerns}`;
+
+  const embeddingRes = await openai.embeddings.create({
+    model: "text-embedding-3-small",
+    input: summary,
+  });
+
+  const driver = getNeo4jDriver();
+  const session = driver.session();
+  try {
+    await session.run(
+      `MERGE (u:User {id: $userId})
+       ON CREATE SET u.created_at = datetime()
+       WITH u
+       CREATE (s:MeetingSession {
+         id: $sessionId,
+         user_id: $userId,
+         customer_industry: $industry,
+         meeting_type: $meetingType,
+         attendees: $attendees,
+         known_concerns: $knownConcerns,
+         name: $name,
+         description: $description,
+         summary: $summary,
+         embedding: $embedding,
+         created_at: datetime()
+       })
+       CREATE (u)-[:HAS_SESSION]->(s)`,
+      {
+        userId,
+        sessionId,
+        industry: ctx.industry,
+        meetingType: ctx.meetingType,
+        attendees: ctx.attendees,
+        knownConcerns: ctx.knownConcerns,
+        name: name ?? `${ctx.meetingType} · ${ctx.industry}`,
+        description: description ?? "",
+        summary,
+        embedding: embeddingRes.data[0].embedding,
+      }
+    );
+    return sessionId;
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}
+
+// ─── Main route handler ───────────────────────────────────────────────────────
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const {
+      question,
+      history = [],
+      attachments = [],
+      meetingContext = null,
+      sessionId = null,
+      userId = "anonymous",
+      saveSession = false,
+      generateScript = false,
+      demoLength = "30",
+      sessionName = "",
+      sessionDescription = "",
+      createSessionOnly = false,
+    }: {
+      question: string;
+      history: ConversationMessage[];
+      attachments: Attachment[];
+      meetingContext: MeetingContext | null;
+      sessionId: string | null;
+      userId: string;
+      saveSession: boolean;
+      generateScript: boolean;
+      demoLength: string;
+      sessionName: string;
+      sessionDescription: string;
+      createSessionOnly: boolean;
+    } = body;
+
+    // ── Eager session creation (toggle-on with locked context) ───────────────
+    if (createSessionOnly && meetingContext) {
+      const newSessionId = await createSession(
+        userId,
+        meetingContext,
+        sessionName || undefined,
+        sessionDescription || undefined
+      );
+      return NextResponse.json({ sessionId: newSessionId });
+    }
+
+    // ── Demo script generation path ──────────────────────────────────────────
+    if (generateScript && meetingContext) {
+      // Pre-fetch relevant Atlas docs in parallel, then generate in one direct call
+      const [docsGeneral, docsFeatures] = await Promise.all([
+        searchAtlasDocs(`${meetingContext.industry} AI security demo ${meetingContext.meetingType}`),
+        searchAtlasDocs(`Atlas guardrails policies AI Gateway features capabilities`),
+      ]);
+
+      const ragContext = `ATLAS KNOWLEDGE BASE (use this to ensure accuracy):\n\n${docsGeneral}\n\n---\n\n${docsFeatures}`;
+      const scriptPrompt = buildScriptPrompt(meetingContext, demoLength);
+
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 8192,
+        system: buildSystemPrompt(meetingContext),
+        messages: [
+          {
+            role: "user" as const,
+            content: `${ragContext}\n\n---\n\n${scriptPrompt}`,
+          },
+        ],
+      });
+
+      const scriptAnswer = response.content
+        .filter((b) => b.type === "text")
+        .map((b) => (b as Anthropic.Messages.TextBlock).text)
+        .join("");
+
+      if (!scriptAnswer.trim()) {
+        console.error("[script] Empty response from Claude. stop_reason:", response.stop_reason);
+        return NextResponse.json(
+          { error: "Script generation returned empty content." },
+          { status: 500 }
+        );
+      }
+
+      // Save script as an interaction if session saving is enabled
+      let activeSessionId = sessionId;
+      if (saveSession && meetingContext) {
+        if (!activeSessionId) {
+          activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
+        }
+        await saveInteraction(
+          activeSessionId,
+          `Generate a ${demoLength}-minute demo script for this meeting.`,
+          scriptAnswer,
+          "claude-sonnet-4-6",
+          false,
+          true // isScript
+        );
+      }
+
+      return NextResponse.json({
+        answer: scriptAnswer,
+        model: "claude-sonnet-4-6",
+        isScript: true,
+        sessionId: activeSessionId,
+      });
+    }
+
+    // ── Model selection ──────────────────────────────────────────────────────
+    const hasImages = attachments.some((a) =>
+      a.mediaType.startsWith("image/")
+    );
+    // Images go to GPT-4o (better vision); everything else to Claude
+    const model = hasImages ? "gpt-4o" : "claude-sonnet-4-6";
+
+    // ── Build user message content ───────────────────────────────────────────
+    type ContentBlock =
+      | Anthropic.Messages.TextBlockParam
+      | Anthropic.Messages.ImageBlockParam
+      | Anthropic.Messages.DocumentBlockParam;
+
+    const userContent: ContentBlock[] = [
+      { type: "text", text: question },
+    ];
+
+    for (const att of attachments) {
+      if (att.mediaType.startsWith("image/")) {
+        userContent.push({
+          type: "image",
+          source: {
+            type: "base64",
+            media_type: att.mediaType as
+              | "image/jpeg"
+              | "image/png"
+              | "image/gif"
+              | "image/webp",
+            data: att.data,
+          },
+        });
+      } else if (att.mediaType === "application/pdf") {
+        userContent.push({
+          type: "document",
+          source: {
+            type: "base64",
+            media_type: "application/pdf",
+            data: att.data,
+          },
+        } as Anthropic.Messages.DocumentBlockParam);
+      }
+    }
+
+    // ── Build messages array ─────────────────────────────────────────────────
+    const messages: Anthropic.Messages.MessageParam[] = [
+      ...history.map((m) => ({
+        role: m.role,
+        content: m.content,
+      })),
+      { role: "user" as const, content: userContent as Anthropic.Messages.ContentBlockParam[] },
+    ];
+
+    // ── Agentic RAG loop (Claude only — GPT-4o path below) ───────────────────
+    let finalAnswer = "";
+
+    if (model === "claude-sonnet-4-6") {
+      let currentMessages: Anthropic.Messages.MessageParam[] = messages;
+      let iterations = 0;
+      const MAX_ITERATIONS = 5;
+
+      while (iterations < MAX_ITERATIONS) {
+        iterations++;
+        const response = await anthropic.messages.create({
+          model: "claude-sonnet-4-6",
+          max_tokens: 4096,
+          system: buildSystemPrompt(meetingContext),
+          tools: TOOLS,
+          messages: currentMessages,
+        });
+
+        if (response.stop_reason === "end_turn") {
+          finalAnswer = response.content
+            .filter((b) => b.type === "text")
+            .map((b) => (b as Anthropic.Messages.TextBlock).text)
+            .join("");
+          break;
+        }
+
+        if (response.stop_reason === "tool_use") {
+          const toolUseBlocks = response.content.filter(
+            (b) => b.type === "tool_use"
+          ) as Anthropic.Messages.ToolUseBlock[];
+
+          const toolResults: Anthropic.Messages.ToolResultBlockParam[] = await Promise.all(
+            toolUseBlocks.map(async (tb) => ({
+              type: "tool_result" as const,
+              tool_use_id: tb.id,
+              content: await executeTool(
+                tb.name,
+                tb.input as Record<string, string>
+              ),
+            }))
+          );
+
+          currentMessages = [
+            ...currentMessages,
+            { role: "assistant" as const, content: response.content as Anthropic.Messages.ContentBlockParam[] },
+            { role: "user" as const, content: toolResults },
+          ];
+        } else {
+          finalAnswer = response.content
+            .filter((b) => b.type === "text")
+            .map((b) => (b as Anthropic.Messages.TextBlock).text)
+            .join("");
+          break;
+        }
+      }
+
+      // Force final text response if loop exhausted without answer
+      if (!finalAnswer.trim()) {
+        const finalResponse = await anthropic.messages.create({
+          model: "claude-sonnet-4-6",
+          max_tokens: 4096,
+          system: buildSystemPrompt(meetingContext),
+          tool_choice: { type: "none" },
+          tools: TOOLS,
+          messages: currentMessages,
+        });
+        finalAnswer = finalResponse.content
+          .filter((b) => b.type === "text")
+          .map((b) => (b as Anthropic.Messages.TextBlock).text)
+          .join("");
+      }
+    } else {
+      // GPT-4o path for image attachments
+      // First: use GPT-4o to analyze the image + answer using its knowledge
+      // Then: augment with Atlas RAG via a follow-up Claude call
+      const gptMessages = [
+        {
+          role: "system" as const,
+          content: buildSystemPrompt(meetingContext),
+        },
+        ...history.map((m) => ({
+          role: m.role as "user" | "assistant",
+          content: m.content,
+        })),
+        {
+          role: "user" as const,
+          content: userContent.map((block) => {
+            if (block.type === "text") return { type: "text" as const, text: block.text };
+            if (block.type === "image") {
+              const src = (block as Anthropic.Messages.ImageBlockParam).source as Anthropic.Messages.Base64ImageSource;
+              return {
+                type: "image_url" as const,
+                image_url: {
+                  url: `data:${src.media_type};base64,${src.data}`,
+                },
+              };
+            }
+            return { type: "text" as const, text: "[attachment]" };
+          }),
+        },
+      ];
+
+      const gptResponse = await openai.chat.completions.create({
+        model: "gpt-4o",
+        max_tokens: 4096,
+        messages: gptMessages,
+      });
+      finalAnswer = gptResponse.choices[0].message.content ?? "";
+    }
+
+    // ── Persist to Neo4j if saving ────────────────────────────────────────────
+    let activeSessionId = sessionId;
+    if (saveSession && meetingContext) {
+      if (!activeSessionId) {
+        activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
+      }
+      await saveInteraction(
+        activeSessionId,
+        question,
+        finalAnswer,
+        model,
+        attachments.length > 0
+      );
+    }
+
+    return NextResponse.json({
+      answer: finalAnswer,
+      model,
+      sessionId: activeSessionId,
+    });
+  } catch (err) {
+    console.error("Meeting API error:", err);
+    return NextResponse.json(
+      { error: "Internal server error", detail: String(err) },
+      { status: 500 }
+    );
+  }
+}
+
+// ─── Session management endpoints ────────────────────────────────────────────
+
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const action = searchParams.get("action");
+  const userId = searchParams.get("userId") ?? "anonymous";
+
+  if (action === "list") {
+    const driver = getNeo4jDriver();
+    const session = driver.session();
+    try {
+      const result = await session.run(
+        `MATCH (u:User {id: $userId})-[:HAS_SESSION]->(s:MeetingSession)
+         OPTIONAL MATCH (s)-[:HAD]->(i:Interaction)
+         WITH s, count(i) AS turnCount
+         RETURN s.id AS id, s.name AS name, s.description AS description,
+                s.customer_industry AS industry,
+                s.meeting_type AS meetingType, s.attendees AS attendees,
+                s.summary AS summary, s.created_at AS createdAt,
+                turnCount
+         ORDER BY s.created_at DESC
+         LIMIT 50`,
+        { userId }
+      );
+      const sessions = result.records.map((r) => ({
+        id: r.get("id"),
+        name: r.get("name") ?? "",
+        description: r.get("description") ?? "",
+        industry: r.get("industry"),
+        meetingType: r.get("meetingType"),
+        attendees: r.get("attendees"),
+        summary: r.get("summary"),
+        createdAt: r.get("createdAt")?.toString() ?? "",
+        turnCount: r.get("turnCount")?.toNumber?.() ?? 0,
+      }));
+      return NextResponse.json({ sessions });
+    } finally {
+      await session.close();
+      await driver.close();
+    }
+  }
+
+  if (action === "session") {
+    const sessionId = searchParams.get("sessionId");
+    if (!sessionId) return NextResponse.json({ error: "sessionId required" }, { status: 400 });
+
+    const driver = getNeo4jDriver();
+    const dbSession = driver.session();
+    try {
+      // Fetch session metadata
+      const sessionResult = await dbSession.run(
+        `MATCH (s:MeetingSession {id: $sessionId})
+         RETURN s.customer_industry AS industry,
+                s.meeting_type AS meetingType,
+                s.attendees AS attendees,
+                s.known_concerns AS knownConcerns,
+                s.name AS name,
+                s.description AS description`,
+        { sessionId }
+      );
+
+      if (sessionResult.records.length === 0) {
+        return NextResponse.json({ error: "Session not found" }, { status: 404 });
+      }
+
+      // Fetch interactions ordered by creation time
+      const interactionResult = await dbSession.run(
+        `MATCH (s:MeetingSession {id: $sessionId})-[:HAD]->(i:Interaction)
+         RETURN i.question AS question, i.answer AS answer,
+                i.is_script AS isScript, toString(i.created_at) AS createdAt
+         ORDER BY i.created_at ASC`,
+        { sessionId }
+      );
+
+      const r = sessionResult.records[0];
+      const interactions = interactionResult.records.map((i) => {
+        const question: string = i.get("question") ?? "";
+        const isScriptFlag: boolean = i.get("isScript") ?? false;
+        // Fallback: detect script interactions by question text for older saved sessions
+        const isScript = isScriptFlag || /generate a \d+-minute demo script/i.test(question);
+        return {
+          question,
+          answer: i.get("answer") ?? "",
+          isScript,
+          createdAt: i.get("createdAt") ?? "",
+        };
+      });
+
+      return NextResponse.json({
+        industry: r.get("industry") ?? "",
+        meetingType: r.get("meetingType") ?? "",
+        attendees: r.get("attendees") ?? "",
+        knownConcerns: r.get("knownConcerns") ?? "",
+        name: r.get("name") ?? "",
+        description: r.get("description") ?? "",
+        interactions,
+      });
+    } finally {
+      await dbSession.close();
+      await driver.close();
+    }
+  }
+
+  return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+}
+
+export async function DELETE(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const sessionId = searchParams.get("sessionId");
+
+  if (!sessionId) {
+    return NextResponse.json({ error: "sessionId required" }, { status: 400 });
+  }
+
+  const driver = getNeo4jDriver();
+  const session = driver.session();
+  try {
+    await session.run(
+      `MATCH (s:MeetingSession {id: $sessionId})
+       OPTIONAL MATCH (s)-[:HAD]->(i:Interaction)
+       DETACH DELETE s, i`,
+      { sessionId }
+    );
+    return NextResponse.json({ deleted: true });
+  } finally {
+    await session.close();
+    await driver.close();
+  }
+}

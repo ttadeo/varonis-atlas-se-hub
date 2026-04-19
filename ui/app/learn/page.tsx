@@ -7,6 +7,32 @@ import Link from "next/link";
 
 const N8N_WEBHOOK = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL!;
 
+type LearningStyle = "visual" | "reading" | "voice";
+
+const STYLE_PREFIXES: Record<LearningStyle, string> = {
+  visual:
+    "RESPONSE STYLE: Use structured formatting — headers, bullet points, tables, and numbered steps. Be concise and scannable. ",
+  reading:
+    "RESPONSE STYLE: Write in flowing prose with rich context and explanation. Use narrative paragraphs rather than lists. ",
+  voice:
+    "RESPONSE STYLE: Write conversationally as if speaking aloud. Avoid markdown, headers, and bullet points — use plain sentences. Keep it natural and easy to listen to. ",
+};
+
+function stripMarkdown(text: string): string {
+  return text
+    .replace(/#{1,6}\s+/g, "")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`{1,3}[^`]*`{1,3}/g, "")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^\s*[-*+]\s+/gm, "")
+    .replace(/^\s*\d+\.\s+/gm, "")
+    .replace(/\|[^\n]+\|/g, "")
+    .replace(/\n{2,}/g, ". ")
+    .replace(/\n/g, " ")
+    .trim();
+}
+
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -17,7 +43,15 @@ interface Lesson {
   title: string;
   tier: string;
   intro: string;
+  checkQuestion: string;
   followUpPrompts: string[];
+}
+
+interface JudgeResult {
+  passed: boolean;
+  score: number;
+  feedback: string;
+  missing: string[];
 }
 
 const LESSONS: Lesson[] = [
@@ -25,6 +59,7 @@ const LESSONS: Lesson[] = [
     id: 1,
     title: "What is Varonis Atlas?",
     tier: "beginner",
+    checkQuestion: "In your own words, what is the main security problem that Atlas is designed to solve?",
     followUpPrompts: [
       "Give me a real customer scenario where all four risk categories show up",
       "How would I explain Shadow AI to a CISO in one sentence?",
@@ -44,6 +79,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 2,
     title: "Atlas Architecture Overview",
     tier: "beginner",
+    checkQuestion: "Why does Atlas run the proxy on the customer plane rather than in Varonis infrastructure?",
     followUpPrompts: [
       "What data actually lives in the Control Plane vs Customer Plane?",
       "How does the two-plane architecture address data residency requirements?",
@@ -63,6 +99,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 3,
     title: "The AI Gateway",
     tier: "beginner",
+    checkQuestion: "A customer's application currently calls https://api.openai.com/v1. What do they need to change to route traffic through Atlas?",
     followUpPrompts: [
       "What does the rule orchestrator actually do when it evaluates a prompt?",
       "What happens to a MODIFIED prompt — does the user see the original or modified version?",
@@ -83,6 +120,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 4,
     title: "Policy Types: WARN, BLOCK, MODIFY",
     tier: "beginner",
+    checkQuestion: "A customer wants to prevent prompt injection attacks but still wants to see what was attempted. Which action(s) would you recommend and why?",
     followUpPrompts: [
       "Give me an example policy combining BLOCK on input and WARN on output",
       "What's the performance impact of synchronous vs asynchronous processing?",
@@ -103,6 +141,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 5,
     title: "AI Inventory & AI Usage",
     tier: "beginner",
+    checkQuestion: "A CISO asks: how do I know if employees are using unauthorized AI tools like personal ChatGPT accounts? Which Atlas application answers this, and how?",
     followUpPrompts: [
       "How does Atlas discover AI usage through ZTNA integrations specifically?",
       "What's the difference between an unsanctioned AI service and Shadow AI in Atlas?",
@@ -123,6 +162,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 6,
     title: "Guardrails & Built-in Rules",
     tier: "beginner",
+    checkQuestion: "Which Atlas rule would you recommend first for a customer who is worried about employees accidentally leaking sensitive data through an AI chatbot?",
     followUpPrompts: [
       "Walk me through how the OWASP LLM Top 10 template maps to specific guardrail rules",
       "What are Agentic Guardrails specifically protecting against?",
@@ -143,6 +183,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 7,
     title: "AI Observability & Audit Trail",
     tier: "intermediate",
+    checkQuestion: "A customer's legal team wants a complete audit trail of every prompt sent to their AI chatbot for the past 90 days. Which Atlas component provides this, and where is that data stored?",
     followUpPrompts: [
       "What exactly is stored in OpenSearch vs S3, and when does data move between them?",
       "Can a customer query their audit trail programmatically via the Atlas API?",
@@ -163,6 +204,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
   {
     id: 8,
     title: "AI 360 Dashboard",
+    checkQuestion: "A CISO asks for a single dashboard showing their organization's complete AI risk posture. What do you show them in Atlas, and what key risk categories does it surface?",
     tier: "intermediate",
     followUpPrompts: [
       "Walk me through what a CISO would actually see on first opening AI 360",
@@ -183,6 +225,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
   {
     id: 9,
     title: "AI Security Posture Management",
+    checkQuestion: "A customer says they want to know if any of their AI Python libraries have known CVEs. Which Atlas application handles this, and how does it discover and report those vulnerabilities?",
     tier: "intermediate",
     followUpPrompts: [
       "How does the LLM pen testing work — what attack types does it test for?",
@@ -204,6 +247,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 10,
     title: "AI Incidents & Issues",
     tier: "intermediate",
+    checkQuestion: "After deploying Atlas, a security analyst sees a new 'Shadow AI' issue in the dashboard. What does that mean, and what are the two most likely causes?",
     followUpPrompts: [
       "Walk me through the full lifecycle of an issue from detection to remediation",
       "How does the Splunk integration work — what format does Atlas send issues in?",
@@ -223,6 +267,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
   {
     id: 11,
     title: "Compliance & TPRM",
+    checkQuestion: "A financial services customer says they need to demonstrate AI governance controls for their upcoming SOC 2 audit. Which Atlas applications and features would you highlight, and what evidence can Atlas provide?",
     tier: "intermediate",
     followUpPrompts: [
       "How does Atlas map its controls to the EU AI Act specifically?",
@@ -244,6 +289,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 12,
     title: "Putting It All Together",
     tier: "intermediate",
+    checkQuestion: "Walk me through how you would open an Atlas conversation with a financial services CISO who tells you their developers are using AI coding assistants but the security team has no visibility into what data is being shared.",
     followUpPrompts: [
       "What's the typical time from first meeting to having Atlas in WARN mode on a production system?",
       "What does the 'before picture' from AI Usage typically reveal in a customer environment?",
@@ -263,6 +309,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 13,
     title: "Prompt Data Privacy & Encryption",
     tier: "advanced",
+    checkQuestion: "A CISO asks: if a guardrail fires and blocks a prompt containing employee PII, does Varonis have access to that PII? Walk me through exactly where that data goes and who can see it.",
     followUpPrompts: [
       "What exactly does BYOK mean operationally — who holds the key and how is it used?",
       "If a customer disables prompt logging for an endpoint, what visibility do they lose?",
@@ -284,6 +331,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 14,
     title: "Competitive Positioning",
     tier: "advanced",
+    checkQuestion: "A prospect says they already have Wiz and feel their AI security needs are covered. How do you respond?",
     followUpPrompts: [
       "How do you handle a prospect who is deep into a Wiz evaluation?",
       "What's the best response when a prospect says Microsoft Purview already covers this?",
@@ -304,6 +352,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 15,
     title: "Deployment Deep Dive & CI/CD",
     tier: "advanced",
+    checkQuestion: "A DevOps team asks: can Atlas automatically test our LLM endpoints every time we push a code change, without requiring a manual security review? How does that work?",
     followUpPrompts: [
       "Walk me through the Docker NGINX deployment step by step",
       "What does the GitHub Actions security gate actually output on a PR?",
@@ -324,6 +373,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
   {
     id: 16,
     title: "Objection Handling Masterclass",
+    checkQuestion: "A security-conscious CTO asks: 'We run our AI workloads in Azure, not AWS — can Atlas even work for us?' How do you answer this, and what roadmap context is relevant?",
     tier: "advanced",
     followUpPrompts: [
       "How do you respond if a prospect says they're waiting for their AI strategy to mature?",
@@ -346,6 +396,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 17,
     title: "AI Attack Techniques & Atlas Detection",
     tier: "advanced",
+    checkQuestion: "A customer's security team asks: our AI assistant has access to our internal knowledge base and customer data — how would an attacker try to abuse that, and how does Atlas catch it?",
     followUpPrompts: [
       "Walk me through a confused deputy attack scenario step by step",
       "How does the Remove Invisible Text guardrail actually detect zero-width characters?",
@@ -367,6 +418,7 @@ If the SE answers with a topic list instead of a full sentence, say exactly: "It
     id: 18,
     title: "Advanced Capstone",
     tier: "advanced",
+    checkQuestion: "A global financial services firm needs to show their board a complete AI security posture within 90 days. Walk me through how you would sequence the Atlas deployment and what you would show the board at the end.",
     followUpPrompts: [
       "How do you handle a board that wants a single AI risk score — can Atlas provide that?",
       "What does the EU data residency deployment look like architecturally?",
@@ -383,7 +435,97 @@ You are teaching an experienced Varonis Sales Engineer. This is the final advanc
 This is the capstone — the SE should be able to handle a board-level conversation and a deep technical objection in the same meeting.
 If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
   },
+  {
+    id: 19,
+    title: "AI Investigation",
+    checkQuestion: "A customer's legal team asks you to demonstrate that Atlas actually monitored and logged their AI chatbot's activity over the past 30 days. What do you show them, and where in Atlas does that evidence live?",
+    tier: "beginner",
+    followUpPrompts: [
+      "What's the difference between the Events page and the Sessions page — when do you use each?",
+      "How does AI Investigation help you prove to an auditor that guardrails are actually working?",
+      "What alert thresholds would you recommend setting first for a new Atlas customer?",
+    ],
+    intro: `[LEARNING MODE - Lesson 19: AI Investigation]
+You are teaching a Varonis Sales Engineer. This is a beginner lesson on AI Investigation — one of Atlas's newest applications and a powerful demonstration tool for SEs. Please:
+1. Explain what AI Investigation is: the central hub for runtime visibility and evidence. It answers the question "what actually happened?" after guardrails fire or after unusual AI behavior is detected. It turns runtime protection from a black box into something security teams can review, prove, and act on.
+2. Walk through the five main areas of AI Investigation: (a) Dashboard — trend charts for quality metrics (jailbreak attempts, PII detections, etc.) and performance metrics (latency, token usage); configure alerts that fire when something exceeds a threshold; (b) Issues — alert-driven triage queue; repeated alerts on the same condition group into a single issue with full history; (c) Events — chronological list of every individual runtime request; inspect the full prompt, response, policy tags, and actions taken; (d) Sessions — full conversation reconstruction when the client sends a user_session_id; see the entire multi-turn interaction, tool calls, and where guardrails intervened; (e) Reports — export issue history for auditors and compliance evidence
+3. Explain the investigation workflow: start at the Dashboard to spot a trend change, jump to Issues to see what fired, drill into Events for the specific request, open Sessions when you need full conversation context
+4. Explain why this matters in an SE demo context: AI Investigation lets you show a CISO "here is a jailbreak attempt that was blocked last Tuesday at 2:14pm — here is the exact prompt, here is what the guardrail did" — not just "guardrails are configured"
+5. End with this exact check question: "A customer's legal team asks you to demonstrate that Atlas actually monitored and logged their AI chatbot's activity over the past 30 days. What do you show them, and where in Atlas does that evidence live?"
+Keep it practical and SE-focused. This is a beginner lesson — no deep technical architecture required.
+IMPORTANT: Do not reference, describe, or suggest what comes in any future lesson. The SE will navigate using the sidebar.
+If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
+  },
+  {
+    id: 20,
+    title: "MCP Security",
+    checkQuestion: "A customer says their AI engineering team just connected three external MCP servers to their internal agent. The security team has zero visibility into what tools those servers expose and no way to prevent tool drift. Walk me through what Atlas does about this, step by step.",
+    tier: "intermediate",
+    followUpPrompts: [
+      "What's the difference between a Virtual MCP and MCP Quarantine — don't they do the same thing?",
+      "How does Atlas detect Shadow MCPs — what's the discovery mechanism?",
+      "Walk me through a scenario where a tool drifts overnight and what Atlas does about it",
+    ],
+    intro: `[LEARNING MODE - Lesson 20: MCP Security]
+You are teaching a Varonis Sales Engineer. This is an intermediate lesson on MCP Security — one of the hottest topics in enterprise AI security and a significant Atlas differentiator. Please:
+1. Explain what MCP (Model Context Protocol) is and why it changes the security model: MCP allows AI agents to dynamically discover and invoke tools at runtime. A single external MCP URL can expose dozens of tools via a single list_tools call — and that tool set can change over time without the security team knowing. This is the fundamental problem.
+2. Explain the three core risks Atlas's MCP Security addresses: (a) Shadow MCPs — MCP servers discovered in code or in use, but with no governance visibility into what tools they expose; (b) Tool Drift — an approved MCP server silently adds a new tool overnight (supply chain risk); (c) Unapproved Tool Exposure — agents receive tools they were never authorized to use
+3. Explain the Atlas MCP governance model with its four key components: (a) MCP Catalog — centralized inventory of all MCP servers and their tools, with ownership, risk, and review status; (b) Virtual MCPs (VMCPs) — curated allowlists of approved tools for specific workflows; define exactly which tools an agent is allowed to use; (c) MCP Quarantine — runtime enforcement that strips tools not on the VMCP allowlist before the model even sees them; (d) MCP Activity — operational monitoring showing which tools are being called, which endpoints are most active, and which tools are being quarantined
+4. Walk through the recommended MCP governance workflow: Discover (code scanning surfaces Shadow MCPs) → Inspect (MCP Inspector connects to the server and retrieves its tool list) → Review (approve or reject tools in the Catalog) → Create VMCP (select only the tools needed for each workflow) → Enable MCP Quarantine (enforce the allowlist at runtime) → Monitor Issues (drift, unapproved usage, failed inspections)
+5. Explain the SE angle: organizations deploying agentic AI are connecting MCP servers without any visibility into what those servers expose or whether tool sets have changed. This is a direct conversation opener with any customer using n8n, LangChain, or similar agentic frameworks.
+6. End with this exact check question: "A customer says their AI engineering team just connected three external MCP servers to their internal agent. The security team has zero visibility into what tools those servers expose and no way to prevent tool drift. Walk me through what Atlas does about this, step by step."
+This is an intermediate lesson — be precise about the MCP governance components. The SE needs to handle technical questions from AI engineering teams.
+IMPORTANT: Do not reference, describe, or suggest what comes in any future lesson. The SE will navigate using the sidebar.
+If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
+  },
+  {
+    id: 21,
+    title: "Integration Patterns",
+    checkQuestion: "A DevOps team says they already use LiteLLM Proxy as their AI gateway and cannot change their application code or infrastructure. Can Atlas still protect their LLM endpoints? How does the integration work and what does it actually enforce?",
+    tier: "intermediate",
+    followUpPrompts: [
+      "How does the LiteLLM integration handle fail-open vs fail-closed when Atlas is unreachable?",
+      "What's different about the Copilot Studio integration vs a standard NGINX proxy deployment?",
+      "Which integration pattern would you recommend for a customer who can't change their application code at all?",
+    ],
+    intro: `[LEARNING MODE - Lesson 21: Integration Patterns]
+You are teaching a Varonis Sales Engineer. This is an intermediate lesson on how Atlas integrates with customer environments — the most common technical question in discovery calls. Please:
+1. Explain the three AI Gateway deployment options in practical terms: (a) NGINX reverse proxy via Docker — the most common deployment; the customer swaps their LLM endpoint URL (e.g., api.openai.com) to the Atlas gateway URL; all traffic flows through Atlas with zero application code changes; (b) Python SDK — for applications that cannot use a proxy; Atlas guardrails integrate directly into the application code; (c) Existing API gateway plugin — for customers already running Kong, Apigee, or similar; Atlas provides a plugin so guardrails layer onto the existing infrastructure
+2. Explain the LiteLLM Proxy integration: if a customer already uses LiteLLM as their AI gateway, Atlas integrates via LiteLLM's Generic Guardrail API — a single config block in the LiteLLM config.yaml enables pre-call and post-call guardrail evaluation with no application code changes. Key configuration concepts: guardrail modes (pre_call blocks/modifies prompts before the LLM call; post_call evaluates responses; logging_only audits without blocking); fail_closed vs fail_open fallback when Atlas is unreachable
+3. Explain the Microsoft Copilot Studio integration: Atlas uses Microsoft's external threat detection webhook to evaluate every tool invocation before it executes. Atlas also discovers Copilot Studio agents, their tools, connectors, and authentication configurations via AI Inventory — giving teams visibility into Copilot Studio's AI footprint alongside everything else in the environment. Note: this integration blocks tool invocations but does not support content modification (unlike NGINX/LiteLLM which support MODIFY actions)
+4. Explain CI/CD integration: Atlas provides a GitHub Action and Azure DevOps Task Extension that run automated LLM endpoint pentesting on every pull request — making security validation part of the development pipeline rather than a separate manual review
+5. Explain the SE discovery angle: "How does Atlas fit into our existing stack?" is the #1 technical question. Knowing these four integration patterns lets you answer confidently for any customer architecture — whether they use LiteLLM, Copilot Studio, a custom proxy, or no proxy at all.
+6. End with this exact check question: "A DevOps team says they already use LiteLLM Proxy as their AI gateway and cannot change their application code or infrastructure. Can Atlas still protect their LLM endpoints? How does the integration work and what does it actually enforce?"
+This is an intermediate lesson — the SE needs to handle integration architecture questions with technical buyers.
+IMPORTANT: Do not reference, describe, or suggest what comes in any future lesson. The SE will navigate using the sidebar.
+If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
+  },
+  {
+    id: 22,
+    title: "Agentic AI Security",
+    checkQuestion: "A customer's AI agent has access to their internal file system, corporate email, and CRM database. Their security architect asks: what are the three main ways an attacker would try to abuse that agent, and which specific Atlas guardrails catch each one?",
+    tier: "advanced",
+    followUpPrompts: [
+      "Walk me through a real confused deputy attack step by step against an agent with email access",
+      "How is Agent Reflection Evaluation different from the other agentic guardrail rules?",
+      "Which agentic guardrail rules would you turn on first for a customer deploying n8n workflows?",
+    ],
+    intro: `[LEARNING MODE - Lesson 22: Agentic AI Security]
+You are teaching an experienced Varonis Sales Engineer. This is an advanced lesson on agentic AI security — the fastest-growing attack surface in enterprise AI and a topic that Atlas addresses more deeply than any competitor. Please:
+1. Explain why agentic AI is fundamentally different from a security perspective: AI agents take real-world actions — they read files, query databases, call APIs, send emails, execute code. Unlike a chatbot that only generates text, an agent with legitimate permissions can cause actual damage if manipulated. The security model must assume an attacker will try to control the agent's actions, not just its outputs.
+2. Explain the three primary attack vectors against agentic systems in detail: (a) Prompt Injection — malicious instructions embedded in documents, emails, tool outputs, or knowledge base content that hijack the agent's behavior; example: a resume uploaded by an applicant contains hidden instructions telling an HR AI agent to exfiltrate the HR database; (b) Confused Deputy — an agent is tricked into misusing its own legitimate permissions on behalf of an attacker; the agent thinks it's doing its job; it's actually exfiltrating data or executing unauthorized transactions; (c) Excessive Autonomy — the agent takes actions beyond its intended scope without human approval checkpoints, either through manipulation or emergent behavior
+3. Walk through Atlas's seven Agentic Guardrail rules and what each one does: (a) Agent Tool Selection — evaluates whether the model selected the appropriate tool for the task; catches agents choosing dangerous or inappropriate capabilities; (b) Agent Parameter Evaluation — validates that the parameters passed to a tool are appropriate and aligned with user intent; catches cases where correct tool, wrong payload; (c) Malicious Tool Calls — detects and blocks harmful or unauthorized tool invocations; the safety gate against agents attempting destructive actions; (d) Inappropriate Agentic Behavior — detects agents acting outside their authorized scope, defying instructions, or engaging in harmful conduct; (e) Agent Tool Quarantine — immediately restricts access to specific unapproved tools without disrupting the entire agent workflow; (f) Agent Planning Evaluation — analyzes a proposed multi-step plan for logic, resource risk, and unauthorized data access before the agent executes it; (g) Agent Reflection Evaluation — post-execution check that assesses whether the final outcome aligns with user intent and security policies; can trigger retries or escalate for human review
+4. Explain MCP Quarantine as the enforcement layer that makes agentic guardrails actionable: even if guardrails detect a problem, MCP Quarantine prevents unapproved tools from being presented to the model in the first place — reducing the attack surface before evaluation even runs
+5. End with this exact check question: "A customer's AI agent has access to their internal file system, corporate email, and CRM database. Their security architect asks: what are the three main ways an attacker would try to abuse that agent, and which specific Atlas guardrails catch each one?"
+This is an advanced lesson — the SE must be able to explain attack vectors with precision and map them directly to Atlas capabilities in front of a security architect.
+IMPORTANT: Do not reference, describe, or suggest what comes in any future lesson. The SE will navigate using the sidebar.
+If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
+  },
 ];
+
+// Intended display order — Beginner → Intermediate → Advanced, new lessons in natural position
+const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 19, 7, 8, 9, 10, 11, 12, 20, 21, 13, 14, 15, 16, 17, 22, 18];
+const LESSON_NUM = Object.fromEntries(DISPLAY_ORDER.map((id, i) => [id, i + 1]));
 
 export default function LearnPage() {
   const [activeLesson, setActiveLesson] = useState<number | null>(null);
@@ -395,9 +537,74 @@ export default function LearnPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Learning style & voice preferences
+  const [learningStyle, setLearningStyle] = useState<LearningStyle | null>(null);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceAutoplay, setVoiceAutoplay] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+  const [prefsLoaded, setPrefsLoaded] = useState(false);
+
+  // LLM Judge
+  const [judgeEnabled, setJudgeEnabled] = useState(false);
+  const [judging, setJudging] = useState(false);
+  const [judgeResults, setJudgeResults] = useState<Record<number, JudgeResult>>({});
+  const [judgePassed, setJudgePassed] = useState<Set<number>>(new Set());
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // Load preferences on mount
+  useEffect(() => {
+    fetch("/api/preferences")
+      .then((r) => r.json())
+      .then((prefs) => {
+        if (prefs.learningStyle) {
+          setLearningStyle(prefs.learningStyle as LearningStyle);
+          setVoiceEnabled(prefs.voiceEnabled ?? false);
+          setVoiceAutoplay(prefs.voiceAutoplay ?? false);
+        } else {
+          setShowOnboarding(true);
+        }
+        setJudgeEnabled(prefs.judgeEnabled ?? false);
+        if (prefs.completedLessons?.length) {
+          setCompleted(new Set(prefs.completedLessons as number[]));
+        }
+        setPrefsLoaded(true);
+      })
+      .catch(() => setPrefsLoaded(true));
+  }, []);
+
+  async function savePrefs(style: LearningStyle, voice: boolean, autoplay: boolean, judge?: boolean) {
+    await fetch("/api/preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        learningStyle: style,
+        voiceEnabled: voice,
+        voiceAutoplay: autoplay,
+        judgeEnabled: judge ?? judgeEnabled,
+      }),
+    });
+  }
+
+  function speak(text: string, index: number) {
+    if (!("speechSynthesis" in window)) return;
+    window.speechSynthesis.cancel();
+    const plain = stripMarkdown(text);
+    const utt = new SpeechSynthesisUtterance(plain);
+    utt.rate = 0.95;
+    utt.onstart = () => setSpeakingIndex(index);
+    utt.onend = () => setSpeakingIndex(null);
+    utt.onerror = () => setSpeakingIndex(null);
+    window.speechSynthesis.speak(utt);
+  }
+
+  function stopSpeaking() {
+    if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+    setSpeakingIndex(null);
+  }
 
   async function sendToN8n(question: string, currentHistory: Message[]) {
     const sanitized = question
@@ -421,9 +628,13 @@ export default function LearnPage() {
     setMessages([]);
     setHistory([]);
     setLoading(true);
+    stopSpeaking();
+
+    const stylePrefix = learningStyle ? STYLE_PREFIXES[learningStyle] : "";
+    const prompt = stylePrefix ? `${stylePrefix}\n\n${lesson.intro}` : lesson.intro;
 
     try {
-      const data = await sendToN8n(lesson.intro, []);
+      const data = await sendToN8n(prompt, []);
       setMessages([{ role: "assistant", content: data.answer }]);
       setHistory(data.history);
     } catch {
@@ -432,6 +643,15 @@ export default function LearnPage() {
       setLoading(false);
     }
   }
+
+  // Auto-play voice for last assistant message when autoplay is on
+  useEffect(() => {
+    if (!voiceAutoplay || !voiceEnabled || messages.length === 0 || loading) return;
+    const last = messages[messages.length - 1];
+    if (last.role !== "assistant") return;
+    speak(last.content, messages.length - 1);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
 
   async function sendMessage() {
     const question = input.trim();
@@ -446,6 +666,35 @@ export default function LearnPage() {
       const data = await sendToN8n(question, history);
       setMessages((prev) => [...prev, { role: "assistant", content: data.answer }]);
       setHistory(data.history);
+
+      // LLM Judge — runs after response if enabled and lesson is active
+      if (judgeEnabled && activeLesson) {
+        const lesson = LESSONS.find((l) => l.id === activeLesson);
+        if (lesson) {
+          setJudging(true);
+          try {
+            const judgeRes = await fetch("/api/judge", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                lessonTitle: lesson.title,
+                checkQuestion: lesson.checkQuestion,
+                answer: question,
+              }),
+            });
+            if (judgeRes.ok) {
+              const result: JudgeResult = await judgeRes.json();
+              const msgIndex = messages.length + 1; // index of the user message just sent
+              setJudgeResults((prev) => ({ ...prev, [msgIndex]: result }));
+              if (result.passed) {
+                setJudgePassed((prev) => new Set(prev).add(activeLesson));
+              }
+            }
+          } finally {
+            setJudging(false);
+          }
+        }
+      }
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -486,6 +735,67 @@ export default function LearnPage() {
 
   return (
     <div className="flex h-screen bg-gray-950 text-gray-100">
+
+      {/* Onboarding modal */}
+      {prefsLoaded && showOnboarding && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl p-8 max-w-lg w-full shadow-2xl">
+            <div className="text-center mb-6">
+              <div className="text-4xl mb-3">🎓</div>
+              <h2 className="text-xl font-semibold text-white">How do you learn best?</h2>
+              <p className="text-sm text-gray-400 mt-1">Atlas will tailor responses to your style.</p>
+            </div>
+            <div className="grid grid-cols-3 gap-3 mb-6">
+              {(["visual", "reading", "voice"] as LearningStyle[]).map((style) => {
+                const meta = {
+                  visual: { icon: "📊", label: "Visual", desc: "Tables, headers & structured lists" },
+                  reading: { icon: "📖", label: "Reading", desc: "Rich prose and narrative explanations" },
+                  voice: { icon: "🔊", label: "Voice", desc: "Plain speech, easy to listen to" },
+                }[style];
+                return (
+                  <button
+                    key={style}
+                    onClick={() => setLearningStyle(style)}
+                    className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all text-center ${
+                      learningStyle === style
+                        ? "border-blue-500 bg-blue-950 text-white"
+                        : "border-gray-700 hover:border-gray-500 text-gray-300"
+                    }`}
+                  >
+                    <span className="text-2xl">{meta.icon}</span>
+                    <span className="text-sm font-medium">{meta.label}</span>
+                    <span className="text-xs text-gray-400">{meta.desc}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {(learningStyle === "voice") && (
+              <div className="mb-4 p-3 rounded-xl bg-gray-800 border border-gray-700 flex items-center justify-between">
+                <span className="text-sm text-gray-300">Auto-play responses aloud</span>
+                <button
+                  onClick={() => setVoiceAutoplay((v) => !v)}
+                  className={`w-10 h-5 rounded-full transition-colors ${voiceAutoplay ? "bg-blue-600" : "bg-gray-600"}`}
+                >
+                  <span className={`block w-4 h-4 rounded-full bg-white shadow transition-transform mx-0.5 ${voiceAutoplay ? "translate-x-5" : "translate-x-0"}`} />
+                </button>
+              </div>
+            )}
+            <button
+              disabled={!learningStyle}
+              onClick={async () => {
+                if (!learningStyle) return;
+                const voice = learningStyle === "voice" || voiceEnabled;
+                setVoiceEnabled(voice);
+                await savePrefs(learningStyle, voice, voiceAutoplay);
+                setShowOnboarding(false);
+              }}
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium py-3 rounded-xl transition-colors"
+            >
+              Start Learning →
+            </button>
+          </div>
+        </div>
+      )}
       {/* Sidebar */}
       <div className="w-64 border-r border-gray-800 flex flex-col">
         <div className="border-b border-gray-800 px-4 py-4 flex items-center gap-2">
@@ -509,7 +819,7 @@ export default function LearnPage() {
                     ? "bg-green-500 text-white"
                     : "bg-gray-700 text-gray-400"
                 }`}>
-                  {completed.has(lesson.id) ? "✓" : lesson.id}
+                  {completed.has(lesson.id) ? "✓" : LESSON_NUM[lesson.id]}
                 </span>
                 <span className="leading-tight">{lesson.title}</span>
               </button>
@@ -532,7 +842,7 @@ export default function LearnPage() {
                     ? "bg-green-500 text-white"
                     : "bg-gray-700 text-gray-400"
                 }`}>
-                  {completed.has(lesson.id) ? "✓" : lesson.id}
+                  {completed.has(lesson.id) ? "✓" : LESSON_NUM[lesson.id]}
                 </span>
                 <span className="leading-tight">{lesson.title}</span>
               </button>
@@ -555,20 +865,93 @@ export default function LearnPage() {
                     ? "bg-green-500 text-white"
                     : "bg-purple-900 text-purple-300"
                 }`}>
-                  {completed.has(lesson.id) ? "✓" : lesson.id}
+                  {completed.has(lesson.id) ? "✓" : LESSON_NUM[lesson.id]}
                 </span>
                 <span className="leading-tight">{lesson.title}</span>
               </button>
             ))}
           </div>
         </div>
-        <div className="mt-auto px-4 py-4 border-t border-gray-800">
-          <p className="text-xs text-gray-500">{completed.size} / {LESSONS.length} lessons completed</p>
-          <div className="mt-2 bg-gray-800 rounded-full h-1.5">
-            <div
-              className="bg-blue-600 h-1.5 rounded-full transition-all"
-              style={{ width: `${(completed.size / LESSONS.length) * 100}%` }}
-            />
+        <div className="mt-auto border-t border-gray-800">
+          {/* Learning style settings */}
+          <div className="px-4 py-3 border-b border-gray-800">
+            <p className="text-xs text-gray-500 mb-2 uppercase tracking-wider font-semibold">Learning Style</p>
+            <div className="flex gap-1">
+              {(["visual", "reading", "voice"] as LearningStyle[]).map((style) => {
+                const icons = { visual: "📊", reading: "📖", voice: "🔊" };
+                return (
+                  <button
+                    key={style}
+                    title={style.charAt(0).toUpperCase() + style.slice(1)}
+                    onClick={async () => {
+                      setLearningStyle(style);
+                      const voice = style === "voice" || voiceEnabled;
+                      setVoiceEnabled(voice);
+                      await savePrefs(style, voice, voiceAutoplay);
+                    }}
+                    className={`flex-1 py-1.5 rounded-lg text-sm transition-colors ${
+                      learningStyle === style
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+                    }`}
+                  >
+                    {icons[style]}
+                  </button>
+                );
+              })}
+            </div>
+            {voiceEnabled && (
+              <div className="flex items-center justify-between mt-2">
+                <span className="text-xs text-gray-400">Auto-play</span>
+                <button
+                  onClick={async () => {
+                    const next = !voiceAutoplay;
+                    setVoiceAutoplay(next);
+                    await savePrefs(learningStyle!, voiceEnabled, next);
+                  }}
+                  className={`w-8 h-4 rounded-full transition-colors relative ${voiceAutoplay ? "bg-blue-600" : "bg-gray-600"}`}
+                >
+                  <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-all ${voiceAutoplay ? "left-4" : "left-0.5"}`} />
+                </button>
+              </div>
+            )}
+          </div>
+          {/* AI Answer Grading toggle */}
+          <div className="px-4 py-3 border-b border-gray-800">
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <p className="text-xs font-semibold text-gray-400">AI Answer Grading</p>
+                <p className="text-xs text-gray-600 mt-0.5 leading-snug">
+                  Scores your check question answers and unlocks &ldquo;Mark as Complete&rdquo; when you pass.
+                </p>
+              </div>
+              <button
+                onClick={async () => {
+                  const next = !judgeEnabled;
+                  setJudgeEnabled(next);
+                  if (learningStyle) await savePrefs(learningStyle, voiceEnabled, voiceAutoplay, next);
+                  else {
+                    await fetch("/api/preferences", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ learningStyle: null, voiceEnabled, voiceAutoplay, judgeEnabled: next }),
+                    });
+                  }
+                }}
+                className={`mt-0.5 w-8 h-4 rounded-full transition-colors relative shrink-0 ${judgeEnabled ? "bg-purple-600" : "bg-gray-600"}`}
+              >
+                <span className={`absolute top-0.5 w-3 h-3 rounded-full bg-white shadow transition-all ${judgeEnabled ? "left-4" : "left-0.5"}`} />
+              </button>
+            </div>
+          </div>
+          <div className="px-4 py-3">
+            <p className="text-xs text-gray-500">{completed.size} / {LESSONS.length} lessons completed</p>
+            <div className="mt-2 bg-gray-800 rounded-full h-1.5">
+              <div
+                className="bg-blue-600 h-1.5 rounded-full transition-all"
+                style={{ width: `${(completed.size / LESSONS.length) * 100}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -578,7 +961,7 @@ export default function LearnPage() {
         <header className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="font-semibold text-white">
-              {currentLesson ? `Lesson ${currentLesson.id}: ${currentLesson.title}` : "Atlas Learning Course"}
+              {currentLesson ? `Lesson ${LESSON_NUM[currentLesson.id]}: ${currentLesson.title}` : "Atlas Learning Course"}
             </h1>
             <p className="text-xs text-gray-400">
               {currentLesson ? "Read the lesson, then answer the check question to continue" : "Select a lesson from the sidebar to begin"}
@@ -600,7 +983,7 @@ export default function LearnPage() {
             <div className="text-center text-gray-500 mt-20">
               <div className="text-4xl mb-4">📚</div>
               <p className="text-lg font-medium text-gray-300">Select a lesson to begin</p>
-              <p className="text-sm mt-2">Work through all 18 lessons across Beginner, Intermediate, and Advanced tiers.</p>
+              <p className="text-sm mt-2">Work through all 22 lessons across Beginner, Intermediate, and Advanced tiers.</p>
             </div>
           )}
 
@@ -608,16 +991,27 @@ export default function LearnPage() {
             <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
               <div className="relative group max-w-2xl min-w-0">
                 {msg.role === "assistant" && (
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(msg.content);
-                      setCopiedIndex(i);
-                      setTimeout(() => setCopiedIndex(null), 2000);
-                    }}
-                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1 rounded-md z-10"
-                  >
-                    {copiedIndex === i ? "Copied!" : "Copy"}
-                  </button>
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-10">
+                    {voiceEnabled && (
+                      <button
+                        onClick={() => speakingIndex === i ? stopSpeaking() : speak(msg.content, i)}
+                        className="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1 rounded-md"
+                        title={speakingIndex === i ? "Stop" : "Read aloud"}
+                      >
+                        {speakingIndex === i ? "⏹" : "🔊"}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(msg.content);
+                        setCopiedIndex(i);
+                        setTimeout(() => setCopiedIndex(null), 2000);
+                      }}
+                      className="bg-gray-700 hover:bg-gray-600 text-gray-300 text-xs px-2 py-1 rounded-md"
+                    >
+                      {copiedIndex === i ? "Copied!" : "Copy"}
+                    </button>
+                  </div>
                 )}
               <div
                 className={`min-w-0 rounded-2xl px-4 py-3 text-sm leading-relaxed overflow-hidden ${
@@ -647,14 +1041,32 @@ export default function LearnPage() {
                   </ReactMarkdown>
                 )}
               </div>
+              {/* Judge result card — shown after user messages when judge is on */}
+              {judgeEnabled && msg.role === "user" && judgeResults[i] && (
+                <div className={`mt-1 rounded-xl px-3 py-2 text-xs border ${
+                  judgeResults[i].passed
+                    ? "bg-green-950 border-green-700 text-green-300"
+                    : "bg-yellow-950 border-yellow-700 text-yellow-300"
+                }`}>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-semibold">{judgeResults[i].passed ? "✓ Passed" : "Not quite"}</span>
+                    <span className="text-gray-500">·</span>
+                    <span className="text-gray-400">Score: {judgeResults[i].score}/100</span>
+                  </div>
+                  <p>{judgeResults[i].feedback}</p>
+                  {judgeResults[i].missing.length > 0 && (
+                    <p className="mt-1 text-gray-400">Missing: {judgeResults[i].missing.join(", ")}</p>
+                  )}
+                </div>
+              )}
               </div>
             </div>
           ))}
 
-          {loading && (
+          {(loading || judging) && (
             <div className="flex justify-start">
               <div className="bg-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-400">
-                {activeLesson && messages.length === 0 ? "Loading lesson…" : "Thinking…"}
+                {judging ? "Grading your answer…" : activeLesson && messages.length === 0 ? "Loading lesson…" : "Thinking…"}
               </div>
             </div>
           )}
@@ -689,6 +1101,26 @@ export default function LearnPage() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
               />
+              {voiceEnabled && messages.length > 0 && (
+                <button
+                  onClick={() => {
+                    if (speakingIndex !== null) {
+                      stopSpeaking();
+                    } else {
+                      const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+                      if (lastAssistant) speak(lastAssistant.content, messages.lastIndexOf(lastAssistant));
+                    }
+                  }}
+                  title={speakingIndex !== null ? "Stop reading" : "Read last response aloud"}
+                  className={`rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
+                    speakingIndex !== null
+                      ? "bg-red-600 hover:bg-red-700 text-white"
+                      : "bg-green-600 hover:bg-green-700 text-white"
+                  }`}
+                >
+                  {speakingIndex !== null ? "⏹ Stop" : "▶ Play"}
+                </button>
+              )}
               <button
                 onClick={sendMessage}
                 disabled={loading || !input.trim()}
@@ -697,16 +1129,40 @@ export default function LearnPage() {
                 Send
               </button>
             </div>
-            <div className="flex justify-center mt-3">
+            <div className="flex flex-col items-center gap-1 mt-3">
               <button
-                onClick={() => {
-                  if (activeLesson) setCompleted((prev) => new Set(prev).add(activeLesson));
+                onClick={async () => {
+                  if (!activeLesson) return;
+                  const next = new Set(completed).add(activeLesson);
+                  setCompleted(next);
+                  await fetch("/api/preferences", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      learningStyle,
+                      voiceEnabled,
+                      voiceAutoplay,
+                      judgeEnabled,
+                      completedLessons: Array.from(next),
+                    }),
+                  });
                 }}
-                disabled={activeLesson ? completed.has(activeLesson) : true}
+                disabled={
+                  !activeLesson ||
+                  completed.has(activeLesson) ||
+                  (judgeEnabled && !judgePassed.has(activeLesson))
+                }
                 className="text-xs px-4 py-1.5 rounded-full border border-green-600 text-green-400 hover:bg-green-600 hover:text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                {activeLesson && completed.has(activeLesson) ? "✓ Lesson Complete" : "Mark as Complete"}
+                {activeLesson && completed.has(activeLesson)
+                  ? "✓ Lesson Complete"
+                  : judgeEnabled && activeLesson && !judgePassed.has(activeLesson)
+                  ? "Answer the check question to unlock"
+                  : "Mark as Complete"}
               </button>
+              {judgeEnabled && activeLesson && !judgePassed.has(activeLesson) && !completed.has(activeLesson) && (
+                <p className="text-xs text-purple-400">AI grading is on — pass the check question to complete this lesson</p>
+              )}
             </div>
             <p className="text-center text-xs text-gray-600 mt-2">Press Enter to send · Shift+Enter for new line</p>
           </div>

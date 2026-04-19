@@ -29,10 +29,24 @@ export default function Home() {
               <div className="text-3xl mb-3">📚</div>
               <h3 className="font-semibold text-white mb-1">Learn Atlas</h3>
               <p className="text-sm text-gray-400">
-                Structured beginner course covering Atlas fundamentals — step by step.
+                Structured course covering Atlas fundamentals across Beginner, Intermediate, and Advanced tiers.
               </p>
               <p className="text-xs text-blue-400 mt-4 group-hover:text-blue-300">
-                6 lessons · Beginner tier →
+                22 lessons · 3 tiers →
+              </p>
+            </Link>
+
+            <Link
+              href="/meeting"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-orange-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="text-3xl mb-3">🤝</div>
+              <h3 className="font-semibold text-white mb-1">Meeting Readiness</h3>
+              <p className="text-sm text-gray-400">
+                Prep for customer meetings. Upload screenshots, RFPs, and architecture diagrams for targeted help.
+              </p>
+              <p className="text-xs text-orange-400 mt-4 group-hover:text-orange-300">
+                Attach files · Multi-model · Session memory →
               </p>
             </Link>
 
