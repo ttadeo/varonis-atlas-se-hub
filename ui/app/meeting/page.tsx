@@ -148,12 +148,6 @@ export default function MeetingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const userId = "se_default"; // Will be replaced by real auth user ID later
-  const broadcastRef = useRef<BroadcastChannel | null>(null);
-
-  useEffect(() => {
-    broadcastRef.current = new BroadcastChannel("atlas-quick-response");
-    return () => broadcastRef.current?.close();
-  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -373,8 +367,11 @@ export default function MeetingPage() {
         setSessionSaved(true);
       }
 
-      // Broadcast to second monitor
-      broadcastRef.current?.postMessage({ question, answer: data.answer, confidence: data.confidence });
+      // Broadcast to second monitor via localStorage (works across popup windows)
+      localStorage.setItem(
+        "atlas-quick-response",
+        JSON.stringify({ question, answer: data.answer, confidence: data.confidence, ts: Date.now() })
+      );
 
     } catch (err) {
       setMessages((prev) => [

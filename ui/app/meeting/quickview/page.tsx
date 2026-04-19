@@ -19,13 +19,17 @@ export default function QuickViewPage() {
   const [flash, setFlash] = useState(false);
 
   useEffect(() => {
-    const channel = new BroadcastChannel("atlas-quick-response");
-    channel.onmessage = (e: MessageEvent<QuickPayload>) => {
-      setCurrent(e.data);
-      setFlash(true);
-      setTimeout(() => setFlash(false), 600);
-    };
-    return () => channel.close();
+    function onStorage(e: StorageEvent) {
+      if (e.key !== "atlas-quick-response" || !e.newValue) return;
+      try {
+        const payload: QuickPayload = JSON.parse(e.newValue);
+        setCurrent(payload);
+        setFlash(true);
+        setTimeout(() => setFlash(false), 600);
+      } catch {}
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   const badgeColor = current?.confidence
