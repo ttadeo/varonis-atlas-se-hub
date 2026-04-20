@@ -15,11 +15,16 @@ from playwright.async_api import async_playwright
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-BASE_URL = "https://playground.alltrue-be.com"
+BASE_URL = "https://prod.alltrue-be.com"
+ORG_ID   = "82d61b63-ca61-4705-b62d-02266001c6bc"
+PROJECT_ID = "28c96091-b86b-438f-b702-7f2f368423d8"
+QUERY_PARAMS = f"?organization={ORG_ID}&project={PROJECT_ID}"
+
 OUTPUT_DIR = Path(__file__).parent / "output" / "ui_navigation"
 
 # Known Atlas UI routes to visit — grouped by nav section
 # Each entry: (path, friendly_name, nav_section)
+# Note: QUERY_PARAMS are appended to every URL at runtime
 UI_ROUTES = [
     # Dashboard / Home
     ("/",                                           "Home Dashboard",               "home"),
@@ -89,7 +94,7 @@ async def login(page):
     print("\n" + "="*50)
     print("ACTION REQUIRED: Manual login needed")
     print("="*50)
-    await page.goto(BASE_URL)
+    await page.goto(BASE_URL + "/ai-360" + QUERY_PARAMS)
     await page.wait_for_load_state("networkidle")
 
     current_url = page.url
@@ -108,7 +113,7 @@ async def login(page):
 # ─── Scrape a single UI page ──────────────────────────────────────────────────
 
 async def scrape_ui_page(page, path: str, friendly_name: str, nav_section: str) -> dict:
-    url = BASE_URL + path
+    url = BASE_URL + path + QUERY_PARAMS
     print(f"  → {friendly_name} ({path})")
 
     try:
