@@ -5,7 +5,6 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 
-const N8N_WEBHOOK = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL!;
 
 interface Message {
   role: "user" | "assistant";
@@ -33,7 +32,7 @@ export default function AskPage() {
     setLoading(true);
 
     try {
-      const res = await fetch(N8N_WEBHOOK, {
+      const res = await fetch("/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question, history }),
