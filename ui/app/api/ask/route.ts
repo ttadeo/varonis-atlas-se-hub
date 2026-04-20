@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const N8N_WEBHOOK = process.env.N8N_WEBHOOK_URL!;
+const N8N_WEBHOOK = process.env.N8N_WEBHOOK_URL ?? process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL ?? "";
 
 export async function POST(req: NextRequest) {
+  if (!N8N_WEBHOOK) {
+    return NextResponse.json({ error: "N8N_WEBHOOK_URL is not configured" }, { status: 500 });
+  }
+
   try {
     const body = await req.json();
 

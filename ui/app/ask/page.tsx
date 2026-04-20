@@ -39,13 +39,19 @@ export default function AskPage() {
       });
 
       const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+      if (!data.answer) {
+        throw new Error("No answer returned from Atlas.");
+      }
       const assistantMessage: Message = { role: "assistant", content: data.answer };
       setMessages((prev) => [...prev, assistantMessage]);
-      setHistory(data.history);
-    } catch {
+      setHistory(data.history ?? []);
+    } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { role: "assistant", content: "Error connecting to Atlas. Please try again." },
+        { role: "assistant", content: `Error: ${String(err)}` },
       ]);
     } finally {
       setLoading(false);
