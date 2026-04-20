@@ -21,7 +21,7 @@ export default function Home() {
             <p className="text-gray-400 mt-2">Your AI-powered guide to Varonis Atlas AI Security</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <Link
               href="/learn"
               className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-blue-500 rounded-2xl p-6 transition-all group"
@@ -64,6 +64,20 @@ export default function Home() {
               </p>
             </Link>
           </div>
+
+          <Link
+            href="/analytics"
+            className="block bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-purple-500 rounded-2xl p-6 transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="text-3xl">📊</div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-white mb-1">Interaction Analytics</h3>
+                <p className="text-sm text-gray-400">Session trends, answer quality scores, knowledge base gaps by industry and meeting type.</p>
+              </div>
+              <p className="text-xs text-purple-400 group-hover:text-purple-300 shrink-0">View dashboard →</p>
+            </div>
+          </Link>
         </div>
       </main>
     </div>
