@@ -359,6 +359,52 @@ Respond with valid JSON only — no markdown, no explanation outside the JSON:
   }
 }
 
+// ─── Quality gate judge for regular chat answers ─────────────────────────────
+
+async function judgeChatResponse(
+  question: string,
+  answer: string,
+  atlasDocs: string
+): Promise<{ score: number; label: string; reason: string }> {
+  const prompt = `You are a quality gate evaluating whether an AI-generated answer about the Varonis Atlas AI Security Platform is worth storing in a knowledge base for future reference.
+
+CUSTOMER QUESTION: ${question}
+
+AI ANSWER (may be long and use markdown formatting):
+${answer.slice(0, 2000)}
+
+ATLAS DOCUMENTATION RETRIEVED:
+${atlasDocs.slice(0, 3000)}
+
+Score the answer from 0 to 100 based on ONLY these criteria:
+- Does the answer address a real Atlas product question (not off-topic, not a greeting)? (30 pts)
+- Is the answer grounded in Atlas-specific facts, features, or capabilities? (40 pts)
+- Is the answer accurate and not misleading or hallucinated? (30 pts)
+
+A well-formed answer about Atlas features should score 70+.
+A vague, off-topic, or clearly hallucinated answer should score below 70.
+Do NOT penalize for length, formatting, or markdown usage.
+
+Respond with valid JSON only — no markdown, no explanation outside the JSON:
+{"score": <number>, "reason": "<one sentence explaining the score>"}`;
+
+  const response = await anthropic.messages.create({
+    model: "claude-haiku-4-5-20251001",
+    max_tokens: 256,
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const raw = (response.content[0] as Anthropic.Messages.TextBlock).text.trim();
+  try {
+    const parsed = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    const score: number = parsed.score ?? 0;
+    const label = score >= 85 ? "High Confidence" : score >= 70 ? "Moderate Confidence" : "Low Confidence";
+    return { score, label, reason: parsed.reason ?? "" };
+  } catch {
+    return { score: 0, label: "Low Confidence", reason: "Could not evaluate answer." };
+  }
+}
+
 // ─── Session save ─────────────────────────────────────────────────────────────
 
 async function saveInteraction(
@@ -541,7 +587,8 @@ export async function POST(req: NextRequest) {
       const confidence = await judgeQuickResponse(question, answer, atlasDocs);
 
       let activeSessionId = sessionId;
-      if (saveSession) {
+      const quickPassesGate = confidence.score >= 70;
+      if (saveSession && quickPassesGate) {
         if (!activeSessionId) {
           activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
         }
@@ -553,6 +600,7 @@ export async function POST(req: NextRequest) {
         model: "claude-sonnet-4-6",
         isQuickResponse: true,
         confidence,
+        savedToMemory: quickPassesGate,
         sessionId: activeSessionId,
       });
     }
@@ -708,6 +756,7 @@ export async function POST(req: NextRequest) {
 
     // ── Agentic RAG loop (Claude only — GPT-4o path below) ───────────────────
     let finalAnswer = "";
+    const retrievedDocs: string[] = []; // accumulate RAG results for quality gate
 
     if (model === "claude-sonnet-4-6") {
       let currentMessages: Anthropic.Messages.MessageParam[] = messages;
@@ -738,14 +787,11 @@ export async function POST(req: NextRequest) {
           ) as Anthropic.Messages.ToolUseBlock[];
 
           const toolResults: Anthropic.Messages.ToolResultBlockParam[] = await Promise.all(
-            toolUseBlocks.map(async (tb) => ({
-              type: "tool_result" as const,
-              tool_use_id: tb.id,
-              content: await executeTool(
-                tb.name,
-                tb.input as Record<string, string>
-              ),
-            }))
+            toolUseBlocks.map(async (tb) => {
+              const result = await executeTool(tb.name, tb.input as Record<string, string>);
+              if (tb.name === "search_atlas_docs") retrievedDocs.push(result);
+              return { type: "tool_result" as const, tool_use_id: tb.id, content: result };
+            })
           );
 
           currentMessages = [
@@ -816,9 +862,24 @@ export async function POST(req: NextRequest) {
       finalAnswer = gptResponse.choices[0].message.content ?? "";
     }
 
-    // ── Persist to Neo4j if saving ────────────────────────────────────────────
+    // ── Quality gate — judge answer before persisting to Neo4j ──────────────
+    let chatConfidence: { score: number; label: string; reason: string } | null = null;
+    let passesGate = true; // default: save (for GPT-4o image path — no judge)
+
+    if (saveSession && meetingContext && model === "claude-sonnet-4-6" && finalAnswer.trim()) {
+      // Use docs from the RAG loop if Claude called the tool; otherwise fetch directly for the judge
+      let docsForJudge = retrievedDocs.join("\n\n---\n\n").slice(0, 4000);
+      if (!docsForJudge) {
+        docsForJudge = (await searchAtlasDocs(question)).slice(0, 4000);
+      }
+      chatConfidence = await judgeChatResponse(question, finalAnswer, docsForJudge);
+      passesGate = chatConfidence.score >= 70;
+      console.log(`[quality-gate] score=${chatConfidence.score} passes=${passesGate} question="${question.slice(0, 60)}"`);
+    }
+
+    // ── Persist to Neo4j if saving and passes quality gate ────────────────────
     let activeSessionId = sessionId;
-    if (saveSession && meetingContext) {
+    if (saveSession && meetingContext && passesGate) {
       if (!activeSessionId) {
         activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
       }
@@ -835,6 +896,8 @@ export async function POST(req: NextRequest) {
       answer: finalAnswer,
       model,
       sessionId: activeSessionId,
+      savedToMemory: passesGate,
+      ...(chatConfidence && { confidence: chatConfidence }),
     });
   } catch (err) {
     console.error("Meeting API error:", err);
