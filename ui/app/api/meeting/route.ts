@@ -48,34 +48,69 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
   const embedding = embeddingRes.data[0].embedding;
 
   const driver = getNeo4jDriver();
-  const session = driver.session();
-  try {
-    const sectionFilter = section ? "AND node.section = $section" : "";
-    const result = await session.run(
-      `CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 8, $embedding)
-       YIELD node, score
-       WHERE score > 0.45 ${sectionFilter}
-       RETURN node.heading AS heading, node.text AS text,
-              node.title AS title, node.section AS section,
-              node.url AS url, score
-       ORDER BY score DESC`,
-      { embedding, section: section ?? null }
-    );
+  const sectionFilter = section ? "AND node.section = $section" : "";
 
-    if (result.records.length === 0) {
-      return "No relevant Atlas documentation found for this query.";
+  // Run vector search and full-text search in parallel using separate sessions
+  const [vectorResult, fulltextResult] = await Promise.all([
+    (async () => {
+      const s = driver.session();
+      try {
+        return await s.run(
+          `CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 12, $embedding)
+           YIELD node, score
+           WHERE score > 0.45 ${sectionFilter}
+           RETURN node.heading AS heading, node.text AS text,
+                  node.title AS title, node.section AS section, score
+           ORDER BY score DESC`,
+          { embedding, section: section ?? null }
+        );
+      } finally { await s.close(); }
+    })(),
+    (async () => {
+      const s = driver.session();
+      try {
+        return await s.run(
+          `CALL db.index.fulltext.queryNodes('atlas_chunk_text', $query)
+           YIELD node, score
+           WHERE score > 0.5 ${sectionFilter}
+           RETURN node.heading AS heading, node.text AS text,
+                  node.title AS title, node.section AS section, score
+           ORDER BY score DESC
+           LIMIT 8`,
+          { query, section: section ?? null }
+        );
+      } finally { await s.close(); }
+    })(),
+  ]);
+
+  await driver.close();
+
+  // Merge: vector results first, then fill with unique full-text results
+  type ChunkRecord = { heading: string; text: string; title: string; section: string; score: number };
+  const seen = new Set<string>();
+  const merged: ChunkRecord[] = [];
+
+  for (const r of vectorResult.records) {
+    const key = r.get("heading");
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push({ heading: r.get("heading"), text: r.get("text"), title: r.get("title"), section: r.get("section"), score: r.get("score") });
     }
-
-    return result.records
-      .map((r) => {
-        const score = (r.get("score") as number).toFixed(3);
-        return `[${r.get("title")} › ${r.get("heading")}] (relevance: ${score})\n${r.get("text")}`;
-      })
-      .join("\n\n---\n\n");
-  } finally {
-    await session.close();
-    await driver.close();
   }
+  for (const r of fulltextResult.records) {
+    const key = r.get("heading");
+    if (!seen.has(key)) {
+      seen.add(key);
+      merged.push({ heading: r.get("heading"), text: r.get("text"), title: r.get("title"), section: r.get("section"), score: r.get("score") });
+    }
+  }
+
+  if (merged.length === 0) return "No relevant Atlas documentation found for this query.";
+
+  return merged
+    .slice(0, 10)
+    .map((c) => `[${c.title} › ${c.heading}]\n${c.text}`)
+    .join("\n\n---\n\n");
 }
 
 // ─── Tool: search_past_sessions ───────────────────────────────────────────────
