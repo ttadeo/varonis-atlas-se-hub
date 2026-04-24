@@ -23,6 +23,24 @@ export default function Home() {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <Link
+              href="/demo"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-emerald-500 rounded-2xl p-6 transition-all group col-span-2"
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-3xl">🎯</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-white mb-1">Demo Provisioning</h3>
+                  <p className="text-sm text-gray-400">
+                    Describe the customer use case → Claude matches Atlas templates → provision the demo environment in one click.
+                  </p>
+                </div>
+                <p className="text-xs text-emerald-400 group-hover:text-emerald-300 shrink-0">
+                  AI-matched · One-click provision →
+                </p>
+              </div>
+            </Link>
+
+            <Link
               href="/learn"
               className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-blue-500 rounded-2xl p-6 transition-all group"
             >

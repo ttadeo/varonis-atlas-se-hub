@@ -23,55 +23,66 @@ QUERY_PARAMS = f"?organization={ORG_ID}&project={PROJECT_ID}"
 OUTPUT_DIR = Path(__file__).parent / "output" / "ui_navigation"
 
 # Known Atlas UI routes to visit — grouped by nav section
+# Updated from live nav discovery against prod.alltrue-be.com (2026-04-20)
 # Each entry: (path, friendly_name, nav_section)
 # Note: QUERY_PARAMS are appended to every URL at runtime
 UI_ROUTES = [
     # Dashboard / Home
-    ("/",                                           "Home Dashboard",               "home"),
+    ("/",                                                       "Home Dashboard",                           "home"),
 
     # AI 360
-    ("/ai-360",                                     "AI 360",                       "ai_360"),
+    ("/ai-360",                                                 "AI 360",                                   "ai_360"),
+    ("/ai-360/risks",                                           "AI 360 — Risks",                           "ai_360"),
+    ("/ai-360/alerts",                                          "AI 360 — Alerts",                          "ai_360"),
+    ("/ai-360/report",                                          "AI 360 — Report",                          "ai_360"),
 
     # AI Inventory
-    ("/ai-inventory",                               "AI Inventory",                 "ai_inventory"),
-    ("/ai-inventory/endpoints",                     "AI Inventory — Endpoints",     "ai_inventory"),
-    ("/ai-inventory/models",                        "AI Inventory — Models",        "ai_inventory"),
-    ("/ai-inventory/applications",                  "AI Inventory — Applications",  "ai_inventory"),
-    ("/ai-inventory/users",                         "AI Inventory — Users",         "ai_inventory"),
+    ("/ai-inventory",                                           "AI Inventory",                             "ai_inventory"),
+    ("/ai-inventory/technologies",                              "AI Inventory — Technologies",              "ai_inventory"),
+    ("/ai-inventory/technologies/list/active",                  "AI Inventory — All AI Resources",          "ai_inventory"),
+    ("/ai-inventory/technologies/MicrosoftCopilotStudio",       "AI Inventory — Copilot Studio Agent",      "ai_inventory"),
+    ("/ai-inventory/technologies/MLArtifact",                   "AI Inventory — Model Artifact File",       "ai_inventory"),
+    ("/ai-inventory/technologies/SageMaker",                    "AI Inventory — SageMaker Artifact",        "ai_inventory"),
+    ("/ai-inventory/technologies/openai-enterprise-data",       "AI Inventory — OpenAI File",               "ai_inventory"),
+    ("/ai-inventory/technologies/azure-openai-api-key",         "AI Inventory — Azure OpenAI Endpoint",     "ai_inventory"),
+    ("/ai-inventory/technologies/AzureMachineLearning",         "AI Inventory — Machine Learning Workspace","ai_inventory"),
+    ("/ai-inventory/technologies/openai-api-key",               "AI Inventory — OpenAI API Key",            "ai_inventory"),
+    ("/ai-inventory/technologies/AzureAIFoundry",               "AI Inventory — Azure AI Foundry",          "ai_inventory"),
+    ("/ai-inventory/technologies/MLFile",                       "AI Inventory — Model File",                "ai_inventory"),
+    ("/ai-inventory/technologies/Microsoft-Copilot-Studio",     "AI Inventory — Microsoft Copilot Studio",  "ai_inventory"),
+    ("/ai-inventory/technologies/Microsoft-Copilot",            "AI Inventory — Microsoft Copilot",         "ai_inventory"),
+    ("/ai-inventory/technologies/azure-openai-data",            "AI Inventory — Azure OpenAI File",         "ai_inventory"),
+    ("/ai-inventory/technologies/custom-ai-agent-tool",         "AI Inventory — Custom AI Agent Tool",      "ai_inventory"),
+    ("/ai-inventory/technologies/google-ai-api-key",            "AI Inventory — Google AI API Key",         "ai_inventory"),
 
-    # AI Gateway
-    ("/ai-gateway",                                 "AI Gateway",                   "ai_gateway"),
-    ("/ai-gateway/policies",                        "AI Gateway — Policies",        "ai_gateway"),
-    ("/ai-gateway/policies/new",                    "AI Gateway — New Policy",      "ai_gateway"),
-    ("/ai-gateway/endpoints",                       "AI Gateway — Endpoints",       "ai_gateway"),
-    ("/ai-gateway/logs",                            "AI Gateway — Logs",            "ai_gateway"),
+    # AI Usage
+    ("/ai-usage/overview",                                      "AI Usage",                                 "ai_usage"),
 
-    # AI SPM
-    ("/ai-spm",                                     "AI SPM",                       "ai_spm"),
-    ("/ai-spm/pentests",                            "AI SPM — PenTests",            "ai_spm"),
-    ("/ai-spm/pentests/new",                        "AI SPM — New PenTest",         "ai_spm"),
-    ("/ai-spm/vulnerabilities",                     "AI SPM — Vulnerabilities",     "ai_spm"),
-    ("/ai-spm/posture",                             "AI SPM — Posture",             "ai_spm"),
+    # AI Red Team
+    ("/ai-red-team",                                            "AI Red Team",                              "ai_red_team"),
 
-    # AI Observability
-    ("/ai-observability",                           "AI Observability",             "ai_observability"),
-    ("/ai-observability/evaluate",                  "AI Observability — Evaluate",  "ai_observability"),
-    ("/ai-observability/monitor",                   "AI Observability — Monitor",   "ai_observability"),
+    # AI SPM (real path: /spm)
+    ("/spm",                                                    "AI SPM",                                   "ai_spm"),
 
-    # AI Incidents
-    ("/ai-incidents",                               "AI Incidents",                 "ai_incidents"),
+    # AI Runtime / Gateway (real path: /ai-gateway)
+    ("/ai-gateway",                                             "AI Runtime",                               "ai_gateway"),
+    ("/ai-gateway/policies",                                    "AI Runtime — Policies",                    "ai_gateway"),
+
+    # AI MCP
+    ("/mcp/catalog",                                            "AI MCP — Catalog",                         "ai_mcp"),
+
+    # AI Investigation / Monitor (real path: /ai-monitor)
+    ("/ai-monitor",                                             "AI Investigation",                         "ai_investigation"),
 
     # AI Compliance
-    ("/ai-compliance",                              "AI Compliance",                "ai_compliance"),
+    ("/ai-compliance",                                          "AI Compliance",                            "ai_compliance"),
+    ("/ai-compliance/audit",                                    "AI Compliance — Audit Log",                "ai_compliance"),
 
     # AI TPRM
-    ("/ai-tprm",                                    "AI TPRM",                      "ai_tprm"),
+    ("/ai-tprm",                                                "AI TPRM",                                  "ai_tprm"),
 
-    # Settings
-    ("/settings",                                   "Settings",                     "settings"),
-    ("/settings/integrations",                      "Settings — Integrations",      "settings"),
-    ("/settings/users",                             "Settings — Users",             "settings"),
-    ("/settings/organization",                      "Settings — Organization",      "settings"),
+    # AI Incidents
+    ("/ai-incidents",                                           "AI Incidents",                             "ai_incidents"),
 ]
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -112,6 +123,67 @@ async def login(page):
 
 # ─── Scrape a single UI page ──────────────────────────────────────────────────
 
+async def discover_nav_routes(page) -> list[tuple[str, str, str]]:
+    """
+    Visit the home page and extract all nav links to discover real routes.
+    Returns list of (path, label, nav_section) tuples.
+    """
+    print("Discovering real nav routes from sidebar...")
+    await page.goto(BASE_URL + "/ai-360" + QUERY_PARAMS)
+    await page.wait_for_load_state("networkidle")
+    await page.wait_for_timeout(2000)
+
+    # Collect all internal links
+    all_links = await page.eval_on_selector_all(
+        "a[href]",
+        "els => els.map(el => ({ href: el.href, text: el.innerText.trim() }))"
+    )
+
+    seen = set()
+    routes = []
+    for link in all_links:
+        href = link["href"]
+        text = link["text"].strip()
+        if not text or not href:
+            continue
+        # Only prod.alltrue-be.com links, skip auth/docs/api links
+        if "prod.alltrue-be.com" not in href:
+            continue
+        if any(x in href for x in ["auth0", "_docs", "openapi", "graphql", "login"]):
+            continue
+        # Extract path (strip base + query params)
+        path = href.replace(BASE_URL, "").split("?")[0]
+        if not path or path in seen:
+            continue
+        seen.add(path)
+        # Infer nav_section from path
+        section = path.strip("/").split("/")[0] if path.strip("/") else "home"
+        section = section.replace("-", "_")
+        routes.append((path, text or path, section))
+
+    print(f"  Discovered {len(routes)} real routes from nav")
+
+    # Merge with hardcoded list — add any hardcoded routes not found in nav
+    discovered_paths = {r[0] for r in routes}
+    for path, name, section in UI_ROUTES:
+        if path not in discovered_paths:
+            routes.append((path, name, section))
+
+    print(f"  Total routes to attempt: {len(routes)}")
+    return routes
+
+
+async def is_404(page) -> bool:
+    """Check if current page is a not-found / error page."""
+    try:
+        body = await page.inner_text("body")
+        title = await page.title()
+        indicators = ["not found", "404", "page not found", "doesn't exist", "no longer exists"]
+        return any(i in body.lower()[:500] or i in title.lower() for i in indicators)
+    except Exception:
+        return False
+
+
 async def scrape_ui_page(page, path: str, friendly_name: str, nav_section: str) -> dict:
     url = BASE_URL + path + QUERY_PARAMS
     print(f"  → {friendly_name} ({path})")
@@ -119,7 +191,30 @@ async def scrape_ui_page(page, path: str, friendly_name: str, nav_section: str) 
     try:
         await page.goto(url)
         await page.wait_for_load_state("networkidle", timeout=20000)
-        await page.wait_for_timeout(1500)  # let React render
+        await page.wait_for_timeout(2000)  # let React hydrate
+
+        # Scroll to trigger lazy-loaded content and virtual lists
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight / 2)")
+        await page.wait_for_timeout(800)
+        await page.evaluate("window.scrollTo(0, 0)")
+        await page.wait_for_timeout(700)
+
+        # Wait up to 3s more for content beyond a bare skeleton (h2/h3 or buttons)
+        try:
+            await page.wait_for_selector("h2, h3, button:not([disabled])", timeout=3000)
+        except Exception:
+            pass  # some pages genuinely have no h2/h3 — that's fine
+
+        # Skip 404 / not-found pages
+        if await is_404(page):
+            print(f"     ⚠ 404 / not found — skipping")
+            return {
+                "url": url, "path": path, "title": friendly_name,
+                "friendly_name": friendly_name, "nav_section": nav_section,
+                "breadcrumbs": [], "nav_items": [], "headings": [],
+                "buttons": [], "tabs": [], "body_text": "",
+                "navigation_description": "", "status": "404_skipped"
+            }
 
         # ── Page title ────────────────────────────────────────────────────────
         try:
@@ -288,19 +383,24 @@ async def main():
         try:
             await login(page)
 
-            print(f"Scraping {len(UI_ROUTES)} UI pages...\n")
+            routes = await discover_nav_routes(page)
+            print(f"\nScraping {len(routes)} UI pages...\n")
 
-            for i, (path, name, section) in enumerate(UI_ROUTES, 1):
-                print(f"[{i}/{len(UI_ROUTES)}]")
+            for i, (path, name, section) in enumerate(routes, 1):
+                print(f"[{i}/{len(routes)}]")
                 result = await scrape_ui_page(page, path, name, section)
                 results.append(result)
+
+                if result["status"] == "404_skipped":
+                    await page.wait_for_timeout(300)
+                    continue
 
                 # Save individual JSON per page
                 filename = slugify(name) + ".json"
                 out_path = OUTPUT_DIR / filename
                 out_path.write_text(json.dumps(result, indent=2, default=str), encoding="utf-8")
 
-                await page.wait_for_timeout(800)  # polite delay
+                await page.wait_for_timeout(1200)  # polite delay
 
         finally:
             await browser.close()
@@ -310,11 +410,13 @@ async def main():
     index_path.write_text(json.dumps(results, indent=2, default=str), encoding="utf-8")
 
     success = sum(1 for r in results if r["status"] == "success")
-    failed = sum(1 for r in results if r["status"] != "success")
+    skipped = sum(1 for r in results if r["status"] == "404_skipped")
+    failed  = sum(1 for r in results if r["status"] not in ("success", "404_skipped"))
 
     print(f"\n{'='*50}")
     print(f"UI scrape complete:")
     print(f"  ✓ {success} pages scraped")
+    print(f"  ⚠ {skipped} pages skipped (404)")
     print(f"  ✗ {failed} pages failed")
     print(f"  Output: {OUTPUT_DIR}")
     print(f"\nNext step: run ingest_atlas_ui.py to load into Neo4j")

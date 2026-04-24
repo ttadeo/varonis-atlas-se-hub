@@ -28,8 +28,8 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
   const driver = getNeo4jDriver();
   const sectionFilter = section ? "AND node.section = $section" : "";
 
-  // Run vector search and full-text search in parallel using separate sessions
-  const [vectorResult, fulltextResult] = await Promise.all([
+  // Run vector search, full-text search, and UI navigation search in parallel
+  const [vectorResult, fulltextResult, uiResult] = await Promise.all([
     (async () => {
       const s = driver.session();
       try {
@@ -59,11 +59,25 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
         );
       } finally { await s.close(); }
     })(),
+    (async () => {
+      const s = driver.session();
+      try {
+        return await s.run(
+          `CALL db.index.vector.queryNodes('ui_page_embeddings', 4, $embedding)
+           YIELD node, score
+           WHERE score > 0.5
+           RETURN node.friendly_name AS name, node.path AS path,
+                  node.navigation_description AS description, score
+           ORDER BY score DESC`,
+          { embedding }
+        );
+      } finally { await s.close(); }
+    })(),
   ]);
 
   await driver.close();
 
-  // Merge: vector results first, then fill with unique full-text results
+  // Merge docs: vector results first, then fill with unique full-text results
   type ChunkRecord = { heading: string; text: string; title: string; section: string; score: number };
   const seen = new Set<string>();
   const merged: ChunkRecord[] = [];
@@ -83,12 +97,22 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
     }
   }
 
-  if (merged.length === 0) return "No relevant Atlas documentation found for this query.";
+  // Append UI navigation results as a separate section
+  const uiChunks = uiResult.records.map((r) => {
+    const desc = r.get("description") as string ?? "";
+    return `[UI Navigation › ${r.get("name")}]\nURL path: ${r.get("path")}\n${desc.slice(0, 600)}`;
+  });
 
-  return merged
-    .slice(0, 10)
-    .map((c) => `[${c.title} › ${c.heading}]\n${c.text}`)
-    .join("\n\n---\n\n");
+  const docsPart = merged.length > 0
+    ? merged.slice(0, 10).map((c) => `[${c.title} › ${c.heading}]\n${c.text}`).join("\n\n---\n\n")
+    : "";
+
+  const uiPart = uiChunks.length > 0
+    ? `\n\n--- ATLAS UI NAVIGATION ---\n\n${uiChunks.join("\n\n---\n\n")}`
+    : "";
+
+  if (!docsPart && !uiPart) return "No relevant Atlas documentation found for this query.";
+  return (docsPart + uiPart).trim();
 }
 
 // ─── Tool definitions ─────────────────────────────────────────────────────────
@@ -119,7 +143,10 @@ async function executeTool(name: string, input: Record<string, string>): Promise
 
 // ─── System prompt ────────────────────────────────────────────────────────────
 
-const SYSTEM_PROMPT = `You are an expert Varonis Atlas AI Security Platform advisor. You have access to the complete Atlas knowledge base via tools. Always search the knowledge base before answering technical questions — do not rely on memory alone.
+const SYSTEM_PROMPT: Anthropic.Messages.TextBlockParam[] = [
+  {
+    type: "text",
+    text: `You are an expert Varonis Atlas AI Security Platform advisor. You have access to the complete Atlas knowledge base via tools. Always search the knowledge base before answering technical questions — do not rely on memory alone.
 
 Your audience is Varonis Sales Engineers and technical staff. Be accurate, concise, and direct.
 
@@ -127,7 +154,10 @@ RESPONSE STYLE:
 - Answer directly and confidently
 - Never say "based on the retrieved documentation" — just answer
 - Use markdown formatting: headers, bullets, code blocks where appropriate
-- Match depth to the question — short questions get short answers, detailed questions get thorough answers`;
+- Match depth to the question — short questions get short answers, detailed questions get thorough answers`,
+    cache_control: { type: "ephemeral" },
+  },
+];
 
 // ─── Main handler ─────────────────────────────────────────────────────────────
 

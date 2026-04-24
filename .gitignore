@@ -33,3 +33,4 @@ out/
 # Vercel
 .vercel
 scraper/output/competitive/debug/
+.env*.local
