@@ -1,0 +1,20 @@
+{
+  "url": "https://prod.alltrue-be.com/settings/integrations?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/settings/integrations",
+  "title": "Varonis",
+  "friendly_name": "Settings \u2014 Integrations",
+  "nav_section": "settings",
+  "breadcrumbs": [],
+  "nav_items": [],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Oops! Page not found."
+    }
+  ],
+  "buttons": [],
+  "tabs": [],
+  "body_text": "Oops! Page not found.\n\nSorry, we couldn't find the page you're looking for.",
+  "navigation_description": "UI Location: Settings \u2014 Integrations\nURL Path: /settings/integrations\nPage Title: Varonis\n\n# Oops! Page not found.\n\nOops! Page not found.\n\nSorry, we couldn't find the page you're looking for.",
+  "status": "success"
+}

@@ -1,17 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { jwtVerify } from "jose";
 
 const COOKIE_NAME = "atlas_session";
 const PUBLIC_PATHS = ["/login", "/api/auth"];
 
-export function proxy(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Allow public paths through
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
 
-  // Check for session cookie
   const session = req.cookies.get(COOKIE_NAME);
   if (!session?.value) {
     const loginUrl = new URL("/login", req.url);
@@ -19,7 +18,15 @@ export function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  try {
+    const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
+    await jwtVerify(session.value, secret);
+    return NextResponse.next();
+  } catch {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("from", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
 }
 
 export const config = {

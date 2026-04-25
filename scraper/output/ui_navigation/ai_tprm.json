@@ -1,0 +1,129 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-tprm",
+  "title": "Varonis",
+  "friendly_name": "AI TPRM",
+  "nav_section": "ai_tprm",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Vendors",
+      "href": "/ai-tprm/vendors?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Policies",
+      "href": "/ai-tprm/policies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-tprm/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-tprm/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Third-Party Risk Management"
+    },
+    {
+      "level": "h3",
+      "text": "Vendor Statistics"
+    },
+    {
+      "level": "h3",
+      "text": "Aggregate Risk Profile"
+    },
+    {
+      "level": "h3",
+      "text": "Top Remediation Issues"
+    },
+    {
+      "level": "h3",
+      "text": "Assessment Progress"
+    },
+    {
+      "level": "h3",
+      "text": "Issue Breakdown"
+    },
+    {
+      "level": "h3",
+      "text": "AI Vendors Over Time"
+    },
+    {
+      "level": "h3",
+      "text": "Vendor AI Technology Usage"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "AI Service Provider 2 (100%)",
+    "Critical 2 (67%)",
+    "High 1 (33%)",
+    "Azure Machine Learning Machine Learning & AI",
+    "Azure OpenAI Endpoint Machine Learning & AI",
+    "DistilBERT ML Model Machine Learning & AI",
+    "Google AI Endpoint Machine Learning & AI",
+    "IBM Watsonx AI Machine Learning & AI",
+    "IBM Watsonx AI Service Machine Learning & AI",
+    "IBM Watsonx Assistant Machine Learning & AI"
+  ],
+  "tabs": [],
+  "body_text": "AI Third-Party Risk ManagementDashboardVendor Statistics2Total VendorsAI Service Provider2(100%)0Vendors Onboarded0Vendors Under Review 1Vendors In Remediation0Vendors ReviewedAggregate Risk ProfileConsequenceNegligibleLowMediumHighCriticalExposureCriticalHighMediumLowNegligible0000100000000000000000000Top Remediation IssuesPrivacy and Data ConcernsCritical Severity2 IssuesVulnerabilityCritical Severity1 IssueNth Party RiskHigh Severity1 IssueAssessment Progress2Active AssessmentsIssue Breakdown3Total IssuesCritical2(67%)High1(33%)AI Vendors Over TimeFeb 01Mar 01Apr 01011223Vendor AI Technology Usage109Total AI ResourcesTechnologyUsageStatusAzure Machine LearningMachine Learning & AI1VendorUnreviewedAzure OpenAI EndpointMachine Learning & AI1VendorUnreviewedDistilBERT ML ModelMachine Learning & AI1VendorUnreviewedGoogle AI EndpointMachine Learning & AI1VendorUnreviewedIBM Watsonx AIMachine Learning & AI1VendorUnreviewedIBM Watsonx AI ServiceMachine Learning & AI1VendorUnreviewedIBM Watsonx AssistantMachine Learning & AI1VendorUnreviewedIBM Watsonx DataMachine Learning & AI1VendorUnreviewedIBM Watsonx DeploymentMachine Learning & AI1VendorUnreviewedIBM Watsonx EndpointMachine Learning & AI1VendorUnreviewedIBM Watsonx PromptMachine Learning & AI1VendorUnreviewedOpenAI EndpointMachine Learning & AI1VendorUnreviewedAmazon EC2Compute Platforms1VendorUnreviewedAmazon LambdaCompute Platforms1VendorUnreviewedBERTopicLibrary1VendorUnreviewedboto3Library1VendorUnreviewedFastAPILibrary1VendorUnreviewedhuggingface_hubLibrary1VendorUnreviewedJupyter NotebookLibrary1VendorUnreviewedKerasLibrary1VendorUnreviewedLangChain.NETLibrary1VendorUnreviewedLlamaIndexLibrary1VendorUnreviewedMatplotlibLibrary1VendorUnreviewedMLflowLibrary1VendorUnreviewedNumPyLibrary1VendorUnreviewedpandasLibrary1VendorUnreviewedscikit-learnLibrary1VendorUnreviewedSentence-TransformersLibrary1VendorUnreviewedStreamlitLibrary1VendorUnreviewedTensorFlowLibrary1VendorUnreviewedTop2VecLibrary1VendorUnreviewedTorchLibrary1VendorUnreviewedTransformersLibrary1VendorUnreviewedXGBoostLibrary1VendorUnreviewedAzure OpenAI VectorstoreVector Database Service1VendorUnreviewedAzure OpenAI AI AgentEnterprise GenAI1VendorUnreviewedAzure Blob Storage1VendorUnreviewedAzure File Storage1VendorUnreviewedAzure OpenAI1VendorUnreviewedAzure SQL1VendorUnreviewedAzure Storage Account1VendorUnreviewed",
+  "navigation_description": "UI Location: AI TPRM\nURL Path: /ai-tprm\nPage Title: Varonis\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, AI Service Provider 2 (100%), Critical 2 (67%), High 1 (33%), Azure Machine Learning Machine Learning & AI, Azure OpenAI Endpoint Machine Learning & AI\n\n# AI Third-Party Risk Management\n### Vendor Statistics\n### Aggregate Risk Profile\n### Top Remediation Issues\n### Assessment Progress\n### Issue Breakdown\n### AI Vendors Over Time\n### Vendor AI Technology Usage\n\nAI Third-Party Risk ManagementDashboardVendor Statistics2Total VendorsAI Service Provider2(100%)0Vendors Onboarded0Vendors Under Review 1Vendors In Remediation0Vendors ReviewedAggregate Risk ProfileConsequenceNegligibleLowMediumHighCriticalExposureCriticalHighMediumLowNegligible0000100000000000000000000Top Remediation IssuesPrivacy and Data ConcernsCritical Severity2 IssuesVulnerabilityCritical Severity1 IssueNth Party RiskHigh Severity1 IssueAssessment Progress2Active AssessmentsIssue Breakdown3Total IssuesCritical2(67%)High1(33%)AI Vendors Over TimeFeb 01Mar 01Apr 01011223Vendor AI Technology Usage109Total AI ResourcesTechnologyUsageStatusAzure Machine LearningMachine Learning & AI1VendorUnreviewedAzure OpenAI EndpointMachine Learning & AI1VendorUnreviewedDistilBERT ML ModelMachine Learning & AI1VendorUnreviewedGoogle AI EndpointMachine Learning & AI1VendorUnreviewedIBM Watsonx AIMachine Learning & AI1VendorUnreviewedIBM Watsonx AI ServiceMachine Learning & AI1VendorUnreviewedIBM Watsonx AssistantMachine Learning & AI1VendorUnreviewedIBM Watsonx DataMachine Learning & AI1VendorUnreviewedIBM Watsonx DeploymentMachine Learning & AI1VendorUnreviewedIBM Watsonx EndpointMachine Learning & AI1VendorUnreviewedIBM Watsonx PromptMachine Learning & AI1VendorUnreviewedOpenAI EndpointMachine Learning & AI1VendorUnreviewedAmazon EC2Compute Platforms1VendorUnreviewedAmazon LambdaCompute Platforms1VendorUnreviewedBERTopicLibrary1VendorUnreviewedboto3Library1VendorUnreviewedFastAPILibrary1VendorUnreviewedhuggingface_hubLibrary1VendorUnreviewedJupyter NotebookLibrary1VendorUnreviewedKerasLibrary1VendorUnreviewedLangChain.NETLibrary1VendorUnreviewedLlamaIndexLibrary1VendorUnreviewedMatplotlibLibrary1VendorUnreviewedMLflowLibrary1VendorUnreviewedNumPyLibrary1VendorUnreviewedpandasLibrary1VendorUnreviewedscikit-learnLibrary1VendorUnreviewedSentence-TransformersLibrary1VendorUnreviewedStreamlitLibrary1VendorUnreviewedTensorFlowLibrary1VendorUnreviewedTop2VecLibrary1VendorUnreviewedTorchLibrary1VendorUnreviewedTransformersLibrary1VendorUnreviewedXGBoostLibrary1VendorUnreviewedAzure OpenAI VectorstoreVector Database Service1VendorUnreviewedAzure OpenAI AI AgentEnterprise GenAI1VendorUnreviewedAzure Blob Storage1VendorUnreviewedAzure File Storage1VendorUnreviewedAzure OpenAI1VendorUnreviewedAzure SQL1VendorUnreviewedAzure Storage Account1VendorUnreviewed",
+  "status": "success"
+}

@@ -1,0 +1,132 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-monitor",
+  "title": "Varonis",
+  "friendly_name": "AI Investigation",
+  "nav_section": "ai_monitor",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Sessions",
+      "href": "/ai-monitor/sessions?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Events",
+      "href": "/ai-monitor/requests?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-monitor/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-monitor/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Investigation"
+    },
+    {
+      "level": "h3",
+      "text": "Use Cases by Severity"
+    },
+    {
+      "level": "h3",
+      "text": "Custom Judge 1"
+    },
+    {
+      "level": "h3",
+      "text": "Malicious Tool Detection"
+    },
+    {
+      "level": "h3",
+      "text": "PII"
+    },
+    {
+      "level": "h3",
+      "text": "Prompt Injection"
+    },
+    {
+      "level": "h3",
+      "text": "Tool Code Injection Detection"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Today",
+    "Refresh",
+    "Critical Severity 0 (0%)",
+    "High Severity 0 (0%)",
+    "Medium Severity 0 (0%)",
+    "Low Severity 0 (0%)",
+    "Stable 1 (100%)",
+    "OpenAI API Key (alltrue_varonis_openai_agenticdemo)",
+    "Quality Metrics",
+    "Performance Metrics"
+  ],
+  "tabs": [
+    "Quality Metrics",
+    "Performance Metrics",
+    "Input",
+    "Output",
+    "Input",
+    "Output"
+  ],
+  "body_text": "AI InvestigationLast refreshed: 4/20/2026, 1:15:41 PMActive Use Cases OnlyTodayRefreshUse Cases by SeverityCritical Severity0 (0%)High Severity0 (0%)Medium Severity0 (0%)Low Severity0 (0%)Stable1 (100%)1 Use Cases in Date RangeOpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAI API Key (alltrue_varonis_openai_agenticdemo)Last activity on 2026-04-20 12:43:52Quality MetricsPerformance Metrics5Scanners0AlertsTime Interval: HourlyView Event DataAll ScannersCustom Judge 1View Event DataAlert SettingInputOutputMalicious Tool DetectionView Event DataAlert SettingPIIView Event DataAlert SettingInputOutputPrompt InjectionView Event DataAlert SettingTool Code Injection DetectionView Event DataAlert Setting",
+  "navigation_description": "UI Location: AI Investigation\nURL Path: /ai-monitor\nPage Title: Varonis\nTabs on this page: Quality Metrics, Performance Metrics, Input, Output, Input, Output\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Today, Refresh, Critical Severity 0 (0%), High Severity 0 (0%), Medium Severity 0 (0%)\n\n# AI Investigation\n### Use Cases by Severity\n### Custom Judge 1\n### Malicious Tool Detection\n### PII\n### Prompt Injection\n### Tool Code Injection Detection\n\nAI InvestigationLast refreshed: 4/20/2026, 1:15:41 PMActive Use Cases OnlyTodayRefreshUse Cases by SeverityCritical Severity0 (0%)High Severity0 (0%)Medium Severity0 (0%)Low Severity0 (0%)Stable1 (100%)1 Use Cases in Date RangeOpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAI API Key (alltrue_varonis_openai_agenticdemo)Last activity on 2026-04-20 12:43:52Quality MetricsPerformance Metrics5Scanners0AlertsTime Interval: HourlyView Event DataAll ScannersCustom Judge 1View Event DataAlert SettingInputOutputMalicious Tool DetectionView Event DataAlert SettingPIIView Event DataAlert SettingInputOutputPrompt InjectionView Event DataAlert SettingTool Code Injection DetectionView Event DataAlert Setting",
+  "status": "success"
+}

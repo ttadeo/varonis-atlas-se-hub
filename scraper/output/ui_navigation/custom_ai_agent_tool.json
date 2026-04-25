@@ -1,0 +1,104 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/custom-ai-agent-tool?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/custom-ai-agent-tool",
+  "title": "Varonis",
+  "friendly_name": "Custom AI Agent Tool",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type Custom AI Agent Tool"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type Custom AI Agent Tool24 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusAgent Tool - Job Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Markdown Formatter ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - MarketWatch Ticker Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Addition ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Division ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Multiply ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Task AssignerCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Task Assigner ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Research Task AssignerCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Spotify Music Recommendation ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Task Assignment ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Tavily Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Tavily Web Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Website Scrape ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Coordinates ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Fact ExtractorCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article FetcherCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Links ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Sections ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article SummarizerCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Summarizer ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Summary ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Query ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedItems per page:251 to 24 of 24 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/custom-ai-agent-tool\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25\n\n# Resources of type Custom AI Agent Tool\n\nResources of type Custom AI Agent Tool24 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusAgent Tool - Job Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Markdown Formatter ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - MarketWatch Ticker Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Addition ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Division ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Multiply ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Task AssignerCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Math Task Assigner ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Research Task AssignerCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Spotify Music Recommendation ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Task Assignment ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Tavily Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Tavily Web Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Website Scrape ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Coordinates ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Fact ExtractorCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article FetcherCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Links ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Sections ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article SummarizerCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Summarizer ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Article Summary ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Query ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedAgent Tool - Wikipedia Search ToolCustom AI Agent ToolAI AgentNo tags assigned1UnreviewedItems per page:251 to 24 of 24 items",
+  "status": "success"
+}

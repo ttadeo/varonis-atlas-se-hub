@@ -1,0 +1,97 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-360/alerts?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-360/alerts",
+  "title": "Varonis",
+  "friendly_name": "Alerts",
+  "nav_section": "ai_360",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Risks",
+      "href": "/ai-360/risks?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Alerts",
+      "href": "/ai-360/alerts?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-360/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Alerts"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Filter",
+    "Alert Type",
+    "Resource",
+    "Status",
+    "Created at",
+    "Severity",
+    "04/20/2026",
+    "04/16/2026",
+    "04/15/2026",
+    "04/10/2026"
+  ],
+  "tabs": [],
+  "body_text": "AlertsSecurity alerts generated from real-time AI activity and policy enforcement across gateways, and governance controls.Open Alerts:315Show All AlertsFilterAlert TypeResourceStatusCreated atSeverityRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/20/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/16/2026CriticalRuntime IssuePreventPromptInjectionRule was triggered.OpenAI API Key (alltrue_openai_demo)OpenAIEndpointUnresolved04/16/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/15/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/10/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/10/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/09/2026CriticalRuntime IssuePreventPromptInjectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/09/2026CriticalRuntime IssuePreventPromptInjectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/08/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/08/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/07/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/07/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/31/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/31/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/30/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/27/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/27/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/26/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/26/2026CriticalRuntime IssueMaliciou",
+  "navigation_description": "UI Location: Alerts\nURL Path: /ai-360/alerts\nPage Title: Varonis\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Filter, Alert Type, Resource, Status, Created at\n\n# Alerts\n\nAlertsSecurity alerts generated from real-time AI activity and policy enforcement across gateways, and governance controls.Open Alerts:315Show All AlertsFilterAlert TypeResourceStatusCreated atSeverityRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/20/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/16/2026CriticalRuntime IssuePreventPromptInjectionRule was triggered.OpenAI API Key (alltrue_openai_demo)OpenAIEndpointUnresolved04/16/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/15/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/10/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/10/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/09/2026CriticalRuntime IssuePreventPromptInjectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/09/2026CriticalRuntime IssuePreventPromptInjectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/08/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/08/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/07/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved04/07/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/31/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/31/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/30/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/27/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/27/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/26/2026CriticalRuntime IssueMaliciousToolDetectionRule was triggered.OpenAI API Key (alltrue_varonis_openai_agenticdemo)OpenAIEndpointUnresolved03/26/2026CriticalRuntime IssueMaliciou",
+  "status": "success"
+}

@@ -1,0 +1,152 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-gateway/policies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-gateway/policies",
+  "title": "Varonis",
+  "friendly_name": "AI Gateway \u2014 Policies",
+  "nav_section": "ai_gateway",
+  "breadcrumbs": [
+    "AllTrue Demos"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Policies",
+      "href": "/ai-gateway/policies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-gateway/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-gateway/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AllTrue Demos",
+      "href": "/ai-gateway/policies?organization=82d61b63-ca61-4705-b62d-02266001c6bc"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Runtime Protection - Project Policies"
+    },
+    {
+      "level": "h2",
+      "text": "All Policies"
+    },
+    {
+      "level": "h3",
+      "text": "Prompt Protection"
+    },
+    {
+      "level": "h3",
+      "text": "Agentic Guardrails"
+    },
+    {
+      "level": "h3",
+      "text": "Custom Policy"
+    },
+    {
+      "level": "h3",
+      "text": "Model Robustness"
+    },
+    {
+      "level": "h3",
+      "text": "User Experience and Tone"
+    },
+    {
+      "level": "h3",
+      "text": "Quality and Accuracy"
+    },
+    {
+      "level": "h3",
+      "text": "Bias and Fairness"
+    },
+    {
+      "level": "h3",
+      "text": "Custom Tagging"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Configure Runtime",
+    "Select a Use Case",
+    "Policy Templates",
+    "Prompt Protection",
+    "1 Policy",
+    "+3",
+    "9 Policies",
+    "+1",
+    "5 Policies",
+    "Agentic Guardrails"
+  ],
+  "tabs": [
+    "+3",
+    "+3",
+    "+3",
+    "+1",
+    "+3",
+    "+3",
+    "+3",
+    "+3",
+    "+3",
+    "+1",
+    "+1",
+    "+1"
+  ],
+  "body_text": "Runtime Protection - Project PoliciesConfigure RuntimeSelect a Use CaseAll PoliciesLast InstalledApr 20 2026 10:23:28 amView Pending ChangesPolicy TemplatesPrompt ProtectionPolicyTagsEnabledStatusOverruled ByAI-Generated Content DetectionUserInactive1 PolicyReset ChangesBanned SubstringsUserAssistantInactiveReset ChangesCode Injection and Generation PreventionAssistantInactiveReset ChangesCode Leakage PreventionUserInactiveReset ChangesContent TypesUserInactiveReset ChangesDetect LanguagesUserAssistantInactiveReset ChangesDetect Malicious URLUserAssistant+3InactiveReset ChangesDetect Sexual ContentUserAssistantInactiveReset ChangesDetect TopicsUserAssistant+3InactiveReset ChangesFunction CallAssistantInactiveReset ChangesGrounding GuardrailAssistantInactiveReset ChangesPIIUserAssistantInactive9 PoliciesReset ChangesPrevent Encoded AttacksUserAssistant+3InactiveReset ChangesPrevent JailbreakUserTool Definition+1Inactive1 PolicyReset ChangesPrevent LeakageUserAssistantInactiveReset ChangesPrevent Obfuscated AttacksUserAssistant+3InactiveReset ChangesPrevent Prompt Injection RuleUserInactive5 PoliciesReset ChangesPrevent Toxicity RuleUserAssistant+3InactiveReset ChangesProfanity CheckUserAssistantInactiveReset ChangesProhibit TopicsUserAssistant+3InactiveReset ChangesRemove Invisible TextUserAssistantInactiveReset ChangesSQL InjectionUserAssistant+3InactiveReset ChangesXSS ProtectionUserAssistant+3InactiveReset ChangesAgentic GuardrailsPolicyTagsEnabledStatusOverruled ByAgent Parameter EvaluationTool CallInactive2 PoliciesReset ChangesAgent Tool SelectionTool CallInactive3 PoliciesReset ChangesMalicious Tool DetectionTool CallInactive6 PoliciesReset ChangesMCP QuarantineTool DefinitionInactive1 PolicyReset ChangesPrevent Code Injection in Tool CallsTool CallInactive1 PolicyReset ChangesPrevent Code Leakage in Tool ResponsesTool ResponseInactiveReset ChangesPrevent PII in ToolsTool DefinitionTool Call+1InactiveReset ChangesPrevent Prompt Injection in ToolsTool DefinitionTool ResponseInactiveReset ChangesPrevent Prompt Leakage in ToolsTool DefinitionTool Call+1InactiveReset ChangesPrevent Tool Name CollisionsTool DefinitionInactiveReset ChangesPrevent Tool PoisoningTool DefinitionInactive1 PolicyReset ChangesProhibited Tool CapabilitiesTool DefinitionInactiveReset ChangesTool Banned SubstringsTool DefinitionTool Call+1InactiveReset ChangesCustom PolicyPolicyTagsEnabledStatusOverruled ByCustom Judge 1UserAssistantInactive3 PoliciesReset ChangesCustom Judge 2UserAssistantInactive1 PolicyReset ChangesCustom Judge 3UserAssistantInactive1 PolicyReset ChangesCustom Judge 4UserAssistantInactiveReset ChangesCustom Judge 5UserAssistantInactiveReset ChangesRegex Pattern Match (Fail)UserAssistantInactiveReset ChangesRegex Pattern Match (Pass)UserAssistantInactiveReset ChangesModel RobustnessPolicyTagsEnabledStatusOverruled ByBoolean ValidationAssistantInactiveReset ChangesClip TokenUserInactiveReset ChangesJSON ValidationAssistantInactiveReset ChangesMessage Cou",
+  "navigation_description": "UI Location: AllTrue Demos\nURL Path: /ai-gateway/policies\nPage Title: Varonis\nTabs on this page: +3, +3, +3, +1, +3, +3, +3, +3, +3, +1, +1, +1\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Configure Runtime, Select a Use Case, Policy Templates, Prompt Protection, 1 Policy\n\n# Runtime Protection - Project Policies\n## All Policies\n### Prompt Protection\n### Agentic Guardrails\n### Custom Policy\n### Model Robustness\n### User Experience and Tone\n### Quality and Accuracy\n### Bias and Fairness\n### Custom Tagging\n\nRuntime Protection - Project PoliciesConfigure RuntimeSelect a Use CaseAll PoliciesLast InstalledApr 20 2026 10:23:28 amView Pending ChangesPolicy TemplatesPrompt ProtectionPolicyTagsEnabledStatusOverruled ByAI-Generated Content DetectionUserInactive1 PolicyReset ChangesBanned SubstringsUserAssistantInactiveReset ChangesCode Injection and Generation PreventionAssistantInactiveReset ChangesCode Leakage PreventionUserInactiveReset ChangesContent TypesUserInactiveReset ChangesDetect LanguagesUserAssistantInactiveReset ChangesDetect Malicious URLUserAssistant+3InactiveReset ChangesDetect Sexual ContentUserAssistantInactiveReset ChangesDetect TopicsUserAssistant+3InactiveReset ChangesFunction CallAssistantInactiveReset ChangesGrounding GuardrailAssistantInactiveReset ChangesPIIUserAssistantInactive9 PoliciesReset ChangesPrevent Encoded AttacksUserAssistant+3InactiveReset ChangesPrevent JailbreakUserTool Definition+1Inactive1 PolicyReset ChangesPrevent LeakageUserAssistantInactiveReset ChangesPrevent Obfuscated AttacksUserAssistant+3InactiveReset ChangesPrevent Prompt Injection RuleUserInactive5 PoliciesReset ChangesPrevent Toxicity RuleUserAssistant+3InactiveReset ChangesProfanity CheckUserAssistantInactiveReset ChangesProhibit TopicsUserAssistant+3InactiveReset ChangesRemove Invisible TextUserAssistantInactiveReset ChangesSQL InjectionUserAssistant+3InactiveReset ChangesXSS ProtectionUserAssistant+3InactiveReset ChangesAgentic GuardrailsPolicyTagsEnabledStatusOverruled ByAgent Parameter EvaluationTool CallInactive2 PoliciesReset ChangesAgent Tool SelectionTool CallInactive3 PoliciesReset ChangesMalicious Tool DetectionTool CallInactive6 PoliciesReset ChangesMCP QuarantineTool DefinitionInactive1 PolicyReset ChangesPrevent Code Injection in Tool CallsTool CallInactive1 PolicyReset ChangesPrevent Code Leakage in Tool ResponsesTool ResponseInactiveReset ChangesPrevent PII in ToolsTool DefinitionTool Call+1InactiveReset ChangesPrevent Prompt Injection in ToolsTool DefinitionTool ResponseInactiveReset ChangesPrevent Prompt Leakage in ToolsTool DefinitionTool Call+1InactiveReset ChangesPrevent Tool Name CollisionsTool DefinitionInactiveReset ChangesPrevent Tool PoisoningTool DefinitionInactive1 PolicyReset ChangesProhibited Tool CapabilitiesTool DefinitionInactiveReset ChangesTool Banned SubstringsTool DefinitionTool Call+1InactiveReset ChangesCustom PolicyPolicyTagsEnabledStatusOverruled ByCustom Judge 1UserAssistantInactive3 PoliciesReset ChangesCustom Judge 2UserAssistantInactive1 PolicyReset ChangesCustom Judge 3UserAssistantInactive1 PolicyReset ChangesCustom Judge 4UserAssistantInactiveReset ChangesCustom Judge 5UserAssistantInactiveReset ChangesRegex Pattern Match (Fail)UserAssistantInactiveReset ChangesRegex Pattern Match (Pass)UserAssistantInactiveReset ChangesModel RobustnessPolicyTagsEnabledStatusOverruled ByBoolean ValidationAssistantInactiveReset ChangesClip TokenUserInactiveReset ChangesJSON ValidationAssistantInactiveReset ChangesMessage Cou",
+  "status": "success"
+}

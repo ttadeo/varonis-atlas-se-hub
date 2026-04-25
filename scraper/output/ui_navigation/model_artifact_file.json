@@ -1,0 +1,105 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/MLArtifact?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/MLArtifact",
+  "title": "Varonis",
+  "friendly_name": "Model Artifact File",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type ML Artifact"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25",
+    "Go to next page"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type ML Artifact80 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview Statusbackdoor.onnx (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedcustom.keras (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddanger.dat (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddata.pkl (alltrue_bert_tiny_torch_picklebomb)Model Artifact FileModel ArtifactsNo tags assigned1Unrevieweddata.pkl (a-model-like-dir)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddata.pkl (bert-tiny-torch-picklebomb)Model Artifact FileModel ArtifactsNo tags assigned1Unrevieweddata.pkl (bert-tiny-torch-picklebomb-backup)Model Artifact FileModel ArtifactsNo tags assigned1Unrevieweddata.pkl (etltestcontainer)Model Artifact FileModel ArtifactsNo tags assigned5Unrevieweddata.pkl (t8)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddeserialization.pkl (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedeval_lambda.h5 (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedeval_lambda.keras (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedeval.pkl (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedeval.pt (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedexploit.py (MaliciousModel)Model FileModel ArtifactsNo tags assigned4Unreviewedfake_model_500MB.bin (christina1023)Model Artifact FileModel ArtifactsNo tags assigned3UnreviewedFingerprint_testing_notebook_with_pii.ipynb (etltestcontainer)Model FileModel ArtifactsNo tags assigned5UnreviewedFingerprint_testing_safe_notebook.ipynb (etltestcontainer)Model FileModel ArtifactsNo tags assigned5Unreviewedgguf.gguf (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedidentity_neural_network_iplugin_v3.engine (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedidentity_neural_network.onnx (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedlibidentity_conv_iplugin_v3.so (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedligue-1-2023-24-league-table-insights.ipynb (etltestcontainer)Model FileModel ArtifactsNo tags assigned5UnreviewedlocalhostB64.pkl (christina-0112-modelscan-removedaccess)Model Artifact FileModel ArtifactsNo tags assigned5Unreviewedmalicious_read_write.pb (azureml)Model Artifact FileModel ArtifactsNo tags assigned4UnreviewedItems per page:251 to 25 of 80 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/MLArtifact\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25, Go to next page\n\n# Resources of type ML Artifact\n\nResources of type ML Artifact80 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview Statusbackdoor.onnx (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedcustom.keras (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddanger.dat (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddata.pkl (alltrue_bert_tiny_torch_picklebomb)Model Artifact FileModel ArtifactsNo tags assigned1Unrevieweddata.pkl (a-model-like-dir)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddata.pkl (bert-tiny-torch-picklebomb)Model Artifact FileModel ArtifactsNo tags assigned1Unrevieweddata.pkl (bert-tiny-torch-picklebomb-backup)Model Artifact FileModel ArtifactsNo tags assigned1Unrevieweddata.pkl (etltestcontainer)Model Artifact FileModel ArtifactsNo tags assigned5Unrevieweddata.pkl (t8)Model Artifact FileModel ArtifactsNo tags assigned4Unrevieweddeserialization.pkl (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedeval_lambda.h5 (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedeval_lambda.keras (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedeval.pkl (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedeval.pt (test-models)Model Artifact FileModel ArtifactsNo tags assigned2Unreviewedexploit.py (MaliciousModel)Model FileModel ArtifactsNo tags assigned4Unreviewedfake_model_500MB.bin (christina1023)Model Artifact FileModel ArtifactsNo tags assigned3UnreviewedFingerprint_testing_notebook_with_pii.ipynb (etltestcontainer)Model FileModel ArtifactsNo tags assigned5UnreviewedFingerprint_testing_safe_notebook.ipynb (etltestcontainer)Model FileModel ArtifactsNo tags assigned5Unreviewedgguf.gguf (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedidentity_neural_network_iplugin_v3.engine (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedidentity_neural_network.onnx (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedlibidentity_conv_iplugin_v3.so (MaliciousModel)Model Artifact FileModel ArtifactsNo tags assigned4Unreviewedligue-1-2023-24-league-table-insights.ipynb (etltestcontainer)Model FileModel ArtifactsNo tags assigned5UnreviewedlocalhostB64.pkl (christina-0112-modelscan-removedaccess)Model Artifact FileModel ArtifactsNo tags assigned5Unreviewedmalicious_read_write.pb (azureml)Model Artifact FileModel ArtifactsNo tags assigned4UnreviewedItems per page:251 to 25 of 80 items",
+  "status": "success"
+}

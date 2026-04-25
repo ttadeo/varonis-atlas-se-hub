@@ -1,0 +1,97 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-360/risks?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-360/risks",
+  "title": "Varonis",
+  "friendly_name": "Risks",
+  "nav_section": "ai_360",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Risks",
+      "href": "/ai-360/risks?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Alerts",
+      "href": "/ai-360/alerts?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-360/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Risks"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Filter",
+    "2026-04-08",
+    "2026-04-06",
+    "2026-03-26",
+    "2026-03-20",
+    "2026-03-18",
+    "2026-03-06",
+    "2026-02-28",
+    "2026-02-24",
+    "2026-02-18"
+  ],
+  "tabs": [],
+  "body_text": "RisksSecurity and governance risks identified through posture analysis, vulnerability scanning, compliance checks, and inventory monitoring across your AI environment.Open Risks:2111Show All IssuesFilterRiskRisk CategoryEntityStatusCreated atSeverityLLM Pentest Failure: Prompt Injection for Azure OpenAI EndpointVulnerabilitiesLLM Pentest FailureAzure OpenAI Endpoint (mc1_azure_EP_2)AzureOpenAIEndpointUnresolved2026-04-08CriticalViolation of `model-scan-code-execution-prohibited` policy for model artifact `pytorch_model.bin`VulnerabilitiesModel Vulnerabilitypytorch_model.bin (ykilcher/totally-harmless-model)ModelArtifactFileUnresolved2026-04-06CriticalLLM Pentest Failure: Prompt Injection: Dynamic Generation for Google AI API KeyVulnerabilitiesLLM Pentest FailureGoogle AI API Key (alltrue_varonis_gemini_observability)GoogleAIEndpointUnresolved2026-03-26CriticalLLM Pentest Failure: Prompt Injection: Dynamic Generation for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_openai_demo)OpenAIEndpointUnresolved2026-03-20CriticalExposure to CVE `CVE-2026-32626`VulnerabilitiesCVEAnythingLLM (anything-llm1.3.0python)anything-llmUnresolved2026-03-18CriticalExposure to CVE `CVE-2025-14009`VulnerabilitiesCVENLTK (nltk3.2.2python)nltkUnresolved2026-03-06CriticalViolation of `agent-tool-poisoning` policy for Copilot Studio Computer Use ToolVulnerabilitiesAgentic VulnerabilityComputer use - Computer use (Pi Calculation Expert)CopilotStudioComputerUseToolUnresolved2026-02-28CriticalViolation of `agent-tool-poisoning` policy for Copilot Studio Computer Use ToolVulnerabilitiesAgentic VulnerabilityComputer use - Computer use (Sophisticated Agent (POISONED DO NOT USE))CopilotStudioComputerUseToolUnresolved2026-02-28CriticalLLM Pentest Failure: Prompt Injection: Dynamic Generation for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_varonis_openai_observability)OpenAIEndpointUnresolved2026-02-24CriticalLLM Pentest Failure: Prompt Injection for Google AI API KeyVulnerabilitiesLLM Pentest FailureGoogle AI API Key (HW Gemini 1)GoogleAIEndpointUnresolved2026-02-18CriticalLLM Pentest Failure: Prompt Injection for Google AI API KeyVulnerabilitiesLLM Pentest FailureGoogle AI API Key (HW Gemini 1)GoogleAIEndpointUnresolved2026-02-17CriticalLLM Pentest Failure: Prompt Injection for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_varonis_openai_observability)OpenAIEndpointUnresolved2026-02-17CriticalLLM Pentest Failure: Prompt Injection for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_openai_demo)OpenAIEndpointUnresolved2026-02-13CriticalLLM Pentest Failure: Prompt Injection for Azure OpenAI EndpointVulnerabilitiesLLM Pentest FailureAzure OpenAI Endpoint (azure_openai_EP2)AzureOpenAIEndpointUnresolved2026-02-10CriticalLLM Pentest Failure: Prompt Injection for Azure OpenAI EndpointVulnerabilitiesLLM Pentest FailureAzure OpenAI Endpoint (azure_openAI_deployment_1)AzureOpenAIEndpointUn",
+  "navigation_description": "UI Location: Risks\nURL Path: /ai-360/risks\nPage Title: Varonis\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Filter, 2026-04-08, 2026-04-06, 2026-03-26, 2026-03-20\n\n# Risks\n\nRisksSecurity and governance risks identified through posture analysis, vulnerability scanning, compliance checks, and inventory monitoring across your AI environment.Open Risks:2111Show All IssuesFilterRiskRisk CategoryEntityStatusCreated atSeverityLLM Pentest Failure: Prompt Injection for Azure OpenAI EndpointVulnerabilitiesLLM Pentest FailureAzure OpenAI Endpoint (mc1_azure_EP_2)AzureOpenAIEndpointUnresolved2026-04-08CriticalViolation of `model-scan-code-execution-prohibited` policy for model artifact `pytorch_model.bin`VulnerabilitiesModel Vulnerabilitypytorch_model.bin (ykilcher/totally-harmless-model)ModelArtifactFileUnresolved2026-04-06CriticalLLM Pentest Failure: Prompt Injection: Dynamic Generation for Google AI API KeyVulnerabilitiesLLM Pentest FailureGoogle AI API Key (alltrue_varonis_gemini_observability)GoogleAIEndpointUnresolved2026-03-26CriticalLLM Pentest Failure: Prompt Injection: Dynamic Generation for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_openai_demo)OpenAIEndpointUnresolved2026-03-20CriticalExposure to CVE `CVE-2026-32626`VulnerabilitiesCVEAnythingLLM (anything-llm1.3.0python)anything-llmUnresolved2026-03-18CriticalExposure to CVE `CVE-2025-14009`VulnerabilitiesCVENLTK (nltk3.2.2python)nltkUnresolved2026-03-06CriticalViolation of `agent-tool-poisoning` policy for Copilot Studio Computer Use ToolVulnerabilitiesAgentic VulnerabilityComputer use - Computer use (Pi Calculation Expert)CopilotStudioComputerUseToolUnresolved2026-02-28CriticalViolation of `agent-tool-poisoning` policy for Copilot Studio Computer Use ToolVulnerabilitiesAgentic VulnerabilityComputer use - Computer use (Sophisticated Agent (POISONED DO NOT USE))CopilotStudioComputerUseToolUnresolved2026-02-28CriticalLLM Pentest Failure: Prompt Injection: Dynamic Generation for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_varonis_openai_observability)OpenAIEndpointUnresolved2026-02-24CriticalLLM Pentest Failure: Prompt Injection for Google AI API KeyVulnerabilitiesLLM Pentest FailureGoogle AI API Key (HW Gemini 1)GoogleAIEndpointUnresolved2026-02-18CriticalLLM Pentest Failure: Prompt Injection for Google AI API KeyVulnerabilitiesLLM Pentest FailureGoogle AI API Key (HW Gemini 1)GoogleAIEndpointUnresolved2026-02-17CriticalLLM Pentest Failure: Prompt Injection for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_varonis_openai_observability)OpenAIEndpointUnresolved2026-02-17CriticalLLM Pentest Failure: Prompt Injection for OpenAI API KeyVulnerabilitiesLLM Pentest FailureOpenAI API Key (alltrue_openai_demo)OpenAIEndpointUnresolved2026-02-13CriticalLLM Pentest Failure: Prompt Injection for Azure OpenAI EndpointVulnerabilitiesLLM Pentest FailureAzure OpenAI Endpoint (azure_openai_EP2)AzureOpenAIEndpointUnresolved2026-02-10CriticalLLM Pentest Failure: Prompt Injection for Azure OpenAI EndpointVulnerabilitiesLLM Pentest FailureAzure OpenAI Endpoint (azure_openAI_deployment_1)AzureOpenAIEndpointUn",
+  "status": "success"
+}

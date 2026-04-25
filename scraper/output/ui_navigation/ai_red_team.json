@@ -1,0 +1,126 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-red-team",
+  "title": "Varonis",
+  "friendly_name": "AI Red Team",
+  "nav_section": "ai_red_team",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-red-team/dashboard?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "PenTests",
+      "href": "/ai-red-team/pentests/results?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Evaluate",
+      "href": "/ai-red-team/evaluations?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Datasets",
+      "href": "/ai-red-team/datasets?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-red-team/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-red-team/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Red Team"
+    },
+    {
+      "level": "h3",
+      "text": "Top Risk Targets"
+    },
+    {
+      "level": "h3",
+      "text": "Unresolved Issues"
+    },
+    {
+      "level": "h3",
+      "text": "ASR (Attack Success Rate)"
+    },
+    {
+      "level": "h3",
+      "text": "Scan Summary"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Select Target",
+    "Hide",
+    "OpenAI API Key (alltrue_openai_demo) gpt-4o Critical 5 5 Unresolved Issues",
+    "Runtime Protection Disabled",
+    "View Scan Detail",
+    "OWASP Top 10 for LLM Critical ASR: 5% 2 Failed 0 Passed 10 Not Tested",
+    "OWASP Top 10 for Agentic Critical ASR: 5% 2 Failed 0 Passed 6 Not Tested",
+    "MITRE ATLAS Critical ASR: 5% 3 Failed 0 Passed 7 Not Tested",
+    "NIST AI RMF - AI Systems Critical ASR: 5% 3 Failed 0 Passed 3 Not Tested",
+    "HITRUST Critical ASR: 5% 4 Failed 0 Passed 10 Not Tested"
+  ],
+  "tabs": [
+    "Runtime Protection Enabled",
+    "Runtime Protection Disabled",
+    "Runtime Protection Enabled",
+    "Runtime Protection Disabled"
+  ],
+  "body_text": "AI Red TeamMonitor how your AI endpoints perform under simulated attacks.OpenAI API Key (alltrue_openai_demo)gpt-4oSelect TargetTop Risk TargetsHideOpenAI API Key (alltrue_openai_demo)gpt-4oCritical55 Unresolved IssuesOpenAI API Key (alltrue_openai_demo)gpt-4o-miniCritical273 Unresolved IssuesGoogle AI API Key (HW Gemini 1)gemini-2.0-flashCritical463 Unresolved IssuesGoogle AI API Key (HW Gemini 1)gemini-2.0-flash-001Critical453 Unresolved IssuesOpenAI API Key (alltrue_varonis_openai_observability)gpt-4oCritical103 Unresolved IssuesAzure OpenAI Endpoint (azure_openAI_deployment_1)gpt-4o-miniCritical243 Unresolved IssuesAzure OpenAI Endpoint (mc1_azure_EP_2)gpt-4o-miniCritical262 Unresolved IssuesOpenAI API Key (alltrue_varonis_openai_observability)gpt-5Critical52 Unresolved IssuesAzure OpenAI Endpoint (azure_openai_EP2)gpt-4o-miniCritical272 Unresolved IssuesGoogle AI API Key (alltrue_varonis_gemini_observability)gemini-flash-latestCritical101 Unresolved IssuesUnresolved Issues5Last Scan Date: Mar 20, 2026 at 13:59:072Critical Severity3High Severity0Medium Severity0Low Severity0InformationalASR (Attack Success Rate)Runtime Protection EnabledRuntime Protection DisabledTop vulnerabilities by ASRMar 20, 2026 at 13:59:07Historical TrendScan SummaryRuntime Protection EnabledRuntime Protection DisabledASR: 5%2/40 Attacks Succeeded8% from previous run (vs Mar 6, 2026 at 16:24:45)Mar 20, 2026 at 13:59:07View Scan DetailFound Vulnerabilities by SeverityCritical Severity1Vulnerabilities+1 New-0 Resolved0 PersistedHigh Severity1Vulnerabilities+1 New-0 Resolved0 PersistedMedium Severity0Vulnerabilities+0 New-0 Resolved0 PersistedLow Severity0Vulnerabilities+0 New-0 Resolved0 PersistedInformational0Vulnerabilities+0 New-0 Resolved0 PersistedCompliance MappingOWASP Top 10 for LLMCriticalASR: 5%2Failed0Passed10Not TestedOWASP Top 10 for AgenticCriticalASR: 5%2Failed0Passed6Not TestedMITRE ATLASCriticalASR: 5%3Failed0Passed7Not TestedNIST AI RMF - AI SystemsCriticalASR: 5%3Failed0Passed3Not TestedHITRUSTCriticalASR: 5%4Failed0Passed10Not Tested",
+  "navigation_description": "UI Location: AI Red Team\nURL Path: /ai-red-team\nPage Title: Varonis\nTabs on this page: Runtime Protection Enabled, Runtime Protection Disabled, Runtime Protection Enabled, Runtime Protection Disabled\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Select Target, Hide, OpenAI API Key (alltrue_openai_demo) gpt-4o Critical 5 5 Unresolved Issues, Runtime Protection Disabled, View Scan Detail\n\n# AI Red Team\n### Top Risk Targets\n### Unresolved Issues\n### ASR (Attack Success Rate)\n### Scan Summary\n\nAI Red TeamMonitor how your AI endpoints perform under simulated attacks.OpenAI API Key (alltrue_openai_demo)gpt-4oSelect TargetTop Risk TargetsHideOpenAI API Key (alltrue_openai_demo)gpt-4oCritical55 Unresolved IssuesOpenAI API Key (alltrue_openai_demo)gpt-4o-miniCritical273 Unresolved IssuesGoogle AI API Key (HW Gemini 1)gemini-2.0-flashCritical463 Unresolved IssuesGoogle AI API Key (HW Gemini 1)gemini-2.0-flash-001Critical453 Unresolved IssuesOpenAI API Key (alltrue_varonis_openai_observability)gpt-4oCritical103 Unresolved IssuesAzure OpenAI Endpoint (azure_openAI_deployment_1)gpt-4o-miniCritical243 Unresolved IssuesAzure OpenAI Endpoint (mc1_azure_EP_2)gpt-4o-miniCritical262 Unresolved IssuesOpenAI API Key (alltrue_varonis_openai_observability)gpt-5Critical52 Unresolved IssuesAzure OpenAI Endpoint (azure_openai_EP2)gpt-4o-miniCritical272 Unresolved IssuesGoogle AI API Key (alltrue_varonis_gemini_observability)gemini-flash-latestCritical101 Unresolved IssuesUnresolved Issues5Last Scan Date: Mar 20, 2026 at 13:59:072Critical Severity3High Severity0Medium Severity0Low Severity0InformationalASR (Attack Success Rate)Runtime Protection EnabledRuntime Protection DisabledTop vulnerabilities by ASRMar 20, 2026 at 13:59:07Historical TrendScan SummaryRuntime Protection EnabledRuntime Protection DisabledASR: 5%2/40 Attacks Succeeded8% from previous run (vs Mar 6, 2026 at 16:24:45)Mar 20, 2026 at 13:59:07View Scan DetailFound Vulnerabilities by SeverityCritical Severity1Vulnerabilities+1 New-0 Resolved0 PersistedHigh Severity1Vulnerabilities+1 New-0 Resolved0 PersistedMedium Severity0Vulnerabilities+0 New-0 Resolved0 PersistedLow Severity0Vulnerabilities+0 New-0 Resolved0 PersistedInformational0Vulnerabilities+0 New-0 Resolved0 PersistedCompliance MappingOWASP Top 10 for LLMCriticalASR: 5%2Failed0Passed10Not TestedOWASP Top 10 for AgenticCriticalASR: 5%2Failed0Passed6Not TestedMITRE ATLASCriticalASR: 5%3Failed0Passed7Not TestedNIST AI RMF - AI SystemsCriticalASR: 5%3Failed0Passed3Not TestedHITRUSTCriticalASR: 5%4Failed0Passed10Not Tested",
+  "status": "success"
+}

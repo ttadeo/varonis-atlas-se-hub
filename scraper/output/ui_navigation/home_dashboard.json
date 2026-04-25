@@ -1,0 +1,144 @@
+{
+  "url": "https://prod.alltrue-be.com/?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/",
+  "title": "Varonis",
+  "friendly_name": "Home Dashboard",
+  "nav_section": "home",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Risks",
+      "href": "/ai-360/risks?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Alerts",
+      "href": "/ai-360/alerts?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-360/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Risk"
+    },
+    {
+      "level": "h3",
+      "text": "Summary"
+    },
+    {
+      "level": "h3",
+      "text": "AI Inventory"
+    },
+    {
+      "level": "h3",
+      "text": "Vulnerable AI Resources"
+    },
+    {
+      "level": "h3",
+      "text": "AI Compliance"
+    },
+    {
+      "level": "h3",
+      "text": "AI Resources in Inventory"
+    },
+    {
+      "level": "h3",
+      "text": "GenAI App Activity"
+    },
+    {
+      "level": "h3",
+      "text": "AI Risk Insights"
+    },
+    {
+      "level": "h3",
+      "text": "Opened and Resolved Incidents"
+    },
+    {
+      "level": "h3",
+      "text": "Issues by Severity"
+    },
+    {
+      "level": "h3",
+      "text": "Risk Category Treemap"
+    },
+    {
+      "level": "h3",
+      "text": "Top 20 Riskiest AI & ML Resources"
+    },
+    {
+      "level": "h3",
+      "text": "Top 5 MITRE ATLAS Risks"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Critical 30 (2%)",
+    "High 52 (3%)",
+    "Medium 20 (1%)",
+    "Low 1837 (95%)",
+    "MITRE",
+    "OWASP"
+  ],
+  "tabs": [
+    "MITRE",
+    "OWASP"
+  ],
+  "body_text": "AI RiskDashboardSummary51Safety ScoreModerate RiskTrend Last 90 Days-24%AI InventoryView All2206+ 1378Total AI Resources2191+ 1363Shadow AI Resources11+ 11Unprotected AI Resources41+ 22AI and ML Model ArtifactsVulnerable AI Resources1939Vulnerable\nAI ResourcesCritical30(2%)High52(3%)Medium20(1%)Low1837(95%)AI ComplianceView AllAI TRISM Assessment0%ISO 420010%The EU AI Act0%The EU AI Act - GPAI Models0%The NIST AI RMF0%NIST AI RMF \u2013 Gen AI Profile5%AI Resources in InventoryFeb 01Mar 01Apr 0105001000150020002500AI Agent1148Model Artifacts252Cloud Platform Inventory247Datasets220AI Services72AI Software70Closed Source Models53Jupyter Notebook45Vector Databases28AI Models25LLM Endpoint16Chatbots16AI Pipeline12Guardrail Integration2GenAI App ActivityFeb 01Mar 01Apr 01050100150Custom Apps0requestsEnterprise Apps0requestsPublic Apps0requestsAI Risk InsightsResources with Multiple IssuesAI Inventory88 IssuesMajor Threats Blocked by AI Runtime ProtectionAI Runtime Protection54 IssuesLLM Attacks Detected by AI Runtime ProtectionAI Runtime Protection31 IssuesLLM Endpoints with Open PenTest FindingsAI SPM9 IssuesRecent AI Runtime Protection Policy Violation TypesAI Runtime Protection8 IssuesResources with Critical VulnerabilitiesAI SPM7 IssuesUntested LLM EndpointsAI SPM7 IssuesOverdue Compliance AuditsAI Compliance4 IssuesProjects with Poor SPM ScoresAI SPM1 IssuesOpened and Resolved IncidentsIssues by SeverityFeb 01Mar 01Apr 010100020003000Critical87High189Medium209Low1940Risk Category TreemapVulnerabilitiesPenTestsAI UsageRuntime ProtectionTPRM BreachMisconfigurationsShadow AIAudit GapData AccessUnprotected AIAgenticTop 20 Riskiest AI & ML ResourcesResource TypeCategoryIssuesCopilot Studio Agent TopicAi Agent000Model Artifact FileModel Assets3305SageMaker ArtifactCloud Resource0480OpenAI FileDataset000Azure OpenAI EndpointLlm Endpoint31069Machine Learning WorkspaceCloud Resource0360OpenAI API KeyLlm Endpoint537679Azure AI Foundry Model DeploymentCloud Resource000Model FileModel Assets010Copilot Studio Connector ToolAi Agent040Microsoft Copilot Studio AgentAi Service000Copilot Studio AgentAi Agent000Copilot Studio Agent Custom PromptAi Agent000Copilot Studio Agent InstructionsAi Agent000Microsoft CopilotAi Service0170Azure AI Foundry Agent ActionAi Agent000Azure OpenAI FileDataset000Custom AI Agent ToolAi Agent020Google AI API KeyLlm Endpoint3526Azure AI Foundry AgentAi Agent000Top 5 MITRE ATLAS RisksMITREOWASPAML.T0051AML.T0054AML.T0057",
+  "navigation_description": "UI Location: Home Dashboard\nURL Path: /\nPage Title: Varonis\nTabs on this page: MITRE, OWASP\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Critical 30 (2%), High 52 (3%), Medium 20 (1%), Low 1837 (95%), MITRE\n\n# AI Risk\n### Summary\n### AI Inventory\n### Vulnerable AI Resources\n### AI Compliance\n### AI Resources in Inventory\n### GenAI App Activity\n### AI Risk Insights\n### Opened and Resolved Incidents\n### Issues by Severity\n\nAI RiskDashboardSummary51Safety ScoreModerate RiskTrend Last 90 Days-24%AI InventoryView All2206+ 1378Total AI Resources2191+ 1363Shadow AI Resources11+ 11Unprotected AI Resources41+ 22AI and ML Model ArtifactsVulnerable AI Resources1939Vulnerable\nAI ResourcesCritical30(2%)High52(3%)Medium20(1%)Low1837(95%)AI ComplianceView AllAI TRISM Assessment0%ISO 420010%The EU AI Act0%The EU AI Act - GPAI Models0%The NIST AI RMF0%NIST AI RMF \u2013 Gen AI Profile5%AI Resources in InventoryFeb 01Mar 01Apr 0105001000150020002500AI Agent1148Model Artifacts252Cloud Platform Inventory247Datasets220AI Services72AI Software70Closed Source Models53Jupyter Notebook45Vector Databases28AI Models25LLM Endpoint16Chatbots16AI Pipeline12Guardrail Integration2GenAI App ActivityFeb 01Mar 01Apr 01050100150Custom Apps0requestsEnterprise Apps0requestsPublic Apps0requestsAI Risk InsightsResources with Multiple IssuesAI Inventory88 IssuesMajor Threats Blocked by AI Runtime ProtectionAI Runtime Protection54 IssuesLLM Attacks Detected by AI Runtime ProtectionAI Runtime Protection31 IssuesLLM Endpoints with Open PenTest FindingsAI SPM9 IssuesRecent AI Runtime Protection Policy Violation TypesAI Runtime Protection8 IssuesResources with Critical VulnerabilitiesAI SPM7 IssuesUntested LLM EndpointsAI SPM7 IssuesOverdue Compliance AuditsAI Compliance4 IssuesProjects with Poor SPM ScoresAI SPM1 IssuesOpened and Resolved IncidentsIssues by SeverityFeb 01Mar 01Apr 010100020003000Critical87High189Medium209Low1940Risk Category TreemapVulnerabilitiesPenTestsAI UsageRuntime ProtectionTPRM BreachMisconfigurationsShadow AIAudit GapData AccessUnprotected AIAgenticTop 20 Riskiest AI & ML ResourcesResource TypeCategoryIssuesCopilot Studio Agent TopicAi Agent000Model Artifact FileModel Assets3305SageMaker ArtifactCloud Resource0480OpenAI FileDataset000Azure OpenAI EndpointLlm Endpoint31069Machine Learning WorkspaceCloud Resource0360OpenAI API KeyLlm Endpoint537679Azure AI Foundry Model DeploymentCloud Resource000Model FileModel Assets010Copilot Studio Connector ToolAi Agent040Microsoft Copilot Studio AgentAi Service000Copilot Studio AgentAi Agent000Copilot Studio Agent Custom PromptAi Agent000Copilot Studio Agent InstructionsAi Agent000Microsoft CopilotAi Service0170Azure AI Foundry Agent ActionAi Agent000Azure OpenAI FileDataset000Custom AI Agent ToolAi Agent020Google AI API KeyLlm Endpoint3526Azure AI Foundry AgentAi Agent000Top 5 MITRE ATLAS RisksMITREOWASPAML.T0051AML.T0054AML.T0057",
+  "status": "success"
+}

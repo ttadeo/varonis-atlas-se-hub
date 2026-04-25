@@ -1,0 +1,107 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-gateway",
+  "title": "Varonis",
+  "friendly_name": "AI Gateway",
+  "nav_section": "ai_gateway",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Policies",
+      "href": "/ai-gateway/policies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-gateway/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-gateway/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Runtime Protection Dashboard"
+    },
+    {
+      "level": "h3",
+      "text": "Activity"
+    },
+    {
+      "level": "h3",
+      "text": "Actions"
+    },
+    {
+      "level": "h3",
+      "text": "Top 10 Security Policy Violations"
+    },
+    {
+      "level": "h3",
+      "text": "Events Over Time"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Refresh",
+    "Prompt Runtime Protection",
+    "All Use Cases (67)",
+    "Last 24 hours"
+  ],
+  "tabs": [],
+  "body_text": "AI Runtime Protection DashboardLast refreshed: 4/20/2026, 12:50:19 PMRefreshRuntime Protection TypePrompt Runtime ProtectionUse CasesAll Use Cases (67)Time RangeLast 24 hoursProxy StatusActiveActivity1Violations40 %Total Requests25.0%0 %Violation RateActions1-Total1-Block0-Modify0-AlertTop 10 Security Policy ViolationsView AllMalicious Tool Detection - Output1 (100%)Events Over Time",
+  "navigation_description": "UI Location: AI Gateway\nURL Path: /ai-gateway\nPage Title: Varonis\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Refresh, Prompt Runtime Protection, All Use Cases (67), Last 24 hours\n\n# AI Runtime Protection Dashboard\n### Activity\n### Actions\n### Top 10 Security Policy Violations\n### Events Over Time\n\nAI Runtime Protection DashboardLast refreshed: 4/20/2026, 12:50:19 PMRefreshRuntime Protection TypePrompt Runtime ProtectionUse CasesAll Use Cases (67)Time RangeLast 24 hoursProxy StatusActiveActivity1Violations40 %Total Requests25.0%0 %Violation RateActions1-Total1-Block0-Modify0-AlertTop 10 Security Policy ViolationsView AllMalicious Tool Detection - Output1 (100%)Events Over Time",
+  "status": "success"
+}

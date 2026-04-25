@@ -1,0 +1,118 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-usage/overview",
+  "title": "Varonis",
+  "friendly_name": "AI Usage",
+  "nav_section": "ai_usage",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Users",
+      "href": "/ai-usage/users?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Policies",
+      "href": "/ai-usage/policies/llm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-usage/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-usage/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Usage"
+    },
+    {
+      "level": "h3",
+      "text": "Summary"
+    },
+    {
+      "level": "h3",
+      "text": "Top AI Activity by Provider"
+    },
+    {
+      "level": "h3",
+      "text": "Top AI Activity by User"
+    },
+    {
+      "level": "h3",
+      "text": "Top AI Activity by Application"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Overall Dashboard",
+    "All GenAI Apps (3)",
+    "All Providers (2)",
+    "Last 7 days (Apr 13 2026 - Apr 20 2026)",
+    "Overview",
+    "Daily Usage",
+    "API AI Requests 34 (100%)",
+    "User AI Requests 0 (0%)"
+  ],
+  "tabs": [
+    "Overview",
+    "Daily Usage"
+  ],
+  "body_text": "AI UsageOverall DashboardApp TypeAll GenAI Apps (3)AI ProviderAll Providers (2)Time RangeLast 7 days (Apr 13 2026 - Apr 20 2026)Configuration StatusTrackingOverviewDaily UsageSummary34Total RequestsAPI AI Requests34(100%)User AI Requests0(0%)3API Keys Managed6Total Active AI Applications0Active AI Users0Users of Unauthorized AI0Unauthorized AI UsageTop AI Activity by ProviderOpenAI API KeyTop AI Activity by UserView AllNo Data AvailableThere is no data available for the parameters selected. Please try a different filter combination.Top AI Activity by ApplicationView AllOpenAI API Key (alltrue_openai_demo)Wikipedia Research Agent22OpenAI API Key (alltrue_varonis_openai_agenticdemo)Wikipedia Research Agent11OpenAI API Key (aviation_demo_openai)Wikipedia Research Agent1",
+  "navigation_description": "UI Location: AI Usage\nURL Path: /ai-usage/overview\nPage Title: Varonis\nTabs on this page: Overview, Daily Usage\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Overall Dashboard, All GenAI Apps (3), All Providers (2), Last 7 days (Apr 13 2026 - Apr 20 2026), Overview\n\n# AI Usage\n### Summary\n### Top AI Activity by Provider\n### Top AI Activity by User\n### Top AI Activity by Application\n\nAI UsageOverall DashboardApp TypeAll GenAI Apps (3)AI ProviderAll Providers (2)Time RangeLast 7 days (Apr 13 2026 - Apr 20 2026)Configuration StatusTrackingOverviewDaily UsageSummary34Total RequestsAPI AI Requests34(100%)User AI Requests0(0%)3API Keys Managed6Total Active AI Applications0Active AI Users0Users of Unauthorized AI0Unauthorized AI UsageTop AI Activity by ProviderOpenAI API KeyTop AI Activity by UserView AllNo Data AvailableThere is no data available for the parameters selected. Please try a different filter combination.Top AI Activity by ApplicationView AllOpenAI API Key (alltrue_openai_demo)Wikipedia Research Agent22OpenAI API Key (alltrue_varonis_openai_agenticdemo)Wikipedia Research Agent11OpenAI API Key (aviation_demo_openai)Wikipedia Research Agent1",
+  "status": "success"
+}

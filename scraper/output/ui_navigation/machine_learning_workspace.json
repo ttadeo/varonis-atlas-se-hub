@@ -1,0 +1,105 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/AzureMachineLearning?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/AzureMachineLearning",
+  "title": "Varonis",
+  "friendly_name": "Machine Learning Workspace",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type Azure Machine Learning"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25",
+    "Go to next page"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type Azure Machine Learning28 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusalltrueMachine Learning ComputeCloud Platform InventoryNo tags assigned4Unreviewedanthony-6762_aiMachine Learning WorkspaceCloud Platform InventoryNo tags assigned5Unreviewedanthony-9028Machine Learning WorkspaceCloud Platform InventoryNo tags assigned5Unreviewedbikeshare_modelAzure Machine Learning Custom ModelAI ModelsNo tags assigned4Unreviewedcredit_defaults_modelAzure Machine Learning Custom ModelAI ModelsNo tags assigned4Unapproveddefault_of_credit_card_clients.csvAzure Machine Learning DatasetDatasetsNo tags assigned4Unrevieweddefaults-model-endpointAzure Machine Learning Online Serving EndpointAI ServicesNo tags assigned4Unrevieweddefaults-model-endpoint - Endpoint Deployment: credit-defaults-model-2Azure Machine Learning Endpoint DeploymentAI PipelineNo tags assigned4Unreviewedgood_boat_81h0q2qvv1Azure Machine Learning Pipeline JobAI PipelineNo tags assigned4Unreviewedhui-6981_aiMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4Unreviewedhui-9642Machine Learning WorkspaceCloud Platform InventoryNo tags assigned4UnreviewedJC-201509-citibike-tripdata.csvAzure Machine Learning DatasetDatasetsNo tags assigned4Unreviewedkevin-2858_aiMachine Learning WorkspaceCloud Platform InventoryNo tags assigned5Unreviewedkevin-6412Machine Learning WorkspaceCloud Platform InventoryNo tags assigned5UnreviewedRyan-Code-Classification-ModelAzure Machine Learning Custom ModelAI ModelsNo tags assigned4UnreviewedRyan-WorkspaceMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4Unreviewedryan-workspace-kdfngAzure Machine Learning Online Serving EndpointAI ServicesNo tags assigned4Unreviewedryan-workspace-kdfng - Endpoint Deployment: ryan-code-classification-mode-1Azure Machine Learning Endpoint DeploymentAI PipelineNo tags assigned4Unreviewedsad_bag_2m8f6dyzj6Azure Machine Learning Pipeline JobAI PipelineNo tags assigned4UnreviewedsecureMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4Unreviewedsupply-chainAzure Machine Learning Online Serving EndpointAI ServicesNo tags assigned4Unreviewedtamir2Machine Learning ComputeCloud Platform InventoryNo tags assigned4UnreviewedtestAzure Machine Learning Custom ModelAI ModelsNo tags assigned4UnreviewedtestMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4UnreviewedtestMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4UnreviewedItems per page:251 to 25 of 28 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/AzureMachineLearning\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25, Go to next page\n\n# Resources of type Azure Machine Learning\n\nResources of type Azure Machine Learning28 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusalltrueMachine Learning ComputeCloud Platform InventoryNo tags assigned4Unreviewedanthony-6762_aiMachine Learning WorkspaceCloud Platform InventoryNo tags assigned5Unreviewedanthony-9028Machine Learning WorkspaceCloud Platform InventoryNo tags assigned5Unreviewedbikeshare_modelAzure Machine Learning Custom ModelAI ModelsNo tags assigned4Unreviewedcredit_defaults_modelAzure Machine Learning Custom ModelAI ModelsNo tags assigned4Unapproveddefault_of_credit_card_clients.csvAzure Machine Learning DatasetDatasetsNo tags assigned4Unrevieweddefaults-model-endpointAzure Machine Learning Online Serving EndpointAI ServicesNo tags assigned4Unrevieweddefaults-model-endpoint - Endpoint Deployment: credit-defaults-model-2Azure Machine Learning Endpoint DeploymentAI PipelineNo tags assigned4Unreviewedgood_boat_81h0q2qvv1Azure Machine Learning Pipeline JobAI PipelineNo tags assigned4Unreviewedhui-6981_aiMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4Unreviewedhui-9642Machine Learning WorkspaceCloud Platform InventoryNo tags assigned4UnreviewedJC-201509-citibike-tripdata.csvAzure Machine Learning DatasetDatasetsNo tags assigned4Unreviewedkevin-2858_aiMachine Learning WorkspaceCloud Platform InventoryNo tags assigned5Unreviewedkevin-6412Machine Learning WorkspaceCloud Platform InventoryNo tags assigned5UnreviewedRyan-Code-Classification-ModelAzure Machine Learning Custom ModelAI ModelsNo tags assigned4UnreviewedRyan-WorkspaceMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4Unreviewedryan-workspace-kdfngAzure Machine Learning Online Serving EndpointAI ServicesNo tags assigned4Unreviewedryan-workspace-kdfng - Endpoint Deployment: ryan-code-classification-mode-1Azure Machine Learning Endpoint DeploymentAI PipelineNo tags assigned4Unreviewedsad_bag_2m8f6dyzj6Azure Machine Learning Pipeline JobAI PipelineNo tags assigned4UnreviewedsecureMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4Unreviewedsupply-chainAzure Machine Learning Online Serving EndpointAI ServicesNo tags assigned4Unreviewedtamir2Machine Learning ComputeCloud Platform InventoryNo tags assigned4UnreviewedtestAzure Machine Learning Custom ModelAI ModelsNo tags assigned4UnreviewedtestMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4UnreviewedtestMachine Learning WorkspaceCloud Platform InventoryNo tags assigned4UnreviewedItems per page:251 to 25 of 28 items",
+  "status": "success"
+}

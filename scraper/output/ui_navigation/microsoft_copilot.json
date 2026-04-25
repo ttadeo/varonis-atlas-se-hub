@@ -1,0 +1,104 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/Microsoft-Copilot?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/Microsoft-Copilot",
+  "title": "Varonis",
+  "friendly_name": "Microsoft Copilot",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type Microsoft Copilot"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type Microsoft Copilot12 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusMicrosoft Copilot (Microsoft-Copilot-3de03e4b-bef7-4324-9dcc-ae25bb2531ab)Microsoft CopilotAI ServicesNo tags assigned5UnapprovedMicrosoft Copilot (Microsoft-Copilot-3de03e4b-bef7-4324-9dcc-ae25bb2531ab)Microsoft CopilotAI ServicesNo tags assigned4UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Security.SecurityCopilot)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Security.SecurityCopilot)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.CustomEngine.T_4a52a053-3be6-3f92-fa1a-07f6efebff34)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.CustomEngine.T_4a52a053-3be6-3f92-fa1a-07f6efebff34)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_4188d)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_4188d)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_72050)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_72050)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-crb09_testAllComponents)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-crb09_testAllComponents)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedItems per page:251 to 12 of 12 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/Microsoft-Copilot\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25\n\n# Resources of type Microsoft Copilot\n\nResources of type Microsoft Copilot12 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusMicrosoft Copilot (Microsoft-Copilot-3de03e4b-bef7-4324-9dcc-ae25bb2531ab)Microsoft CopilotAI ServicesNo tags assigned5UnapprovedMicrosoft Copilot (Microsoft-Copilot-3de03e4b-bef7-4324-9dcc-ae25bb2531ab)Microsoft CopilotAI ServicesNo tags assigned4UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Security.SecurityCopilot)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Security.SecurityCopilot)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.CustomEngine.T_4a52a053-3be6-3f92-fa1a-07f6efebff34)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.CustomEngine.T_4a52a053-3be6-3f92-fa1a-07f6efebff34)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_4188d)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_4188d)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_72050)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-copilots_header_72050)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-crb09_testAllComponents)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedMicrosoft Copilot (Microsoft-Copilot-Copilot.Studio.Default-3de03e4b-bef7-4324-9dcc-ae25bb2531ab-crb09_testAllComponents)Microsoft CopilotAI ServicesNo tags assigned3UnapprovedItems per page:251 to 12 of 12 items",
+  "status": "success"
+}

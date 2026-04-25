@@ -1,0 +1,105 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/MicrosoftCopilotStudio?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/MicrosoftCopilotStudio",
+  "title": "Varonis",
+  "friendly_name": "Copilot Studio Agent Topic",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type Azure Copilot Studio"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25",
+    "Go to next page"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type Azure Copilot Studio890 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusAction Approval Model (Universal AI Compliance)Copilot Studio Agent Knowledge SourceAI AgentNo tags assigned4ApprovedAgentCopilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 1Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 10Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 10 (Agent 10)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 11Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 11 (Agent 11)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 12Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 12 (Agent 12)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 13Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 13 (Agent 13)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 14Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 14 (Agent 14)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 15Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 15 (Agent 15)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 16Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 16 (Agent 16)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 17Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 17 (Agent 17)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 18Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 18 (Agent 18)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 19Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 19 (Agent 19)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 2Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 20Copilot Studio AgentAI AgentNo tags assigned3UnreviewedItems per page:251 to 25 of 890 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/MicrosoftCopilotStudio\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25, Go to next page\n\n# Resources of type Azure Copilot Studio\n\nResources of type Azure Copilot Studio890 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusAction Approval Model (Universal AI Compliance)Copilot Studio Agent Knowledge SourceAI AgentNo tags assigned4ApprovedAgentCopilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 1Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 10Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 10 (Agent 10)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 11Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 11 (Agent 11)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 12Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 12 (Agent 12)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 13Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 13 (Agent 13)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 14Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 14 (Agent 14)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 15Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 15 (Agent 15)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 16Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 16 (Agent 16)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 17Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 17 (Agent 17)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 18Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 18 (Agent 18)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 19Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 19 (Agent 19)Copilot Studio Agent InstructionsAI AgentNo tags assigned4UnreviewedAgent 2Copilot Studio AgentAI AgentNo tags assigned3UnreviewedAgent 20Copilot Studio AgentAI AgentNo tags assigned3UnreviewedItems per page:251 to 25 of 890 items",
+  "status": "success"
+}

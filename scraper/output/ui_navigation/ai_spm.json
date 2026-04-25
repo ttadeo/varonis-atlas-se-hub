@@ -1,0 +1,125 @@
+{
+  "url": "https://prod.alltrue-be.com/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/spm",
+  "title": "Varonis",
+  "friendly_name": "AI SPM",
+  "nav_section": "spm",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Policies",
+      "href": "/spm/policies/cloud-configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Model Scan",
+      "href": "/spm/model-scan?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/spm/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/spm/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Security Posture Management"
+    },
+    {
+      "level": "h3",
+      "text": "Open Issues by Severity"
+    },
+    {
+      "level": "h3",
+      "text": "Open Issues by Type"
+    },
+    {
+      "level": "h3",
+      "text": "CVE Findings 71 Issues"
+    },
+    {
+      "level": "h3",
+      "text": "Misconfigurations 40 Issues"
+    },
+    {
+      "level": "h3",
+      "text": "Sensitive Data Findings 9 Issues"
+    },
+    {
+      "level": "h3",
+      "text": "Model Scan Findings 16 Issues"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Critical 11",
+    "High 47",
+    "Medium 10",
+    "Low 3",
+    "CVE-2024-3573",
+    "10/16/2025",
+    "CVE-2023-6014",
+    "CVE-2026-32626",
+    "03/18/2026",
+    "CVE-2023-6974"
+  ],
+  "tabs": [],
+  "body_text": "AI Security Posture ManagementOpen Issues by SeverityFeb 01Mar 01Apr 010100200Open Issues by TypeCVE FindingsMisconfigurationsModel Vulnerability FindingsAgentic FindingsSensitive Data FindingsCVE Findings71IssuesCritical11High47Medium10Low3Top 20 FindingsView AllVulnerabilitySeverityScoreExposureDateCVE-2024-3573Critical9.3110/16/2025CVE-2023-6014Critical9.8110/16/2025CVE-2026-32626Critical9.6103/18/2026CVE-2023-6974Critical9.8110/16/2025CVE-2024-24592Critical9.8110/16/2025CVE-2020-13092Critical9.8110/16/2025CVE-2024-24593Critical9.6110/16/2025CVE-2025-14009Critical10.0103/06/2026CVE-2023-6975Critical9.8110/16/2025CVE-2023-43654Critical10.0110/16/2025CVE-2024-3568Critical9.6110/16/2025CVE-2023-6709High8.8110/16/2025CVE-2021-32677High8.2110/16/2025CVE-2023-6730High8.8110/16/2025CVE-2021-3842High7.5110/16/2025CVE-2023-6977High7.5110/16/2025CVE-2023-7018High7.8110/16/2025CVE-2021-3828High7.5110/16/2025CVE-2023-6940High8.8110/16/2025CVE-2023-6909High7.5110/16/2025Misconfigurations40IssuesHigh32Medium4Low4Top 20 FindingsView AllMisconfigurationSeverityExposureDatesagemaker-artifacts-encryption-enabledHigh1610/20/2025machine_learning_workspace_public_access_enabledHigh810/17/2025sagemaker-model-network-isolation-checkHigh201/31/2026public-access-to-storage-account-blobHigh210/17/2025s3-versioning-and-backup-enabledMedium410/20/2025sagemaker-notebook-instance-network-securityHigh101/31/2026sagemaker-notebook-instance-root-access-disabledHigh101/31/2026sagemaker-notebook-security-settings-checkHigh110/20/2025storage-account-public-access-enabledHigh103/14/2026macie-regular-sensitive-data-discovery-checkLow410/20/2025Sensitive Data Findings9IssuesMedium9Top 20 FindingsView AllFindingSeverityExposureDateSensitive Information Found in DatasetMedium101/01/2026Sensitive Information Found in DatasetMedium101/03/2026Sensitive Information Found in DatasetMedium101/01/2026Sensitive Information Found in DatasetMedium101/01/2026Sensitive Information Found in DatasetMedium101/03/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Model Scan Findings16IssuesCritical12Medium2Low2Top 20 FindingsView AllFindingSeverityExposureDatemodel-scan-code-execution-prohibitedCritical1110/16/2025model-scan-malware-signatures-prohibitedCritical101/22/2026model-scan-input-output-operations-prohibitedMedium101/22/2026model-scan-network-access-prohibitedMedium101/22/2026model-custom-layers-prohibitedLow210/16/2025",
+  "navigation_description": "UI Location: AI SPM\nURL Path: /spm\nPage Title: Varonis\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Critical 11, High 47, Medium 10, Low 3, CVE-2024-3573\n\n# AI Security Posture Management\n### Open Issues by Severity\n### Open Issues by Type\n### CVE Findings 71 Issues\n### Misconfigurations 40 Issues\n### Sensitive Data Findings 9 Issues\n### Model Scan Findings 16 Issues\n\nAI Security Posture ManagementOpen Issues by SeverityFeb 01Mar 01Apr 010100200Open Issues by TypeCVE FindingsMisconfigurationsModel Vulnerability FindingsAgentic FindingsSensitive Data FindingsCVE Findings71IssuesCritical11High47Medium10Low3Top 20 FindingsView AllVulnerabilitySeverityScoreExposureDateCVE-2024-3573Critical9.3110/16/2025CVE-2023-6014Critical9.8110/16/2025CVE-2026-32626Critical9.6103/18/2026CVE-2023-6974Critical9.8110/16/2025CVE-2024-24592Critical9.8110/16/2025CVE-2020-13092Critical9.8110/16/2025CVE-2024-24593Critical9.6110/16/2025CVE-2025-14009Critical10.0103/06/2026CVE-2023-6975Critical9.8110/16/2025CVE-2023-43654Critical10.0110/16/2025CVE-2024-3568Critical9.6110/16/2025CVE-2023-6709High8.8110/16/2025CVE-2021-32677High8.2110/16/2025CVE-2023-6730High8.8110/16/2025CVE-2021-3842High7.5110/16/2025CVE-2023-6977High7.5110/16/2025CVE-2023-7018High7.8110/16/2025CVE-2021-3828High7.5110/16/2025CVE-2023-6940High8.8110/16/2025CVE-2023-6909High7.5110/16/2025Misconfigurations40IssuesHigh32Medium4Low4Top 20 FindingsView AllMisconfigurationSeverityExposureDatesagemaker-artifacts-encryption-enabledHigh1610/20/2025machine_learning_workspace_public_access_enabledHigh810/17/2025sagemaker-model-network-isolation-checkHigh201/31/2026public-access-to-storage-account-blobHigh210/17/2025s3-versioning-and-backup-enabledMedium410/20/2025sagemaker-notebook-instance-network-securityHigh101/31/2026sagemaker-notebook-instance-root-access-disabledHigh101/31/2026sagemaker-notebook-security-settings-checkHigh110/20/2025storage-account-public-access-enabledHigh103/14/2026macie-regular-sensitive-data-discovery-checkLow410/20/2025Sensitive Data Findings9IssuesMedium9Top 20 FindingsView AllFindingSeverityExposureDateSensitive Information Found in DatasetMedium101/01/2026Sensitive Information Found in DatasetMedium101/03/2026Sensitive Information Found in DatasetMedium101/01/2026Sensitive Information Found in DatasetMedium101/01/2026Sensitive Information Found in DatasetMedium101/03/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Sensitive Information Found in Notebook CellsMedium101/22/2026Model Scan Findings16IssuesCritical12Medium2Low2Top 20 FindingsView AllFindingSeverityExposureDatemodel-scan-code-execution-prohibitedCritical1110/16/2025model-scan-malware-signatures-prohibitedCritical101/22/2026model-scan-input-output-operations-prohibitedMedium101/22/2026model-scan-network-access-prohibitedMedium101/22/2026model-custom-layers-prohibitedLow210/16/2025",
+  "status": "success"
+}

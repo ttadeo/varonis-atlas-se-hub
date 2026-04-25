@@ -1,0 +1,105 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies",
+  "title": "Varonis",
+  "friendly_name": "AI Agent",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Technologies in AI Inventory"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Download AI BOM",
+    "Add New",
+    "Filters",
+    "Technology",
+    "Resources",
+    "Resource Categories",
+    "Org. Usage",
+    "Review Status",
+    "1 Category",
+    "5 Categories"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Technologies in AI InventoryGroup by TechnologyDownload AI BOMAdd NewActiveExcludedDeletedFiltersTechnologyResourcesResource CategoriesOrg. UsageReview StatusAzure Copilot StudioMachine Learning & AI8901 Category1UnreviewedAzure AI Foundry2825 Categories1UnreviewedML FileMachine Learning & AI1541 Category1UnapprovedAmazon SageMakerMachine Learning & AI1363 Categories1UnreviewedOpenAI Enterprise DataDatasets941 Category1UnreviewedMCP ServerMachine Learning & AI801 Category1UnreviewedML ArtifactMachine Learning & AI801 Category1UnreviewedMicrosoft Copilot StudioEnterprise GenAI551 Category1UnreviewedJupyterMachine Learning & AI451 Category1UnreviewedAzure OpenAI DataDatasets381 Category1UnreviewedOpenAI Enterprise ModelMachine Learning & AI322 Categories1UnreviewedAzure Machine LearningMachine Learning & AI285 Categories1UnapprovedCustom AI Agent ToolMachine Learning & AI241 Category1UnreviewedOpenAI Enterprise AI AgentEnterprise GenAI221 Category1UnreviewedAzure OpenAI AI AgentEnterprise GenAI201 Category1UnreviewedAzure OpenAI ModelMachine Learning & AI172 Categories1UnreviewedCustom AI AgentMachine Learning & AI161 Category1UnreviewedMachine Learning Model PackageMachine Learning & AI161 Category1UnreviewedMicrosoft CopilotEnterprise GenAI121 Category1UnapprovedCustom AI Agent PromptMachine Learning & AI121 Category1UnreviewedML ModelcardMachine Learning & AI111 Category1UnreviewedAzure OpenAI111 Category1UnreviewedAzure OpenAI VectorstoreVector Database Service91 Category1UnreviewedData AssetDatasets91 Category1UnreviewedOpenAI EndpointMachine Learning & AI61 Category1UnreviewedItems per page:251 to 25 of 87 items",
+  "navigation_description": "UI Location: AI Agent\nURL Path: /ai-inventory/technologies\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Download AI BOM, Add New, Filters, Technology, Resources\n\n# Technologies in AI Inventory\n\nTechnologies in AI InventoryGroup by TechnologyDownload AI BOMAdd NewActiveExcludedDeletedFiltersTechnologyResourcesResource CategoriesOrg. UsageReview StatusAzure Copilot StudioMachine Learning & AI8901 Category1UnreviewedAzure AI Foundry2825 Categories1UnreviewedML FileMachine Learning & AI1541 Category1UnapprovedAmazon SageMakerMachine Learning & AI1363 Categories1UnreviewedOpenAI Enterprise DataDatasets941 Category1UnreviewedMCP ServerMachine Learning & AI801 Category1UnreviewedML ArtifactMachine Learning & AI801 Category1UnreviewedMicrosoft Copilot StudioEnterprise GenAI551 Category1UnreviewedJupyterMachine Learning & AI451 Category1UnreviewedAzure OpenAI DataDatasets381 Category1UnreviewedOpenAI Enterprise ModelMachine Learning & AI322 Categories1UnreviewedAzure Machine LearningMachine Learning & AI285 Categories1UnapprovedCustom AI Agent ToolMachine Learning & AI241 Category1UnreviewedOpenAI Enterprise AI AgentEnterprise GenAI221 Category1UnreviewedAzure OpenAI AI AgentEnterprise GenAI201 Category1UnreviewedAzure OpenAI ModelMachine Learning & AI172 Categories1UnreviewedCustom AI AgentMachine Learning & AI161 Category1UnreviewedMachine Learning Model PackageMachine Learning & AI161 Category1UnreviewedMicrosoft CopilotEnterprise GenAI121 Category1UnapprovedCustom AI Agent PromptMachine Learning & AI121 Category1UnreviewedML ModelcardMachine Learning & AI111 Category1UnreviewedAzure OpenAI111 Category1UnreviewedAzure OpenAI VectorstoreVector Database Service91 Category1UnreviewedData AssetDatasets91 Category1UnreviewedOpenAI EndpointMachine Learning & AI61 Category1UnreviewedItems per page:251 to 25 of 87 items",
+  "status": "success"
+}

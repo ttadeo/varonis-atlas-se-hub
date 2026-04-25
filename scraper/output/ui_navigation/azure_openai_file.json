@@ -1,0 +1,105 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/azure-openai-data?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/azure-openai-data",
+  "title": "Varonis",
+  "friendly_name": "Azure OpenAI File",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type Azure OpenAI Data"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25",
+    "Go to next page"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type Azure OpenAI Data38 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview Statusalembic_history.pdfAzure OpenAI FileDatasetsNo tags assigned4Unreviewedalembic_history.pdfAzure OpenAI FileDatasetsNo tags assigned4UnreviewedAllTrue.ai.htmlAzure OpenAI FileDatasetsNo tags assigned5UnreviewedAllTrue.ai.htmlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedfile-sample_500kB.docAzure OpenAI FileDatasetsNo tags assigned5Unreviewedfile-sample_500kB.docAzure OpenAI FileDatasetsNo tags assigned5Unreviewedfine-tine-0711.jsonlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedmy_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4Unreviewedmy_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4Unreviewedmy_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4Unreviewednew_file_06_11.jsonAzure OpenAI FileDatasetsNo tags assigned4Unreviewedopenai_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20241112.xlsxAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250121.pdfAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250121.xlsxAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250312.pdfAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250312.xlsxAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned5Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedsample_category_classification_fine_tuning_AzureOpenAI.jsonlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedsample_chat_fine_tuning.jsonlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedsample_chat_fine_tuning_v2.jsonlAzure OpenAI FileDatasetsNo tags assigned4UnreviewedItems per page:251 to 25 of 38 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/azure-openai-data\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25, Go to next page\n\n# Resources of type Azure OpenAI Data\n\nResources of type Azure OpenAI Data38 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview Statusalembic_history.pdfAzure OpenAI FileDatasetsNo tags assigned4Unreviewedalembic_history.pdfAzure OpenAI FileDatasetsNo tags assigned4UnreviewedAllTrue.ai.htmlAzure OpenAI FileDatasetsNo tags assigned5UnreviewedAllTrue.ai.htmlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedfile-sample_500kB.docAzure OpenAI FileDatasetsNo tags assigned5Unreviewedfile-sample_500kB.docAzure OpenAI FileDatasetsNo tags assigned5Unreviewedfine-tine-0711.jsonlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedmy_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4Unreviewedmy_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4Unreviewedmy_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4Unreviewednew_file_06_11.jsonAzure OpenAI FileDatasetsNo tags assigned4Unreviewedopenai_secret_key.pyAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20241112.xlsxAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250121.pdfAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250121.xlsxAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250312.pdfAzure OpenAI FileDatasetsNo tags assigned4UnreviewedPatient Data_20250312.xlsxAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned5Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedresults.csvAzure OpenAI FileDatasetsNo tags assigned4Unreviewedsample_category_classification_fine_tuning_AzureOpenAI.jsonlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedsample_chat_fine_tuning.jsonlAzure OpenAI FileDatasetsNo tags assigned4Unreviewedsample_chat_fine_tuning_v2.jsonlAzure OpenAI FileDatasetsNo tags assigned4UnreviewedItems per page:251 to 25 of 38 items",
+  "status": "success"
+}

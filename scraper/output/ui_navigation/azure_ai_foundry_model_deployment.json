@@ -1,0 +1,105 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory/technologies/AzureAIFoundry?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory/technologies/AzureAIFoundry",
+  "title": "Varonis",
+  "friendly_name": "Azure AI Foundry Model Deployment",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [
+    "AI Inventory Technologies"
+  ],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "Resources of type Azure AI Foundry"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "Add New",
+    "Filters",
+    "25",
+    "Go to next page"
+  ],
+  "tabs": [
+    "Active",
+    "Excluded",
+    "Deleted"
+  ],
+  "body_text": "Resources of type Azure AI Foundry282 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusageandsearchAzure AI Foundry IndexCloud Platform InventoryNo tags assigned5UnreviewedAgent117Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent147Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent278Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent381Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent392Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent475Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent514Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent648Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent651Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent689Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent746Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent773Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent776Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent794Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent829Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent833Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent883Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent922Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent926Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent940Azure AI Foundry AgentAI AgentNo tags assigned5Unreviewedagent (Agent-with-tools)Azure AI Foundry Agent ActionAI AgentNo tags assigned4Unreviewedagentic-testing-newAzure AI Foundry ResourceCloud Platform InventoryNo tags assigned5Unreviewedagent-test-indexAzure AI Foundry Vector StoreVector DatabasesNo tags assigned3UnreviewedAgentVectorStore_12841Azure AI Foundry Vector StoreVector DatabasesNo tags assigned5UnreviewedItems per page:251 to 25 of 282 items",
+  "navigation_description": "UI Location: AI Inventory Technologies\nURL Path: /ai-inventory/technologies/AzureAIFoundry\nPage Title: Varonis\nTabs on this page: Active, Excluded, Deleted\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, Add New, Filters, 25, Go to next page\n\n# Resources of type Azure AI Foundry\n\nResources of type Azure AI Foundry282 ResourcesAdd NewActiveExcludedDeletedFiltersResourceResource CategoryTagsOrg. UsageIssuesReview StatusageandsearchAzure AI Foundry IndexCloud Platform InventoryNo tags assigned5UnreviewedAgent117Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent147Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent278Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent381Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent392Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent475Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent514Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent648Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent651Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent689Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent746Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent773Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent776Azure AI Foundry AgentAI AgentNo tags assigned3UnreviewedAgent794Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent829Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent833Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent883Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent922Azure AI Foundry AgentAI AgentNo tags assigned4UnreviewedAgent926Azure AI Foundry AgentAI AgentNo tags assigned5UnreviewedAgent940Azure AI Foundry AgentAI AgentNo tags assigned5Unreviewedagent (Agent-with-tools)Azure AI Foundry Agent ActionAI AgentNo tags assigned4Unreviewedagentic-testing-newAzure AI Foundry ResourceCloud Platform InventoryNo tags assigned5Unreviewedagent-test-indexAzure AI Foundry Vector StoreVector DatabasesNo tags assigned3UnreviewedAgentVectorStore_12841Azure AI Foundry Vector StoreVector DatabasesNo tags assigned5UnreviewedItems per page:251 to 25 of 282 items",
+  "status": "success"
+}

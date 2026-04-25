@@ -1,0 +1,133 @@
+{
+  "url": "https://prod.alltrue-be.com/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8",
+  "path": "/ai-inventory",
+  "title": "Varonis",
+  "friendly_name": "AI Inventory",
+  "nav_section": "ai_inventory",
+  "breadcrumbs": [],
+  "nav_items": [
+    {
+      "label": "AI 360",
+      "href": "/ai-360?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Inventory",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Usage",
+      "href": "/ai-usage/overview?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Red Team",
+      "href": "/ai-red-team?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI SPM",
+      "href": "/spm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Runtime",
+      "href": "/ai-gateway?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI MCP",
+      "href": "/mcp/catalog?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Investigation",
+      "href": "/ai-monitor?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Compliance",
+      "href": "/ai-compliance?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI TPRM",
+      "href": "/ai-tprm?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "AI Incidents",
+      "href": "/ai-incidents?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Dashboard",
+      "href": "/ai-inventory?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Technologies",
+      "href": "/ai-inventory/technologies?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Configuration",
+      "href": "/ai-inventory/configuration?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Issues",
+      "href": "/ai-inventory/issues?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    },
+    {
+      "label": "Report",
+      "href": "/ai-inventory/report?organization=82d61b63-ca61-4705-b62d-02266001c6bc&project=28c96091-b86b-438f-b702-7f2f368423d8"
+    }
+  ],
+  "headings": [
+    {
+      "level": "h1",
+      "text": "AI Inventory"
+    },
+    {
+      "level": "h3",
+      "text": "AI Asset Landscape"
+    },
+    {
+      "level": "h3",
+      "text": "AI Resources in Inventory"
+    },
+    {
+      "level": "h3",
+      "text": "AI PaaS Inventory 6 Technologies View All"
+    },
+    {
+      "level": "h3",
+      "text": "AI Model Inventory 17 Technologies View All"
+    },
+    {
+      "level": "h3",
+      "text": "AI Software Inventory 47 Technologies View All"
+    },
+    {
+      "level": "h3",
+      "text": "AI Service Inventory 4 Technologies View All"
+    },
+    {
+      "level": "h3",
+      "text": "Data and Development Resources 13 Technologies View All"
+    },
+    {
+      "level": "h3",
+      "text": "Agentic Inventory 12 Technologies View All"
+    }
+  ],
+  "buttons": [
+    "AllTrue Demos Wikipedia Research Agent",
+    "Open menu",
+    "Search",
+    "Notification Preferences",
+    "User Profile and Settings",
+    "129",
+    "98",
+    "13",
+    "154",
+    "80",
+    "30",
+    "16",
+    "12",
+    "11",
+    "55"
+  ],
+  "tabs": [],
+  "body_text": "AI InventoryAI Asset Landscape87+ 37AI Technologies2206+ 1378AI Resources2177+ 1349Unreviewed AI Resources14+ 14Unapproved AI Resources4Linked Cloud AccountsAI Resources in InventoryFeb 01Mar 01Apr 0105001000150020002500AI Agent1148Model Artifacts252Cloud Platform Inventory247Datasets220AI Services72AI Software70Closed Source Models53Jupyter Notebook45Vector Databases28AI Models25LLM Endpoint16Chatbots16AI Pipeline12Guardrail Integration2AI PaaS Inventory6 TechnologiesView AllTechnologyResourcesOrg. UsageReview StatusAzure AI Foundry1291UnreviewedAmazon SageMakerMachine Learning & AI981UnreviewedAzure Machine LearningMachine Learning & AI131UnreviewedAmazon S3Storage41UnreviewedAzure Blob Storage21UnreviewedAmazon TextractMachine Learning & AI11UnreviewedAI Model Inventory17 TechnologiesView AllTechnologyResourcesOrg. UsageReview StatusML FileMachine Learning & AI1541UnapprovedML ArtifactMachine Learning & AI801UnreviewedOpenAI Enterprise ModelMachine Learning & AI301UnreviewedMachine Learning Model PackageMachine Learning & AI161UnreviewedAzure OpenAI ModelMachine Learning & AI121UnreviewedAzure OpenAI111UnreviewedML ModelcardMachine Learning & AI111UnreviewedAmazon SageMakerMachine Learning & AI91UnreviewedOpenAI EndpointMachine Learning & AI61UnreviewedAzure OpenAI EndpointMachine Learning & AI51UnreviewedAzure Machine LearningMachine Learning & AI41UnapprovedGoogle AI EndpointMachine Learning & AI41UnreviewedHuggingFace ML ModelMachine Learning & AI31UnreviewedLiteLLMGuardrail21ApprovedDistilBERT ML ModelMachine Learning & AI11UnreviewedGoogle ML ModelMachine Learning & AI11UnreviewedCustom LLM EndpointMachine Learning & AI11ApprovedAI Software Inventory47 TechnologiesView AllTechnologyResourcesOrg. UsageReview Statusscikit-learnLibrary21UnreviewedTransformersLibrary21UnreviewedTensorFlow .NETLibrary11UnreviewedLightGBMLibrary11UnreviewedMatplotlibLibrary11UnreviewedAzure Cognitive Services \u2013 Computer VisionLibrary11UnreviewedCatBoostLibrary11Unreviewedboto3Library11UnreviewedMicrosoft.MLLibrary11UnreviewedMLflowLibrary11UnreviewedNLTKLibrary11UnreviewedNumPyLibrary11UnreviewedNumpy.NETLibrary11UnreviewedNumSharpLibrary11UnreviewedOpenAILibrary11UnreviewedH2OLibrary11UnreviewedAutoGPTLibrary11UnreviewedDeepLearning4JLibrary11UnreviewedEncogLibrary11UnreviewedTensorFlow JavaLibrary11UnreviewedTribuoLibrary11UnreviewedpandasLibrary11UnreviewedAnythingLLMLibrary11UnreviewedAllenNLPLibrary11UnreviewedAlbumentationsLibrary11UnreviewedspaCyLibrary11UnreviewedStreamlitLibrary11UnreviewedTextBlobLibrary11UnreviewedTorchServeLibrary11UnreviewedTorchSharpLibrary11UnreviewedXGBoostLibrary11UnreviewedONNX Runtime JavaLibrary11UnreviewedNeurophLibrary11UnreviewedSmileLibrary11UnreviewedStanford CoreNLPLibrary11UnreviewedFastAPILibrary11UnreviewedArrowLibrary11UnreviewedLoaderLibrary11UnreviewedGoPickleLibrary11UnreviewedTensorLibrary11UnreviewedTextLibrary11UnreviewedGraphvizLibrary11Unreviewedhuggingface_hubLibrary11UnreviewedClearMLLibrary11UnreviewedKe",
+  "navigation_description": "UI Location: AI Inventory\nURL Path: /ai-inventory\nPage Title: Varonis\nAction buttons: AllTrue Demos Wikipedia Research Agent, Open menu, Search, Notification Preferences, User Profile and Settings, 129, 98, 13, 154, 80\n\n# AI Inventory\n### AI Asset Landscape\n### AI Resources in Inventory\n### AI PaaS Inventory 6 Technologies View All\n### AI Model Inventory 17 Technologies View All\n### AI Software Inventory 47 Technologies View All\n### AI Service Inventory 4 Technologies View All\n### Data and Development Resources 13 Technologies View All\n### Agentic Inventory 12 Technologies View All\n\nAI InventoryAI Asset Landscape87+ 37AI Technologies2206+ 1378AI Resources2177+ 1349Unreviewed AI Resources14+ 14Unapproved AI Resources4Linked Cloud AccountsAI Resources in InventoryFeb 01Mar 01Apr 0105001000150020002500AI Agent1148Model Artifacts252Cloud Platform Inventory247Datasets220AI Services72AI Software70Closed Source Models53Jupyter Notebook45Vector Databases28AI Models25LLM Endpoint16Chatbots16AI Pipeline12Guardrail Integration2AI PaaS Inventory6 TechnologiesView AllTechnologyResourcesOrg. UsageReview StatusAzure AI Foundry1291UnreviewedAmazon SageMakerMachine Learning & AI981UnreviewedAzure Machine LearningMachine Learning & AI131UnreviewedAmazon S3Storage41UnreviewedAzure Blob Storage21UnreviewedAmazon TextractMachine Learning & AI11UnreviewedAI Model Inventory17 TechnologiesView AllTechnologyResourcesOrg. UsageReview StatusML FileMachine Learning & AI1541UnapprovedML ArtifactMachine Learning & AI801UnreviewedOpenAI Enterprise ModelMachine Learning & AI301UnreviewedMachine Learning Model PackageMachine Learning & AI161UnreviewedAzure OpenAI ModelMachine Learning & AI121UnreviewedAzure OpenAI111UnreviewedML ModelcardMachine Learning & AI111UnreviewedAmazon SageMakerMachine Learning & AI91UnreviewedOpenAI EndpointMachine Learning & AI61UnreviewedAzure OpenAI EndpointMachine Learning & AI51UnreviewedAzure Machine LearningMachine Learning & AI41UnapprovedGoogle AI EndpointMachine Learning & AI41UnreviewedHuggingFace ML ModelMachine Learning & AI31UnreviewedLiteLLMGuardrail21ApprovedDistilBERT ML ModelMachine Learning & AI11UnreviewedGoogle ML ModelMachine Learning & AI11UnreviewedCustom LLM EndpointMachine Learning & AI11ApprovedAI Software Inventory47 TechnologiesView AllTechnologyResourcesOrg. UsageReview Statusscikit-learnLibrary21UnreviewedTransformersLibrary21UnreviewedTensorFlow .NETLibrary11UnreviewedLightGBMLibrary11UnreviewedMatplotlibLibrary11UnreviewedAzure Cognitive Services \u2013 Computer VisionLibrary11UnreviewedCatBoostLibrary11Unreviewedboto3Library11UnreviewedMicrosoft.MLLibrary11UnreviewedMLflowLibrary11UnreviewedNLTKLibrary11UnreviewedNumPyLibrary11UnreviewedNumpy.NETLibrary11UnreviewedNumSharpLibrary11UnreviewedOpenAILibrary11UnreviewedH2OLibrary11UnreviewedAutoGPTLibrary11UnreviewedDeepLearning4JLibrary11UnreviewedEncogLibrary11UnreviewedTensorFlow JavaLibrary11UnreviewedTribuoLibrary11UnreviewedpandasLibrary11UnreviewedAnythingLLMLibrary11UnreviewedAllenNLPLibrary11UnreviewedAlbumentationsLibrary11UnreviewedspaCyLibrary11UnreviewedStreamlitLibrary11UnreviewedTextBlobLibrary11UnreviewedTorchServeLibrary11UnreviewedTorchSharpLibrary11UnreviewedXGBoostLibrary11UnreviewedONNX Runtime JavaLibrary11UnreviewedNeurophLibrary11UnreviewedSmileLibrary11UnreviewedStanford CoreNLPLibrary11UnreviewedFastAPILibrary11UnreviewedArrowLibrary11UnreviewedLoaderLibrary11UnreviewedGoPickleLibrary11UnreviewedTensorLibrary11UnreviewedTextLibrary11UnreviewedGraphvizLibrary11Unreviewedhuggingface_hubLibrary11UnreviewedClearMLLibrary11UnreviewedKe",
+  "status": "success"
+}
