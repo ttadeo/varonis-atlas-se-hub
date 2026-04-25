@@ -14,7 +14,10 @@ export async function POST(req: NextRequest) {
 
   const upstream = await fetch(N8N_APPLY_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-atlas-secret": process.env.N8N_WEBHOOK_SECRET ?? "",
+    },
     body: JSON.stringify(body),
   });
 

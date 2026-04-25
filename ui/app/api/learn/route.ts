@@ -1,23 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const N8N_DISCOVER_URL =
-  process.env.N8N_DEMO_DISCOVER_URL ??
-  "https://ttadeo.app.n8n.cloud/webhook/atlas-demo-provisioning";
+const N8N_LEARN_URL =
+  process.env.N8N_WEBHOOK_URL ??
+  "https://ttadeo.app.n8n.cloud/webhook/atlas-rag-query";
 
 export async function POST(req: NextRequest) {
-  const { use_case, industry, meeting_type } = await req.json();
+  const body = await req.json();
 
-  if (!use_case?.trim()) {
-    return NextResponse.json({ error: "use_case is required" }, { status: 400 });
-  }
-
-  const upstream = await fetch(N8N_DISCOVER_URL, {
+  const upstream = await fetch(N8N_LEARN_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "x-atlas-secret": process.env.N8N_WEBHOOK_SECRET ?? "",
     },
-    body: JSON.stringify({ use_case, industry, meeting_type }),
+    body: JSON.stringify(body),
   });
 
   const data = await upstream.json();

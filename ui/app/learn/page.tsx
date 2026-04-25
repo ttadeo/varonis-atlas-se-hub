@@ -5,7 +5,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
 
-const N8N_WEBHOOK = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL!;
+const N8N_WEBHOOK = "/api/learn";
 
 type LearningStyle = "visual" | "reading" | "voice";
 

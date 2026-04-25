@@ -28,6 +28,19 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Rate limit: max 3 requests per email per 10 minutes
+  const rateLimitKey = `ratelimit:${normalized}`;
+  const attempts = await redis.incr(rateLimitKey);
+  if (attempts === 1) {
+    await redis.expire(rateLimitKey, 600);
+  }
+  if (attempts > 3) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait 10 minutes before trying again." },
+      { status: 429 }
+    );
+  }
+
   const code = generateOTP();
 
   // Store with 10 minute TTL
