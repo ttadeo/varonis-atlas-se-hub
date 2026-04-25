@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import neo4j from "neo4j-driver";
+import { jwtVerify } from "jose";
 
 const COOKIE_NAME = "atlas_session";
 
-function getUserId(req: NextRequest): string | null {
+async function getUserId(req: NextRequest): Promise<string | null> {
   const cookie = req.cookies.get(COOKIE_NAME)?.value;
   if (!cookie) return null;
   try {
-    const decoded = atob(cookie);
-    return decoded.split(":")[0] || null;
+    const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
+    const { payload } = await jwtVerify(cookie, secret);
+    return (payload.email as string) ?? null;
   } catch {
     return null;
   }
@@ -26,7 +28,7 @@ function getDriver() {
 }
 
 export async function GET(req: NextRequest) {
-  const userId = getUserId(req);
+  const userId = await getUserId(req);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const driver = getDriver();
@@ -61,7 +63,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const userId = getUserId(req);
+  const userId = await getUserId(req);
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { learningStyle, voiceEnabled, voiceAutoplay, judgeEnabled, completedLessons } = await req.json();
