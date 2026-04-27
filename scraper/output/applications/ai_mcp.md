@@ -1,6 +1,6 @@
 ---
 title: AI MCP
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_mcp
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_mcp
 section: applications
 ---
 

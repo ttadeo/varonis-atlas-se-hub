@@ -1,6 +1,6 @@
 ---
 title: AI Inventory
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_inventory
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_inventory
 section: applications
 ---
 
@@ -48,6 +48,8 @@ Once the roles are created and your AWS account is linked, click Test Connection
 To complete this through the GUI, open one tab with your AWS account and another with the system, then click the Create Role button. Alternatively, you can download the CloudFormation script and run it from the AWS CLI.
 
 You can either connect to an Azure account and add all your subscriptions or you can add only certain subscriptions. In either case the system will provide a command that you can copy to be run within your Azure account using azure-cli. See the screen in Cloud Accounts.
+**Copilot Studio note:**
+Discovery of Copilot Studio resources requires additional permissions in **Power Platform** beyond the cloud account connection. To complete setup, add the Varonis enterprise application as an **Application User** in the target Power Platform environment and assign the required role. See **Platform Services &gt; Integrations** for step-by-step instructions.
 Create a service account with the Viewer role in your Google Cloud account. Within Google Cloud, navigate to IAM &amp; Admin and select Service Accounts. Click + CREATE SERVICE ACCOUNT and enter a name and ID. Add the Viewer role from the predefined basic roles. In the service accounts list, select the three dots under Actions and click Manage keys. Create a service account key and, when prompted, choose a JSON key.
 Download the generated key and copy this into the API Credentials field along with the account name you selected.
 Follow IBM instructions for more details [here](https://dataplatform.cloud.ibm.com/docs/content/wsj/admin/admin-apikeys.html?context=wx&amp;audience=wdp). You need to create a Service ID and give it access to the project:

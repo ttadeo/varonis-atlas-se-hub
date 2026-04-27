@@ -1,6 +1,6 @@
 ---
 title: AI TPRM
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_tprm
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_tprm
 section: applications
 ---
 

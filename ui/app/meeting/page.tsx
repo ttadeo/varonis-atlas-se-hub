@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -136,6 +137,7 @@ export default function MeetingPage() {
   const [savedSessions, setSavedSessions] = useState<SavedSession[]>([]);
   const [showSessionsDrawer, setShowSessionsDrawer] = useState(false);
   const [loadingSessions, setLoadingSessions] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState<"sessions" | "scripts">("sessions");
   const [sessionScripts, setSessionScripts] = useState<Message[]>([]);
 
@@ -1028,8 +1030,16 @@ export default function MeetingPage() {
             <span className="text-xs px-2 py-1 rounded-full bg-orange-900 text-orange-300 font-medium">
               SE Tool
             </span>
+            <button
+              onClick={() => setHelpOpen(true)}
+              className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
+              title="Help"
+            >
+              ?
+            </button>
           </div>
         </header>
+        <HelpPanel page="meeting" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
         {/* Chat messages */}
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">

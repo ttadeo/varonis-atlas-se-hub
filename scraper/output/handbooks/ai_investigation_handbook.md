@@ -1,6 +1,6 @@
 ---
 title: AI Investigation Handbook
-url: https://playground.alltrue-be.com/_docs/docs/handbooks/ai_investigation_handbook
+url: https://prod.alltrue-be.com/_docs/docs/handbooks/ai_investigation_handbook
 section: handbooks
 ---
 

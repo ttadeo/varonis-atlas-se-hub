@@ -1,6 +1,6 @@
 ---
 title: Platform and Applications Overview
-url: https://playground.alltrue-be.com/_docs/docs/overview/platform_and_applications#
+url: https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#
 section: overview
 ---
 

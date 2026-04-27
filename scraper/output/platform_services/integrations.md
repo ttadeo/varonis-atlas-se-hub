@@ -1,6 +1,6 @@
 ---
 title: Integrations
-url: https://playground.alltrue-be.com/_docs/docs/platform_services/integration
+url: https://prod.alltrue-be.com/_docs/docs/platform_services/integration
 section: platform_services
 ---
 
@@ -62,6 +62,10 @@ To set up API access:
 - Click on Permissions.
 - Review the permissions the system is asking of you and click on "Grant admin consent for {tenant}". Click Accept.
 
+### Microsoft Copilot Studio Discovery[​](#microsoft-copilot-studio-discovery)
+To enable Copilot Studio Discovery, you must manually register the Varonis AISec enterprise application as an Application User in your Power Platform environment. This one-time setup grants the application the necessary permissions (Service Reader role) to access your environment's data through Microsoft Dataverse.
+
+[Guide to Adding Enterprise Applications as Application Users in Power Platform](/_docs/files/varonis-power-platform-enterprise-apps.pdf)
 ### Cloudflare LogPush Integration[​](#cloudflare-logpush-integration)
 Receive HTTP and DNS access events from Cloudflare using inbound integrations:
 
@@ -341,4 +345,4 @@ At this point the system will synchronize with your watsonx.governance system. S
 - Updates to models made in the system will be synced to watsonx.governance as long as watsonx.governance users have not updated data within watsonx.governance. If they have, the synchronization will treat watsonx.governance as the master record and will no longer push updates from the system, so as not to overwrite changes made within watsonx.governance.
 
 If you want to disconnect the two systems, you can delete the integration. Note that this does not delete resources already synced to watsonx.governance, but you can click Delete All Resources to remove all previously synced resources from watsonx.governance.
-[PreviousAdmin Console](/_docs/docs/platform_services/admin_console)[NextData Encryption and Key Management](/_docs/docs/platform_services/encryption)- [Outbound Integration](#outbound-integration)- [Inbound Integration](#inbound-integration)- [API Integration](#api-integration)[Microsoft Co-Pilot API Setup](#microsoft-co-pilot-api-setup)- [Cloudflare LogPush Integration](#cloudflare-logpush-integration)- [Watsonx.Governance Integration](#watsonxgovernance-integration)
+[PreviousAdmin Console](/_docs/docs/platform_services/admin_console)[NextData Encryption and Key Management](/_docs/docs/platform_services/encryption)- [Outbound Integration](#outbound-integration)- [Inbound Integration](#inbound-integration)- [API Integration](#api-integration)[Microsoft Co-Pilot API Setup](#microsoft-co-pilot-api-setup)- [Microsoft Copilot Studio Discovery](#microsoft-copilot-studio-discovery)- [Cloudflare LogPush Integration](#cloudflare-logpush-integration)- [Watsonx.Governance Integration](#watsonxgovernance-integration)

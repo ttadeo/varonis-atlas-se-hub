@@ -1,6 +1,6 @@
 ---
 title: Architecture Overview
-url: https://playground.alltrue-be.com/_docs/docs/overview/architecture
+url: https://prod.alltrue-be.com/_docs/docs/overview/architecture
 section: overview
 ---
 

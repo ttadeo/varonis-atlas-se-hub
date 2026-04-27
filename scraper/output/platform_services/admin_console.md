@@ -1,6 +1,6 @@
 ---
 title: Admin Console
-url: https://playground.alltrue-be.com/_docs/docs/platform_services/admin_console
+url: https://prod.alltrue-be.com/_docs/docs/platform_services/admin_console
 section: platform_services
 ---
 

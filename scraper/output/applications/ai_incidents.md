@@ -1,6 +1,6 @@
 ---
 title: AI Incidents
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_incidents
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_incidents
 section: applications
 ---
 

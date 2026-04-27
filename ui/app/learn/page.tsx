@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 const N8N_WEBHOOK = "/api/learn";
 
@@ -548,6 +549,7 @@ export default function LearnPage() {
   // LLM Judge
   const [judgeEnabled, setJudgeEnabled] = useState(false);
   const [judging, setJudging] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [judgeResults, setJudgeResults] = useState<Record<number, JudgeResult>>({});
   const [judgePassed, setJudgePassed] = useState<Set<number>>(new Set());
 
@@ -967,16 +969,26 @@ export default function LearnPage() {
               {currentLesson ? "Read the lesson, then answer the check question to continue" : "Select a lesson from the sidebar to begin"}
             </p>
           </div>
-          {currentLesson && (
-            <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-              currentLesson.tier === "beginner" ? "bg-blue-900 text-blue-300" :
-              currentLesson.tier === "intermediate" ? "bg-yellow-900 text-yellow-300" :
-              "bg-purple-900 text-purple-300"
-            }`}>
-              {currentLesson.tier.charAt(0).toUpperCase() + currentLesson.tier.slice(1)}
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {currentLesson && (
+              <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                currentLesson.tier === "beginner" ? "bg-blue-900 text-blue-300" :
+                currentLesson.tier === "intermediate" ? "bg-yellow-900 text-yellow-300" :
+                "bg-purple-900 text-purple-300"
+              }`}>
+                {currentLesson.tier.charAt(0).toUpperCase() + currentLesson.tier.slice(1)}
+              </span>
+            )}
+            <button
+              onClick={() => setHelpOpen(true)}
+              className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
+              title="Help"
+            >
+              ?
+            </button>
+          </div>
         </header>
+        <HelpPanel page="learn" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
           {!activeLesson && (

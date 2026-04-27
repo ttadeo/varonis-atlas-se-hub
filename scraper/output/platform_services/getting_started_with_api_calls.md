@@ -1,6 +1,6 @@
 ---
 title: Getting Started with API Calls
-url: https://playground.alltrue-be.com/_docs/docs/platform_services/api
+url: https://prod.alltrue-be.com/_docs/docs/platform_services/api
 section: platform_services
 ---
 
@@ -93,4 +93,4 @@ api = f"/v1/admin/auth0-customer/{CUSTOMER_ID}/users"
 response = make_api_request(api, token=JWT_TOKEN, method="GET")
 print(json.dumps(response, indent=2))
 
-```[PreviousData Encryption and Key Management](/_docs/docs/platform_services/encryption)[NextLiteLLM Proxy Integration](/_docs/docs/platform_services/litellm)- [Preparation](#preparation)[Create the API Role](#create-the-api-role)- [Create API Key](#create-api-key)- [Sample Execution Using Python](#sample-execution-using-python)
+```[PreviousData Encryption and Key Management](/_docs/docs/platform_services/encryption)[NextAWS Bedrock](/_docs/docs/providers/aws_bedrock)- [Preparation](#preparation)[Create the API Role](#create-the-api-role)- [Create API Key](#create-api-key)- [Sample Execution Using Python](#sample-execution-using-python)

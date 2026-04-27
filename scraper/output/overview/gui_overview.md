@@ -1,6 +1,6 @@
 ---
 title: GUI Overview
-url: https://playground.alltrue-be.com/_docs/docs/overview/gui_navigation
+url: https://prod.alltrue-be.com/_docs/docs/overview/gui_navigation
 section: overview
 ---
 

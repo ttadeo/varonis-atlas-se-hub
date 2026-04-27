@@ -1,6 +1,6 @@
 ---
 title: AI Usage
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_usage
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_usage
 section: applications
 ---
 

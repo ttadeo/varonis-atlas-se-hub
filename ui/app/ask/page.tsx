@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 
 interface Message {
@@ -16,6 +17,7 @@ export default function AskPage() {
   const [history, setHistory] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -74,7 +76,17 @@ export default function AskPage() {
           <h1 className="font-semibold text-white">Ask Atlas</h1>
           <p className="text-xs text-gray-400">Free-form Q&A — Atlas AI Security Platform</p>
         </div>
+        <div className="ml-auto">
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
+            title="Help"
+          >
+            ?
+          </button>
+        </div>
       </header>
+      <HelpPanel page="ask" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
         {messages.length === 0 && (

@@ -1,6 +1,6 @@
 ---
 title: AI Runtime Protection
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_gateway
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_gateway
 section: applications
 ---
 

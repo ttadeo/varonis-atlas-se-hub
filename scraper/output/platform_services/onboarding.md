@@ -1,6 +1,6 @@
 ---
 title: Onboarding
-url: https://playground.alltrue-be.com/_docs/docs/platform_services/onboarding
+url: https://prod.alltrue-be.com/_docs/docs/platform_services/onboarding
 section: platform_services
 ---
 

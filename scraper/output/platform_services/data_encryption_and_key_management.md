@@ -1,6 +1,6 @@
 ---
 title: Data Encryption and Key Management
-url: https://playground.alltrue-be.com/_docs/docs/platform_services/encryption
+url: https://prod.alltrue-be.com/_docs/docs/platform_services/encryption
 section: platform_services
 ---
 

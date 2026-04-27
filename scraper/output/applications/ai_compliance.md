@@ -1,6 +1,6 @@
 ---
 title: AI Compliance
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_compliance
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_compliance
 section: applications
 ---
 

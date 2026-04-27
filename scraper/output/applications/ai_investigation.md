@@ -1,6 +1,6 @@
 ---
 title: AI Investigation
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_monitor
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_monitor
 section: applications
 ---
 

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -109,6 +110,7 @@ export default function DemoPage() {
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
   const [applied, setApplied] = useState<ApplyResult | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   // ── Step 1: Discover ────────────────────────────────────────────────────────
 
@@ -225,8 +227,16 @@ export default function DemoPage() {
           <span className={step === "applied" ? "text-white font-medium" : ""}>
             3. Provisioned
           </span>
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="ml-2 w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
+            title="Help"
+          >
+            ?
+          </button>
         </div>
       </header>
+      <HelpPanel page="demo" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <main className="flex-1 overflow-y-auto px-6 py-8">
         <div className="max-w-3xl mx-auto">

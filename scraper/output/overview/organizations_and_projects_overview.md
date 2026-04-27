@@ -1,6 +1,6 @@
 ---
 title: Organizations and Projects Overview
-url: https://playground.alltrue-be.com/_docs/docs/overview/orgs_and_projects
+url: https://prod.alltrue-be.com/_docs/docs/overview/orgs_and_projects
 section: overview
 ---
 

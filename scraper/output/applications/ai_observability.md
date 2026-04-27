@@ -1,6 +1,6 @@
 ---
 title: AI Observability
-url: https://playground.alltrue-be.com/_docs/docs/applications/ai_observability
+url: https://prod.alltrue-be.com/_docs/docs/applications/ai_observability
 section: applications
 ---
 
