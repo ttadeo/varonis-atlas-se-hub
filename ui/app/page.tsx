@@ -83,19 +83,31 @@ export default function Home() {
             </Link>
           </div>
 
-          <Link
-            href="/analytics"
-            className="block bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-purple-500 rounded-2xl p-6 transition-all group"
-          >
-            <div className="flex items-center gap-4">
-              <div className="text-3xl">📊</div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-white mb-1">Interaction Analytics</h3>
-                <p className="text-sm text-gray-400">Session trends, answer quality scores, knowledge base gaps by industry and meeting type.</p>
-              </div>
-              <p className="text-xs text-purple-400 group-hover:text-purple-300 shrink-0">View dashboard →</p>
-            </div>
-          </Link>
+          <div className="grid grid-cols-2 gap-4">
+            <Link
+              href="/resources"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-amber-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="text-3xl mb-3">📁</div>
+              <h3 className="font-semibold text-white mb-1">Resource Library</h3>
+              <p className="text-sm text-gray-400">
+                Competitive decks, case studies, datasheets, and Field Friday Q&A from Highspot.
+              </p>
+              <p className="text-xs text-amber-400 mt-4 group-hover:text-amber-300">
+                Browsable · Searchable →
+              </p>
+            </Link>
+
+            <Link
+              href="/analytics"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-purple-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="text-3xl mb-3">📊</div>
+              <h3 className="font-semibold text-white mb-1">Interaction Analytics</h3>
+              <p className="text-sm text-gray-400">Session trends, answer quality scores, knowledge base gaps by industry and meeting type.</p>
+              <p className="text-xs text-purple-400 mt-4 group-hover:text-purple-300">View dashboard →</p>
+            </Link>
+          </div>
         </div>
       </main>
     </div>

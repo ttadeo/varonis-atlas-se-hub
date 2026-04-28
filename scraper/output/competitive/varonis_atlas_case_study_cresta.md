@@ -6,239 +6,28 @@ section: competitive
 
 # Varonis Atlas Case Study - Cresta
 
-The links in this menu move focus to different parts of the page. To navigate within this menu, use the arrow keys. To exit this menu press the escape key or tab key.
-Press OPT + / to open this menu
-Press OPT + / to open this menu
-Skip to Content
-Skip to Info Panel
-Skip to Header
-Varonis Atlas Case Study - Cresta
-Sales Collateral
-PDF
-Added 2 weeks ago
-Share Externally
-0/0
-Slide
-1
-(Current Slide)
-Slide
-2
-(Current Slide)
-Slide
-3
-(Current Slide)
-1 of 3
-ZOOM
 CUSTOMER PROFILE
 
 CRESTA’S
 
-PLATFORM NEEDS
-AI for CX
+PLATFORM NEEDS AI for CX Customer experience frontier AI company 400+ Employees serving dozens of Fortune 500 and enterprise organizations
 
-Customer experience frontier
+$1.6B Valuation grounded in AI solutions
 
-AI company
+INTRODUCTION Cresta, a leader in generative AI solutions for contact centers, recognized the need for a robust AI security and compliance framework to maintain its competitive edge and build trust with its customers. By partnering with Varonis, Cresta implemented cutting-edge AI Trust, Risk, and Security Management (TRiSM) capabilities, enabling them to rapidly achieve ISO 42001 compliance and solidify their position as the most secure and trustworthy AI platform in their industry.
 
-400+
-
-Employees serving dozens of
-
-Fortune 500 and enterprise
-
-organizations
-
-$1.6B
-
-Valuation grounded in AI solutions
-
-INTRODUCTION
-
-Cresta, a leader in generative AI solutions for contact centers,
-
-recognized the need for a robust AI security and compliance framework
-
-to maintain its competitive edge and build trust with its customers. By
-
-partnering with Varonis, Cresta implemented cutting-edge AI Trust,
-
-Risk, and Security Management (TRiSM) capabilities, enabling them to
-
-rapidly achieve ISO 42001 compliance and solidify their position as the
-
-most secure and trustworthy AI platform in their industry.
-
-CHALLENGE
-
-With Cresta's rapid growth and its reliance on AI for core offerings and
-
-technology
-, the company needed a way to secure its entire AI
-
-ecosystem. AI systems spanned customer-facing applications, internal
-
-agents, and foundational models securely trained on customer data.
-
-Cresta looked for a comprehensive set of tools to cover the entire
-
-TRiSM spectrum, from visibility and security posture management to
-
-compliance.
-
-See Varonis Atlas in action
+CHALLENGE With Cresta's rapid growth and its reliance on AI for core offerings and technology , the company needed a way to secure its entire AI ecosystem. AI systems spanned customer-facing applications, internal agents, and foundational models securely trained on customer data. Cresta looked for a comprehensive set of tools to cover the entire TRiSM spectrum, from visibility and security posture management to compliance. See Varonis Atlas in action
 
 HOW CRESTA ACHIEVED
 
-A BEST IN CLASS AI PLATFORM
-Continuously assess and mitigate
+A BEST IN CLASS AI PLATFORM Continuously assess and mitigate AI security risks Automate compliance with evolving AI regulations Provide real-time visibility into AI assets and security posture Deliver tangible proof of security and compliance to customers \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \
 
-AI security risks
-
-Automate compliance with
-
-evolving AI regulations
-
-Provide real-time visibility into AI
-
-assets and security posture
-
-Deliver tangible proof of security
-
-and compliance to customers
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
- 
-\
 THE SOLUTION
 
-AI RED TEAMING AND PENETRATION TESTING
+AI RED TEAMING AND PENETRATION TESTING Cresta leveraged Varonis Atlas’ AI red teaming and pentesting capabilities to validate their innovative AI chatbots and applications and mitigate potential security risks before they could be exploited. This rigorous testing process helped Cresta stay ahead of emerging threats and maintain a resilient AI infrastructure while at the same time prove to their customers that they offer the worldʼs best and safest solutions.
 
-Cresta leveraged Varonis Atlas’ AI red teaming and pentesting capabilities to validate their
+AI SECURITY POSTURE MANAGEMENT AND INVENTORY DISCOVERY To maintain continuous visibility into its AI resources, Cresta utilized Varonis Atlas’ real-time inventory discovery and AI security posture management features. These tools provided Cresta with an up-to-date catalog of all its AI assets, along with real-time security assessments and automated risk mitigation.
 
-innovative AI chatbots and applications and mitigate potential security risks before they could
+AUTOMATED COMPLIANCE AND ISO 42001 CERTIFICATION With AI regulations becoming increasingly complex, Cresta needed a solution that could simplify compliance and certification efforts. Varonis Atlas’ automated compliance capabilities helped Cresta to seamlessly align with regulatory requirements, ultimately making it the first company in its space to achieve ISO 42001 certification. The artifacts generated by the Atlas platform provided Cresta with the necessary documentation to demonstrate compliance and security excellence to regulators, auditors, and customers. www.varonis.com | 1.877.292.8767
 
-be exploited. This rigorous testing process helped Cresta stay ahead of emerging threats and
-
-maintain a resilient AI infrastructure while at the same time prove to their customers that they
-
-offer the worldʼs best and safest solutions.
-
-AI SECURITY POSTURE MANAGEMENT AND INVENTORY DISCOVERY
-
-To maintain continuous visibility into its AI resources, Cresta utilized Varonis Atlas’ real-time
-
-inventory discovery and AI security posture management features. These tools provided
-
-Cresta with an up-to-date catalog of all its AI assets, along with real-time security assessments
-
-and automated risk mitigation.
-
-AUTOMATED COMPLIANCE AND ISO 42001 CERTIFICATION
-
-With AI regulations becoming increasingly complex, Cresta needed a solution that could
-
-simplify compliance and certification efforts. Varonis Atlas’ automated compliance
-
-capabilities helped Cresta to seamlessly align with regulatory requirements, ultimately making
-
-it the first company in its space to achieve ISO 42001 certification. The artifacts generated by
-
-the Atlas platform provided Cresta with the necessary documentation to demonstrate
-
-compliance and security excellence to regulators, auditors, and customers.
-
-www.varonis.com | 1.877.292.8767
-
-TRY VARONIS FOR FREE.
-
-See how our cloud-native solution covers all your AI security needs.
-
-Get started today at
- 
-varonis.com/trial.
-Description
-This case study explains how an AI solutions provider for contact centers, Cresta, achieved ISO 42001 certification and overall AI security goals with Varonis, positioning itself as a leader in AI trustworthiness. The implementation of Varonis Atlas enabled continuous risk assessment, automated compliance, and proactive security management, ensuring customer confidence and a competitive edge in the industry.
-Details
-Viewed
-144
-times
-Downloaded
-22
-times
-Shared externally
-11
-times
-Reviews
-Write a Review
-Recommended
-Technical Overview — Varonis Atlas and ISO 42001
-Content type:
-PDF
-Added 1w
-Sales Slides — Varonis Atlas AI Security Platform
-Content type:
-PowerPoint
-Updated 2 weeks ago
-Varonis Atlas AI Security Platform
-Content type:
-Page
-Updated 1 week ago
-How a Pharmaceutical Company Turned to Varonis for DSPM
-Content type:
-PDF
-Updated 10 months ago
-Case Study - City of Lynnwood
-Content type:
-PDF
-Added 5m
-Blog — Varonis Launches Atlas to Secure AI and the Data That Powers It
-Content type:
-Web Link
-Added 4w
-Press Release — Varonis Launches Atlas to Secure AI and the Data That Powers It
-Content type:
-Web Link
-Added 4w
-Datasheet - Varonis Interceptor
-Content type:
-PDF
-Updated 2 months ago
+TRY VARONIS FOR FREE. See how our cloud-native solution covers all your AI security needs. Get started today at varonis.com/trial. Description This case study explains how an AI solutions provider for contact centers, Cresta, achieved ISO 42001 certification and overall AI security goals with Varonis, positioning itself as a leader in AI trustworthiness. The implementation of Varonis Atlas enabled continuous risk assessment, automated compliance, and proactive security management, ensuring customer confidence and a competitive edge in the industry. Details Viewed times Downloaded times Shared externally times Reviews Write a Review Recommended Technical Overview — Varonis Atlas and ISO 42001 Content type: Added 1w Sales Slides — Varonis Atlas AI Security Platform Content type: Varonis Atlas AI Security Platform Content type: Page How a Pharmaceutical Company Turned to Varonis for DSPM Content type: Case Study - City of Lynnwood Content type: Added 5m Blog — Varonis Launches Atlas to Secure AI and the Data That Powers It Content type: Web Link Added 4w Press Release — Varonis Launches Atlas to Secure AI and the Data That Powers It Content type: Web Link Added 4w Datasheet - Varonis Interceptor Content type:
