@@ -557,6 +557,14 @@ export default function LearnPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // Auto-resume last lesson after preferences load
+  useEffect(() => {
+    if (prefsLoaded && activeLesson && messages.length === 0 && learningStyle) {
+      startLesson(activeLesson);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefsLoaded]);
+
   // Load preferences on mount
   useEffect(() => {
     fetch("/api/preferences")
@@ -572,6 +580,9 @@ export default function LearnPage() {
         setJudgeEnabled(prefs.judgeEnabled ?? false);
         if (prefs.completedLessons?.length) {
           setCompleted(new Set(prefs.completedLessons as number[]));
+        }
+        if (prefs.activeLesson) {
+          setActiveLesson(prefs.activeLesson as number);
         }
         setPrefsLoaded(true);
       })
@@ -631,6 +642,13 @@ export default function LearnPage() {
     setHistory([]);
     setLoading(true);
     stopSpeaking();
+
+    // Persist the active lesson so returning to the page resumes here
+    fetch("/api/preferences", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activeLesson: lessonId }),
+    }).catch(() => {});
 
     const stylePrefix = learningStyle ? STYLE_PREFIXES[learningStyle] : "";
     const prompt = stylePrefix ? `${stylePrefix}\n\n${lesson.intro}` : lesson.intro;
