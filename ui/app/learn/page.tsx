@@ -557,21 +557,14 @@ export default function LearnPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  // Auto-resume last lesson after preferences load
-  useEffect(() => {
-    if (prefsLoaded && activeLesson && messages.length === 0 && learningStyle) {
-      startLesson(activeLesson);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [prefsLoaded]);
-
-  // Load preferences on mount
+  // Load preferences on mount — auto-resumes last lesson using fetched values directly
   useEffect(() => {
     fetch("/api/preferences")
       .then((r) => r.json())
       .then((prefs) => {
-        if (prefs.learningStyle) {
-          setLearningStyle(prefs.learningStyle as LearningStyle);
+        const style = prefs.learningStyle as LearningStyle | null;
+        if (style) {
+          setLearningStyle(style);
           setVoiceEnabled(prefs.voiceEnabled ?? false);
           setVoiceAutoplay(prefs.voiceAutoplay ?? false);
         } else {
@@ -581,12 +574,15 @@ export default function LearnPage() {
         if (prefs.completedLessons?.length) {
           setCompleted(new Set(prefs.completedLessons as number[]));
         }
-        if (prefs.activeLesson) {
+        if (prefs.activeLesson && style) {
           setActiveLesson(prefs.activeLesson as number);
+          // Call with fetched style directly — avoids stale closure on state
+          startLesson(prefs.activeLesson as number, style);
         }
         setPrefsLoaded(true);
       })
       .catch(() => setPrefsLoaded(true));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function savePrefs(style: LearningStyle, voice: boolean, autoplay: boolean, judge?: boolean) {
@@ -635,7 +631,7 @@ export default function LearnPage() {
     return res.json();
   }
 
-  async function startLesson(lessonId: number) {
+  async function startLesson(lessonId: number, styleOverride?: LearningStyle) {
     const lesson = LESSONS.find((l) => l.id === lessonId)!;
     setActiveLesson(lessonId);
     setMessages([]);
@@ -650,7 +646,8 @@ export default function LearnPage() {
       body: JSON.stringify({ activeLesson: lessonId }),
     }).catch(() => {});
 
-    const stylePrefix = learningStyle ? STYLE_PREFIXES[learningStyle] : "";
+    const effectiveStyle = styleOverride ?? learningStyle;
+    const stylePrefix = effectiveStyle ? STYLE_PREFIXES[effectiveStyle] : "";
     const prompt = stylePrefix ? `${stylePrefix}\n\n${lesson.intro}` : lesson.intro;
 
     try {
