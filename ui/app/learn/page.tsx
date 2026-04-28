@@ -574,10 +574,11 @@ export default function LearnPage() {
         if (prefs.completedLessons?.length) {
           setCompleted(new Set(prefs.completedLessons as number[]));
         }
-        if (prefs.activeLesson && style) {
-          setActiveLesson(prefs.activeLesson as number);
-          // Call with fetched style directly — avoids stale closure on state
-          startLesson(prefs.activeLesson as number, style);
+        // Restore last active lesson from localStorage (fast, reliable, no round-trip)
+        const savedLesson = parseInt(localStorage.getItem("atlas_active_lesson") ?? "", 10);
+        if (savedLesson && style) {
+          setActiveLesson(savedLesson);
+          startLesson(savedLesson, style);
         }
         setPrefsLoaded(true);
       })
@@ -639,12 +640,8 @@ export default function LearnPage() {
     setLoading(true);
     stopSpeaking();
 
-    // Persist the active lesson so returning to the page resumes here
-    fetch("/api/preferences", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ activeLesson: lessonId }),
-    }).catch(() => {});
+    // Persist active lesson to localStorage — instant, survives navigation
+    localStorage.setItem("atlas_active_lesson", String(lessonId));
 
     const effectiveStyle = styleOverride ?? learningStyle;
     const stylePrefix = effectiveStyle ? STYLE_PREFIXES[effectiveStyle] : "";
