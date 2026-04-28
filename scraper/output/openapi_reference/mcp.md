@@ -1,6 +1,6 @@
-# Atlas API — mcp
+# mcp API Endpoints
 
-## POST /v1/mcp/servers —  Create Mcp Server Config
+## POST /v1/mcp/servers -  Create Mcp Server Config
 
 **Endpoint**: `POST /v1/mcp/servers`
 **Summary**:  Create Mcp Server Config
@@ -8,16 +8,13 @@
 
 Register a new MCP server for discovery
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/mcp/servers —  Get Mcp Server Configs
+## GET /v1/mcp/servers -  Get Mcp Server Configs
 
 **Endpoint**: `GET /v1/mcp/servers`
 **Summary**:  Get Mcp Server Configs
@@ -41,7 +38,7 @@ List all MCP server configurations for the customer
 
 ---
 
-## GET /v1/mcp/servers/issues —  Get Mcp Issues
+## GET /v1/mcp/servers/issues -  Get Mcp Issues
 
 **Endpoint**: `GET /v1/mcp/servers/issues`
 **Summary**:  Get Mcp Issues
@@ -67,7 +64,7 @@ List all MCP related security issues (Drift, Shadow Servers, etc.)
 
 ---
 
-## GET /v1/mcp/servers/issues/{issue_id} —  Get Mcp Issue Detail
+## GET /v1/mcp/servers/issues/{issue_id} -  Get Mcp Issue Detail
 
 **Endpoint**: `GET /v1/mcp/servers/issues/{issue_id}`
 **Summary**:  Get Mcp Issue Detail
@@ -84,7 +81,7 @@ Get specific details for a given MCP issue
 
 ---
 
-## GET /v1/mcp/servers/{mcp_server_config_id} —  Get Mcp Server Config
+## GET /v1/mcp/servers/{mcp_server_config_id} -  Get Mcp Server Config
 
 **Endpoint**: `GET /v1/mcp/servers/{mcp_server_config_id}`
 **Summary**:  Get Mcp Server Config
@@ -101,7 +98,7 @@ Get MCP server configuration details
 
 ---
 
-## PATCH /v1/mcp/servers/{mcp_server_config_id} —  Update Mcp Server Config
+## PATCH /v1/mcp/servers/{mcp_server_config_id} -  Update Mcp Server Config
 
 **Endpoint**: `PATCH /v1/mcp/servers/{mcp_server_config_id}`
 **Summary**:  Update Mcp Server Config
@@ -112,16 +109,13 @@ Update MCP server configuration or rotate credentials
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/mcp/servers/{mcp_server_config_id} —  Delete Mcp Server Config
+## DELETE /v1/mcp/servers/{mcp_server_config_id} -  Delete Mcp Server Config
 
 **Endpoint**: `DELETE /v1/mcp/servers/{mcp_server_config_id}`
 **Summary**:  Delete Mcp Server Config
@@ -138,7 +132,7 @@ Delete MCP server configuration
 
 ---
 
-## POST /v1/mcp/servers/{mcp_server_config_id}/test-connection —  Test Mcp Connection
+## POST /v1/mcp/servers/{mcp_server_config_id}/test-connection -  Test Mcp Connection
 
 **Endpoint**: `POST /v1/mcp/servers/{mcp_server_config_id}/test-connection`
 **Summary**:  Test Mcp Connection
@@ -155,7 +149,7 @@ Test connection to the configured MCP server
 
 ---
 
-## POST /v1/mcp/servers/probe —  Probe Mcp Connection
+## POST /v1/mcp/servers/probe -  Probe Mcp Connection
 
 **Endpoint**: `POST /v1/mcp/servers/probe`
 **Summary**:  Probe Mcp Connection
@@ -163,16 +157,13 @@ Test connection to the configured MCP server
 
 Test connection using provided parameters without saving
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/mcp/servers/connection-dependency —  Create Mcp Server Access Dependency
+## POST /v1/mcp/servers/connection-dependency -  Create Mcp Server Access Dependency
 
 **Endpoint**: `POST /v1/mcp/servers/connection-dependency`
 **Summary**:  Create Mcp Server Access Dependency
@@ -180,16 +171,13 @@ Test connection using provided parameters without saving
 
 Create an ACCESSES dependency between an MCP connection and MCP server
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/mcp/servers/{mcp_server_config_id}/discover —  Run Mcp Discovery
+## POST /v1/mcp/servers/{mcp_server_config_id}/discover -  Run Mcp Discovery
 
 **Endpoint**: `POST /v1/mcp/servers/{mcp_server_config_id}/discover`
 **Summary**:  Run Mcp Discovery
@@ -206,7 +194,7 @@ Trigger manual discovery for this MCP server
 
 ---
 
-## GET /v1/mcp/servers/{mcp_server_config_id}/discovered-resources —  Get Mcp Server Discovered Resources
+## GET /v1/mcp/servers/{mcp_server_config_id}/discovered-resources -  Get Mcp Server Discovered Resources
 
 **Endpoint**: `GET /v1/mcp/servers/{mcp_server_config_id}/discovered-resources`
 **Summary**:  Get Mcp Server Discovered Resources
@@ -227,7 +215,7 @@ Get a paginated list of resources discovered by this MCP server
 
 ---
 
-## PATCH /v1/mcp/servers/resources/{resource_instance_id} —  Update Mcp Resource
+## PATCH /v1/mcp/servers/resources/{resource_instance_id} -  Update Mcp Resource
 
 **Endpoint**: `PATCH /v1/mcp/servers/resources/{resource_instance_id}`
 **Summary**:  Update Mcp Resource
@@ -237,9 +225,6 @@ Update user-defined fields for an MCP resource
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response

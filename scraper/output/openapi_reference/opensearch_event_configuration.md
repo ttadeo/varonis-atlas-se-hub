@@ -1,6 +1,6 @@
-# Atlas API — opensearch_event_configuration
+# opensearch_event_configuration API Endpoints
 
-## GET /v1/opensearch_event_configuration/customer/{customer_id}/configurations — Get Opensearch Configurations
+## GET /v1/opensearch_event_configuration/customer/{customer_id}/configurations - Get Opensearch Configurations
 
 **Endpoint**: `GET /v1/opensearch_event_configuration/customer/{customer_id}/configurations`
 **Summary**: Get Opensearch Configurations
@@ -18,7 +18,7 @@
 
 ---
 
-## POST /v1/opensearch_event_configuration/customer/{customer_id}/configuration — Add Opensearch Configuration
+## POST /v1/opensearch_event_configuration/customer/{customer_id}/configuration - Add Opensearch Configuration
 
 **Endpoint**: `POST /v1/opensearch_event_configuration/customer/{customer_id}/configuration`
 **Summary**: Add Opensearch Configuration
@@ -27,16 +27,13 @@
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/opensearch_event_configuration/customer/{customer_id}/configurations/{configuration_id} — Patch Opensearch Configuration
+## PATCH /v1/opensearch_event_configuration/customer/{customer_id}/configurations/{configuration_id} - Patch Opensearch Configuration
 
 **Endpoint**: `PATCH /v1/opensearch_event_configuration/customer/{customer_id}/configurations/{configuration_id}`
 **Summary**: Patch Opensearch Configuration
@@ -46,16 +43,13 @@
 - `customer_id` (path, required): 
 - `configuration_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/opensearch_event_configuration/customer/{customer_id}/configurations/{configuration_id} — Delete Opensearch Configuration
+## DELETE /v1/opensearch_event_configuration/customer/{customer_id}/configurations/{configuration_id} - Delete Opensearch Configuration
 
 **Endpoint**: `DELETE /v1/opensearch_event_configuration/customer/{customer_id}/configurations/{configuration_id}`
 **Summary**: Delete Opensearch Configuration

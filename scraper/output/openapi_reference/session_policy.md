@@ -1,6 +1,6 @@
-# Atlas API — session-policy
+# session-policy API Endpoints
 
-## GET /v1/session-policy/rules — Get Session Policy Rules
+## GET /v1/session-policy/rules - Get Session Policy Rules
 
 **Endpoint**: `GET /v1/session-policy/rules`
 **Summary**: Get Session Policy Rules
@@ -13,7 +13,7 @@ Return all session-type firewall rule definitions.
 
 ---
 
-## GET /v1/session-policy/configs — Get Session Policy Configs
+## GET /v1/session-policy/configs - Get Session Policy Configs
 
 **Endpoint**: `GET /v1/session-policy/configs`
 **Summary**: Get Session Policy Configs
@@ -32,7 +32,7 @@ Return resolved session policy configs including disabled ones.
 
 ---
 
-## POST /v1/session-policy/stage-settings/customer — Stage Customer Settings
+## POST /v1/session-policy/stage-settings/customer - Stage Customer Settings
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/customer`
 **Summary**: Stage Customer Settings
@@ -40,16 +40,13 @@ Return resolved session policy configs including disabled ones.
 
 Save session policy settings at customer level.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/organization/{organization_id} — Stage Organization Settings
+## POST /v1/session-policy/stage-settings/organization/{organization_id} - Stage Organization Settings
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/organization/{organization_id}`
 **Summary**: Stage Organization Settings
@@ -60,16 +57,13 @@ Save session policy settings at organization level.
 **Parameters**:
 - `organization_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id} — Stage Project Settings
+## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id} - Stage Project Settings
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}`
 **Summary**: Stage Project Settings
@@ -81,16 +75,13 @@ Save session policy settings at project level.
 - `organization_id` (path, required): 
 - `project_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}/resource/{resource_id} — Stage Resource Settings
+## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}/resource/{resource_id} - Stage Resource Settings
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}/resource/{resource_id}`
 **Summary**: Stage Resource Settings
@@ -103,16 +94,13 @@ Save session policy settings at resource level.
 - `project_id` (path, required): 
 - `resource_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/customer — Toggle Customer Status
+## POST /v1/session-policy/toggle/customer - Toggle Customer Status
 
 **Endpoint**: `POST /v1/session-policy/toggle/customer`
 **Summary**: Toggle Customer Status
@@ -120,16 +108,13 @@ Save session policy settings at resource level.
 
 Toggle session policy enabled/disabled at customer level.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/organization/{organization_id} — Toggle Organization Status
+## POST /v1/session-policy/toggle/organization/{organization_id} - Toggle Organization Status
 
 **Endpoint**: `POST /v1/session-policy/toggle/organization/{organization_id}`
 **Summary**: Toggle Organization Status
@@ -140,16 +125,13 @@ Toggle session policy enabled/disabled at organization level.
 **Parameters**:
 - `organization_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id} — Toggle Project Status
+## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id} - Toggle Project Status
 
 **Endpoint**: `POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}`
 **Summary**: Toggle Project Status
@@ -161,16 +143,13 @@ Toggle session policy enabled/disabled at project level.
 - `organization_id` (path, required): 
 - `project_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}/resource/{resource_id} — Toggle Resource Status
+## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}/resource/{resource_id} - Toggle Resource Status
 
 **Endpoint**: `POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}/resource/{resource_id}`
 **Summary**: Toggle Resource Status
@@ -183,16 +162,13 @@ Toggle session policy enabled/disabled at resource level.
 - `project_id` (path, required): 
 - `resource_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/session-policy/rules-default-settings/{rule_type} — Get Default Settings For Session Policy
+## GET /v1/session-policy/rules-default-settings/{rule_type} - Get Default Settings For Session Policy
 
 **Endpoint**: `GET /v1/session-policy/rules-default-settings/{rule_type}`
 **Summary**: Get Default Settings For Session Policy
@@ -209,7 +185,7 @@ Return default settings for a session policy type.
 
 ---
 
-## GET /v1/session-policy/rule-settings-schema/{rule_type} — Get Settings Schema For Session Policy
+## GET /v1/session-policy/rule-settings-schema/{rule_type} - Get Settings Schema For Session Policy
 
 **Endpoint**: `GET /v1/session-policy/rule-settings-schema/{rule_type}`
 **Summary**: Get Settings Schema For Session Policy
@@ -226,7 +202,7 @@ Return JSON schema for a session policy type's settings.
 
 ---
 
-## GET /v1/session-policy/rule-configs/{rule_type} — Get Rule Config For Session Policy
+## GET /v1/session-policy/rule-configs/{rule_type} - Get Rule Config For Session Policy
 
 **Endpoint**: `GET /v1/session-policy/rule-configs/{rule_type}`
 **Summary**: Get Rule Config For Session Policy

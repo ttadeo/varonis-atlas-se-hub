@@ -1,6 +1,6 @@
-# Atlas API — scheduling-job
+# scheduling-job API Endpoints
 
-## POST /v1/scheduling-jobs/{customer_id}/jobs — Post Job
+## POST /v1/scheduling-jobs/{customer_id}/jobs - Post Job
 
 **Endpoint**: `POST /v1/scheduling-jobs/{customer_id}/jobs`
 **Summary**: Post Job
@@ -11,16 +11,13 @@ Created a new scheduled job for a customer.
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/scheduling-jobs/{customer_id}/jobs — Get Jobs
+## GET /v1/scheduling-jobs/{customer_id}/jobs - Get Jobs
 
 **Endpoint**: `GET /v1/scheduling-jobs/{customer_id}/jobs`
 **Summary**: Get Jobs
@@ -36,7 +33,7 @@ Created a new scheduled job for a customer.
 
 ---
 
-## PATCH /v1/scheduling-jobs/{customer_id}/jobs/{job_id} — Patch Job
+## PATCH /v1/scheduling-jobs/{customer_id}/jobs/{job_id} - Patch Job
 
 **Endpoint**: `PATCH /v1/scheduling-jobs/{customer_id}/jobs/{job_id}`
 **Summary**: Patch Job
@@ -46,16 +43,13 @@ Created a new scheduled job for a customer.
 - `customer_id` (path, required): 
 - `job_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/scheduling-jobs/{customer_id}/jobs/{job_id} — Delete Job
+## DELETE /v1/scheduling-jobs/{customer_id}/jobs/{job_id} - Delete Job
 
 **Endpoint**: `DELETE /v1/scheduling-jobs/{customer_id}/jobs/{job_id}`
 **Summary**: Delete Job
@@ -72,7 +66,7 @@ Created a new scheduled job for a customer.
 
 ---
 
-## POST /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/schedules — Post Schedule
+## POST /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/schedules - Post Schedule
 
 **Endpoint**: `POST /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/schedules`
 **Summary**: Post Schedule
@@ -82,16 +76,13 @@ Created a new scheduled job for a customer.
 - `customer_id` (path, required): 
 - `job_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/schedules/sync — Sync Schedules
+## POST /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/schedules/sync - Sync Schedules
 
 **Endpoint**: `POST /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/schedules/sync`
 **Summary**: Sync Schedules
@@ -107,7 +98,7 @@ Created a new scheduled job for a customer.
 
 ---
 
-## PATCH /v1/scheduling-jobs/{customer_id}/schedules/{schedule_id} — Patch Schedule
+## PATCH /v1/scheduling-jobs/{customer_id}/schedules/{schedule_id} - Patch Schedule
 
 **Endpoint**: `PATCH /v1/scheduling-jobs/{customer_id}/schedules/{schedule_id}`
 **Summary**: Patch Schedule
@@ -117,16 +108,13 @@ Created a new scheduled job for a customer.
 - `customer_id` (path, required): 
 - `schedule_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/scheduling-jobs/{customer_id}/schedules/{schedule_id} — Delete Schedule
+## DELETE /v1/scheduling-jobs/{customer_id}/schedules/{schedule_id} - Delete Schedule
 
 **Endpoint**: `DELETE /v1/scheduling-jobs/{customer_id}/schedules/{schedule_id}`
 **Summary**: Delete Schedule
@@ -142,7 +130,7 @@ Created a new scheduled job for a customer.
 
 ---
 
-## PATCH /v1/scheduling-jobs/{customer_id}/pentest_scan_schedule/{schedule_id} — Edit Pentest Scan Schedule
+## PATCH /v1/scheduling-jobs/{customer_id}/pentest_scan_schedule/{schedule_id} - Edit Pentest Scan Schedule
 
 **Endpoint**: `PATCH /v1/scheduling-jobs/{customer_id}/pentest_scan_schedule/{schedule_id}`
 **Summary**: Edit Pentest Scan Schedule
@@ -156,16 +144,13 @@ otherwise, a new template is created and assigned.
 - `customer_id` (path, required): 
 - `schedule_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/executions — Get Job Executions
+## GET /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/executions - Get Job Executions
 
 **Endpoint**: `GET /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/executions`
 **Summary**: Get Job Executions

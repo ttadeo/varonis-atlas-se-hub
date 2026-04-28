@@ -1,13 +1,10 @@
-# Atlas API — ingest
+# ingest API Endpoints
 
-## POST /v1/ingest/jobs — Create Ingest Job
+## POST /v1/ingest/jobs - Create Ingest Job
 
 **Endpoint**: `POST /v1/ingest/jobs`
 **Summary**: Create Ingest Job
 **Tags**: ingest
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `201`: Successful Response
@@ -15,7 +12,7 @@
 
 ---
 
-## GET /v1/ingest/jobs — List Ingest Jobs
+## GET /v1/ingest/jobs - List Ingest Jobs
 
 **Endpoint**: `GET /v1/ingest/jobs`
 **Summary**: List Ingest Jobs
@@ -32,7 +29,7 @@
 
 ---
 
-## GET /v1/ingest/jobs/next — Next Ingest Job
+## GET /v1/ingest/jobs/next - Next Ingest Job
 
 **Endpoint**: `GET /v1/ingest/jobs/next`
 **Summary**: Next Ingest Job
@@ -44,7 +41,7 @@
 
 ---
 
-## GET /v1/ingest/jobs/{job_id} — Get Ingest Job
+## GET /v1/ingest/jobs/{job_id} - Get Ingest Job
 
 **Endpoint**: `GET /v1/ingest/jobs/{job_id}`
 **Summary**: Get Ingest Job
@@ -59,7 +56,7 @@
 
 ---
 
-## PATCH /v1/ingest/jobs/{job_id} — Patch Ingest Job
+## PATCH /v1/ingest/jobs/{job_id} - Patch Ingest Job
 
 **Endpoint**: `PATCH /v1/ingest/jobs/{job_id}`
 **Summary**: Patch Ingest Job
@@ -68,16 +65,13 @@
 **Parameters**:
 - `job_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/ingest/jobs/{job_id} — Delete Ingest Job
+## DELETE /v1/ingest/jobs/{job_id} - Delete Ingest Job
 
 **Endpoint**: `DELETE /v1/ingest/jobs/{job_id}`
 **Summary**: Delete Ingest Job
@@ -92,14 +86,11 @@
 
 ---
 
-## POST /v1/ingest/configurations — Create Ingest Configuration
+## POST /v1/ingest/configurations - Create Ingest Configuration
 
 **Endpoint**: `POST /v1/ingest/configurations`
 **Summary**: Create Ingest Configuration
 **Tags**: ingest
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `201`: Successful Response
@@ -107,7 +98,7 @@
 
 ---
 
-## GET /v1/ingest/configurations — List Ingest Configurations
+## GET /v1/ingest/configurations - List Ingest Configurations
 
 **Endpoint**: `GET /v1/ingest/configurations`
 **Summary**: List Ingest Configurations
@@ -123,7 +114,7 @@
 
 ---
 
-## GET /v1/ingest/configurations/{configuration_id} — Get Ingest Configuration
+## GET /v1/ingest/configurations/{configuration_id} - Get Ingest Configuration
 
 **Endpoint**: `GET /v1/ingest/configurations/{configuration_id}`
 **Summary**: Get Ingest Configuration
@@ -138,7 +129,7 @@
 
 ---
 
-## PATCH /v1/ingest/configurations/{configuration_id} — Patch Ingest Configuration
+## PATCH /v1/ingest/configurations/{configuration_id} - Patch Ingest Configuration
 
 **Endpoint**: `PATCH /v1/ingest/configurations/{configuration_id}`
 **Summary**: Patch Ingest Configuration
@@ -147,16 +138,13 @@
 **Parameters**:
 - `configuration_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/ingest/configurations/{configuration_id} — Delete Ingest Configuration
+## DELETE /v1/ingest/configurations/{configuration_id} - Delete Ingest Configuration
 
 **Endpoint**: `DELETE /v1/ingest/configurations/{configuration_id}`
 **Summary**: Delete Ingest Configuration

@@ -1,6 +1,6 @@
-# Atlas API — ai-usage
+# ai-usage API Endpoints
 
-## POST /v1/ai-usage/customer/{customer_id}/logging/copilot/microsoft — Pull Copilot Logs
+## POST /v1/ai-usage/customer/{customer_id}/logging/copilot/microsoft - Pull Copilot Logs
 
 **Endpoint**: `POST /v1/ai-usage/customer/{customer_id}/logging/copilot/microsoft`
 **Summary**: Pull Copilot Logs
@@ -19,7 +19,7 @@ Pull logs from the Copilot service
 
 ---
 
-## POST /v1/ai-usage/log-push/format/datadog — Cloudflare Log Push Datadog Format
+## POST /v1/ai-usage/log-push/format/datadog - Cloudflare Log Push Datadog Format
 
 **Endpoint**: `POST /v1/ai-usage/log-push/format/datadog`
 **Summary**: Cloudflare Log Push Datadog Format
@@ -40,7 +40,7 @@ Endpoint that mimics Datadog log push format from Cloudflare
 
 ---
 
-## POST /v1/ai-usage/quarantine/llm-endpoint — Get Llm Endpoint Quarantine Status
+## POST /v1/ai-usage/quarantine/llm-endpoint - Get Llm Endpoint Quarantine Status
 
 **Endpoint**: `POST /v1/ai-usage/quarantine/llm-endpoint`
 **Summary**: Get Llm Endpoint Quarantine Status
@@ -49,16 +49,13 @@ Endpoint that mimics Datadog log push format from Cloudflare
 Validate whether then given LLM endpoint (resolved either by API key or endpoint identifier) is sanctioned according to
 AI Usage Quarantine Policy settings.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/ai-usage-policy/quarantine/{resource_category} — Get Quarantine Policy Settings
+## GET /v1/ai-usage-policy/quarantine/{resource_category} - Get Quarantine Policy Settings
 
 **Endpoint**: `GET /v1/ai-usage-policy/quarantine/{resource_category}`
 **Summary**: Get Quarantine Policy Settings
@@ -73,7 +70,7 @@ AI Usage Quarantine Policy settings.
 
 ---
 
-## PATCH /v1/ai-usage-policy/quarantine/{resource_category} — Set Quarantine Policy Settings
+## PATCH /v1/ai-usage-policy/quarantine/{resource_category} - Set Quarantine Policy Settings
 
 **Endpoint**: `PATCH /v1/ai-usage-policy/quarantine/{resource_category}`
 **Summary**: Set Quarantine Policy Settings
@@ -81,9 +78,6 @@ AI Usage Quarantine Policy settings.
 
 **Parameters**:
 - `resource_category` (path, required): 
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response

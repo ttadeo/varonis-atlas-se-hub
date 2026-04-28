@@ -1,6 +1,6 @@
-# Atlas API — siem
+# siem API Endpoints
 
-## GET /v1/siem/endpoints — Get Siem Endpoints
+## GET /v1/siem/endpoints - Get Siem Endpoints
 
 **Endpoint**: `GET /v1/siem/endpoints`
 **Summary**: Get Siem Endpoints
@@ -15,14 +15,11 @@
 
 ---
 
-## POST /v1/siem/endpoint — Add Siem Endpoint
+## POST /v1/siem/endpoint - Add Siem Endpoint
 
 **Endpoint**: `POST /v1/siem/endpoint`
 **Summary**: Add Siem Endpoint
 **Tags**: siem
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `201`: Successful Response
@@ -30,7 +27,7 @@
 
 ---
 
-## PATCH /v1/siem/endpoint/{siem_endpoint_id} — Patch Siem Endpoint
+## PATCH /v1/siem/endpoint/{siem_endpoint_id} - Patch Siem Endpoint
 
 **Endpoint**: `PATCH /v1/siem/endpoint/{siem_endpoint_id}`
 **Summary**: Patch Siem Endpoint
@@ -39,16 +36,13 @@
 **Parameters**:
 - `siem_endpoint_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/siem/endpoint/{siem_endpoint_id} — Delete Siem Endpoint
+## DELETE /v1/siem/endpoint/{siem_endpoint_id} - Delete Siem Endpoint
 
 **Endpoint**: `DELETE /v1/siem/endpoint/{siem_endpoint_id}`
 **Summary**: Delete Siem Endpoint
@@ -63,14 +57,11 @@
 
 ---
 
-## PUT /v1/siem/endpoint/configuration — Update Siem Configuration
+## PUT /v1/siem/endpoint/configuration - Update Siem Configuration
 
 **Endpoint**: `PUT /v1/siem/endpoint/configuration`
 **Summary**: Update Siem Configuration
 **Tags**: siem
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -78,7 +69,7 @@
 
 ---
 
-## GET /v1/siem/endpoint/{siem_endpoint_id}/configuration — Get Siem Endpoint Configuration
+## GET /v1/siem/endpoint/{siem_endpoint_id}/configuration - Get Siem Endpoint Configuration
 
 **Endpoint**: `GET /v1/siem/endpoint/{siem_endpoint_id}/configuration`
 **Summary**: Get Siem Endpoint Configuration
@@ -95,7 +86,7 @@
 
 ---
 
-## DELETE /v1/siem/endpoint/{siem_endpoint_id}/configuration — Delete Siem Endpoint Configuration
+## DELETE /v1/siem/endpoint/{siem_endpoint_id}/configuration - Delete Siem Endpoint Configuration
 
 **Endpoint**: `DELETE /v1/siem/endpoint/{siem_endpoint_id}/configuration`
 **Summary**: Delete Siem Endpoint Configuration
@@ -112,7 +103,7 @@
 
 ---
 
-## GET /v1/siem/endpoint/configurations — Get Siem Endpoint Configurations
+## GET /v1/siem/endpoint/configurations - Get Siem Endpoint Configurations
 
 **Endpoint**: `GET /v1/siem/endpoint/configurations`
 **Summary**: Get Siem Endpoint Configurations
@@ -132,7 +123,7 @@ still returns all of the endpoint configurations relevant for that project or or
 
 ---
 
-## GET /v1/siem/customer/{customer_id}/endpoints —  Get Siem Endpoints
+## GET /v1/siem/customer/{customer_id}/endpoints -  Get Siem Endpoints
 
 **Endpoint**: `GET /v1/siem/customer/{customer_id}/endpoints`
 **Summary**:  Get Siem Endpoints
@@ -148,7 +139,7 @@ still returns all of the endpoint configurations relevant for that project or or
 
 ---
 
-## PATCH /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id} —  Patch Siem Endpoint
+## PATCH /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id} -  Patch Siem Endpoint
 
 **Endpoint**: `PATCH /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}`
 **Summary**:  Patch Siem Endpoint
@@ -158,16 +149,13 @@ still returns all of the endpoint configurations relevant for that project or or
 - `customer_id` (path, required): 
 - `siem_endpoint_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id} —  Delete Siem Endpoint
+## DELETE /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id} -  Delete Siem Endpoint
 
 **Endpoint**: `DELETE /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}`
 **Summary**:  Delete Siem Endpoint
@@ -183,7 +171,7 @@ still returns all of the endpoint configurations relevant for that project or or
 
 ---
 
-## GET /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}/configuration —  Get Siem Endpoint Configuration
+## GET /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}/configuration -  Get Siem Endpoint Configuration
 
 **Endpoint**: `GET /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}/configuration`
 **Summary**:  Get Siem Endpoint Configuration
@@ -201,7 +189,7 @@ still returns all of the endpoint configurations relevant for that project or or
 
 ---
 
-## DELETE /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}/configuration —  Delete Siem Endpoint Configuration
+## DELETE /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}/configuration -  Delete Siem Endpoint Configuration
 
 **Endpoint**: `DELETE /v1/siem/customer/{customer_id}/endpoint/{siem_endpoint_id}/configuration`
 **Summary**:  Delete Siem Endpoint Configuration
@@ -219,7 +207,7 @@ still returns all of the endpoint configurations relevant for that project or or
 
 ---
 
-## GET /v1/siem/customer/{customer_id}/endpoint/configurations —  Get Siem Endpoint Configurations
+## GET /v1/siem/customer/{customer_id}/endpoint/configurations -  Get Siem Endpoint Configurations
 
 **Endpoint**: `GET /v1/siem/customer/{customer_id}/endpoint/configurations`
 **Summary**:  Get Siem Endpoint Configurations

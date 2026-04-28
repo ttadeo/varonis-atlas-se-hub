@@ -1,36 +1,30 @@
-# Atlas API — inventory
+# inventory API Endpoints
 
-## POST /v1/inventory/resources/llm-endpoint — Add Llm Endpoint Resources
+## POST /v1/inventory/resources/llm-endpoint - Add Llm Endpoint Resources
 
 **Endpoint**: `POST /v1/inventory/resources/llm-endpoint`
 **Summary**: Add Llm Endpoint Resources
 **Tags**: inventory, llm-firewall
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/customer/{customer_id}/resources/llm-endpoint — Add Llm Endpoint Resources
+## POST /v1/inventory/customer/{customer_id}/resources/llm-endpoint - Add Llm Endpoint Resources
 
 **Endpoint**: `POST /v1/inventory/customer/{customer_id}/resources/llm-endpoint`
 **Summary**: Add Llm Endpoint Resources
 **Tags**: inventory, llm-firewall
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/assign-dsl-spec-version/{llm_endpoint_dsl_spec_version_id} — Assign Existing Llm Endpoint To Existing Dsl Spec
+## POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/assign-dsl-spec-version/{llm_endpoint_dsl_spec_version_id} - Assign Existing Llm Endpoint To Existing Dsl Spec
 
 **Endpoint**: `POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/assign-dsl-spec-version/{llm_endpoint_dsl_spec_version_id}`
 **Summary**: Assign Existing Llm Endpoint To Existing Dsl Spec
@@ -40,16 +34,13 @@
 - `llm_endpoint_dsl_spec_version_id` (path, required): 
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl-spec-assignment — Get Llm Endpoint Dsl Spec Assignment For Resource
+## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl-spec-assignment - Get Llm Endpoint Dsl Spec Assignment For Resource
 
 **Endpoint**: `GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl-spec-assignment`
 **Summary**: Get Llm Endpoint Dsl Spec Assignment For Resource
@@ -64,7 +55,7 @@
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id}/llm-endpoint-pentest-connection — Get Llm Endpoint Pentest Connection
+## GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id}/llm-endpoint-pentest-connection - Get Llm Endpoint Pentest Connection
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id}/llm-endpoint-pentest-connection`
 **Summary**: Get Llm Endpoint Pentest Connection
@@ -80,7 +71,7 @@
 
 ---
 
-## PATCH /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config — Patch Llm Endpoint Resource Additional Config
+## PATCH /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config - Patch Llm Endpoint Resource Additional Config
 
 **Endpoint**: `PATCH /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config`
 **Summary**: Patch Llm Endpoint Resource Additional Config
@@ -89,16 +80,13 @@
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config — Get Llm Endpoint Resource Additional Config
+## GET /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config - Get Llm Endpoint Resource Additional Config
 
 **Endpoint**: `GET /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config`
 **Summary**: Get Llm Endpoint Resource Additional Config
@@ -113,7 +101,7 @@
 
 ---
 
-## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Get Pentest Connection Url
+## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url - Get Pentest Connection Url
 
 **Endpoint**: `GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url`
 **Summary**: Get Pentest Connection Url
@@ -128,7 +116,7 @@
 
 ---
 
-## PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Patch Pentest Connection Url
+## PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url - Patch Pentest Connection Url
 
 **Endpoint**: `PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url`
 **Summary**: Patch Pentest Connection Url
@@ -137,16 +125,13 @@
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs — List Llm Endpoint Dsl Specs
+## GET /v1/inventory/llm-endpoint/dsl/specs - List Llm Endpoint Dsl Specs
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs`
 **Summary**: List Llm Endpoint Dsl Specs
@@ -157,14 +142,11 @@
 
 ---
 
-## POST /v1/inventory/llm-endpoint/dsl/specs — Create Llm Endpoint Dsl Spec
+## POST /v1/inventory/llm-endpoint/dsl/specs - Create Llm Endpoint Dsl Spec
 
 **Endpoint**: `POST /v1/inventory/llm-endpoint/dsl/specs`
 **Summary**: Create Llm Endpoint Dsl Spec
 **Tags**: inventory
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -172,7 +154,7 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id} — Get Llm Endpoint Dsl Spec
+## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id} - Get Llm Endpoint Dsl Spec
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}`
 **Summary**: Get Llm Endpoint Dsl Spec
@@ -187,7 +169,7 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/versions — List Llm Endpoint Dsl Spec Versions
+## GET /v1/inventory/llm-endpoint/dsl/specs/versions - List Llm Endpoint Dsl Spec Versions
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/versions`
 **Summary**: List Llm Endpoint Dsl Spec Versions
@@ -198,7 +180,7 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions — List Llm Endpoint Dsl Spec Versions For Spec
+## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions - List Llm Endpoint Dsl Spec Versions For Spec
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions`
 **Summary**: List Llm Endpoint Dsl Spec Versions For Spec
@@ -213,7 +195,7 @@
 
 ---
 
-## POST /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions — Create Llm Endpoint Dsl Spec Version
+## POST /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions - Create Llm Endpoint Dsl Spec Version
 
 **Endpoint**: `POST /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions`
 **Summary**: Create Llm Endpoint Dsl Spec Version
@@ -222,16 +204,13 @@
 **Parameters**:
 - `llm_endpoint_dsl_spec_id` (path, required): The ID of the LLM Endpoint DSL Spec to add a version to.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/versions/{llm_endpoint_dsl_spec_version_id} — Get Llm Endpoint Dsl Spec Version
+## GET /v1/inventory/llm-endpoint/dsl/specs/versions/{llm_endpoint_dsl_spec_version_id} - Get Llm Endpoint Dsl Spec Version
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/versions/{llm_endpoint_dsl_spec_version_id}`
 **Summary**: Get Llm Endpoint Dsl Spec Version
@@ -246,7 +225,7 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/latest-version — Get Latest Llm Endpoint Dsl Spec Version
+## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/latest-version - Get Latest Llm Endpoint Dsl Spec Version
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/latest-version`
 **Summary**: Get Latest Llm Endpoint Dsl Spec Version
@@ -261,14 +240,11 @@
 
 ---
 
-## POST /v1/inventory/llm-endpoint/dsl/specs/validate — Validate Llm Endpoint Dsl Spec
+## POST /v1/inventory/llm-endpoint/dsl/specs/validate - Validate Llm Endpoint Dsl Spec
 
 **Endpoint**: `POST /v1/inventory/llm-endpoint/dsl/specs/validate`
 **Summary**: Validate Llm Endpoint Dsl Spec
 **Tags**: inventory
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -276,7 +252,7 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs-with-versions — List Llm Endpoint Dsl Specs With Versions
+## GET /v1/inventory/llm-endpoint/dsl/specs-with-versions - List Llm Endpoint Dsl Specs With Versions
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs-with-versions`
 **Summary**: List Llm Endpoint Dsl Specs With Versions
@@ -291,7 +267,7 @@
 
 ---
 
-## POST /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions/{llm_endpoint_dsl_spec_version_id}/test-connection — Test Llm Endpoint Dsl Spec Connection
+## POST /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions/{llm_endpoint_dsl_spec_version_id}/test-connection - Test Llm Endpoint Dsl Spec Connection
 
 **Endpoint**: `POST /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions/{llm_endpoint_dsl_spec_version_id}/test-connection`
 **Summary**: Test Llm Endpoint Dsl Spec Connection
@@ -301,16 +277,13 @@
 - `llm_endpoint_dsl_spec_id` (path, required): The ID of the LLM Endpoint DSL Spec.
 - `llm_endpoint_dsl_spec_version_id` (path, required): The ID of the LLM Endpoint DSL Spec Version.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl/specs/test-connection — Test Assigned Llm Endpoint Dsl Spec Connection
+## POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl/specs/test-connection - Test Assigned Llm Endpoint Dsl Spec Connection
 
 **Endpoint**: `POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl/specs/test-connection`
 **Summary**: Test Assigned Llm Endpoint Dsl Spec Connection
@@ -319,8 +292,20 @@
 **Parameters**:
 - `resource_instance_id` (path, required): The ID of the LLM Endpoint Resource Instance.
 
-**Request Body** (required):
-- `application/json`
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/inventory/resource/{resource_instance_id}/dependency-suggestions - Get dependency suggestions for a resource instance
+
+**Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/dependency-suggestions`
+**Summary**: Get dependency suggestions for a resource instance
+**Tags**: inventory
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
@@ -328,7 +313,31 @@
 
 ---
 
-## GET /v1/inventory/tag-definitions — List all tag definitions
+## POST /v1/inventory/resources/dependencies/manual - Add manual resource dependencies
+
+**Endpoint**: `POST /v1/inventory/resources/dependencies/manual`
+**Summary**: Add manual resource dependencies
+**Tags**: inventory
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/inventory/resources/dependencies/manual - Remove manual resource dependencies
+
+**Endpoint**: `DELETE /v1/inventory/resources/dependencies/manual`
+**Summary**: Remove manual resource dependencies
+**Tags**: inventory
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/inventory/tag-definitions - List all tag definitions
 
 **Endpoint**: `GET /v1/inventory/tag-definitions`
 **Summary**: List all tag definitions
@@ -339,7 +348,7 @@
 
 ---
 
-## GET /v1/inventory/resource/{resource_instance_id}/tags — Get all tags for a resource
+## GET /v1/inventory/resource/{resource_instance_id}/tags - Get all tags for a resource
 
 **Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/tags`
 **Summary**: Get all tags for a resource
@@ -354,7 +363,7 @@
 
 ---
 
-## PUT /v1/inventory/resource/{resource_instance_id}/tags — Assign or replace tags for a resource
+## PUT /v1/inventory/resource/{resource_instance_id}/tags - Assign or replace tags for a resource
 
 **Endpoint**: `PUT /v1/inventory/resource/{resource_instance_id}/tags`
 **Summary**: Assign or replace tags for a resource
@@ -363,16 +372,13 @@
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/inventory/resource/{resource_instance_id}/tags — Remove specific tags from a resource
+## DELETE /v1/inventory/resource/{resource_instance_id}/tags - Remove specific tags from a resource
 
 **Endpoint**: `DELETE /v1/inventory/resource/{resource_instance_id}/tags`
 **Summary**: Remove specific tags from a resource
@@ -381,46 +387,37 @@
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/tags/assign — Bulk assign tags to multiple resources
+## POST /v1/inventory/resources/tags/assign - Bulk assign tags to multiple resources
 
 **Endpoint**: `POST /v1/inventory/resources/tags/assign`
 **Summary**: Bulk assign tags to multiple resources
 **Tags**: inventory
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/tags/remove — Bulk remove tags from multiple resources
+## POST /v1/inventory/resources/tags/remove - Bulk remove tags from multiple resources
 
 **Endpoint**: `POST /v1/inventory/resources/tags/remove`
 **Summary**: Bulk remove tags from multiple resources
 **Tags**: inventory
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/tags/typeahead — Typeahead suggestions for tag values
+## GET /v1/inventory/tags/typeahead - Typeahead suggestions for tag values
 
 **Endpoint**: `GET /v1/inventory/tags/typeahead`
 **Summary**: Typeahead suggestions for tag values
@@ -437,7 +434,7 @@
 
 ---
 
-## GET /v1/inventory/job-status/{job_id} — Get Discovery Job Status
+## GET /v1/inventory/job-status/{job_id} - Get Discovery Job Status
 
 **Endpoint**: `GET /v1/inventory/job-status/{job_id}`
 **Summary**: Get Discovery Job Status
@@ -460,7 +457,7 @@ Returns:
 
 ---
 
-## GET /v1/inventory/technologies — Get Technologies
+## GET /v1/inventory/technologies - Get Technologies
 
 **Endpoint**: `GET /v1/inventory/technologies`
 **Summary**: Get Technologies
@@ -477,7 +474,7 @@ Returns:
 
 ---
 
-## GET /v1/inventory/resources-types — Get Resource Types
+## GET /v1/inventory/resources-types - Get Resource Types
 
 **Endpoint**: `GET /v1/inventory/resources-types`
 **Summary**: Get Resource Types
@@ -496,7 +493,7 @@ Returns:
 
 ---
 
-## POST /v1/inventory/resources —  Api Add Multiple Resource Instance New
+## POST /v1/inventory/resources -  Api Add Multiple Resource Instance New
 
 **Endpoint**: `POST /v1/inventory/resources`
 **Summary**:  Api Add Multiple Resource Instance New
@@ -505,23 +502,17 @@ Returns:
 **Parameters**:
 - `resource_source_type` (query, optional): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory/resources — Api Patch Resource Instances New
+## PATCH /v1/inventory/resources - Api Patch Resource Instances New
 
 **Endpoint**: `PATCH /v1/inventory/resources`
 **Summary**: Api Patch Resource Instances New
 **Tags**: inventory
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `204`: Successful Response
@@ -529,7 +520,7 @@ Returns:
 
 ---
 
-## POST /v1/inventory/customer/{customer_id}/resources — Api Add Multiple Resource Instance Deprecated
+## POST /v1/inventory/customer/{customer_id}/resources - Api Add Multiple Resource Instance Deprecated
 
 **Endpoint**: `POST /v1/inventory/customer/{customer_id}/resources`
 **Summary**: Api Add Multiple Resource Instance Deprecated
@@ -539,22 +530,22 @@ Returns:
 - `customer_id` (path, required): 
 - `resource_source_type` (query, optional): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resources — Api Get Resource Instances
+## GET /v1/inventory/customer/{customer_id}/resources - Api Get Resource Instances
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resources`
 **Summary**: Api Get Resource Instances
 **Tags**: inventory
 
 Returns in a list format of some basic resource information: does not return the full resource instance.
+
+Pagination is opt-in: if neither ``page`` nor ``per_page`` is provided, every matching resource is returned
+in a single response. When either is provided, the response additionally includes a ``pagination`` block.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -571,6 +562,8 @@ Returns in a list format of some basic resource information: does not return the
 - `include_issue_summaries` (query, optional): 
 - `capabilities` (query, optional): 
 - `archetypes` (query, optional): 
+- `per_page` (query, optional): Items per page. Pass along with ``page`` to enable pagination.
+- `page` (query, optional): 1-based page number. Pass along with ``per_page`` to enable pagination.
 
 **Responses**:
 - `200`: Successful Response
@@ -578,7 +571,7 @@ Returns in a list format of some basic resource information: does not return the
 
 ---
 
-## GET /v1/inventory/resource/{resource_instance_id}/dependency-graph — Get Dependency Graph
+## GET /v1/inventory/resource/{resource_instance_id}/dependency-graph - Get Dependency Graph
 
 **Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/dependency-graph`
 **Summary**: Get Dependency Graph
@@ -593,7 +586,7 @@ Returns in a list format of some basic resource information: does not return the
 
 ---
 
-## GET /v1/inventory/resources/dependency-graph — Get Dependency Graphs Paginated
+## GET /v1/inventory/resources/dependency-graph - Get Dependency Graphs Paginated
 
 **Endpoint**: `GET /v1/inventory/resources/dependency-graph`
 **Summary**: Get Dependency Graphs Paginated
@@ -612,7 +605,7 @@ Returns in a list format of some basic resource information: does not return the
 
 ---
 
-## PATCH /v1/inventory/resource/{resource_instance_id} — Api Patch Resource Instance New
+## PATCH /v1/inventory/resource/{resource_instance_id} - Api Patch Resource Instance New
 
 **Endpoint**: `PATCH /v1/inventory/resource/{resource_instance_id}`
 **Summary**: Api Patch Resource Instance New
@@ -621,16 +614,13 @@ Returns in a list format of some basic resource information: does not return the
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory/customer/resource/{resource_instance_id} — Api Patch Resource Instance New
+## PATCH /v1/inventory/customer/resource/{resource_instance_id} - Api Patch Resource Instance New
 
 **Endpoint**: `PATCH /v1/inventory/customer/resource/{resource_instance_id}`
 **Summary**: Api Patch Resource Instance New
@@ -639,16 +629,13 @@ Returns in a list format of some basic resource information: does not return the
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory/customer/{customer_id}/resource/{resource_instance_id} — Api Patch Resource Instance Old
+## PATCH /v1/inventory/customer/{customer_id}/resource/{resource_instance_id} - Api Patch Resource Instance Old
 
 **Endpoint**: `PATCH /v1/inventory/customer/{customer_id}/resource/{resource_instance_id}`
 **Summary**: Api Patch Resource Instance Old
@@ -658,16 +645,13 @@ Returns in a list format of some basic resource information: does not return the
 - `customer_id` (path, required): 
 - `resource_instance_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id} — Api Get Resource Instance
+## GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id} - Api Get Resource Instance
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id}`
 **Summary**: Api Get Resource Instance
@@ -683,7 +667,7 @@ Returns in a list format of some basic resource information: does not return the
 
 ---
 
-## GET /v1/inventory/supports-system-prompt/{resource_type} — Get Resource Type Supports System Prompt
+## GET /v1/inventory/supports-system-prompt/{resource_type} - Get Resource Type Supports System Prompt
 
 **Endpoint**: `GET /v1/inventory/supports-system-prompt/{resource_type}`
 **Summary**: Get Resource Type Supports System Prompt
@@ -701,7 +685,7 @@ Only applicable to resource types that are LlmEndpoints, it will be None if this
 
 ---
 
-## PUT /v1/inventory/resources/projects —  Update Resource Projects
+## PUT /v1/inventory/resources/projects -  Update Resource Projects
 
 **Endpoint**: `PUT /v1/inventory/resources/projects`
 **Summary**:  Update Resource Projects
@@ -709,31 +693,25 @@ Only applicable to resource types that are LlmEndpoints, it will be None if this
 
 Update the project assignments for a list of resources.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/review —  Review Multiple Resources
+## POST /v1/inventory/resources/review -  Review Multiple Resources
 
 **Endpoint**: `POST /v1/inventory/resources/review`
 **Summary**:  Review Multiple Resources
 **Tags**: inventory
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/discover-inventory — Discover Inventory For Customer
+## POST /v1/inventory/discover-inventory - Discover Inventory For Customer
 
 **Endpoint**: `POST /v1/inventory/discover-inventory`
 **Summary**: Discover Inventory For Customer
@@ -741,16 +719,13 @@ Update the project assignments for a list of resources.
 
 DEPRECATED: Use /inventory/discover-inventory/add-resources instead.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/discover-inventory/add-resources — Discover And Add Inventory
+## POST /v1/inventory/discover-inventory/add-resources - Discover And Add Inventory
 
 **Endpoint**: `POST /v1/inventory/discover-inventory/add-resources`
 **Summary**: Discover And Add Inventory
@@ -761,16 +736,13 @@ Customer can optionally filter the cloud accounts to filter to.
 Then add the resources to the database (one cloud provider account
 at a time). Group all results together in one response showing all the resources that were added.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/discover-inventory/start-discovery-job — Start Customer Discovery Job
+## POST /v1/inventory/discover-inventory/start-discovery-job - Start Customer Discovery Job
 
 **Endpoint**: `POST /v1/inventory/discover-inventory/start-discovery-job`
 **Summary**: Start Customer Discovery Job
@@ -779,16 +751,13 @@ at a time). Group all results together in one response showing all the resources
 Initiate a job to run in the background to initiate a discovery scan. Will run in the background, and
 return a job_id that a caller can use for polling.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/discover/jupyter-notebooks/customer/{customer_id} — Discover Jupyter Notebooks Inventory For Customer
+## POST /v1/inventory/discover/jupyter-notebooks/customer/{customer_id} - Discover Jupyter Notebooks Inventory For Customer
 
 **Endpoint**: `POST /v1/inventory/discover/jupyter-notebooks/customer/{customer_id}`
 **Summary**: Discover Jupyter Notebooks Inventory For Customer
@@ -803,37 +772,31 @@ return a job_id that a caller can use for polling.
 
 ---
 
-## POST /v1/inventory/add-resources/discover/jupyter-notebooks — Discover And Add Jupyter Notebooks Inventory
+## POST /v1/inventory/add-resources/discover/jupyter-notebooks - Discover And Add Jupyter Notebooks Inventory
 
 **Endpoint**: `POST /v1/inventory/add-resources/discover/jupyter-notebooks`
 **Summary**: Discover And Add Jupyter Notebooks Inventory
 **Tags**: inventory
 
-**Request Body** (optional):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/add-resources/discover/jupyter-notebooks/customer/{customer_id} — Discover And Add Jupyter Notebooks Inventory
+## POST /v1/inventory/add-resources/discover/jupyter-notebooks/customer/{customer_id} - Discover And Add Jupyter Notebooks Inventory
 
 **Endpoint**: `POST /v1/inventory/add-resources/discover/jupyter-notebooks/customer/{customer_id}`
 **Summary**: Discover And Add Jupyter Notebooks Inventory
 **Tags**: inventory
 
-**Request Body** (optional):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/cloud-discoveries — Get Past Cloud Discovery List
+## GET /v1/inventory/customer/{customer_id}/cloud-discoveries - Get Past Cloud Discovery List
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/cloud-discoveries`
 **Summary**: Get Past Cloud Discovery List
@@ -848,7 +811,7 @@ return a job_id that a caller can use for polling.
 
 ---
 
-## GET /v1/inventory/project-ai-bom/{project_id}/versions — Get Project Ai Bom Versions
+## GET /v1/inventory/project-ai-bom/{project_id}/versions - Get Project Ai Bom Versions
 
 **Endpoint**: `GET /v1/inventory/project-ai-bom/{project_id}/versions`
 **Summary**: Get Project Ai Bom Versions
@@ -865,7 +828,7 @@ Get the AI BOM versions for a project
 
 ---
 
-## GET /v1/inventory/project-ai-bom/{project_id} — Get Project Ai Bom
+## GET /v1/inventory/project-ai-bom/{project_id} - Get Project Ai Bom
 
 **Endpoint**: `GET /v1/inventory/project-ai-bom/{project_id}`
 **Summary**: Get Project Ai Bom
@@ -883,7 +846,7 @@ Get the most recent AI BOM for a project
 
 ---
 
-## POST /v1/inventory/project-ai-bom/customer/{customer_id}/project/{project_id} — Create Project Ai Bom
+## POST /v1/inventory/project-ai-bom/customer/{customer_id}/project/{project_id} - Create Project Ai Bom
 
 **Endpoint**: `POST /v1/inventory/project-ai-bom/customer/{customer_id}/project/{project_id}`
 **Summary**: Create Project Ai Bom
@@ -901,7 +864,7 @@ Create an AI BOM for a project
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resources/dependency-files — Get Active Dependency Files
+## GET /v1/inventory/customer/{customer_id}/resources/dependency-files - Get Active Dependency Files
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resources/dependency-files`
 **Summary**: Get Active Dependency Files
@@ -919,7 +882,7 @@ Get the active dependency files for a customer
 
 ---
 
-## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file — Delete Dependency File
+## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file - Delete Dependency File
 
 **Endpoint**: `DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file`
 **Summary**: Delete Dependency File
@@ -945,7 +908,7 @@ Delete a dependency file and update resource instances accordingly.
 
 ---
 
-## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file — Reassign Dependency File Project
+## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file - Reassign Dependency File Project
 
 **Endpoint**: `PUT /v1/inventory/customer/{customer_id}/resources/dependency-file`
 **Summary**: Reassign Dependency File Project
@@ -973,7 +936,7 @@ Reassign a dependency file to a new project, along with all resources associated
 
 ---
 
-## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-files-bulk — Bulk Delete Dependency File
+## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-files-bulk - Bulk Delete Dependency File
 
 **Endpoint**: `DELETE /v1/inventory/customer/{customer_id}/resources/dependency-files-bulk`
 **Summary**: Bulk Delete Dependency File
@@ -989,16 +952,13 @@ Delete a dependency file and update resource instances accordingly.
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file/bulk-unlink-from-project — Bulk Unlink Dependency File Project
+## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file/bulk-unlink-from-project - Bulk Unlink Dependency File Project
 
 **Endpoint**: `PUT /v1/inventory/customer/{customer_id}/resources/dependency-file/bulk-unlink-from-project`
 **Summary**: Bulk Unlink Dependency File Project
@@ -1015,16 +975,13 @@ Unlink dependency files from their current project, along with all resources ass
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/inventory-filter-options — Get Inventory Filter Options
+## GET /v1/inventory/inventory-filter-options - Get Inventory Filter Options
 
 **Endpoint**: `GET /v1/inventory/inventory-filter-options`
 **Summary**: Get Inventory Filter Options
@@ -1041,7 +998,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory/technology-filter-options — Get Technology Filter Options
+## GET /v1/inventory/technology-filter-options - Get Technology Filter Options
 
 **Endpoint**: `GET /v1/inventory/technology-filter-options`
 **Summary**: Get Technology Filter Options
@@ -1058,7 +1015,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory/repository-search-results — Get Repository Search Results
+## GET /v1/inventory/repository-search-results - Get Repository Search Results
 
 **Endpoint**: `GET /v1/inventory/repository-search-results`
 **Summary**: Get Repository Search Results
@@ -1080,7 +1037,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory/repository-configs/{repository_config_id}/resource-instances-by-type — Get Repo Resource Instances By Type
+## GET /v1/inventory/repository-configs/{repository_config_id}/resource-instances-by-type - Get Repo Resource Instances By Type
 
 **Endpoint**: `GET /v1/inventory/repository-configs/{repository_config_id}/resource-instances-by-type`
 **Summary**: Get Repo Resource Instances By Type
@@ -1095,7 +1052,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory-policy/resource_types — Gets all the resource types seperated by resource category
+## GET /v1/inventory-policy/resource_types - Gets all the resource types seperated by resource category
 
 **Endpoint**: `GET /v1/inventory-policy/resource_types`
 **Summary**: Gets all the resource types seperated by resource category
@@ -1112,14 +1069,11 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## PATCH /v1/inventory-policy — Create or update inventory policies for the customer
+## PATCH /v1/inventory-policy - Create or update inventory policies for the customer
 
 **Endpoint**: `PATCH /v1/inventory-policy`
 **Summary**: Create or update inventory policies for the customer
 **Tags**: inventory
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -1127,7 +1081,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory-policy — Get the inventory policy for the customer
+## GET /v1/inventory-policy - Get the inventory policy for the customer
 
 **Endpoint**: `GET /v1/inventory-policy`
 **Summary**: Get the inventory policy for the customer
@@ -1138,7 +1092,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## DELETE /v1/inventory-policy — Resets the inventory policies for a customer
+## DELETE /v1/inventory-policy - Resets the inventory policies for a customer
 
 **Endpoint**: `DELETE /v1/inventory-policy`
 **Summary**: Resets the inventory policies for a customer
@@ -1153,7 +1107,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## PATCH /v1/inventory-policy/resource_category/{resource_category} — Create or update a inventory policy for the customer on a particular category
+## PATCH /v1/inventory-policy/resource_category/{resource_category} - Create or update a inventory policy for the customer on a particular category
 
 **Endpoint**: `PATCH /v1/inventory-policy/resource_category/{resource_category}`
 **Summary**: Create or update a inventory policy for the customer on a particular category
@@ -1162,16 +1116,13 @@ Unlink dependency files from their current project, along with all resources ass
 **Parameters**:
 - `resource_category` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory-policy/resource_category/{resource_category} — Get the inventory policy for the customer on a particular category
+## GET /v1/inventory-policy/resource_category/{resource_category} - Get the inventory policy for the customer on a particular category
 
 **Endpoint**: `GET /v1/inventory-policy/resource_category/{resource_category}`
 **Summary**: Get the inventory policy for the customer on a particular category
@@ -1186,7 +1137,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## DELETE /v1/inventory-policy/resource_category/{resource_category} — Resets the inventory policy for a customer
+## DELETE /v1/inventory-policy/resource_category/{resource_category} - Resets the inventory policy for a customer
 
 **Endpoint**: `DELETE /v1/inventory-policy/resource_category/{resource_category}`
 **Summary**: Resets the inventory policy for a customer
@@ -1201,7 +1152,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## PATCH /v1/inventory-policy/resource_category/{resource_category}/toggle_cloud_storage/{cloud_storage_type} — Toggle a cloud storage type for the customer
+## PATCH /v1/inventory-policy/resource_category/{resource_category}/toggle_cloud_storage/{cloud_storage_type} - Toggle a cloud storage type for the customer
 
 **Endpoint**: `PATCH /v1/inventory-policy/resource_category/{resource_category}/toggle_cloud_storage/{cloud_storage_type}`
 **Summary**: Toggle a cloud storage type for the customer
@@ -1217,7 +1168,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## PATCH /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category} — Create or update a inventory policy for the customer on a particular category
+## PATCH /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category} - Create or update a inventory policy for the customer on a particular category
 
 **Endpoint**: `PATCH /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category}`
 **Summary**: Create or update a inventory policy for the customer on a particular category
@@ -1227,16 +1178,13 @@ Unlink dependency files from their current project, along with all resources ass
 - `resource_category` (path, required): 
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category} — Resets the inventory policy for a customer
+## DELETE /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category} - Resets the inventory policy for a customer
 
 **Endpoint**: `DELETE /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category}`
 **Summary**: Resets the inventory policy for a customer
@@ -1252,7 +1200,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category} — Get the inventory policy for the customer on a particular category
+## GET /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category} - Get the inventory policy for the customer on a particular category
 
 **Endpoint**: `GET /v1/inventory-policy/customer/{customer_id}/inventory_policy/{resource_category}`
 **Summary**: Get the inventory policy for the customer on a particular category
@@ -1268,7 +1216,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## DELETE /v1/inventory-policy/customer/{customer_id}/inventory_policy — Resets the inventory policies for a customer
+## DELETE /v1/inventory-policy/customer/{customer_id}/inventory_policy - Resets the inventory policies for a customer
 
 **Endpoint**: `DELETE /v1/inventory-policy/customer/{customer_id}/inventory_policy`
 **Summary**: Resets the inventory policies for a customer
@@ -1284,7 +1232,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/inventory-policy/customer/{customer_id}/inventory_policy — Get the inventory policy for the customer
+## GET /v1/inventory-policy/customer/{customer_id}/inventory_policy - Get the inventory policy for the customer
 
 **Endpoint**: `GET /v1/inventory-policy/customer/{customer_id}/inventory_policy`
 **Summary**: Get the inventory policy for the customer
@@ -1299,7 +1247,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## PATCH /v1/inventory-policy/customer/{customer_id}/inventory_policy — Create or update inventory policies for the customer
+## PATCH /v1/inventory-policy/customer/{customer_id}/inventory_policy - Create or update inventory policies for the customer
 
 **Endpoint**: `PATCH /v1/inventory-policy/customer/{customer_id}/inventory_policy`
 **Summary**: Create or update inventory policies for the customer
@@ -1308,16 +1256,13 @@ Unlink dependency files from their current project, along with all resources ass
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory-policy/inventory_policy/{resource_category}/toggle_cloud_storage/{cloud_storage_type} — Toggle a cloud storage type for the customer
+## PATCH /v1/inventory-policy/inventory_policy/{resource_category}/toggle_cloud_storage/{cloud_storage_type} - Toggle a cloud storage type for the customer
 
 **Endpoint**: `PATCH /v1/inventory-policy/inventory_policy/{resource_category}/toggle_cloud_storage/{cloud_storage_type}`
 **Summary**: Toggle a cloud storage type for the customer
@@ -1333,7 +1278,7 @@ Unlink dependency files from their current project, along with all resources ass
 
 ---
 
-## GET /v1/hosted-service/{hosted_service_id} —  Get Hosted Service
+## GET /v1/hosted-service/{hosted_service_id} -  Get Hosted Service
 
 **Endpoint**: `GET /v1/hosted-service/{hosted_service_id}`
 **Summary**:  Get Hosted Service
@@ -1352,7 +1297,7 @@ Get a particular hosted service
 
 ---
 
-## DELETE /v1/hosted-service/{hosted_service_id} —  Delete Hosted Service
+## DELETE /v1/hosted-service/{hosted_service_id} -  Delete Hosted Service
 
 **Endpoint**: `DELETE /v1/hosted-service/{hosted_service_id}`
 **Summary**:  Delete Hosted Service
@@ -1369,7 +1314,7 @@ Deletes a particular hosted service
 
 ---
 
-## PATCH /v1/hosted-service/{hosted_service_id} —  Patch Hosted Service
+## PATCH /v1/hosted-service/{hosted_service_id} -  Patch Hosted Service
 
 **Endpoint**: `PATCH /v1/hosted-service/{hosted_service_id}`
 **Summary**:  Patch Hosted Service
@@ -1380,16 +1325,13 @@ Updates a particular hosted service
 **Parameters**:
 - `hosted_service_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/hosted-service —  Get Hosted Services
+## GET /v1/hosted-service -  Get Hosted Services
 
 **Endpoint**: `GET /v1/hosted-service`
 **Summary**:  Get Hosted Services
@@ -1411,7 +1353,7 @@ Get hosted services for a customer with cursor pagination
 
 ---
 
-## POST /v1/hosted-service —  Add Hosted Service
+## POST /v1/hosted-service -  Add Hosted Service
 
 **Endpoint**: `POST /v1/hosted-service`
 **Summary**:  Add Hosted Service
@@ -1419,16 +1361,13 @@ Get hosted services for a customer with cursor pagination
 
 Creates a new hosted service
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/hosted-service/bulk —  Delete Hosted Service In Bulk
+## DELETE /v1/hosted-service/bulk -  Delete Hosted Service In Bulk
 
 **Endpoint**: `DELETE /v1/hosted-service/bulk`
 **Summary**:  Delete Hosted Service In Bulk
@@ -1436,16 +1375,13 @@ Creates a new hosted service
 
 Deletes a particular hosted service
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/hosted-service/hosted-services/bulk-unlink-from-project —  Unlink Hosted Service From Project In Bulk
+## PUT /v1/hosted-service/hosted-services/bulk-unlink-from-project -  Unlink Hosted Service From Project In Bulk
 
 **Endpoint**: `PUT /v1/hosted-service/hosted-services/bulk-unlink-from-project`
 **Summary**:  Unlink Hosted Service From Project In Bulk
@@ -1453,16 +1389,13 @@ Deletes a particular hosted service
 
 Updates hosted services by unlinking them from their current project
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/hosted-service/sync-discovery/{hosted_service_id} —  Sync Run Hosted Service Discovery
+## POST /v1/hosted-service/sync-discovery/{hosted_service_id} -  Sync Run Hosted Service Discovery
 
 **Endpoint**: `POST /v1/hosted-service/sync-discovery/{hosted_service_id}`
 **Summary**:  Sync Run Hosted Service Discovery
@@ -1479,7 +1412,7 @@ Synchronously runs discovery for a hosted service
 
 ---
 
-## POST /v1/hosted-service/start-discovery-job/{hosted_service_id} — Run Hosted Service Discovery Job
+## POST /v1/hosted-service/start-discovery-job/{hosted_service_id} - Run Hosted Service Discovery Job
 
 **Endpoint**: `POST /v1/hosted-service/start-discovery-job/{hosted_service_id}`
 **Summary**: Run Hosted Service Discovery Job
@@ -1497,7 +1430,7 @@ return a job_id that a caller can use for polling.
 
 ---
 
-## GET /v1/hosted-service/job-status/{job_id} — Get Hosted Service Job Status
+## GET /v1/hosted-service/job-status/{job_id} - Get Hosted Service Job Status
 
 **Endpoint**: `GET /v1/hosted-service/job-status/{job_id}`
 **Summary**: Get Hosted Service Job Status

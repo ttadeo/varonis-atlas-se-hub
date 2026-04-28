@@ -1,6 +1,6 @@
-# Atlas API — watsonx-governance
+# watsonx-governance API Endpoints
 
-## GET /v1/watsonx-governance/{watsonx_governance_integration_id} —  Get Watsonx Governance Integration
+## GET /v1/watsonx-governance/{watsonx_governance_integration_id} -  Get Watsonx Governance Integration
 
 **Endpoint**: `GET /v1/watsonx-governance/{watsonx_governance_integration_id}`
 **Summary**:  Get Watsonx Governance Integration
@@ -15,7 +15,7 @@
 
 ---
 
-## PATCH /v1/watsonx-governance/{watsonx_governance_integration_id} —  Patch Watsonx Governance Integration
+## PATCH /v1/watsonx-governance/{watsonx_governance_integration_id} -  Patch Watsonx Governance Integration
 
 **Endpoint**: `PATCH /v1/watsonx-governance/{watsonx_governance_integration_id}`
 **Summary**:  Patch Watsonx Governance Integration
@@ -24,16 +24,13 @@
 **Parameters**:
 - `watsonx_governance_integration_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/watsonx-governance/{watsonx_governance_integration_id} —  Delete Watsonx Governance Integration
+## DELETE /v1/watsonx-governance/{watsonx_governance_integration_id} -  Delete Watsonx Governance Integration
 
 **Endpoint**: `DELETE /v1/watsonx-governance/{watsonx_governance_integration_id}`
 **Summary**:  Delete Watsonx Governance Integration
@@ -48,7 +45,7 @@
 
 ---
 
-## GET /v1/watsonx-governance —  Get Watsonx Governance Integrations
+## GET /v1/watsonx-governance -  Get Watsonx Governance Integrations
 
 **Endpoint**: `GET /v1/watsonx-governance`
 **Summary**:  Get Watsonx Governance Integrations
@@ -59,14 +56,11 @@
 
 ---
 
-## POST /v1/watsonx-governance —  Create Watsonx Governance Integration
+## POST /v1/watsonx-governance -  Create Watsonx Governance Integration
 
 **Endpoint**: `POST /v1/watsonx-governance`
 **Summary**:  Create Watsonx Governance Integration
 **Tags**: watsonx-governance
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `201`: Successful Response
@@ -74,7 +68,7 @@
 
 ---
 
-## POST /v1/watsonx-governance/sync —  Sync Watsonx Governance Integration
+## POST /v1/watsonx-governance/sync -  Sync Watsonx Governance Integration
 
 **Endpoint**: `POST /v1/watsonx-governance/sync`
 **Summary**:  Sync Watsonx Governance Integration
@@ -91,7 +85,7 @@ Synchronize the WatsonX Governance integration for a customer.
 
 ---
 
-## POST /v1/watsonx-governance/sync/{watsonx_governance_integration_id} —  Sync Watsonx Governance Integration
+## POST /v1/watsonx-governance/sync/{watsonx_governance_integration_id} -  Sync Watsonx Governance Integration
 
 **Endpoint**: `POST /v1/watsonx-governance/sync/{watsonx_governance_integration_id}`
 **Summary**:  Sync Watsonx Governance Integration
@@ -108,7 +102,7 @@ Synchronize the WatsonX Governance integration for a customer.
 
 ---
 
-## POST /v1/watsonx-governance/sync-job —  Sync Job Watsonx Governance Integration
+## POST /v1/watsonx-governance/sync-job -  Sync Job Watsonx Governance Integration
 
 **Endpoint**: `POST /v1/watsonx-governance/sync-job`
 **Summary**:  Sync Job Watsonx Governance Integration
@@ -126,7 +120,7 @@ return a job_id that a caller can use for polling.
 
 ---
 
-## POST /v1/watsonx-governance/sync-job/{watsonx_governance_integration_id} —  Sync Job Watsonx Governance Integration
+## POST /v1/watsonx-governance/sync-job/{watsonx_governance_integration_id} -  Sync Job Watsonx Governance Integration
 
 **Endpoint**: `POST /v1/watsonx-governance/sync-job/{watsonx_governance_integration_id}`
 **Summary**:  Sync Job Watsonx Governance Integration
@@ -144,7 +138,7 @@ return a job_id that a caller can use for polling.
 
 ---
 
-## GET /v1/watsonx-governance/job-status/{job_id} — Get Governance Job Status
+## GET /v1/watsonx-governance/job-status/{job_id} - Get Governance Job Status
 
 **Endpoint**: `GET /v1/watsonx-governance/job-status/{job_id}`
 **Summary**: Get Governance Job Status
@@ -161,7 +155,7 @@ Get the status of a job that was initiated to run a watsonx governance scan.
 
 ---
 
-## DELETE /v1/watsonx-governance/integration_resources/{watsonx_governance_integration_id} — Delete all the remote existing governance resources
+## DELETE /v1/watsonx-governance/integration_resources/{watsonx_governance_integration_id} - Delete all the remote existing governance resources
 
 **Endpoint**: `DELETE /v1/watsonx-governance/integration_resources/{watsonx_governance_integration_id}`
 **Summary**: Delete all the remote existing governance resources
@@ -176,7 +170,7 @@ Get the status of a job that was initiated to run a watsonx governance scan.
 
 ---
 
-## POST /v1/watsonx-governance/test-connection/{watsonx_governance_integration_id} — Tests the connection of a governance integration
+## POST /v1/watsonx-governance/test-connection/{watsonx_governance_integration_id} - Tests the connection of a governance integration
 
 **Endpoint**: `POST /v1/watsonx-governance/test-connection/{watsonx_governance_integration_id}`
 **Summary**: Tests the connection of a governance integration

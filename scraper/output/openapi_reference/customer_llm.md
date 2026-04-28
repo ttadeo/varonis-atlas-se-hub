@@ -1,6 +1,6 @@
-# Atlas API — customer-llm
+# customer-llm API Endpoints
 
-## GET /v1/customer-llm/llm-config-for-workload-and-feature-groups — Get Llm Config For Feature Group And Use Case For Customer External
+## GET /v1/customer-llm/llm-config-for-workload-and-feature-groups - Get Llm Config For Feature Group And Use Case For Customer External
 
 **Endpoint**: `GET /v1/customer-llm/llm-config-for-workload-and-feature-groups`
 **Summary**: Get Llm Config For Feature Group And Use Case For Customer External
@@ -17,14 +17,11 @@
 
 ---
 
-## POST /v1/customer-llm/llm-config-for-workload-and-feature-groups — Post Llm Config For Feature Group And Use Case For Customer External
+## POST /v1/customer-llm/llm-config-for-workload-and-feature-groups - Post Llm Config For Feature Group And Use Case For Customer External
 
 **Endpoint**: `POST /v1/customer-llm/llm-config-for-workload-and-feature-groups`
 **Summary**: Post Llm Config For Feature Group And Use Case For Customer External
 **Tags**: customer-llm
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -32,7 +29,7 @@
 
 ---
 
-## POST /v1/customer-llm/configurations — Create Customer Llm Configuration
+## POST /v1/customer-llm/configurations - Create Customer Llm Configuration
 
 **Endpoint**: `POST /v1/customer-llm/configurations`
 **Summary**: Create Customer Llm Configuration
@@ -43,16 +40,13 @@ Create a new customer LLM configuration.
 **Parameters**:
 - `verify_connection` (query, optional): Verify the connection to the LLM provider before saving the configuration.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/customer-llm/configurations — Get Customer Llm Configurations
+## GET /v1/customer-llm/configurations - Get Customer Llm Configurations
 
 **Endpoint**: `GET /v1/customer-llm/configurations`
 **Summary**: Get Customer Llm Configurations
@@ -72,7 +66,7 @@ Get all customer LLM configurations.
 
 ---
 
-## PUT /v1/customer-llm/configurations/{customer_llm_configuration_id} — Update Customer Llm Configuration
+## PUT /v1/customer-llm/configurations/{customer_llm_configuration_id} - Update Customer Llm Configuration
 
 **Endpoint**: `PUT /v1/customer-llm/configurations/{customer_llm_configuration_id}`
 **Summary**: Update Customer Llm Configuration
@@ -84,16 +78,13 @@ Update an existing customer LLM configuration.
 - `customer_llm_configuration_id` (path, required): 
 - `verify_connection` (query, optional): Verify the connection to the LLM provider before saving the configuration.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/customer-llm/configurations/{customer_llm_configuration_id} — Delete Customer Llm Configuration
+## DELETE /v1/customer-llm/configurations/{customer_llm_configuration_id} - Delete Customer Llm Configuration
 
 **Endpoint**: `DELETE /v1/customer-llm/configurations/{customer_llm_configuration_id}`
 **Summary**: Delete Customer Llm Configuration
@@ -110,7 +101,7 @@ Delete a customer LLM configuration.
 
 ---
 
-## GET /v1/customer-llm/configurations/{customer_llm_configuration_id} — Get Customer Llm Configurations
+## GET /v1/customer-llm/configurations/{customer_llm_configuration_id} - Get Customer Llm Configurations
 
 **Endpoint**: `GET /v1/customer-llm/configurations/{customer_llm_configuration_id}`
 **Summary**: Get Customer Llm Configurations
@@ -130,7 +121,7 @@ Get all customer LLM configurations.
 
 ---
 
-## GET /v1/customer-llm/configurations/{customer_llm_configuration_id}/details — Get Customer Llm Configuration Details
+## GET /v1/customer-llm/configurations/{customer_llm_configuration_id}/details - Get Customer Llm Configuration Details
 
 **Endpoint**: `GET /v1/customer-llm/configurations/{customer_llm_configuration_id}/details`
 **Summary**: Get Customer Llm Configuration Details
@@ -147,7 +138,7 @@ Get the details of a specific customer LLM configuration, including safe credent
 
 ---
 
-## POST /v1/customer-llm/configurations/{customer_llm_configuration_id}/verify-connection — Check Customer Llm Configuration Connection
+## POST /v1/customer-llm/configurations/{customer_llm_configuration_id}/verify-connection - Check Customer Llm Configuration Connection
 
 **Endpoint**: `POST /v1/customer-llm/configurations/{customer_llm_configuration_id}/verify-connection`
 **Summary**: Check Customer Llm Configuration Connection
@@ -164,7 +155,7 @@ Check the connection for a specific customer LLM configuration.
 
 ---
 
-## GET /v1/customer-llm/llm-models/credentials — Get Customer Llm Model Credentials
+## GET /v1/customer-llm/llm-models/credentials - Get Customer Llm Model Credentials
 
 **Endpoint**: `GET /v1/customer-llm/llm-models/credentials`
 **Summary**: Get Customer Llm Model Credentials

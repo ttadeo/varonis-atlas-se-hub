@@ -1,6 +1,6 @@
-# Atlas API — pull-requests
+# pull-requests API Endpoints
 
-## GET /v1/pull-requests/customer/{customer_id}/issue/{issue_id}/commands — Get Pull Request Commands For Issue
+## GET /v1/pull-requests/customer/{customer_id}/issue/{issue_id}/commands - Get Pull Request Commands For Issue
 
 **Endpoint**: `GET /v1/pull-requests/customer/{customer_id}/issue/{issue_id}/commands`
 **Summary**: Get Pull Request Commands For Issue
@@ -16,7 +16,7 @@
 
 ---
 
-## GET /v1/pull-requests/customer/{customer_id}/resource/{resource_instance_id}/commands — Get Pull Request Commands For Resource Instance
+## GET /v1/pull-requests/customer/{customer_id}/resource/{resource_instance_id}/commands - Get Pull Request Commands For Resource Instance
 
 **Endpoint**: `GET /v1/pull-requests/customer/{customer_id}/resource/{resource_instance_id}/commands`
 **Summary**: Get Pull Request Commands For Resource Instance
@@ -32,7 +32,7 @@
 
 ---
 
-## POST /v1/pull-requests/customer/{customer_id}/commands — Execute Pull Request Commands
+## POST /v1/pull-requests/customer/{customer_id}/commands - Execute Pull Request Commands
 
 **Endpoint**: `POST /v1/pull-requests/customer/{customer_id}/commands`
 **Summary**: Execute Pull Request Commands
@@ -42,16 +42,13 @@
 - `customer_id` (path, required): 
 - `internal_access` (query, optional): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/pull-requests/customer/{customer_id}/pull-request/{pull_request_id} — Get Pull Request
+## GET /v1/pull-requests/customer/{customer_id}/pull-request/{pull_request_id} - Get Pull Request
 
 **Endpoint**: `GET /v1/pull-requests/customer/{customer_id}/pull-request/{pull_request_id}`
 **Summary**: Get Pull Request
@@ -68,7 +65,7 @@
 
 ---
 
-## GET /v1/pull-requests/customer/{customer_id}/issue/{issue_id}/pull-requests — Get Pull Requests For Issue
+## GET /v1/pull-requests/customer/{customer_id}/issue/{issue_id}/pull-requests - Get Pull Requests For Issue
 
 **Endpoint**: `GET /v1/pull-requests/customer/{customer_id}/issue/{issue_id}/pull-requests`
 **Summary**: Get Pull Requests For Issue
@@ -85,7 +82,7 @@
 
 ---
 
-## GET /v1/pull-requests/customer/{customer_id}/resource/{resource_instance_id}/pull-requests — Get Pull Requests For Resource Instance
+## GET /v1/pull-requests/customer/{customer_id}/resource/{resource_instance_id}/pull-requests - Get Pull Requests For Resource Instance
 
 **Endpoint**: `GET /v1/pull-requests/customer/{customer_id}/resource/{resource_instance_id}/pull-requests`
 **Summary**: Get Pull Requests For Resource Instance

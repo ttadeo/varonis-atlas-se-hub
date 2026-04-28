@@ -1,6 +1,6 @@
-# Atlas API — agents
+# agents API Endpoints
 
-## GET /v1/control-plane/ai-agents/tools — Get Tools
+## GET /v1/control-plane/ai-agents/tools - Get Tools
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/tools`
 **Summary**: Get Tools
@@ -13,7 +13,7 @@ Get available tools for agent execution.
 
 ---
 
-## GET /v1/control-plane/ai-agents/models — Get Models
+## GET /v1/control-plane/ai-agents/models - Get Models
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/models`
 **Summary**: Get Models
@@ -30,7 +30,7 @@ Get available models for agent execution.
 
 ---
 
-## GET /v1/control-plane/ai-agents/frameworks — Get Frameworks
+## GET /v1/control-plane/ai-agents/frameworks - Get Frameworks
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/frameworks`
 **Summary**: Get Frameworks
@@ -41,7 +41,7 @@ Get available models for agent execution.
 
 ---
 
-## GET /v1/control-plane/ai-agents/active-agent-customer-frameworks — Get Active Agent Customer Frameworks
+## GET /v1/control-plane/ai-agents/active-agent-customer-frameworks - Get Active Agent Customer Frameworks
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/active-agent-customer-frameworks`
 **Summary**: Get Active Agent Customer Frameworks
@@ -64,7 +64,7 @@ Returns:
 
 ---
 
-## POST /v1/control-plane/ai-agents/agent-customer-framework — Create Agent Customer Framework
+## POST /v1/control-plane/ai-agents/agent-customer-framework - Create Agent Customer Framework
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/agent-customer-framework`
 **Summary**: Create Agent Customer Framework
@@ -79,16 +79,13 @@ Args:
 Returns:
     The created agent customer framework
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/entity — Create Entity
+## POST /v1/control-plane/ai-agents/entity - Create Entity
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/entity`
 **Summary**: Create Entity
@@ -106,16 +103,13 @@ Returns:
 Raises:
     HTTPException: If the control has no action instances
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/control-plane/ai-agents/entities/{agent_control_id} — Get Entities
+## GET /v1/control-plane/ai-agents/entities/{agent_control_id} - Get Entities
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/entities/{agent_control_id}`
 **Summary**: Get Entities
@@ -139,7 +133,7 @@ Returns:
 
 ---
 
-## PUT /v1/control-plane/ai-agents/entity/{entity_id} — Update Entity
+## PUT /v1/control-plane/ai-agents/entity/{entity_id} - Update Entity
 
 **Endpoint**: `PUT /v1/control-plane/ai-agents/entity/{entity_id}`
 **Summary**: Update Entity
@@ -165,16 +159,13 @@ Raises:
 **Parameters**:
 - `entity_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/control-plane/ai-agents/entity/{entity_id} — Get Entity With Variables
+## GET /v1/control-plane/ai-agents/entity/{entity_id} - Get Entity With Variables
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/entity/{entity_id}`
 **Summary**: Get Entity With Variables
@@ -191,7 +182,7 @@ Get an agent entity by ID, including joined independent variable schema and valu
 
 ---
 
-## DELETE /v1/control-plane/ai-agents/entity/{entity_id} — Delete Entity
+## DELETE /v1/control-plane/ai-agents/entity/{entity_id} - Delete Entity
 
 **Endpoint**: `DELETE /v1/control-plane/ai-agents/entity/{entity_id}`
 **Summary**: Delete Entity
@@ -208,7 +199,7 @@ Delete an agent entity.
 
 ---
 
-## POST /v1/control-plane/ai-agents/control-entity-execution — Create Control Entity Execution
+## POST /v1/control-plane/ai-agents/control-entity-execution - Create Control Entity Execution
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/control-entity-execution`
 **Summary**: Create Control Entity Execution
@@ -216,16 +207,13 @@ Delete an agent entity.
 
 Trigger a control execution for a single entity.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/control-plane/ai-agents/control-entity-execution — Update Control Entity Execution
+## PATCH /v1/control-plane/ai-agents/control-entity-execution - Update Control Entity Execution
 
 **Endpoint**: `PATCH /v1/control-plane/ai-agents/control-entity-execution`
 **Summary**: Update Control Entity Execution
@@ -246,16 +234,13 @@ Returns:
 Raises:
     HTTPException: If the execution is not found
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/resume-control-entity-execution — Resume Control Entity Execution
+## POST /v1/control-plane/ai-agents/resume-control-entity-execution - Resume Control Entity Execution
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/resume-control-entity-execution`
 **Summary**: Resume Control Entity Execution
@@ -263,16 +248,13 @@ Raises:
 
 Trigger a control execution for a single entity.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/control-execution/resume — Resume Control Execution
+## POST /v1/control-plane/ai-agents/control-execution/resume - Resume Control Execution
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/control-execution/resume`
 **Summary**: Resume Control Execution
@@ -280,16 +262,13 @@ Trigger a control execution for a single entity.
 
 Resume a control execution via the internal agents service.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/control-execution — Create Control Execution
+## POST /v1/control-plane/ai-agents/control-execution - Create Control Execution
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/control-execution`
 **Summary**: Create Control Execution
@@ -300,16 +279,13 @@ Trigger control execution for all entities belonging to a control.
 Returns:
     List of {"entity_id": ..., "control_execution_id": ...} for each executed entity.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/trigger-framework-controls — Trigger Framework Controls
+## POST /v1/control-plane/ai-agents/trigger-framework-controls - Trigger Framework Controls
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/trigger-framework-controls`
 **Summary**: Trigger Framework Controls
@@ -320,16 +296,13 @@ Trigger control execution for all controls in the framework
 Returns:
     results = List of {"entity_id": ..., "control_execution_id": ...} for each executed entity.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/framework-control — Create Framework Control From Prototype
+## POST /v1/control-plane/ai-agents/framework-control - Create Framework Control From Prototype
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/framework-control`
 **Summary**: Create Framework Control From Prototype
@@ -337,16 +310,13 @@ Returns:
 
 Create Agent Customer Framework Control from Prototype.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/control — Create Framework Control
+## POST /v1/control-plane/ai-agents/control - Create Framework Control
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/control`
 **Summary**: Create Framework Control
@@ -354,16 +324,13 @@ Create Agent Customer Framework Control from Prototype.
 
 Create Agent Control ORM object associated with customer framework.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/control-plane/ai-agents/control — Patch Framework Control
+## PATCH /v1/control-plane/ai-agents/control - Patch Framework Control
 
 **Endpoint**: `PATCH /v1/control-plane/ai-agents/control`
 **Summary**: Patch Framework Control
@@ -371,31 +338,25 @@ Create Agent Control ORM object associated with customer framework.
 
 Update Agent Control ORM object associated with either new name or instructions
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/control-plane/ai-agents/update-execution — Update Framework Execution
+## PUT /v1/control-plane/ai-agents/update-execution - Update Framework Execution
 
 **Endpoint**: `PUT /v1/control-plane/ai-agents/update-execution`
 **Summary**: Update Framework Execution
 **Tags**: agents
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/control-plane/ai-agents/control-group-execution — Update Control Group Execution
+## PUT /v1/control-plane/ai-agents/control-group-execution - Update Control Group Execution
 
 **Endpoint**: `PUT /v1/control-plane/ai-agents/control-group-execution`
 **Summary**: Update Control Group Execution
@@ -403,31 +364,25 @@ Update Agent Control ORM object associated with either new name or instructions
 
 Creates new execution if execution type is changed, else updates execution name
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/control-group-execution — Create Control Group Execution
+## POST /v1/control-plane/ai-agents/control-group-execution - Create Control Group Execution
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/control-group-execution`
 **Summary**: Create Control Group Execution
 **Tags**: agents
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/control-plane/ai-agents/action-execution/{action_execution_id} — Get Action Execution
+## GET /v1/control-plane/ai-agents/action-execution/{action_execution_id} - Get Action Execution
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/action-execution/{action_execution_id}`
 **Summary**: Get Action Execution
@@ -444,7 +399,7 @@ Get an agent action execution by its ID.
 
 ---
 
-## GET /v1/control-plane/ai-agents/control-entity-execution/{control_entity_execution_id} — Get Control Entity Execution
+## GET /v1/control-plane/ai-agents/control-entity-execution/{control_entity_execution_id} - Get Control Entity Execution
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/control-entity-execution/{control_entity_execution_id}`
 **Summary**: Get Control Entity Execution
@@ -461,7 +416,7 @@ Get an agent control entity execution by its ID.
 
 ---
 
-## GET /v1/control-plane/ai-agents/control/{control_id} — Get Control
+## GET /v1/control-plane/ai-agents/control/{control_id} - Get Control
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/control/{control_id}`
 **Summary**: Get Control
@@ -488,7 +443,7 @@ Raises:
 
 ---
 
-## DELETE /v1/control-plane/ai-agents/control/{control_id} — Delete Control
+## DELETE /v1/control-plane/ai-agents/control/{control_id} - Delete Control
 
 **Endpoint**: `DELETE /v1/control-plane/ai-agents/control/{control_id}`
 **Summary**: Delete Control
@@ -505,7 +460,7 @@ Delete a control and all related agent actions and agent entities.
 
 ---
 
-## PATCH /v1/control-plane/ai-agents/agent-customer-framework/delete/{agent_customer_framework_id} — Delete Agent Customer Framework
+## PATCH /v1/control-plane/ai-agents/agent-customer-framework/delete/{agent_customer_framework_id} - Delete Agent Customer Framework
 
 **Endpoint**: `PATCH /v1/control-plane/ai-agents/agent-customer-framework/delete/{agent_customer_framework_id}`
 **Summary**: Delete Agent Customer Framework
@@ -536,7 +491,7 @@ Raises:
 
 ---
 
-## DELETE /v1/control-plane/ai-agents/agent-customer-framework/{framework_id} — Hard Delete Agent Customer Framework
+## DELETE /v1/control-plane/ai-agents/agent-customer-framework/{framework_id} - Hard Delete Agent Customer Framework
 
 **Endpoint**: `DELETE /v1/control-plane/ai-agents/agent-customer-framework/{framework_id}`
 **Summary**: Hard Delete Agent Customer Framework
@@ -553,7 +508,7 @@ Delete ORM Agent Customer Framework.
 
 ---
 
-## GET /v1/control-plane/ai-agents/action-execution-evidence/{action_execution_id} — Get Evidence Objects
+## GET /v1/control-plane/ai-agents/action-execution-evidence/{action_execution_id} - Get Evidence Objects
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/action-execution-evidence/{action_execution_id}`
 **Summary**: Get Evidence Objects
@@ -568,7 +523,7 @@ Delete ORM Agent Customer Framework.
 
 ---
 
-## GET /v1/control-plane/ai-agents/evidence/{control_entity_execution_id} — Get Evidence Report
+## GET /v1/control-plane/ai-agents/evidence/{control_entity_execution_id} - Get Evidence Report
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/evidence/{control_entity_execution_id}`
 **Summary**: Get Evidence Report
@@ -585,7 +540,7 @@ Get the evidence ZIP for a specific control entity execution.
 
 ---
 
-## GET /v1/control-plane/ai-agents/reasoning/{control_entity_execution_id} — Get Evidence Reasoning
+## GET /v1/control-plane/ai-agents/reasoning/{control_entity_execution_id} - Get Evidence Reasoning
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/reasoning/{control_entity_execution_id}`
 **Summary**: Get Evidence Reasoning
@@ -602,7 +557,7 @@ Get the reasoning for a specific control entity execution.
 
 ---
 
-## GET /v1/control-plane/ai-agents/control-ready/{control_id} — Control Ready To Execute
+## GET /v1/control-plane/ai-agents/control-ready/{control_id} - Control Ready To Execute
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/control-ready/{control_id}`
 **Summary**: Control Ready To Execute
@@ -619,14 +574,11 @@ Checks if any control is ready to execute.
 
 ---
 
-## POST /v1/control-plane/ai-agents/credential — Create Credential
+## POST /v1/control-plane/ai-agents/credential - Create Credential
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/credential`
 **Summary**: Create Credential
 **Tags**: agents
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -634,7 +586,7 @@ Checks if any control is ready to execute.
 
 ---
 
-## GET /v1/control-plane/ai-agents/credential — Get Credential
+## GET /v1/control-plane/ai-agents/credential - Get Credential
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/credential`
 **Summary**: Get Credential
@@ -649,14 +601,11 @@ Checks if any control is ready to execute.
 
 ---
 
-## PATCH /v1/control-plane/ai-agents/credential — Update Credential
+## PATCH /v1/control-plane/ai-agents/credential - Update Credential
 
 **Endpoint**: `PATCH /v1/control-plane/ai-agents/credential`
 **Summary**: Update Credential
 **Tags**: agents
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -664,7 +613,7 @@ Checks if any control is ready to execute.
 
 ---
 
-## DELETE /v1/control-plane/ai-agents/credential — Delete Credential
+## DELETE /v1/control-plane/ai-agents/credential - Delete Credential
 
 **Endpoint**: `DELETE /v1/control-plane/ai-agents/credential`
 **Summary**: Delete Credential
@@ -680,14 +629,11 @@ Checks if any control is ready to execute.
 
 ---
 
-## POST /v1/control-plane/ai-agents/generate-action-input — Generate Filled Input For Action Prototypes
+## POST /v1/control-plane/ai-agents/generate-action-input - Generate Filled Input For Action Prototypes
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/generate-action-input`
 **Summary**: Generate Filled Input For Action Prototypes
 **Tags**: agents
-
-**Request Body** (required):
-- `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -695,7 +641,7 @@ Checks if any control is ready to execute.
 
 ---
 
-## GET /v1/control-plane/ai-agents/feedback/{action_execution_id} — Get Agent Action Execution Feedback
+## GET /v1/control-plane/ai-agents/feedback/{action_execution_id} - Get Agent Action Execution Feedback
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/feedback/{action_execution_id}`
 **Summary**: Get Agent Action Execution Feedback
@@ -712,37 +658,31 @@ Get the summary for a specific action execution.
 
 ---
 
-## POST /v1/control-plane/ai-agents/control-entity-with-execution — Create Control Entity With Execution
+## POST /v1/control-plane/ai-agents/control-entity-with-execution - Create Control Entity With Execution
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/control-entity-with-execution`
 **Summary**: Create Control Entity With Execution
 **Tags**: agents
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/validate-create-entity-spreadsheet — Validate Create Entity Spreadsheet
+## POST /v1/control-plane/ai-agents/validate-create-entity-spreadsheet - Validate Create Entity Spreadsheet
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/validate-create-entity-spreadsheet`
 **Summary**: Validate Create Entity Spreadsheet
 **Tags**: agents
 
-**Request Body** (required):
-- `multipart/form-data`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/control-plane/ai-agents/create-entities — Create Entities From Spreadsheet
+## POST /v1/control-plane/ai-agents/create-entities - Create Entities From Spreadsheet
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/create-entities`
 **Summary**: Create Entities From Spreadsheet
@@ -750,16 +690,13 @@ Get the summary for a specific action execution.
 
 Create entities from a CSV spreadsheet after validating its content.
 
-**Request Body** (required):
-- `multipart/form-data`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/control-plane/ai-agents/create-entities-csv/{agent_control_id} — Download Entities Csv Template
+## GET /v1/control-plane/ai-agents/create-entities-csv/{agent_control_id} - Download Entities Csv Template
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/create-entities-csv/{agent_control_id}`
 **Summary**: Download Entities Csv Template
@@ -776,7 +713,7 @@ Download a CSV template for bulk entity creation for the given control.
 
 ---
 
-## GET /v1/control-plane/ai-agents/agent-customer-subagent-tool/{customer_subagent_id} — Get Agent Customer Subagent Tools By Id
+## GET /v1/control-plane/ai-agents/agent-customer-subagent-tool/{customer_subagent_id} - Get Agent Customer Subagent Tools By Id
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/agent-customer-subagent-tool/{customer_subagent_id}`
 **Summary**: Get Agent Customer Subagent Tools By Id
@@ -793,7 +730,7 @@ Get the tool tree for a specific customer subagent.
 
 ---
 
-## GET /v1/control-plane/ai-agents/agent-customer-subagent-tools — Get Agent Customer Tools
+## GET /v1/control-plane/ai-agents/agent-customer-subagent-tools - Get Agent Customer Tools
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/agent-customer-subagent-tools`
 **Summary**: Get Agent Customer Tools
@@ -806,7 +743,7 @@ Get the tool tree for a specific customer subagent.
 
 ---
 
-## GET /v1/control-plane/ai-agents/longterm-memory — Get Longterm Memory
+## GET /v1/control-plane/ai-agents/longterm-memory - Get Longterm Memory
 
 **Endpoint**: `GET /v1/control-plane/ai-agents/longterm-memory`
 **Summary**: Get Longterm Memory
@@ -825,7 +762,7 @@ Returns:
 
 ---
 
-## POST /v1/control-plane/ai-agents/longterm-memory — Upload Longterm Memory
+## POST /v1/control-plane/ai-agents/longterm-memory - Upload Longterm Memory
 
 **Endpoint**: `POST /v1/control-plane/ai-agents/longterm-memory`
 **Summary**: Upload Longterm Memory
@@ -842,9 +779,6 @@ Example file structure in zip:
 
 Returns:
     A dictionary with 'uploaded_count' indicating how many files were uploaded
-
-**Request Body** (required):
-- `multipart/form-data`
 
 **Responses**:
 - `200`: Successful Response

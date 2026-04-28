@@ -1,6 +1,6 @@
 # no-auth API Endpoints
 
-## POST /services/collector/raw — Cloudflare Log Push Splunk Format
+## POST /services/collector/raw - Cloudflare Log Push Splunk Format
 
 **Endpoint**: `POST /services/collector/raw`
 **Summary**: Cloudflare Log Push Splunk Format

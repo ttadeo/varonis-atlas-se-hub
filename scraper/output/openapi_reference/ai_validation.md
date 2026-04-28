@@ -1,6 +1,6 @@
-# Atlas API — ai-validation
+# ai-validation API Endpoints
 
-## GET /v2/ai-validation/categories — Get Categories
+## GET /v2/ai-validation/categories - Get Categories
 
 **Endpoint**: `GET /v2/ai-validation/categories`
 **Summary**: Get Categories
@@ -16,7 +16,7 @@
 
 ---
 
-## GET /v2/ai-validation/categories/{ai_validation_category_id} — Get Category
+## GET /v2/ai-validation/categories/{ai_validation_category_id} - Get Category
 
 **Endpoint**: `GET /v2/ai-validation/categories/{ai_validation_category_id}`
 **Summary**: Get Category
@@ -31,7 +31,7 @@
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/categories — Get Customer Categories
+## GET /v2/ai-validation/customer/{customer_id}/categories - Get Customer Categories
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/categories`
 **Summary**: Get Customer Categories
@@ -49,7 +49,7 @@
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/categories — Create Ai Validation Customer Category
+## POST /v2/ai-validation/customer/{customer_id}/categories - Create Ai Validation Customer Category
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/categories`
 **Summary**: Create Ai Validation Customer Category
@@ -59,16 +59,13 @@
 - `customer_id` (path, required): 
 - `ai_validation_scan_template_id` (query, optional): Id of template to associate this category with
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} — Get Customer Category
+## GET /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} - Get Customer Category
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id}`
 **Summary**: Get Customer Category
@@ -84,7 +81,7 @@
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} — Update Customer Category
+## PATCH /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} - Update Customer Category
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id}`
 **Summary**: Update Customer Category
@@ -94,16 +91,13 @@
 - `customer_id` (path, required): 
 - `ai_validation_customer_category_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/categories-with-test-cases — Get Customer Categories With Test Cases
+## GET /v2/ai-validation/categories-with-test-cases - Get Customer Categories With Test Cases
 
 **Endpoint**: `GET /v2/ai-validation/categories-with-test-cases`
 **Summary**: Get Customer Categories With Test Cases
@@ -122,7 +116,7 @@ Get all customer categories with test cases, filterable by template and category
 
 ---
 
-## GET /v2/ai-validation/templates/{ai_validation_scan_template_id}/categories-with-test-cases — Get Template With Customer Categories With Test Cases
+## GET /v2/ai-validation/templates/{ai_validation_scan_template_id}/categories-with-test-cases - Get Template With Customer Categories With Test Cases
 
 **Endpoint**: `GET /v2/ai-validation/templates/{ai_validation_scan_template_id}/categories-with-test-cases`
 **Summary**: Get Template With Customer Categories With Test Cases
@@ -140,7 +134,7 @@ Get all template information along with customer categories and their test cases
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/templates — Create Ai Validation Customer Scan Template
+## POST /v2/ai-validation/customer/{customer_id}/templates - Create Ai Validation Customer Scan Template
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/templates`
 **Summary**: Create Ai Validation Customer Scan Template
@@ -149,16 +143,13 @@ Get all template information along with customer categories and their test cases
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/templates — Get Ai Validation Customer Scan Templates
+## GET /v2/ai-validation/customer/{customer_id}/templates - Get Ai Validation Customer Scan Templates
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/templates`
 **Summary**: Get Ai Validation Customer Scan Templates
@@ -177,7 +168,7 @@ Get all template information along with customer categories and their test cases
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/templates/create-with-category-testcase — Create Ai Validation Customer Scan Template With Customer Category Testcase
+## POST /v2/ai-validation/customer/{customer_id}/templates/create-with-category-testcase - Create Ai Validation Customer Scan Template With Customer Category Testcase
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/templates/create-with-category-testcase`
 **Summary**: Create Ai Validation Customer Scan Template With Customer Category Testcase
@@ -186,16 +177,13 @@ Get all template information along with customer categories and their test cases
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}/update-with-category-testcase — Update Ai Validation Customer Scan Template With Customer Category Testcase
+## PUT /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}/update-with-category-testcase - Update Ai Validation Customer Scan Template With Customer Category Testcase
 
 **Endpoint**: `PUT /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}/update-with-category-testcase`
 **Summary**: Update Ai Validation Customer Scan Template With Customer Category Testcase
@@ -205,16 +193,13 @@ Get all template information along with customer categories and their test cases
 - `customer_id` (path, required): 
 - `ai_validation_scan_template_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} — Get Ai Validation Customer Scan Template
+## GET /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} - Get Ai Validation Customer Scan Template
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}`
 **Summary**: Get Ai Validation Customer Scan Template
@@ -230,7 +215,7 @@ Get all template information along with customer categories and their test cases
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} — Update Ai Validation Template
+## PATCH /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} - Update Ai Validation Template
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}`
 **Summary**: Update Ai Validation Template
@@ -240,16 +225,13 @@ Get all template information along with customer categories and their test cases
 - `customer_id` (path, required): 
 - `ai_validation_scan_template_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/start-ai-validation-scan — Start Ai Validation Scan
+## POST /v2/ai-validation/customer/{customer_id}/start-ai-validation-scan - Start Ai Validation Scan
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/start-ai-validation-scan`
 **Summary**: Start Ai Validation Scan
@@ -260,16 +242,13 @@ Start an AI Validation scan
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/use-cases — Create Use Case
+## POST /v2/ai-validation/customer/{customer_id}/use-cases - Create Use Case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/use-cases`
 **Summary**: Create Use Case
@@ -280,16 +259,13 @@ Create a use case
 **Parameters**:
 - `customer_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases — Get Use Cases
+## GET /v2/ai-validation/customer/{customer_id}/use-cases - Get Use Cases
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases`
 **Summary**: Get Use Cases
@@ -306,7 +282,7 @@ Get all use cases for a customer
 
 ---
 
-## PATCH /v2/ai-validation/use-cases/{use_case_id} — Update Use Case
+## PATCH /v2/ai-validation/use-cases/{use_case_id} - Update Use Case
 
 **Endpoint**: `PATCH /v2/ai-validation/use-cases/{use_case_id}`
 **Summary**: Update Use Case
@@ -317,16 +293,13 @@ Update a use case
 **Parameters**:
 - `use_case_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Create Or Update Ai Validation Use Case Config
+## POST /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config - Create Or Update Ai Validation Use Case Config
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config`
 **Summary**: Create Or Update Ai Validation Use Case Config
@@ -338,16 +311,13 @@ Create an AI validation use case config by its usecase id, updates if one alread
 - `customer_id` (path, required): 
 - `use_case_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Get Ai Validation Use Case Config
+## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config - Get Ai Validation Use Case Config
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config`
 **Summary**: Get Ai Validation Use Case Config
@@ -365,7 +335,7 @@ Get an AI validation use case config by its usecase id
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Update Ai Validation Use Case Config By Use Case
+## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config - Update Ai Validation Use Case Config By Use Case
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config`
 **Summary**: Update Ai Validation Use Case Config By Use Case
@@ -377,16 +347,13 @@ Update an AI validation use case config
 - `customer_id` (path, required): 
 - `use_case_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Get Schedule For Ai Validation Use Case Config
+## GET /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job - Get Schedule For Ai Validation Use Case Config
 
 **Endpoint**: `GET /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
 **Summary**: Get Schedule For Ai Validation Use Case Config
@@ -403,7 +370,7 @@ Get a scheduled job for an AI validation use case config by its usecase id
 
 ---
 
-## POST /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Create Schedule For Ai Validation Use Case Config
+## POST /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job - Create Schedule For Ai Validation Use Case Config
 
 **Endpoint**: `POST /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
 **Summary**: Create Schedule For Ai Validation Use Case Config
@@ -414,16 +381,13 @@ Create a scheduled job for an AI validation use case config by its usecase id
 **Parameters**:
 - `use_case_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Delete Schedule For Ai Validation Use Case Config
+## DELETE /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job - Delete Schedule For Ai Validation Use Case Config
 
 **Endpoint**: `DELETE /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
 **Summary**: Delete Schedule For Ai Validation Use Case Config
@@ -440,7 +404,7 @@ Delete a scheduled job for an AI validation use case config by its usecase id
 
 ---
 
-## PATCH /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Update Schedule For Ai Validation Use Case Config
+## PATCH /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job - Update Schedule For Ai Validation Use Case Config
 
 **Endpoint**: `PATCH /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
 **Summary**: Update Schedule For Ai Validation Use Case Config
@@ -451,16 +415,13 @@ Update a scheduled job for an AI validation use case config by its usecase id
 **Parameters**:
 - `use_case_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/use-case-configs/{ai_validation_use_case_config_id} — Update Ai Validation Use Case Config
+## PATCH /v2/ai-validation/customer/{customer_id}/use-case-configs/{ai_validation_use_case_config_id} - Update Ai Validation Use Case Config
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/use-case-configs/{ai_validation_use_case_config_id}`
 **Summary**: Update Ai Validation Use Case Config
@@ -472,16 +433,13 @@ Update an AI validation use case config
 - `customer_id` (path, required): 
 - `ai_validation_use_case_config_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id} — Get Use Case
+## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id} - Get Use Case
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}`
 **Summary**: Get Use Case
@@ -499,7 +457,7 @@ Get a specific use case
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution — Get Baseline Execution
+## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution - Get Baseline Execution
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution`
 **Summary**: Get Baseline Execution
@@ -517,7 +475,7 @@ Get a use case's baseline execution
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution — Update Baseline Execution
+## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution - Update Baseline Execution
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution`
 **Summary**: Update Baseline Execution
@@ -529,16 +487,13 @@ Update a use case's baseline execution
 - `customer_id` (path, required): 
 - `use_case_id` (path, required): 
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-csv — Import Test Cases from CSV File
+## POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-csv - Import Test Cases from CSV File
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-csv`
 **Summary**: Import Test Cases from CSV File
@@ -551,16 +506,13 @@ Update a use case's baseline execution
 - `customer_category_id` (path, required): The customer category ID
 - `auto_create_correctness_evaluation` (query, optional): Whether to automatically create a Correctness (RESPONSE_SIMILARITY) evaluation when expected_output column is found in CSV. Defaults to True.
 
-**Request Body** (required):
-- `multipart/form-data`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/importable-datasets — List Importable Datasets For Customer Category
+## GET /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/importable-datasets - List Importable Datasets For Customer Category
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/importable-datasets`
 **Summary**: List Importable Datasets For Customer Category
@@ -614,7 +566,7 @@ Discovers all capture replay datasets accessible to the customer and analyzes th
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-from-dataset — Import Dataset as Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-from-dataset - Import Dataset as Test Cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-from-dataset`
 **Summary**: Import Dataset as Test Cases
@@ -626,16 +578,13 @@ Transform capture replay dataset into test cases with optional expected outputs 
 - `customer_id` (path, required): Customer identifier
 - `customer_category_id` (path, required): Target customer category identifier for test case creation
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/import-csv — Parse CSV File for Test Cases
+## POST /v2/ai-validation/import-csv - Parse CSV File for Test Cases
 
 **Endpoint**: `POST /v2/ai-validation/import-csv`
 **Summary**: Parse CSV File for Test Cases
@@ -643,16 +592,13 @@ Transform capture replay dataset into test cases with optional expected outputs 
 
 **Parse a CSV file containing test case prompts and return structured JSON data for frontend consumption.**
 
-**Request Body** (required):
-- `multipart/form-data`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/importable-datasets — Get Importable Datasets for AI Validation
+## GET /v2/ai-validation/importable-datasets - Get Importable Datasets for AI Validation
 
 **Endpoint**: `GET /v2/ai-validation/importable-datasets`
 **Summary**: Get Importable Datasets for AI Validation
@@ -670,7 +616,7 @@ Transform capture replay dataset into test cases with optional expected outputs 
 
 ---
 
-## GET /v2/ai-validation/job-status/{job_id} — Get Pentest Job
+## GET /v2/ai-validation/job-status/{job_id} - Get Pentest Job
 
 **Endpoint**: `GET /v2/ai-validation/job-status/{job_id}`
 **Summary**: Get Pentest Job
@@ -687,7 +633,7 @@ Get the status of a job that was initiated to run a discovery scan.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox — Create AI Validation Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox - Create AI Validation Sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox`
 **Summary**: Create AI Validation Sandbox
@@ -695,16 +641,13 @@ Get the status of a job that was initiated to run a discovery scan.
 
 Create a new AI validation sandbox for testing AI models and services with comprehensive configuration options
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox — List AI Validation Sandboxes
+## GET /v2/ai-validation/customer/{customer_id}/sandbox - List AI Validation Sandboxes
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox`
 **Summary**: List AI Validation Sandboxes
@@ -728,7 +671,7 @@ Retrieve AI validation sandboxes with optional filtering and pagination
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/resource-instances — Get Resource Instances Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/resource-instances - Get Resource Instances Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/resource-instances`
 **Summary**: Get Resource Instances Route
@@ -747,7 +690,7 @@ Get all resource instances that could be added to a sandbox.
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Get AI Validation Sandbox Details
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} - Get AI Validation Sandbox Details
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}`
 **Summary**: Get AI Validation Sandbox Details
@@ -764,7 +707,7 @@ Retrieve detailed information about a specific AI validation sandbox
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Update AI Validation Sandbox
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} - Update AI Validation Sandbox
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}`
 **Summary**: Update AI Validation Sandbox
@@ -775,16 +718,13 @@ Modify configuration and settings of an existing AI validation sandbox
 **Parameters**:
 - `sandbox_id` (path, required): Unique sandbox identifier
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Delete AI Validation Sandbox
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} - Delete AI Validation Sandbox
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}`
 **Summary**: Delete AI Validation Sandbox
@@ -801,7 +741,7 @@ Permanently remove an AI validation sandbox and all associated data including te
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/clone — Clone AI Validation Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/clone - Clone AI Validation Sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/clone`
 **Summary**: Clone AI Validation Sandbox
@@ -818,7 +758,7 @@ Create an identical copy of an existing sandbox with all configurations, test da
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/abort — Abort Sandbox Executions
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/abort - Abort Sandbox Executions
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/abort`
 **Summary**: Abort Sandbox Executions
@@ -835,7 +775,7 @@ Initiate abort of all active executions for a sandbox. Returns immediately; clea
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — Add AI Model/Service to Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources - Add AI Model/Service to Sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources`
 **Summary**: Add AI Model/Service to Sandbox
@@ -846,16 +786,13 @@ Assign an existing AI model or service to a sandbox for testing and evaluation w
 **Parameters**:
 - `sandbox_id` (path, required): Target sandbox identifier
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — List Sandbox AI Models/Services
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources - List Sandbox AI Models/Services
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources`
 **Summary**: List Sandbox AI Models/Services
@@ -872,7 +809,7 @@ Retrieve all AI models and services assigned to a specific sandbox with executio
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — Remove AI Model/Service from Sandbox
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources - Remove AI Model/Service from Sandbox
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources`
 **Summary**: Remove AI Model/Service from Sandbox
@@ -891,7 +828,7 @@ Remove one or more AI models/services from a sandbox environment by instance ID 
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id} — Update Sandbox AI Model/Service Configuration
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id} - Update Sandbox AI Model/Service Configuration
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}`
 **Summary**: Update Sandbox AI Model/Service Configuration
@@ -903,16 +840,13 @@ Modify the configuration of an AI model or service within a sandbox including ex
 - `sandbox_id` (path, required): Sandbox identifier containing the resource
 - `resource_id` (path, required): Unique identifier of the sandbox resource to update
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases — Add Test Cases to Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases - Add Test Cases to Sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases`
 **Summary**: Add Test Cases to Sandbox
@@ -923,16 +857,13 @@ Modify the configuration of an AI model or service within a sandbox including ex
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases — List Sandbox Test Cases
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases - List Sandbox Test Cases
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases`
 **Summary**: List Sandbox Test Cases
@@ -955,7 +886,7 @@ Retrieve paginated list of test cases configured for sandbox execution and valid
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} — Remove Test Case from Sandbox
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} - Remove Test Case from Sandbox
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}`
 **Summary**: Remove Test Case from Sandbox
@@ -973,7 +904,7 @@ Permanently delete a test case and its configuration from the sandbox
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} — Update Sandbox Test Case
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} - Update Sandbox Test Case
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}`
 **Summary**: Update Sandbox Test Case
@@ -985,16 +916,13 @@ Modify test case configuration including prompts and template variables
 - `sandbox_id` (path, required): Sandbox identifier
 - `testcase_id` (path, required): Test case identifier to update
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/generate_with_ai_assistant — Generate Test Cases with AI Assistant
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/generate_with_ai_assistant - Generate Test Cases with AI Assistant
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/generate_with_ai_assistant`
 **Summary**: Generate Test Cases with AI Assistant
@@ -1005,16 +933,13 @@ Deprecated: Use POST /{sandbox_id}/generate-testcases instead.
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier for test case creation
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/clone — Clone Sandbox Test Case
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/clone - Clone Sandbox Test Case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/clone`
 **Summary**: Clone Sandbox Test Case
@@ -1032,7 +957,7 @@ Create an exact duplicate of an existing test case with new unique identifier
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/bulk-delete — Bulk Delete Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/bulk-delete - Bulk Delete Test Cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/bulk-delete`
 **Summary**: Bulk Delete Test Cases
@@ -1043,16 +968,13 @@ Delete multiple test cases from an AI validation sandbox in a single operation
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing test cases to delete
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-testcases — Generate AI-Powered Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-testcases - Generate AI-Powered Test Cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-testcases`
 **Summary**: Generate AI-Powered Test Cases
@@ -1063,16 +985,13 @@ Create comprehensive test cases using advanced AI models based on user requireme
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier for test case generation
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-csv — Import Test Cases from CSV File
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-csv - Import Test Cases from CSV File
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-csv`
 **Summary**: Import Test Cases from CSV File
@@ -1085,16 +1004,13 @@ Create comprehensive test cases using advanced AI models based on user requireme
 - `auto_create_correctness_evaluation` (query, optional): Whether to automatically create a Correctness (RESPONSE_SIMILARITY) evaluation when expected_output column is found in CSV. Defaults to True.
 - `auto_create_binary_classification` (query, optional): Whether to automatically create a BINARY_CLASSIFICATION evaluation when actual_label column is found in CSV. Defaults to True.
 
-**Request Body** (required):
-- `multipart/form-data`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/importable-datasets — List Available Datasets for Import
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/importable-datasets - List Available Datasets for Import
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/importable-datasets`
 **Summary**: List Available Datasets for Import
@@ -1115,7 +1031,7 @@ Create comprehensive test cases using advanced AI models based on user requireme
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-from-dataset — Import Dataset as Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-from-dataset - Import Dataset as Test Cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-from-dataset`
 **Summary**: Import Dataset as Test Cases
@@ -1126,16 +1042,13 @@ Transform capture replay dataset into test cases with optional expected outputs 
 **Parameters**:
 - `sandbox_id` (path, required): Target sandbox identifier for test case creation
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/execute — Execute Sandbox (Async)
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/execute - Execute Sandbox (Async)
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/execute`
 **Summary**: Execute Sandbox (Async)
@@ -1146,16 +1059,13 @@ Start asynchronous execution of AI models against test cases with background pro
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier to execute
 
-**Request Body** (optional):
-- `application/json`
-
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions — List Sandbox Executions
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions - List Sandbox Executions
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions`
 **Summary**: List Sandbox Executions
@@ -1173,7 +1083,7 @@ Retrieve all execution records for a sandbox with optional status filtering
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id} — Get Execution Summary
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id} - Get Execution Summary
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}`
 **Summary**: Get Execution Summary
@@ -1191,7 +1101,7 @@ Retrieve detailed summary of execution status, progress, and result statistics
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id} — Delete Sandbox Execution
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id} - Delete Sandbox Execution
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}`
 **Summary**: Delete Sandbox Execution
@@ -1209,7 +1119,7 @@ Permanently remove execution record and all associated test results
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results — List Execution Results
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results - List Execution Results
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results`
 **Summary**: List Execution Results
@@ -1227,7 +1137,7 @@ Retrieve all test case results for a specific execution with detailed outcomes
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id} — Get Specific Execution Result
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id} - Get Specific Execution Result
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id}`
 **Summary**: Get Specific Execution Result
@@ -1246,7 +1156,7 @@ Retrieve detailed information for a single test case execution result
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id} — Update Execution Result
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id} - Update Execution Result
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id}`
 **Summary**: Update Execution Result
@@ -1259,16 +1169,13 @@ Modify execution result details and outcomes for manual corrections
 - `execution_id` (path, required): Execution identifier
 - `result_id` (path, required): Result identifier to update
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-results — Clear Execution Results
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-results - Clear Execution Results
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-results`
 **Summary**: Clear Execution Results
@@ -1287,7 +1194,7 @@ Reset execution results while preserving execution history for re-execution
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/testcases/{testcase_id}/clear-results — Clear Test Case Results
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/testcases/{testcase_id}/clear-results - Clear Test Case Results
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/testcases/{testcase_id}/clear-results`
 **Summary**: Clear Test Case Results
@@ -1306,7 +1213,7 @@ Reset execution results for a specific test case while preserving other results
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-multiple-testcases — Clear Multiple Test Case Results
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-multiple-testcases - Clear Multiple Test Case Results
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-multiple-testcases`
 **Summary**: Clear Multiple Test Case Results
@@ -1318,16 +1225,13 @@ Reset execution results for multiple test cases in batch operation
 - `sandbox_id` (path, required): Sandbox identifier
 - `execution_id` (path, required): Execution identifier
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latest-results — Get Latest Execution Results with Filtering and Pagination
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latest-results - Get Latest Execution Results with Filtering and Pagination
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latest-results`
 **Summary**: Get Latest Execution Results with Filtering and Pagination
@@ -1352,7 +1256,7 @@ Retrieve slim latest results with optional filtering and pagination. Supports fi
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations — Create Sandbox Evaluation
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations - Create Sandbox Evaluation
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations`
 **Summary**: Create Sandbox Evaluation
@@ -1363,16 +1267,13 @@ Define evaluation criteria and configuration for AI model output assessment and 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier for evaluation configuration
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations — List Sandbox Evaluations
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations - List Sandbox Evaluations
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations`
 **Summary**: List Sandbox Evaluations
@@ -1396,7 +1297,7 @@ Retrieve all evaluation configurations and criteria defined for the sandbox
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Get Evaluation Configuration
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} - Get Evaluation Configuration
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id}`
 **Summary**: Get Evaluation Configuration
@@ -1414,7 +1315,7 @@ Retrieve detailed configuration and parameters for a specific evaluation
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Update Evaluation Configuration
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} - Update Evaluation Configuration
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id}`
 **Summary**: Update Evaluation Configuration
@@ -1426,16 +1327,13 @@ Modify evaluation parameters, criteria, and configuration settings
 - `sandbox_id` (path, required): Sandbox identifier containing the evaluation
 - `evaluation_id` (path, required): Evaluation identifier to update
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Delete Evaluation Configuration
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} - Delete Evaluation Configuration
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id}`
 **Summary**: Delete Evaluation Configuration
@@ -1453,7 +1351,7 @@ Permanently remove evaluation configuration and all associated settings
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-commentary — Generate Sandbox Commentary Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-commentary - Generate Sandbox Commentary Route
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-commentary`
 **Summary**: Generate Sandbox Commentary Route
@@ -1470,7 +1368,7 @@ Generate AI commentary for a sandbox to help understand which resource performed
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/all/active-jobs — Check for Global Active Jobs
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/all/active-jobs - Check for Global Active Jobs
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/all/active-jobs`
 **Summary**: Check for Global Active Jobs
@@ -1487,7 +1385,7 @@ Check for all active evaluation jobs across all sandboxes for the customer
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/active-jobs — Check for Active Jobs
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/active-jobs - Check for Active Jobs
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/active-jobs`
 **Summary**: Check for Active Jobs
@@ -1504,7 +1402,7 @@ Check if sandbox has active evaluation jobs for polling state restoration
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}/clone — Clone Sandbox Resource Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}/clone - Clone Sandbox Resource Route
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}/clone`
 **Summary**: Clone Sandbox Resource Route
@@ -1522,7 +1420,7 @@ Clone an existing AI Validation Sandbox resource within the same sandbox.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/validate — Validate All LLM Endpoint Resources
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/validate - Validate All LLM Endpoint Resources
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/validate`
 **Summary**: Validate All LLM Endpoint Resources
@@ -1539,7 +1437,7 @@ Checks all LLM Endpoint resources in the specified sandbox for secret existence 
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/template-variables — Get Sandbox Template Variables Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/template-variables - Get Sandbox Template Variables Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/template-variables`
 **Summary**: Get Sandbox Template Variables Route
@@ -1556,7 +1454,7 @@ Get all unique template variable names for a sandbox.
 
 ---
 
-## PUT /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Update Testcase Variables Route Put
+## PUT /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables - Update Testcase Variables Route Put
 
 **Endpoint**: `PUT /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables`
 **Summary**: Update Testcase Variables Route Put
@@ -1569,16 +1467,13 @@ Replace all variable values for a specific test case (PUT - full replacement).
 - `testcase_id` (path, required): The test case ID
 - `allow_new` (query, optional): Allow setting variables not yet defined in sandbox templates
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Update Testcase Variables Route Patch
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables - Update Testcase Variables Route Patch
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables`
 **Summary**: Update Testcase Variables Route Patch
@@ -1591,16 +1486,13 @@ Partially update variable values for a specific test case (PATCH - merge).
 - `testcase_id` (path, required): The test case ID
 - `allow_new` (query, optional): Allow setting variables not yet defined in sandbox templates
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Get Testcase Variables Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables - Get Testcase Variables Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables`
 **Summary**: Get Testcase Variables Route
@@ -1618,7 +1510,7 @@ Get current variable values for a specific test case.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation — Create Commentary Conversation Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation - Create Commentary Conversation Route
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation`
 **Summary**: Create Commentary Conversation Route
@@ -1629,16 +1521,13 @@ Create a new commentary conversation for an AI validation sandbox.
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation — Get Commentary Conversation Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation - Get Commentary Conversation Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation`
 **Summary**: Get Commentary Conversation Route
@@ -1655,7 +1544,7 @@ Get the commentary conversation for an AI validation sandbox.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages — Add Message To Conversation Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages - Add Message To Conversation Route
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages`
 **Summary**: Add Message To Conversation Route
@@ -1667,16 +1556,13 @@ Add a new message to an existing commentary conversation.
 - `sandbox_id` (path, required): The sandbox ID
 - `conversation_id` (path, required): The conversation ID
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages — Get Conversation Messages Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages - Get Conversation Messages Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages`
 **Summary**: Get Conversation Messages Route
@@ -1696,7 +1582,7 @@ Get messages from a commentary conversation with pagination.
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/status — Update Conversation Status Route
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/status - Update Conversation Status Route
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/status`
 **Summary**: Update Conversation Status Route
@@ -1708,16 +1594,13 @@ Update the status of a commentary conversation.
 - `sandbox_id` (path, required): The sandbox ID
 - `conversation_id` (path, required): The conversation ID
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/commentary/conversations — List Conversations Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/commentary/conversations - List Conversations Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/commentary/conversations`
 **Summary**: List Conversations Route
@@ -1736,7 +1619,7 @@ List all commentary conversations for a customer.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat/send — Send Message And Get Ai Response Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat/send - Send Message And Get Ai Response Route
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat/send`
 **Summary**: Send Message And Get Ai Response Route
@@ -1747,16 +1630,13 @@ Send a user message and receive an AI response in commentary chat.
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat — Get Commentary Chat With Suggestions Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat - Get Commentary Chat With Suggestions Route
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat`
 **Summary**: Get Commentary Chat With Suggestions Route
@@ -1773,7 +1653,7 @@ Get commentary conversation with AI-generated discussion suggestions.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/export-csv — Export AI Evaluation to CSV
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/export-csv - Export AI Evaluation to CSV
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/export-csv`
 **Summary**: Export AI Evaluation to CSV
@@ -1790,7 +1670,7 @@ Generate CSV report of sandbox evaluation results with all resources and evaluat
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/summary — Get Sandbox Summary
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/summary - Get Sandbox Summary
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/summary`
 **Summary**: Get Sandbox Summary
@@ -1807,7 +1687,7 @@ Retrieve comprehensive summary statistics for a sandbox including test case coun
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latency-distribution — Get Latency Distribution
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latency-distribution - Get Latency Distribution
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latency-distribution`
 **Summary**: Get Latency Distribution
@@ -1826,7 +1706,7 @@ Returns bucketed latency distribution with summary statistics for charting
 
 ---
 
-## POST /v2/ai-validation-sandbox/update-batch-results — Update Batch Sandbox Results
+## POST /v2/ai-validation-sandbox/update-batch-results - Update Batch Sandbox Results
 
 **Endpoint**: `POST /v2/ai-validation-sandbox/update-batch-results`
 **Summary**: Update Batch Sandbox Results
@@ -1834,16 +1714,13 @@ Returns bucketed latency distribution with summary statistics for charting
 
 Update execution results from llm-pentest batch processing.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation-sandbox/mark-batch-complete — Mark Sandbox Batch Complete
+## POST /v2/ai-validation-sandbox/mark-batch-complete - Mark Sandbox Batch Complete
 
 **Endpoint**: `POST /v2/ai-validation-sandbox/mark-batch-complete`
 **Summary**: Mark Sandbox Batch Complete
@@ -1851,16 +1728,13 @@ Update execution results from llm-pentest batch processing.
 
 Mark a sandbox batch as complete.
 
-**Request Body** (required):
-- `application/json`
-
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation-sandbox/active-sandboxes — List Active Sandboxes
+## GET /v2/ai-validation-sandbox/active-sandboxes - List Active Sandboxes
 
 **Endpoint**: `GET /v2/ai-validation-sandbox/active-sandboxes`
 **Summary**: List Active Sandboxes

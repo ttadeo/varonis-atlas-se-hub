@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from playwright.async_api import async_playwright
 
-BASE_URL = "https://playground.alltrue-be.com"
+BASE_URL = "https://prod.alltrue-be.com"
 OPENAPI_URL = f"{BASE_URL}/_docs/api/openapi"
 OUTPUT_DIR = Path(__file__).parent / "output" / "openapi_reference"
 
