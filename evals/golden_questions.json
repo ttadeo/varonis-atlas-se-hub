@@ -242,7 +242,7 @@
     "lesson_title": "AI Attack Techniques & Atlas Detection",
     "question_type": "check_question",
     "question": "A customer's security team asks: our AI assistant has access to our internal knowledge base and customer data — how would an attacker try to abuse that, and how does Atlas catch it?",
-    "expected_topics": ["prompt injection", "agentic", "guardrails", "jailbreak", "data exfiltration", "invisible text", "semantic", "detection"]
+    "expected_topics": ["prompt injection", "agentic guardrails", "confused deputy", "data exfiltration", "invisible text", "semantic obfuscation", "Detect Topics", "Remove Invisible Text"]
   },
   {
     "lesson_id": 17,
@@ -267,38 +267,38 @@
   },
   {
     "lesson_id": 99,
-    "lesson_title": "3.20 — AI Runtime Protection",
+    "lesson_title": "V3.2.0 — AI Runtime Protection",
     "question_type": "version_check",
     "question": "What is AI Runtime Protection in Atlas and how does it differ from the AI Gateway?",
     "expected_topics": ["AI Runtime Protection", "runtime", "gateway", "inline", "proxy", "real-time", "enforcement"]
   },
   {
     "lesson_id": 99,
-    "lesson_title": "3.20 — AI Runtime Protection",
+    "lesson_title": "V3.2.0 — AI Runtime Protection",
     "question_type": "version_check",
-    "question": "A customer wants to protect AI workloads running on AWS Bedrock. What does Atlas support for Bedrock in version 3.20?",
-    "expected_topics": ["AWS Bedrock", "Bedrock", "provider", "integration", "runtime", "Atlas"]
+    "question": "A customer wants to protect AI workloads running on AWS Bedrock. What does Atlas support for Bedrock in V3.2.0?",
+    "expected_topics": ["AWS Bedrock", "Bedrock AgentCore", "discovery", "provider", "integration", "Atlas"]
   },
   {
     "lesson_id": 99,
-    "lesson_title": "3.20 — MCP Security",
+    "lesson_title": "V3.2.0 — MCP Security",
     "question_type": "version_check",
     "question": "What is MCP in the context of AI security, and what controls does Atlas provide for MCP servers?",
     "expected_topics": ["MCP", "Model Context Protocol", "tool", "agent", "quarantine", "guardrail", "security"]
   },
   {
     "lesson_id": 99,
-    "lesson_title": "3.20 — MCP Security",
+    "lesson_title": "V3.2.0 — MCP Security",
     "question_type": "version_check",
     "question": "A customer is deploying AI agents that use MCP to call external tools. What are the key security risks and how does Atlas address them?",
     "expected_topics": ["MCP", "tool poisoning", "agentic", "quarantine", "guardrail", "prompt injection", "external tools"]
   },
   {
     "lesson_id": 99,
-    "lesson_title": "3.20 — What's New",
+    "lesson_title": "V3.2.0 — What's New",
     "question_type": "version_check",
-    "question": "What are the most significant new features introduced in Atlas version 3.20?",
-    "expected_topics": ["3.20", "AI Runtime Protection", "MCP", "AWS Bedrock", "new", "release"]
+    "question": "What are the most significant new features introduced in Atlas V3.2.0?",
+    "expected_topics": ["V3.2.0", "multi-modal guardrails", "browser-based pentests", "Bedrock AgentCore", "Runtime Policy Automations", "Gateway Selective Logging", "Pentest Strategies"]
   },
   {
     "lesson_id": 99,
