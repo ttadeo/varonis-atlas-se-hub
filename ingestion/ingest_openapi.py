@@ -84,7 +84,7 @@ def load_to_neo4j(chunks: list[dict], driver):
                 title=chunk.get("title", ""),
                 section="openapi_reference",
                 url="https://prod.alltrue-be.com/_docs/api/openapi",
-                file=f"openapi_reference/{chunk.get('tags', ['general'])[0]}",
+                file=f"openapi_reference/{(chunk.get('tags') or ['general'])[0]}",
                 api_method=chunk.get("method", ""),
                 api_path=chunk.get("api_path", "")
             )

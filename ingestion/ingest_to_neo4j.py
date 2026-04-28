@@ -180,11 +180,15 @@ RETURN c
 """
 
 
-def chunk_id(chunk: dict, index: int) -> str:
-    """Stable ID for a chunk based on file + heading + index."""
+def chunk_id(chunk: dict, per_file_index: int) -> str:
+    """Stable ID for a chunk based on file + heading + per-file index.
+
+    Uses per_file_index (position within the file, not global list position)
+    so IDs remain stable even when new files are added to the ingestion run.
+    """
     file_slug = re.sub(r"[^a-z0-9]", "_", chunk.get("file", "").lower())
     heading_slug = re.sub(r"[^a-z0-9]", "_", chunk.get("heading", "").lower())[:40]
-    return f"{file_slug}__{heading_slug}__{index}"
+    return f"{file_slug}__{heading_slug}__{per_file_index}"
 
 
 def load_to_neo4j(chunks: list[dict], driver):
@@ -217,9 +221,13 @@ def load_to_neo4j(chunks: list[dict], driver):
                 )
                 pages_seen.add(url)
 
-        # Upsert chunks
-        for i, chunk in enumerate(chunks):
-            cid = chunk_id(chunk, i)
+        # Upsert chunks — track per-file index so IDs are stable across runs
+        file_counters: dict[str, int] = {}
+        for idx, chunk in enumerate(chunks):
+            file_key = chunk.get("file", "")
+            per_file_index = file_counters.get(file_key, 0)
+            file_counters[file_key] = per_file_index + 1
+            cid = chunk_id(chunk, per_file_index)
             session.run(UPSERT_CHUNK,
                 id=cid,
                 heading=chunk.get("heading", ""),
@@ -231,8 +239,8 @@ def load_to_neo4j(chunks: list[dict], driver):
                 url=chunk.get("url", ""),
                 file=chunk.get("file", "")
             )
-            if (i + 1) % 20 == 0 or (i + 1) == len(chunks):
-                print(f"  Loaded {i + 1}/{len(chunks)} chunks")
+            if (idx + 1) % 20 == 0 or (idx + 1) == len(chunks):
+                print(f"  Loaded {idx + 1}/{len(chunks)} chunks")
 
     print(f"\n✓ {len(chunks)} chunks loaded into Neo4j")
     print(f"  Sections: {len(sections_seen)}")
