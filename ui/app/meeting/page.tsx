@@ -152,6 +152,7 @@ export default function MeetingPage() {
 
   // Audio / TTS state
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+  const speakingIndexRef = useRef<number | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -179,16 +180,18 @@ export default function MeetingPage() {
 
   function speak(text: string, index: number) {
     if (!("speechSynthesis" in window)) return;
-    if (speakingIndex === index) {
+    if (speakingIndexRef.current === index) {
       window.speechSynthesis.cancel();
+      speakingIndexRef.current = null;
       setSpeakingIndex(null);
       return;
     }
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(stripMarkdownForSpeech(text));
     utt.rate = 0.95;
-    utt.onend = () => setSpeakingIndex(null);
-    utt.onerror = () => setSpeakingIndex(null);
+    utt.onend = () => { speakingIndexRef.current = null; setSpeakingIndex(null); };
+    utt.onerror = () => { speakingIndexRef.current = null; setSpeakingIndex(null); };
+    speakingIndexRef.current = index;
     setSpeakingIndex(index);
     window.speechSynthesis.speak(utt);
   }
