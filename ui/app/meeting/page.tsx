@@ -146,6 +146,13 @@ export default function MeetingPage() {
   const [quickInput, setQuickInput] = useState("");
   const [quickLoading, setQuickLoading] = useState(false);
 
+  // Pinned key points
+  const [pinnedPoints, setPinnedPoints] = useState<{ text: string; msgIndex: number; id: string }[]>([]);
+  const [showPinnedDrawer, setShowPinnedDrawer] = useState(false);
+
+  // Audio / TTS state
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -154,6 +161,53 @@ export default function MeetingPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // ── TTS helpers ───────────────────────────────────────────────────────────────
+
+  function stripMarkdownForSpeech(text: string): string {
+    return text
+      .replace(/#{1,6}\s+/g, "")
+      .replace(/\*\*(.*?)\*\*/g, "$1")
+      .replace(/\*(.*?)\*/g, "$1")
+      .replace(/`[^`]*`/g, "")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/^\s*[-*+]\s+/gm, "")
+      .replace(/\n{2,}/g, ". ")
+      .replace(/\n/g, " ")
+      .trim();
+  }
+
+  function speak(text: string, index: number) {
+    if (!("speechSynthesis" in window)) return;
+    if (speakingIndex === index) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(stripMarkdownForSpeech(text));
+    utt.rate = 0.95;
+    utt.onend = () => setSpeakingIndex(null);
+    utt.onerror = () => setSpeakingIndex(null);
+    setSpeakingIndex(index);
+    window.speechSynthesis.speak(utt);
+  }
+
+  // ── Pin / unpin a key point ────────────────────────────────────────────────
+
+  function togglePin(text: string, msgIndex: number) {
+    const id = `${msgIndex}-${text.slice(0, 40)}`;
+    setPinnedPoints((prev) => {
+      const exists = prev.find((p) => p.id === id);
+      if (exists) return prev.filter((p) => p.id !== id);
+      return [...prev, { text, msgIndex, id }];
+    });
+  }
+
+  function isPinned(text: string, msgIndex: number) {
+    const id = `${msgIndex}-${text.slice(0, 40)}`;
+    return pinnedPoints.some((p) => p.id === id);
+  }
 
   // ── Sync meeting context to localStorage so the pop-out can use it ──────────
   useEffect(() => {
@@ -985,6 +1039,73 @@ export default function MeetingPage() {
         </div>
       )}
 
+      {/* Key Points Drawer */}
+      {showPinnedDrawer && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="flex-1 bg-black/50" onClick={() => setShowPinnedDrawer(false)} />
+          <div className="w-96 bg-gray-900 border-l border-gray-700 flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-700">
+              <h2 className="font-semibold text-white">★ Key Points</h2>
+              <button
+                onClick={() => setShowPinnedDrawer(false)}
+                className="text-gray-400 hover:text-white text-lg leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              {pinnedPoints.length === 0 ? (
+                <div className="text-center mt-16">
+                  <p className="text-gray-500 text-sm">No key points pinned yet.</p>
+                  <p className="text-gray-600 text-xs mt-2 px-4">
+                    Hover over any paragraph in a response and click ☆ to pin it here.
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {pinnedPoints.map((point) => (
+                    <div key={point.id} className="bg-gray-800 border border-yellow-700/40 rounded-xl px-4 py-3 group">
+                      <div className="flex items-start gap-2">
+                        <span className="text-yellow-400 text-xs shrink-0 mt-0.5">★</span>
+                        <p className="text-sm text-gray-200 flex-1 leading-relaxed">{point.text}</p>
+                        <button
+                          onClick={() => togglePin(point.text, point.msgIndex)}
+                          className="text-gray-600 hover:text-red-400 text-xs shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                          title="Remove"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {pinnedPoints.length > 0 && (
+              <div className="border-t border-gray-700 px-4 py-3 flex gap-2">
+                <button
+                  onClick={() => {
+                    const text = pinnedPoints.map((p, idx) => `${idx + 1}. ${p.text}`).join("\n\n");
+                    navigator.clipboard.writeText(text);
+                  }}
+                  className="flex-1 text-xs px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition-colors"
+                >
+                  Copy All
+                </button>
+                <button
+                  onClick={() => setPinnedPoints([])}
+                  className="text-xs px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-red-400 border border-gray-700 transition-colors"
+                >
+                  Clear All
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
@@ -1021,6 +1142,16 @@ export default function MeetingPage() {
                 ⬡ Pop Out
               </button>
             )}
+            <button
+              onClick={() => setShowPinnedDrawer(true)}
+              className={`text-xs px-3 py-1.5 rounded-lg border transition-colors relative ${
+                pinnedPoints.length > 0
+                  ? "bg-yellow-900/40 border-yellow-700 text-yellow-300 hover:bg-yellow-900/60"
+                  : "bg-gray-800 hover:bg-gray-700 border-gray-700 text-gray-300"
+              }`}
+            >
+              ★ Key Points {pinnedPoints.length > 0 && `(${pinnedPoints.length})`}
+            </button>
             <button
               onClick={openSessionsDrawer}
               className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 hover:bg-gray-700 border border-gray-700 text-gray-300 transition-colors"
@@ -1094,7 +1225,28 @@ export default function MeetingPage() {
                         h3: ({ children }) => (
                           <h3 className="text-sm font-semibold mt-2 mb-1">{children}</h3>
                         ),
-                        p: ({ children }) => <p className="mb-2">{children}</p>,
+                        p: ({ children, node }) => {
+                          const getText = (n: { type?: string; value?: string; children?: unknown[] }): string => {
+                            if (!n) return '';
+                            if (n.type === 'text') return n.value || '';
+                            if (n.children) return (n.children as typeof n[]).map(getText).join('');
+                            return '';
+                          };
+                          const text = node ? getText(node as Parameters<typeof getText>[0]) : '';
+                          const pinned = isPinned(text, i);
+                          return (
+                            <p className="mb-2 flex items-start gap-1.5 group/pin">
+                              <button
+                                onClick={() => togglePin(text, i)}
+                                className={`shrink-0 mt-0.5 text-xs transition-colors ${pinned ? 'text-yellow-400' : 'text-gray-600 opacity-0 group-hover/pin:opacity-100'}`}
+                                title={pinned ? 'Remove from Key Points' : 'Pin to Key Points'}
+                              >
+                                {pinned ? '★' : '☆'}
+                              </button>
+                              <span>{children}</span>
+                            </p>
+                          );
+                        },
                         ul: ({ children }) => (
                           <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>
                         ),
@@ -1154,9 +1306,16 @@ export default function MeetingPage() {
                   </div>
                 )}
 
-                {/* Model badge + script button */}
+                {/* Model badge + audio + script button */}
                 {msg.role === "assistant" && !msg.isQuickResponse && (
                   <div className="flex items-center gap-3 px-1">
+                    <button
+                      onClick={() => speak(msg.content, i)}
+                      className={`text-xs transition-colors ${speakingIndex === i ? "text-orange-400 hover:text-orange-300" : "text-gray-600 hover:text-gray-400"}`}
+                      title={speakingIndex === i ? "Stop reading" : "Read aloud"}
+                    >
+                      {speakingIndex === i ? "⏹ Stop" : "🔊 Listen"}
+                    </button>
                     {msg.model && (
                       <p className="text-xs text-gray-600">via {msg.model}</p>
                     )}
