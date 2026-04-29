@@ -163,6 +163,73 @@ export default function MeetingPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // ── Persist and auto-restore last active session ───────────────────────────
+
+  useEffect(() => {
+    if (sessionId) {
+      localStorage.setItem("atlas-meeting-active-session-id", sessionId);
+    }
+  }, [sessionId]);
+
+  useEffect(() => {
+    const savedId = localStorage.getItem("atlas-meeting-active-session-id");
+    if (!savedId) return;
+
+    async function restoreLastSession() {
+      const res = await fetch(`/api/meeting?action=session&sessionId=${savedId}`);
+      if (!res.ok) { localStorage.removeItem("atlas-meeting-active-session-id"); return; }
+      const data = await res.json();
+
+      setContext({
+        industry: data.industry,
+        meetingType: data.meetingType,
+        attendees: data.attendees,
+        knownConcerns: data.knownConcerns,
+      });
+      setContextLocked(true);
+
+      const restoredMessages: Message[] = data.interactions.flatMap(
+        (int: { question: string; answer: string; isScript: boolean }) => [
+          { role: "user" as const, content: int.question },
+          { role: "assistant" as const, content: int.answer, isScript: int.isScript ?? false },
+        ]
+      );
+      const restoredHistory = data.interactions
+        .filter((int: { isScript: boolean }) => !int.isScript)
+        .flatMap((int: { question: string; answer: string }) => [
+          { role: "user" as const, content: int.question },
+          { role: "assistant" as const, content: int.answer },
+        ]);
+
+      setMessages(restoredMessages);
+      setHistory(restoredHistory);
+      setSessionScripts(restoredMessages.filter((m) => m.role === "assistant" && m.isScript));
+      setSessionId(savedId);
+      setSessionName(data.name || "");
+      setSessionDescription(data.description || "");
+      setIsSaving(true);
+      setSessionSaved(true);
+    }
+
+    restoreLastSession();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function startNewSession() {
+    localStorage.removeItem("atlas-meeting-active-session-id");
+    setMessages([]);
+    setHistory([]);
+    setSessionScripts([]);
+    setSessionId(null);
+    setSessionName("");
+    setSessionDescription("");
+    setIsSaving(false);
+    setSessionSaved(false);
+    setContext({ industry: "", meetingType: "", attendees: "", knownConcerns: "" });
+    setContextLocked(false);
+    setPinnedPoints([]);
+  }
+
   // ── TTS helpers ───────────────────────────────────────────────────────────────
 
   function stripMarkdownForSpeech(text: string): string {
@@ -878,6 +945,15 @@ export default function MeetingPage() {
 
             {sessionSaved && (
               <p className="text-xs text-green-400">✓ Session being saved</p>
+            )}
+
+            {(sessionId || messages.length > 0) && (
+              <button
+                onClick={startNewSession}
+                className="w-full text-xs text-gray-500 hover:text-gray-300 border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-2 transition-colors"
+              >
+                + New Session
+              </button>
             )}
           </div>
         </div>
