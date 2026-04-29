@@ -147,8 +147,10 @@ export default function MeetingPage() {
   const [quickLoading, setQuickLoading] = useState(false);
 
   // Pinned key points
-  const [pinnedPoints, setPinnedPoints] = useState<{ text: string; msgIndex: number; id: string }[]>([]);
+  const [pinnedPoints, setPinnedPoints] = useState<{ id: string; name: string; text: string; msgIndex: number }[]>([]);
   const [showPinnedDrawer, setShowPinnedDrawer] = useState(false);
+  const [namingSection, setNamingSection] = useState<{ id: string; text: string; defaultName: string } | null>(null);
+  const [pendingPinName, setPendingPinName] = useState("");
 
   // Audio / TTS state
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
@@ -263,19 +265,17 @@ export default function MeetingPage() {
     window.speechSynthesis.speak(utt);
   }
 
-  // ── Pin / unpin a key point ────────────────────────────────────────────────
+  // ── Pin / unpin a section ─────────────────────────────────────────────────
 
-  function togglePin(text: string, msgIndex: number) {
-    const id = `${msgIndex}-${text.slice(0, 40)}`;
-    setPinnedPoints((prev) => {
-      const exists = prev.find((p) => p.id === id);
-      if (exists) return prev.filter((p) => p.id !== id);
-      return [...prev, { text, msgIndex, id }];
-    });
+  function pinSection(id: string, name: string, text: string, msgIndex: number) {
+    setPinnedPoints((prev) => [...prev, { id, name, text, msgIndex }]);
   }
 
-  function isPinned(text: string, msgIndex: number) {
-    const id = `${msgIndex}-${text.slice(0, 40)}`;
+  function unpinSection(id: string) {
+    setPinnedPoints((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  function isSectionPinned(id: string) {
     return pinnedPoints.some((p) => p.id === id);
   }
 
@@ -1138,24 +1138,34 @@ export default function MeetingPage() {
                 <div className="text-center mt-16">
                   <p className="text-gray-500 text-sm">No key points pinned yet.</p>
                   <p className="text-gray-600 text-xs mt-2 px-4">
-                    Hover over any paragraph in a response and click ☆ to pin it here.
+                    Hover over any response section and click ☆ to pin it here.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {pinnedPoints.map((point) => (
                     <div key={point.id} className="bg-gray-800 border border-yellow-700/40 rounded-xl px-4 py-3 group">
-                      <div className="flex items-start gap-2">
-                        <span className="text-yellow-400 text-xs shrink-0 mt-0.5">★</span>
-                        <p className="text-sm text-gray-200 flex-1 leading-relaxed">{point.text}</p>
-                        <button
-                          onClick={() => togglePin(point.text, point.msgIndex)}
-                          className="text-gray-600 hover:text-red-400 text-xs shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"
-                          title="Remove"
-                        >
-                          ✕
-                        </button>
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <p className="text-xs font-semibold text-yellow-400">★ {point.name}</p>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <button
+                            onClick={() => navigator.clipboard.writeText(point.text)}
+                            className="text-xs text-gray-500 hover:text-gray-300 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            Copy
+                          </button>
+                          <button
+                            onClick={() => unpinSection(point.id)}
+                            className="text-xs text-gray-600 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                            title="Remove"
+                          >
+                            ✕
+                          </button>
+                        </div>
                       </div>
+                      <p className="text-xs text-gray-400 leading-relaxed line-clamp-4">
+                        {point.text.replace(/^#{1,3}\s+.+\n?/m, "").replace(/[*_`#]/g, "").trim()}
+                      </p>
                     </div>
                   ))}
                 </div>
@@ -1166,7 +1176,7 @@ export default function MeetingPage() {
               <div className="border-t border-gray-700 px-4 py-3 flex gap-2">
                 <button
                   onClick={() => {
-                    const text = pinnedPoints.map((p, idx) => `${idx + 1}. ${p.text}`).join("\n\n");
+                    const text = pinnedPoints.map((p, idx) => `${idx + 1}. ${p.name}\n\n${p.text}`).join("\n\n---\n\n");
                     navigator.clipboard.writeText(text);
                   }}
                   className="flex-1 text-xs px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-300 border border-gray-700 transition-colors"
@@ -1295,71 +1305,79 @@ export default function MeetingPage() {
                   {msg.role === "user" ? (
                     msg.content
                   ) : (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        h2: ({ children }) => (
-                          <h2 className="text-base font-semibold mt-3 mb-1">{children}</h2>
-                        ),
-                        h3: ({ children }) => (
-                          <h3 className="text-sm font-semibold mt-2 mb-1">{children}</h3>
-                        ),
-                        p: ({ children, node }) => {
-                          const getText = (n: { type?: string; value?: string; children?: unknown[] }): string => {
-                            if (!n) return '';
-                            if (n.type === 'text') return n.value || '';
-                            if (n.children) return (n.children as typeof n[]).map(getText).join('');
-                            return '';
-                          };
-                          const text = node ? getText(node as Parameters<typeof getText>[0]) : '';
-                          const pinned = isPinned(text, i);
-                          return (
-                            <p className="mb-2 flex items-start gap-1.5 group/pin">
-                              <button
-                                onClick={() => togglePin(text, i)}
-                                className={`shrink-0 mt-0.5 text-xs transition-colors ${pinned ? 'text-yellow-400' : 'text-gray-600 opacity-0 group-hover/pin:opacity-100'}`}
-                                title={pinned ? 'Remove from Key Points' : 'Pin to Key Points'}
-                              >
-                                {pinned ? '★' : '☆'}
-                              </button>
-                              <span>{children}</span>
-                            </p>
-                          );
-                        },
-                        ul: ({ children }) => (
-                          <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>
-                        ),
-                        ol: ({ children }) => (
-                          <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>
-                        ),
-                        strong: ({ children }) => (
-                          <strong className="font-semibold">{children}</strong>
-                        ),
-                        table: ({ children }) => (
-                          <table className="w-full text-xs border-collapse my-2">{children}</table>
-                        ),
-                        th: ({ children }) => (
-                          <th className="border border-gray-600 px-2 py-1 bg-gray-700 text-left">
-                            {children}
-                          </th>
-                        ),
-                        td: ({ children }) => (
-                          <td className="border border-gray-600 px-2 py-1">{children}</td>
-                        ),
-                        pre: ({ children }) => (
-                          <pre className="bg-gray-700 rounded p-2 my-2 overflow-x-auto text-xs font-mono">
-                            {children}
-                          </pre>
-                        ),
-                        code: ({ children }) => (
-                          <code className="bg-gray-700 px-1 rounded text-xs font-mono break-all">
-                            {children}
-                          </code>
-                        ),
-                      }}
-                    >
-                      {msg.content}
-                    </ReactMarkdown>
+                    (() => {
+                      const sections = msg.content.split(/\n\s*---\s*\n/);
+                      const mdComponents = {
+                        h2: ({ children }: { children?: React.ReactNode }) => <h2 className="text-base font-semibold mt-3 mb-1">{children}</h2>,
+                        h3: ({ children }: { children?: React.ReactNode }) => <h3 className="text-sm font-semibold mt-2 mb-1">{children}</h3>,
+                        p:  ({ children }: { children?: React.ReactNode }) => <p className="mb-2">{children}</p>,
+                        ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                        ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                        strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-semibold">{children}</strong>,
+                        table: ({ children }: { children?: React.ReactNode }) => <table className="w-full text-xs border-collapse my-2">{children}</table>,
+                        th: ({ children }: { children?: React.ReactNode }) => <th className="border border-gray-600 px-2 py-1 bg-gray-700 text-left">{children}</th>,
+                        td: ({ children }: { children?: React.ReactNode }) => <td className="border border-gray-600 px-2 py-1">{children}</td>,
+                        pre: ({ children }: { children?: React.ReactNode }) => <pre className="bg-gray-700 rounded p-2 my-2 overflow-x-auto text-xs font-mono">{children}</pre>,
+                        code: ({ children }: { children?: React.ReactNode }) => <code className="bg-gray-700 px-1 rounded text-xs font-mono break-all">{children}</code>,
+                      };
+                      return (
+                        <>
+                          {sections.map((section, sIdx) => {
+                            const sectionId = `${i}-${sIdx}`;
+                            const pinned = isSectionPinned(sectionId);
+                            const isNaming = namingSection?.id === sectionId;
+                            const headingMatch = section.match(/^#{1,3}\s+(.+)/m);
+                            const defaultName = headingMatch ? headingMatch[1].trim() : `Section ${sIdx + 1}`;
+                            return (
+                              <div key={sIdx}>
+                                {sIdx > 0 && <hr className="border-gray-700 my-3" />}
+                                <div className="group/section">
+                                  <div className="flex items-center justify-end mb-1 min-h-[20px]">
+                                    {isNaming ? (
+                                      <div className="flex items-center gap-1.5">
+                                        <input
+                                          autoFocus
+                                          type="text"
+                                          value={pendingPinName}
+                                          onChange={(e) => setPendingPinName(e.target.value)}
+                                          onKeyDown={(e) => {
+                                            if (e.key === "Enter") { pinSection(sectionId, pendingPinName || defaultName, section, i); setNamingSection(null); }
+                                            if (e.key === "Escape") setNamingSection(null);
+                                          }}
+                                          placeholder={defaultName}
+                                          className="text-xs bg-gray-700 text-gray-100 rounded px-2 py-1 w-44 focus:outline-none focus:ring-1 focus:ring-yellow-500 placeholder-gray-500"
+                                        />
+                                        <button
+                                          onClick={() => { pinSection(sectionId, pendingPinName || defaultName, section, i); setNamingSection(null); }}
+                                          className="text-xs bg-yellow-600 hover:bg-yellow-500 text-white rounded px-2 py-1 transition-colors"
+                                        >
+                                          Save
+                                        </button>
+                                        <button onClick={() => setNamingSection(null)} className="text-xs text-gray-500 hover:text-gray-300">✕</button>
+                                      </div>
+                                    ) : (
+                                      <button
+                                        onClick={() => {
+                                          if (pinned) { unpinSection(sectionId); }
+                                          else { setNamingSection({ id: sectionId, text: section, defaultName }); setPendingPinName(defaultName); }
+                                        }}
+                                        className={`text-sm transition-colors ${pinned ? "text-yellow-400" : "text-gray-600 opacity-0 group-hover/section:opacity-100"}`}
+                                        title={pinned ? "Remove from Key Points" : "Pin section to Key Points"}
+                                      >
+                                        {pinned ? "★" : "☆"}
+                                      </button>
+                                    )}
+                                  </div>
+                                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                                    {section}
+                                  </ReactMarkdown>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </>
+                      );
+                    })()
                   )}
                 </div>
 
