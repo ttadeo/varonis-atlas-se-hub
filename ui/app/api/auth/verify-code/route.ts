@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Redis } from "@upstash/redis";
 import { SignJWT } from "jose";
+import neo4j from "neo4j-driver";
 
 const redis = new Redis({
   url: process.env.KV_REST_API_URL!,
@@ -35,6 +36,21 @@ if (!stored || stored !== submitted) {
     .setExpirationTime(`${SESSION_HOURS}h`)
     .setIssuedAt()
     .sign(secret);
+
+  // Ensure User node exists in Neo4j (fire and forget — don't block login)
+  try {
+    const driver = neo4j.driver(
+      process.env.NEO4J_URI ?? "bolt://localhost:7687",
+      neo4j.auth.basic(process.env.NEO4J_USER ?? "neo4j", process.env.NEO4J_PASSWORD ?? ""),
+      { maxConnectionPoolSize: 1 }
+    );
+    const dbSession = driver.session();
+    await dbSession.run("MERGE (u:User {id: $email})", { email: normalized });
+    await dbSession.close();
+    await driver.close();
+  } catch {
+    // Non-fatal — login still succeeds if Neo4j is unreachable
+  }
 
   const response = NextResponse.json({ ok: true });
   response.cookies.set(COOKIE_NAME, token, {
