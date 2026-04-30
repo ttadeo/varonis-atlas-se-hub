@@ -989,13 +989,23 @@ export async function GET(req: NextRequest) {
       const result = await session.run(
         `MATCH (u:User {id: $userId})-[:HAS_SESSION]->(s:MeetingSession)
          OPTIONAL MATCH (s)-[:HAD]->(i:Interaction)
-         WITH s, count(i) AS turnCount
+         WITH s, count(i) AS turnCount, null AS sharedBy
          RETURN s.id AS id, s.name AS name, s.description AS description,
                 s.customer_industry AS industry,
                 s.meeting_type AS meetingType, s.attendees AS attendees,
                 s.summary AS summary, s.created_at AS createdAt,
-                turnCount
-         ORDER BY s.created_at DESC
+                turnCount, sharedBy
+         UNION
+         MATCH (s:MeetingSession)-[:SHARED_WITH]->(u:User {id: $userId})
+         MATCH (owner:User)-[:HAS_SESSION]->(s)
+         OPTIONAL MATCH (s)-[:HAD]->(i:Interaction)
+         WITH s, count(i) AS turnCount, owner.id AS sharedBy
+         RETURN s.id AS id, s.name AS name, s.description AS description,
+                s.customer_industry AS industry,
+                s.meeting_type AS meetingType, s.attendees AS attendees,
+                s.summary AS summary, s.created_at AS createdAt,
+                turnCount, sharedBy
+         ORDER BY createdAt DESC
          LIMIT 50`,
         { userId }
       );
@@ -1009,6 +1019,7 @@ export async function GET(req: NextRequest) {
         summary: r.get("summary"),
         createdAt: r.get("createdAt")?.toString() ?? "",
         turnCount: r.get("turnCount")?.toNumber?.() ?? 0,
+        sharedBy: r.get("sharedBy") ?? null,
       }));
       return NextResponse.json({ sessions });
     } finally {

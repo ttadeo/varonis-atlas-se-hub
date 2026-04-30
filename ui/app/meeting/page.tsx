@@ -49,6 +49,18 @@ interface SavedSession {
   summary: string;
   createdAt: string;
   turnCount: number;
+  sharedBy?: string | null;
+}
+
+interface Notification {
+  id: string;
+  type: string;
+  message: string;
+  sessionId: string;
+  sessionName: string;
+  fromUserId: string;
+  read: boolean;
+  createdAt: string;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -156,6 +168,14 @@ export default function MeetingPage() {
   const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const speakingIndexRef = useRef<number | null>(null);
 
+  // Share & notifications
+  const [allUsers, setAllUsers] = useState<{ id: string }[]>([]);
+  const [shareTargetSessionId, setShareTargetSessionId] = useState<string | null>(null);
+  const [shareTargetSessionName, setShareTargetSessionName] = useState<string>("");
+  const [shareLoading, setShareLoading] = useState(false);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [showNotifTray, setShowNotifTray] = useState(false);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -171,6 +191,47 @@ export default function MeetingPage() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  // ── Users list + notifications ────────────────────────────────────────────
+
+  useEffect(() => {
+    fetch("/api/users").then(r => r.json()).then(d => setAllUsers(d.users ?? [])).catch(() => {});
+    fetchNotifications();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function fetchNotifications() {
+    fetch("/api/notifications")
+      .then(r => r.json())
+      .then(d => setNotifications(d.notifications ?? []))
+      .catch(() => {});
+  }
+
+  async function markAllRead() {
+    const unread = notifications.filter(n => !n.read).map(n => n.id);
+    if (!unread.length) return;
+    await fetch("/api/notifications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids: unread }),
+    });
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  }
+
+  async function shareSession(recipientId: string) {
+    if (!shareTargetSessionId) return;
+    setShareLoading(true);
+    try {
+      await fetch("/api/sessions/share", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: shareTargetSessionId, sessionName: shareTargetSessionName, recipientId }),
+      });
+    } finally {
+      setShareLoading(false);
+      setShareTargetSessionId(null);
+    }
+  }
 
   // ── Persist pinned points to localStorage keyed by session ────────────────
 
@@ -1042,6 +1103,9 @@ export default function MeetingPage() {
                             <p className="text-sm font-medium text-white truncate">
                               {s.name || `${s.meetingType} · ${s.industry}`}
                             </p>
+                            {s.sharedBy && (
+                              <p className="text-xs text-blue-400 mt-0.5">↗ Shared by {s.sharedBy}</p>
+                            )}
                             {s.description && (
                               <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{s.description}</p>
                             )}
@@ -1072,12 +1136,22 @@ export default function MeetingPage() {
                             >
                               Scripts
                             </button>
-                            <button
-                              onClick={() => deleteSession(s.id)}
-                              className="text-xs text-red-500 hover:text-red-400"
-                            >
-                              Delete
-                            </button>
+                            {!s.sharedBy && (
+                              <button
+                                onClick={() => { setShareTargetSessionId(s.id); setShareTargetSessionName(s.name || `${s.meetingType} · ${s.industry}`); }}
+                                className="text-xs text-green-400 hover:text-green-300"
+                              >
+                                Share
+                              </button>
+                            )}
+                            {!s.sharedBy && (
+                              <button
+                                onClick={() => deleteSession(s.id)}
+                                className="text-xs text-red-500 hover:text-red-400"
+                              >
+                                Delete
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1213,6 +1287,85 @@ export default function MeetingPage() {
         </div>
       )}
 
+      {/* Share Session Modal */}
+      {shareTargetSessionId && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center px-4">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-sm shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-700">
+              <h2 className="font-semibold text-white text-sm">Share Session</h2>
+              <button onClick={() => setShareTargetSessionId(null)} className="text-gray-400 hover:text-white">✕</button>
+            </div>
+            <div className="px-5 py-4">
+              <p className="text-xs text-gray-400 mb-3">Select a user to share <span className="text-white font-medium">&ldquo;{shareTargetSessionName}&rdquo;</span> with:</p>
+              {allUsers.length === 0 ? (
+                <p className="text-xs text-gray-500">No other users found.</p>
+              ) : (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {allUsers.map((u) => (
+                    <button
+                      key={u.id}
+                      onClick={() => shareSession(u.id)}
+                      disabled={shareLoading}
+                      className="w-full text-left text-sm text-gray-200 bg-gray-800 hover:bg-gray-700 disabled:opacity-50 rounded-lg px-3 py-2.5 transition-colors truncate"
+                    >
+                      {u.id}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Notification Tray */}
+      {showNotifTray && (
+        <div className="fixed inset-0 z-50 flex">
+          <div className="flex-1 bg-black/50" onClick={() => setShowNotifTray(false)} />
+          <div className="w-96 bg-gray-900 border-l border-gray-700 flex flex-col shadow-2xl">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gray-700">
+              <h2 className="font-semibold text-white">Notifications</h2>
+              <button onClick={() => setShowNotifTray(false)} className="text-gray-400 hover:text-white text-lg leading-none">✕</button>
+            </div>
+            <div className="flex-1 overflow-y-auto px-4 py-4">
+              {notifications.length === 0 ? (
+                <div className="text-center mt-16">
+                  <p className="text-gray-500 text-sm">No notifications yet.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {notifications.map((n) => (
+                    <div
+                      key={n.id}
+                      className={`rounded-xl px-4 py-3 border ${n.read ? "bg-gray-800 border-gray-700" : "bg-blue-950 border-blue-700"}`}
+                    >
+                      <p className="text-sm text-gray-200 leading-snug">{n.message}</p>
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="text-xs text-gray-500">
+                          {new Date(n.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </p>
+                        {n.sessionId && (
+                          <button
+                            onClick={async () => {
+                              const fakeSession = { id: n.sessionId, name: n.sessionName, description: "", industry: "", meetingType: "", attendees: "", summary: "", createdAt: "", turnCount: 0 };
+                              await loadSession(fakeSession);
+                              setShowNotifTray(false);
+                            }}
+                            className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+                          >
+                            Open Session →
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="border-b border-gray-800 px-6 py-4 flex items-center justify-between">
@@ -1268,6 +1421,19 @@ export default function MeetingPage() {
             <span className="text-xs px-2 py-1 rounded-full bg-orange-900 text-orange-300 font-medium">
               SE Tool
             </span>
+            {/* Notification bell */}
+            <button
+              onClick={() => { setShowNotifTray(true); markAllRead(); }}
+              className="relative w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm flex items-center justify-center transition-colors"
+              title="Notifications"
+            >
+              🔔
+              {notifications.filter(n => !n.read).length > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-[10px] font-bold flex items-center justify-center">
+                  {notifications.filter(n => !n.read).length}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => setHelpOpen(true)}
               className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
