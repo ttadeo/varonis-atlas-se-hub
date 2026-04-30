@@ -165,6 +165,13 @@ export default function MeetingPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  // ── Persist pinned points to localStorage keyed by session ────────────────
+
+  useEffect(() => {
+    if (!sessionId) return;
+    localStorage.setItem(`atlas-pinned-${sessionId}`, JSON.stringify(pinnedPoints));
+  }, [pinnedPoints, sessionId]);
+
   // ── Persist and auto-restore last active session ───────────────────────────
 
   useEffect(() => {
@@ -211,6 +218,8 @@ export default function MeetingPage() {
       setSessionDescription(data.description || "");
       setIsSaving(true);
       setSessionSaved(true);
+      const savedPins = localStorage.getItem(`atlas-pinned-${savedId}`);
+      if (savedPins) setPinnedPoints(JSON.parse(savedPins));
     }
 
     restoreLastSession();
@@ -696,6 +705,8 @@ export default function MeetingPage() {
       setSessionDescription(s.description);
       setIsSaving(true);
       setSessionSaved(true);
+      const savedPins = localStorage.getItem(`atlas-pinned-${s.id}`);
+      setPinnedPoints(savedPins ? JSON.parse(savedPins) : []);
       if (!keepDrawerOpen) setShowSessionsDrawer(false);
 
       return scripts;
