@@ -986,17 +986,22 @@ export async function GET(req: NextRequest) {
     const driver = getNeo4jDriver();
     const session = driver.session();
     try {
-      const result = await session.run(
+      // Own sessions
+      const ownResult = await session.run(
         `MATCH (u:User {id: $userId})-[:HAS_SESSION]->(s:MeetingSession)
          OPTIONAL MATCH (s)-[:HAD]->(i:Interaction)
-         WITH s, count(i) AS turnCount, null AS sharedBy
+         WITH s, count(i) AS turnCount
          RETURN s.id AS id, s.name AS name, s.description AS description,
                 s.customer_industry AS industry,
                 s.meeting_type AS meetingType, s.attendees AS attendees,
                 s.summary AS summary, s.created_at AS createdAt,
-                turnCount, sharedBy
-         UNION
-         MATCH (s:MeetingSession)-[:SHARED_WITH]->(u:User {id: $userId})
+                turnCount
+         ORDER BY s.created_at DESC LIMIT 50`,
+        { userId }
+      );
+      // Shared with me
+      const sharedResult = await session.run(
+        `MATCH (s:MeetingSession)-[:SHARED_WITH]->(u:User {id: $userId})
          MATCH (owner:User)-[:HAS_SESSION]->(s)
          OPTIONAL MATCH (s)-[:HAD]->(i:Interaction)
          WITH s, count(i) AS turnCount, owner.id AS sharedBy
@@ -1005,11 +1010,11 @@ export async function GET(req: NextRequest) {
                 s.meeting_type AS meetingType, s.attendees AS attendees,
                 s.summary AS summary, s.created_at AS createdAt,
                 turnCount, sharedBy
-         ORDER BY createdAt DESC
-         LIMIT 50`,
+         ORDER BY s.created_at DESC LIMIT 50`,
         { userId }
       );
-      const sessions = result.records.map((r) => ({
+
+      const toSession = (r: import("neo4j-driver").Record, sharedBy: string | null = null) => ({
         id: r.get("id"),
         name: r.get("name") ?? "",
         description: r.get("description") ?? "",
@@ -1019,8 +1024,19 @@ export async function GET(req: NextRequest) {
         summary: r.get("summary"),
         createdAt: r.get("createdAt")?.toString() ?? "",
         turnCount: r.get("turnCount")?.toNumber?.() ?? 0,
-        sharedBy: r.get("sharedBy") ?? null,
-      }));
+        sharedBy,
+      });
+
+      const own = ownResult.records.map((r) => toSession(r, null));
+      const shared = sharedResult.records.map((r) => toSession(r, r.get("sharedBy") ?? null));
+
+      // Merge, deduplicate by id, sort by createdAt desc
+      const seen = new Set<string>();
+      const sessions = [...own, ...shared]
+        .filter((s) => { if (seen.has(s.id)) return false; seen.add(s.id); return true; })
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .slice(0, 50);
+
       return NextResponse.json({ sessions });
     } finally {
       await session.close();
