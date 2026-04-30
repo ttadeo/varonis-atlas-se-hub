@@ -159,7 +159,14 @@ export default function MeetingPage() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const userId = "se_default"; // Will be replaced by real auth user ID later
+  const [userId, setUserId] = useState<string>("se_default");
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => { if (d.userId) setUserId(d.userId); })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
