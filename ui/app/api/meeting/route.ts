@@ -18,6 +18,8 @@ interface MeetingContext {
   meetingType: string;
   attendees: string;
   knownConcerns: string;
+  customerUrl?: string;
+  customerIntel?: string;
 }
 
 interface ConversationMessage {
@@ -265,6 +267,11 @@ RESPONSE STYLE:
 
 function buildSystemPrompt(ctx: MeetingContext | null): Anthropic.Messages.TextBlockParam[] {
   if (!ctx) return [STATIC_SYSTEM_PROMPT];
+
+  const customerIntelSection = ctx.customerIntel
+    ? `\n\nCUSTOMER INTELLIGENCE (scraped from ${ctx.customerUrl}):\n${ctx.customerIntel}\n\nUse this intelligence to personalize every response — reference the customer's specific products, people, priorities, and pain points when relevant.`
+    : "";
+
   return [
     STATIC_SYSTEM_PROMPT,
     {
@@ -273,7 +280,7 @@ function buildSystemPrompt(ctx: MeetingContext | null): Anthropic.Messages.TextB
 - Customer Industry: ${ctx.industry}
 - Meeting Type: ${ctx.meetingType}
 - People in the room: ${ctx.attendees}
-- Known concerns / objections: ${ctx.knownConcerns || "None specified"}
+- Known concerns / objections: ${ctx.knownConcerns || "None specified"}${customerIntelSection}
 
 Tailor every answer to this customer profile. Reference their industry, the meeting type, and address their known concerns directly when relevant.`,
     },
@@ -289,6 +296,7 @@ MEETING DETAILS:
 - People in the room: ${ctx.attendees || "Not specified"}
 - Known concerns / objections: ${ctx.knownConcerns || "None specified"}
 - Total demo time: ${demoLength} minutes
+${ctx.customerIntel ? `\nCUSTOMER INTELLIGENCE (from ${ctx.customerUrl}):\n${ctx.customerIntel}` : ""}
 
 Search the Atlas knowledge base to ensure accuracy on product features, capabilities, and terminology before writing the script.
 
@@ -326,7 +334,7 @@ MEETING DETAILS:
 - Meeting Type: ${ctx.meetingType}
 - People in the room: ${ctx.attendees || "Not specified"}
 - Known concerns / objections: ${ctx.knownConcerns || "None specified"}
-
+${ctx.customerIntel ? `\nCUSTOMER INTELLIGENCE (from ${ctx.customerUrl}):\n${ctx.customerIntel}` : ""}
 Search the Atlas knowledge base to ensure accuracy on product features, capabilities, and terminology before writing the guide.
 
 Generate a practical, immediately usable call guide with the following sections:

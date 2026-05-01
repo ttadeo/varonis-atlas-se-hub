@@ -13,6 +13,8 @@ interface MeetingContext {
   meetingType: string;
   attendees: string;
   knownConcerns: string;
+  customerUrl?: string;
+  customerIntel?: string;
 }
 
 interface Attachment {
@@ -125,6 +127,9 @@ export default function MeetingPage() {
     knownConcerns: "",
   });
   const [contextLocked, setContextLocked] = useState(false);
+  const [customerUrl, setCustomerUrl] = useState("");
+  const [scraping, setScraping] = useState(false);
+  const [scrapeError, setScrapeError] = useState<string | null>(null);
 
   // Demo script state
   const [demoRequired, setDemoRequired] = useState(false);
@@ -307,6 +312,34 @@ export default function MeetingPage() {
     setContext({ industry: "", meetingType: "", attendees: "", knownConcerns: "" });
     setContextLocked(false);
     setPinnedPoints([]);
+    setCustomerUrl("");
+    setScrapeError(null);
+  }
+
+  // ── Customer website scraping ─────────────────────────────────────────────
+
+  async function scrapeCustomerSite() {
+    if (!customerUrl.trim()) return;
+    setScraping(true);
+    setScrapeError(null);
+    try {
+      const res = await fetch("/api/scrape-customer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: customerUrl.trim(), attendees: context.attendees }),
+      });
+      const data = await res.json();
+      if (data.error && !data.summary) {
+        setScrapeError(data.error);
+        return;
+      }
+      setContext((c) => ({ ...c, customerUrl: customerUrl.trim(), customerIntel: data.summary }));
+      if (data.error) setScrapeError(data.error); // partial error
+    } catch (err) {
+      setScrapeError(`Failed to reach scrape API: ${String(err)}`);
+    } finally {
+      setScraping(false);
+    }
   }
 
   // ── TTS helpers ───────────────────────────────────────────────────────────────
@@ -859,6 +892,9 @@ export default function MeetingPage() {
               {context.attendees && (
                 <p className="text-gray-500 text-xs">{context.attendees}</p>
               )}
+              {context.customerIntel && (
+                <p className="text-xs text-green-400 mt-1">✓ {context.customerUrl} researched</p>
+              )}
               <button
                 onClick={() => setContextLocked(false)}
                 className="text-xs text-blue-400 hover:text-blue-300 mt-2"
@@ -916,6 +952,35 @@ export default function MeetingPage() {
                   onChange={(e) => setContext((c) => ({ ...c, knownConcerns: e.target.value }))}
                   className="w-full bg-gray-800 text-sm text-gray-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-blue-600 placeholder-gray-500"
                 />
+              </div>
+
+              {/* Customer website */}
+              <div>
+                <label className="text-xs text-gray-400 mb-1 block">Customer Website</label>
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    placeholder="e.g. acmecorp.com"
+                    value={customerUrl}
+                    onChange={(e) => setCustomerUrl(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") scrapeCustomerSite(); }}
+                    className="flex-1 bg-gray-800 text-sm text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-600 placeholder-gray-500"
+                  />
+                  <button
+                    onClick={scrapeCustomerSite}
+                    disabled={!customerUrl.trim() || scraping}
+                    className="text-xs bg-blue-700 hover:bg-blue-600 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg px-2.5 py-2 transition-colors shrink-0"
+                    title="Research this company"
+                  >
+                    {scraping ? "…" : "🔍"}
+                  </button>
+                </div>
+                {scrapeError && (
+                  <p className="text-xs text-red-400 mt-1">{scrapeError}</p>
+                )}
+                {context.customerIntel && (
+                  <p className="text-xs text-green-400 mt-1">✓ Company researched</p>
+                )}
               </div>
 
               <button
