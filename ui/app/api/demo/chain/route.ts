@@ -1,14 +1,18 @@
 import { NextResponse } from "next/server";
 
+// Tenant-specific SDK URL — same base used by n8n workflows
+const ATLAS_TENANT_URL = "https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com";
 const ATLAS_API_URL = "https://api.prod.alltrue-be.com";
 
 async function getAtlasJWT(): Promise<string> {
   const apiKey = process.env.ATLAS_API_KEY;
   if (!apiKey) throw new Error("ATLAS_API_KEY not configured");
 
-  const res = await fetch(`${ATLAS_API_URL}/v1/auth/issue-jwt-token`, {
+  // Matches the auth flow in n8n: POST to tenant SDK endpoint with api_key in body
+  const res = await fetch(`${ATLAS_TENANT_URL}/sdk/v1/auth/token`, {
     method: "POST",
-    headers: { "X-API-Key": apiKey },
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ api_key: apiKey }),
     signal: AbortSignal.timeout(10000),
   });
   if (!res.ok) {
@@ -16,7 +20,7 @@ async function getAtlasJWT(): Promise<string> {
     throw new Error(`Atlas auth failed (${res.status}): ${body}`);
   }
   const data = await res.json();
-  return data.access_token as string;
+  return (data.access_token ?? data.token) as string;
 }
 
 export async function GET() {
