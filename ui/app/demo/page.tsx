@@ -4,6 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 import HelpPanel from "@/components/HelpPanel";
 
+// ─── Chain of Custody types ──────────────────────────────────────────────────
+
+interface AtlasResource {
+  id?: string;
+  name?: string;
+  resource_type?: string;
+  technology?: string;
+  resource_category?: string;
+  review_status?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface ChainScanResult {
+  resources: { resources?: AtlasResource[]; [key: string]: unknown } | null;
+  dependency_graphs: unknown;
+  project_id: string;
+}
+
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
 interface ExistingMatch {
@@ -93,11 +112,61 @@ function ScoreBar({ score }: { score: number }) {
   );
 }
 
+// ─── Chain helpers ──────────────────────────────────────────────────────────
+
+const CATEGORY_META: Record<string, { label: string; color: string; icon: string }> = {
+  "AI Software":              { label: "Library / Framework", color: "bg-purple-700/60 text-purple-200 border-purple-600", icon: "📦" },
+  "LLM Endpoint":             { label: "LLM Endpoint",        color: "bg-blue-700/60 text-blue-200 border-blue-600",       icon: "🤖" },
+  "AI Models":                { label: "AI Model",            color: "bg-green-700/60 text-green-200 border-green-600",     icon: "🧠" },
+  "AI Platform-as-a-Service": { label: "AI PaaS",             color: "bg-cyan-700/60 text-cyan-200 border-cyan-600",        icon: "☁️" },
+  "AI Services":              { label: "AI Service",          color: "bg-yellow-700/60 text-yellow-200 border-yellow-600",  icon: "⚙️" },
+};
+
+const CHAIN_LAYER_ORDER = [
+  "AI Software",
+  "AI Platform-as-a-Service",
+  "AI Services",
+  "LLM Endpoint",
+  "AI Models",
+];
+
+function categoryMeta(cat?: string) {
+  return CATEGORY_META[cat ?? ""] ?? { label: cat ?? "Resource", color: "bg-gray-700/60 text-gray-200 border-gray-600", icon: "⬜" };
+}
+
+function statusBadge(status?: string) {
+  if (!status) return null;
+  const lower = status.toLowerCase();
+  if (lower === "approved")    return <span className="text-xs px-2 py-0.5 rounded-full bg-green-800/60 text-green-300 border border-green-700">Approved</span>;
+  if (lower === "rejected")    return <span className="text-xs px-2 py-0.5 rounded-full bg-red-800/60 text-red-300 border border-red-700">Rejected</span>;
+  return                              <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-800/60 text-yellow-300 border border-yellow-700">Unreviewed</span>;
+}
+
+function ResourcePill({ resource }: { resource: AtlasResource }) {
+  const meta = categoryMeta(resource.resource_category);
+  return (
+    <div className={`inline-flex flex-col gap-1 px-3 py-2 rounded-lg border text-xs ${meta.color}`}>
+      <div className="flex items-center gap-1.5 font-medium">
+        <span>{meta.icon}</span>
+        <span className="truncate max-w-40">{resource.name ?? "Unnamed"}</span>
+      </div>
+      <div className="flex items-center gap-1.5 opacity-80">
+        <span>{meta.label}</span>
+        {statusBadge(resource.review_status)}
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 type Step = "input" | "results" | "applied";
+type Mode = "provision" | "chain";
 
 export default function DemoPage() {
+  const [mode, setMode] = useState<Mode>("provision");
+
+  // ── Demo Provisioning state ─────────────────────────────────────────────────
   const [step, setStep] = useState<Step>("input");
   const [useCase, setUseCase] = useState("");
   const [industry, setIndustry] = useState("Healthcare");
@@ -111,6 +180,30 @@ export default function DemoPage() {
   const [applyError, setApplyError] = useState<string | null>(null);
   const [applied, setApplied] = useState<ApplyResult | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+
+  // ── Chain of Custody state ──────────────────────────────────────────────────
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [chainResult, setChainResult] = useState<ChainScanResult | null>(null);
+
+  // ── Chain of Custody: Scan ─────────────────────────────────────────────────
+
+  async function handleChainScan() {
+    if (scanning) return;
+    setScanning(true);
+    setScanError(null);
+    setChainResult(null);
+    try {
+      const res = await fetch("/api/demo/chain");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setChainResult(data);
+    } catch (err) {
+      setScanError(String(err));
+    } finally {
+      setScanning(false);
+    }
+  }
 
   // ── Step 1: Discover ────────────────────────────────────────────────────────
 
@@ -208,28 +301,56 @@ export default function DemoPage() {
           D
         </div>
         <div>
-          <h1 className="font-semibold text-white">Demo Provisioning</h1>
+          <h1 className="font-semibold text-white">
+            {mode === "provision" ? "Demo Provisioning" : "AI Chain of Custody"}
+          </h1>
           <p className="text-xs text-gray-400">
-            Describe the customer use case → get ranked Atlas templates → provision
+            {mode === "provision"
+              ? "Describe the customer use case → get ranked Atlas templates → provision"
+              : "Scan Atlas Inventory to visualize how AI artifacts are connected"}
           </p>
         </div>
 
-        {/* Step indicator */}
-        <div className="ml-auto flex items-center gap-2 text-xs text-gray-500">
-          <span className={step === "input" ? "text-white font-medium" : ""}>
-            1. Use Case
-          </span>
-          <span>›</span>
-          <span className={step === "results" ? "text-white font-medium" : ""}>
-            2. Template Match
-          </span>
-          <span>›</span>
-          <span className={step === "applied" ? "text-white font-medium" : ""}>
-            3. Provisioned
-          </span>
+        {/* Mode toggle + step indicator */}
+        <div className="ml-auto flex items-center gap-3">
+          {/* Tab toggle */}
+          <div className="flex rounded-lg overflow-hidden border border-gray-700 text-xs">
+            <button
+              onClick={() => setMode("provision")}
+              className={`px-3 py-1.5 transition-colors ${
+                mode === "provision"
+                  ? "bg-emerald-700 text-white font-medium"
+                  : "bg-gray-800 text-gray-400 hover:text-white"
+              }`}
+            >
+              Demo Prep
+            </button>
+            <button
+              onClick={() => setMode("chain")}
+              className={`px-3 py-1.5 transition-colors ${
+                mode === "chain"
+                  ? "bg-emerald-700 text-white font-medium"
+                  : "bg-gray-800 text-gray-400 hover:text-white"
+              }`}
+            >
+              Chain of Custody
+            </button>
+          </div>
+
+          {/* Step indicator — only for provision mode */}
+          {mode === "provision" && (
+            <div className="flex items-center gap-2 text-xs text-gray-500">
+              <span className={step === "input" ? "text-white font-medium" : ""}>1. Use Case</span>
+              <span>›</span>
+              <span className={step === "results" ? "text-white font-medium" : ""}>2. Template Match</span>
+              <span>›</span>
+              <span className={step === "applied" ? "text-white font-medium" : ""}>3. Provisioned</span>
+            </div>
+          )}
+
           <button
             onClick={() => setHelpOpen(true)}
-            className="ml-2 w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold flex items-center justify-center transition-colors"
             title="Help"
           >
             ?
@@ -240,6 +361,12 @@ export default function DemoPage() {
 
       <main className="flex-1 overflow-y-auto px-6 py-8">
         <div className="max-w-3xl mx-auto">
+
+          {/* ── Chain of Custody mode ─────────────────────────────────────── */}
+          {mode === "chain" && <ChainView scanning={scanning} scanError={scanError} chainResult={chainResult} onScan={handleChainScan} />}
+
+          {/* ── Demo Provisioning mode ────────────────────────────────────── */}
+          {mode === "provision" && <>
 
           {/* ── Step 1: Input ─────────────────────────────────────────────── */}
           {step === "input" && (
@@ -493,8 +620,162 @@ export default function DemoPage() {
               </div>
             </div>
           )}
+
+          </> /* end provision mode */}
         </div>
       </main>
+    </div>
+  );
+}
+
+// ─── Chain of Custody View ────────────────────────────────────────────────────
+
+function ChainView({
+  scanning,
+  scanError,
+  chainResult,
+  onScan,
+}: {
+  scanning: boolean;
+  scanError: string | null;
+  chainResult: ChainScanResult | null;
+  onScan: () => void;
+}) {
+  const resources: AtlasResource[] = chainResult?.resources?.resources ?? [];
+
+  // Group by category in supply-chain layer order
+  const grouped = CHAIN_LAYER_ORDER.reduce<Record<string, AtlasResource[]>>(
+    (acc, cat) => {
+      const items = resources.filter((r) => r.resource_category === cat);
+      if (items.length) acc[cat] = items;
+      return acc;
+    },
+    {}
+  );
+  // Catch any categories not in the ordered list
+  for (const r of resources) {
+    const cat = r.resource_category ?? "Unknown";
+    if (!CHAIN_LAYER_ORDER.includes(cat)) {
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(r);
+    }
+  }
+
+  const layers = Object.keys(grouped);
+
+  // Count by status for summary
+  const approved   = resources.filter((r) => r.review_status?.toLowerCase() === "approved").length;
+  const unreviewed = resources.filter((r) => !r.review_status || r.review_status.toLowerCase() === "unreviewed").length;
+  const rejected   = resources.filter((r) => r.review_status?.toLowerCase() === "rejected").length;
+
+  return (
+    <div className="space-y-6">
+      {/* Intro */}
+      <div>
+        <h2 className="text-lg font-semibold text-white mb-1">AI Chain of Custody</h2>
+        <p className="text-sm text-gray-400">
+          Scan the Atlas AI Inventory to discover every AI artifact in your project
+          and visualize how they&apos;re connected — from libraries and frameworks
+          through to LLM endpoints and models.
+        </p>
+      </div>
+
+      {/* Scan button */}
+      <button
+        onClick={onScan}
+        disabled={scanning}
+        className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-6 py-3 text-sm font-medium transition-colors"
+      >
+        {scanning ? "Scanning Atlas Inventory…" : chainResult ? "Re-Scan Inventory" : "Scan AI Inventory →"}
+      </button>
+
+      {/* Error */}
+      {scanError && (
+        <div className="bg-red-900/40 border border-red-700 rounded-xl px-4 py-3 text-sm text-red-300">
+          {scanError}
+        </div>
+      )}
+
+      {/* Results */}
+      {chainResult && resources.length === 0 && !scanError && (
+        <div className="bg-gray-800 border border-gray-700 rounded-xl px-5 py-8 text-center text-sm text-gray-400">
+          No resources found in this project. Link a cloud account or code repository
+          in Atlas AI Inventory to begin discovery.
+        </div>
+      )}
+
+      {resources.length > 0 && (
+        <>
+          {/* Summary stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {[
+              { label: "Total Resources", value: resources.length, color: "text-white" },
+              { label: "Approved",        value: approved,          color: "text-green-400" },
+              { label: "Unreviewed",      value: unreviewed,        color: "text-yellow-400" },
+              { label: "Rejected",        value: rejected,          color: "text-red-400" },
+            ].map(({ label, value, color }) => (
+              <div key={label} className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-center">
+                <p className={`text-2xl font-bold ${color}`}>{value}</p>
+                <p className="text-xs text-gray-400 mt-0.5">{label}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Chain visualization — layers connected by arrows */}
+          <div>
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
+              AI Supply Chain — by Layer
+            </h3>
+
+            <div className="space-y-2">
+              {layers.map((cat, idx) => {
+                const meta = categoryMeta(cat);
+                return (
+                  <div key={cat}>
+                    {/* Layer row */}
+                    <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+                        {meta.icon} {meta.label} Layer ({grouped[cat].length})
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {grouped[cat].map((r, i) => (
+                          <ResourcePill key={r.id ?? i} resource={r} />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Arrow connector between layers */}
+                    {idx < layers.length - 1 && (
+                      <div className="flex justify-center py-1 text-gray-600 text-lg select-none">
+                        ↓
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Raw response toggle for debugging */}
+          <details className="text-xs text-gray-600">
+            <summary className="cursor-pointer hover:text-gray-400">Raw API response</summary>
+            <pre className="mt-2 bg-gray-900 rounded-lg p-3 overflow-x-auto text-gray-500 text-[11px]">
+              {JSON.stringify(chainResult, null, 2)}
+            </pre>
+          </details>
+        </>
+      )}
+
+      {/* No scan yet — placeholder */}
+      {!chainResult && !scanning && !scanError && (
+        <div className="bg-gray-800/50 border border-dashed border-gray-700 rounded-xl px-6 py-12 text-center space-y-2">
+          <p className="text-4xl">🔗</p>
+          <p className="text-sm font-medium text-gray-300">Ready to scan</p>
+          <p className="text-xs text-gray-500">
+            Click &ldquo;Scan AI Inventory&rdquo; to pull live data from Atlas and visualize the AI artifact chain.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
