@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
       voiceEnabled: r.get("voiceEnabled") ?? false,
       voiceAutoplay: r.get("voiceAutoplay") ?? false,
       judgeEnabled: r.get("judgeEnabled") ?? false,
-      completedLessons: r.get("completedLessons") ?? [],
+      completedLessons: (r.get("completedLessons") ?? []).map((n: unknown) => Math.round(Number(n))),
       activeLesson: r.get("activeLesson") ?? null,
     });
   } finally {
