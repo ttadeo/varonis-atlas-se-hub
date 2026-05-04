@@ -43,11 +43,11 @@ export async function GET() {
     // Fetch resources list and dependency graphs in parallel
     const [resourcesRes, graphsRes] = await Promise.all([
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources${projectId ? `?project=${projectId}` : ""}`,
+        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
         { headers, signal: timeout }
       ),
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/resources/dependency-graph?${projectId ? `project_id=${projectId}&` : ""}per_page=50&page=1`,
+        `${ATLAS_API_URL}/v1/inventory/resources/dependency-graph?per_page=50&page=1`,
         { headers, signal: timeout }
       ),
     ]);
