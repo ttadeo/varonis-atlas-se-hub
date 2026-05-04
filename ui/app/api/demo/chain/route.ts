@@ -55,9 +55,10 @@ export async function GET() {
     const resources = resourcesRes.ok ? await resourcesRes.json() : null;
     const graphs = graphsRes.ok ? await graphsRes.json() : null;
 
-    if (!resources && !graphs) {
+    if (!resources) {
+      const body = await resourcesRes.text();
       return NextResponse.json(
-        { error: `Atlas API returned errors: resources=${resourcesRes.status} graphs=${graphsRes.status}` },
+        { error: `Atlas inventory returned ${resourcesRes.status}`, detail: body },
         { status: 502 }
       );
     }
