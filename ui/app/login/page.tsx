@@ -9,30 +9,60 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const from = searchParams.get("from") ?? "/";
 
-  const [step, setStep] = useState<"email" | "code">("email");
+  const SUPERUSER = "ttadeo@timthecoder.net";
+
+  const [step, setStep] = useState<"email" | "code" | "password">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function handleSendCode(e: React.FormEvent) {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
+    // Superuser bypass — go straight to password prompt
+    if (email.trim().toLowerCase() === SUPERUSER) {
+      setStep("password");
+      return;
+    }
+
+    setLoading(true);
     try {
       const res = await fetch("/api/auth/send-code", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-
       const data = await res.json();
-
       if (res.ok) {
         setStep("code");
       } else {
         setError(data.error ?? "Failed to send code");
+      }
+    } catch {
+      setError("Unable to connect. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleSuperuserLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/superuser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        router.push(from);
+      } else {
+        setError(data.error ?? "Invalid credentials");
       }
     } catch {
       setError("Unable to connect. Please try again.");
@@ -81,7 +111,48 @@ function LoginForm() {
         </div>
 
         <div className="bg-gray-900 border border-gray-800 rounded-2xl px-6 py-8">
-          {step === "email" ? (
+          {step === "password" ? (
+            <>
+              <h2 className="text-sm font-semibold text-gray-300 mb-2 text-center">Enter your password</h2>
+              <p className="text-xs text-gray-500 mb-6 text-center">
+                Signing in as <span className="text-gray-300">{email}</span>
+              </p>
+
+              <form onSubmit={handleSuperuserLogin} className="space-y-4">
+                <div>
+                  <label className="text-xs text-gray-400 mb-1 block">Password</label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    autoFocus
+                    required
+                  />
+                </div>
+
+                {error && <p className="text-red-400 text-xs text-center">{error}</p>}
+
+                <button
+                  type="submit"
+                  disabled={loading || !password}
+                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-4 py-3 text-sm font-medium transition-colors mt-2"
+                >
+                  {loading ? "Signing in…" : "Sign In"}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setStep("email"); setPassword(""); setError(""); }}
+                  className="w-full text-gray-500 hover:text-gray-300 text-xs py-2 transition-colors"
+                >
+                  Use a different email
+                </button>
+              </form>
+            </>
+          ) : step === "email" ? (
             <>
               <h2 className="text-sm font-semibold text-gray-300 mb-2 text-center">Sign in with your Varonis email</h2>
               <p className="text-xs text-gray-500 mb-6 text-center">We'll send a 6-digit code to your inbox</p>
