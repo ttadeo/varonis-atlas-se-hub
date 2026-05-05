@@ -712,25 +712,41 @@ function groupByCategory(resources: AtlasResource[]): Record<string, AtlasResour
   return grouped;
 }
 
-function ProjectChain({ projectId, resources, projectMeta }: { projectId: string; resources: AtlasResource[]; projectMeta?: { name: string; orgName: string } }) {
+const LAYER_PAGE_SIZE = 10;
+
+function ProjectChain({
+  projectId,
+  resources,
+  projectMeta,
+  matchedIds,
+}: {
+  projectId: string;
+  resources: AtlasResource[];
+  projectMeta?: { name: string; orgName: string };
+  matchedIds: Set<string>;
+}) {
   const grouped = groupByCategory(resources);
   const layers = Object.keys(grouped);
+  const [expandedLayers, setExpandedLayers] = useState<Record<string, boolean>>({});
+
   const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
   const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
   const rejected   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unapproved").length;
   const categoryCount = layers.length;
 
+  // If search active, highlight matched resources
+  const hasSearch = matchedIds.size > 0;
+  const projectHasMatch = hasSearch && resources.some((r) => matchedIds.has(r.resource_instance_id ?? ""));
+
   return (
-    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 space-y-4">
+    <div className={`bg-gray-800/50 border rounded-xl p-4 space-y-4 transition-all ${
+      hasSearch ? (projectHasMatch ? "border-emerald-600 shadow-lg shadow-emerald-900/30" : "border-gray-700 opacity-40") : "border-gray-700"
+    }`}>
       {/* Project header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-semibold text-white">
-            {projectMeta?.name ?? projectId}
-          </p>
-          {projectMeta?.orgName && (
-            <p className="text-xs text-gray-500 mt-0.5">{projectMeta.orgName}</p>
-          )}
+          <p className="text-sm font-semibold text-white">{projectMeta?.name ?? projectId}</p>
+          {projectMeta?.orgName && <p className="text-xs text-gray-500 mt-0.5">{projectMeta.orgName}</p>}
           <p className="text-xs font-mono text-gray-600 mt-0.5">{projectId}</p>
           <div className="flex gap-3 mt-1 text-xs">
             <span className="text-gray-300">{resources.length} resources</span>
@@ -748,22 +764,36 @@ function ProjectChain({ projectId, resources, projectMeta }: { projectId: string
       <div className="space-y-2">
         {layers.map((cat, idx) => {
           const meta = categoryMeta(cat);
+          const items = grouped[cat];
+          const isExpanded = expandedLayers[cat] ?? false;
+          const visible = isExpanded ? items : items.slice(0, LAYER_PAGE_SIZE);
+          const overflow = items.length - LAYER_PAGE_SIZE;
+
           return (
             <div key={cat}>
               <div className="bg-gray-900/60 border border-gray-700/60 rounded-lg p-3">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                  {meta.icon} {meta.label} ({grouped[cat].length})
+                  {meta.icon} {meta.label} ({items.length})
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {grouped[cat].slice(0, 10).map((r, i) => (
-                    <ResourcePill key={r.resource_instance_id ?? r.id ?? i} resource={r} />
-                  ))}
-                  {grouped[cat].length > 10 && (
-                    <span className="inline-flex items-center px-3 py-2 rounded-lg border border-gray-600 text-xs text-gray-500">
-                      +{grouped[cat].length - 10} more
-                    </span>
-                  )}
+                  {visible.map((r, i) => {
+                    const rid = r.resource_instance_id ?? r.id ?? String(i);
+                    const isMatch = matchedIds.has(rid);
+                    return (
+                      <div key={rid} className={isMatch ? "ring-2 ring-emerald-500 rounded-lg" : ""}>
+                        <ResourcePill resource={r} />
+                      </div>
+                    );
+                  })}
                 </div>
+                {overflow > 0 && (
+                  <button
+                    onClick={() => setExpandedLayers((prev) => ({ ...prev, [cat]: !isExpanded }))}
+                    className="mt-2 text-xs text-emerald-400 hover:text-emerald-300 transition-colors"
+                  >
+                    {isExpanded ? "Show less ↑" : `Show ${overflow} more ↓`}
+                  </button>
+                )}
               </div>
               {idx < layers.length - 1 && (
                 <div className="flex justify-center py-1 text-gray-600 text-lg select-none">↓</div>
@@ -774,6 +804,11 @@ function ProjectChain({ projectId, resources, projectMeta }: { projectId: string
       </div>
     </div>
   );
+}
+
+interface SearchResult {
+  summary: string;
+  matches: { id: string; reason: string }[];
 }
 
 function ChainView({
@@ -787,29 +822,58 @@ function ChainView({
   chainResult: ChainScanResult | null;
   onScan: () => void;
 }) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searching, setSearching] = useState(false);
+  const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+  const [searchError, setSearchError] = useState<string | null>(null);
+
   const resources: AtlasResource[] = chainResult?.resources?.resources ?? [];
   const projectMap = buildProjectMap(chainResult?.org_projects);
 
-  // Group by project_id first
+  // Group by project_id — use project_ids array (first entry)
   const byProject = resources.reduce<Record<string, AtlasResource[]>>((acc, r) => {
-    const pid = r.project_id ?? r.project ?? "No Project";
+    const pid = (Array.isArray(r.project_ids) ? r.project_ids[0] : null) ?? r.project_id ?? r.project ?? "No Project";
     if (!acc[pid]) acc[pid] = [];
     acc[pid].push(r);
     return acc;
   }, {});
 
   const projectIds = Object.keys(byProject);
-
-  // Sort: projects with more category diversity first (better chains at the top)
   projectIds.sort((a, b) => {
     const catsA = new Set(byProject[a].map((r) => r.resource_type_category ?? r.resource_category)).size;
     const catsB = new Set(byProject[b].map((r) => r.resource_type_category ?? r.resource_category)).size;
     return catsB - catsA;
   });
 
+  const matchedIds = new Set((searchResult?.matches ?? []).map((m) => m.id));
+  const matchReasons = Object.fromEntries((searchResult?.matches ?? []).map((m) => [m.id, m.reason]));
+
   const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
   const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
   const rejected   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unapproved").length;
+
+  async function handleSearch() {
+    if (!searchQuery.trim() || searching || resources.length === 0) return;
+    setSearching(true);
+    setSearchError(null);
+    setSearchResult(null);
+    try {
+      const res = await fetch("/api/demo/chain/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ query: searchQuery, resources }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setSearchResult(data);
+    } catch (err) {
+      setSearchError(String(err));
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  void matchReasons; // used in tooltip future enhancement
 
   return (
     <div className="space-y-6">
@@ -863,13 +927,62 @@ function ChainView({
             ))}
           </div>
 
+          {/* Intelligent search */}
+          <div className="bg-gray-800/60 border border-gray-700 rounded-xl p-4 space-y-3">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Intelligent Search</p>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => { setSearchQuery(e.target.value); setSearchResult(null); }}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="e.g. Show me where a guardrail blocks PII from leaving a prompt"
+                className="flex-1 bg-gray-900 text-gray-100 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder-gray-600"
+              />
+              <button
+                onClick={handleSearch}
+                disabled={searching || !searchQuery.trim()}
+                className="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2.5 text-sm font-medium transition-colors whitespace-nowrap"
+              >
+                {searching ? "Analyzing…" : "Search"}
+              </button>
+              {searchResult && (
+                <button
+                  onClick={() => { setSearchResult(null); setSearchQuery(""); }}
+                  className="bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg px-3 py-2.5 text-sm transition-colors"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {searchError && (
+              <p className="text-xs text-red-400">{searchError}</p>
+            )}
+
+            {searchResult && (
+              <div className="space-y-2">
+                <div className="bg-emerald-900/30 border border-emerald-700/50 rounded-lg px-4 py-3">
+                  <p className="text-sm text-emerald-200">{searchResult.summary}</p>
+                  <p className="text-xs text-emerald-500 mt-1">{searchResult.matches.length} resource{searchResult.matches.length !== 1 ? "s" : ""} matched — highlighted below</p>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Per-project chains */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
               AI Supply Chain — by Project ({projectIds.length})
             </h3>
             {projectIds.map((pid) => (
-              <ProjectChain key={pid} projectId={pid} resources={byProject[pid]} projectMeta={projectMap[pid]} />
+              <ProjectChain
+                key={pid}
+                projectId={pid}
+                resources={byProject[pid]}
+                projectMeta={projectMap[pid]}
+                matchedIds={matchedIds}
+              />
             ))}
           </div>
 
