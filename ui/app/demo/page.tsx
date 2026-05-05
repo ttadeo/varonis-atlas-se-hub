@@ -115,19 +115,22 @@ function ScoreBar({ score }: { score: number }) {
 // ─── Chain helpers ──────────────────────────────────────────────────────────
 
 const CATEGORY_META: Record<string, { label: string; color: string; icon: string }> = {
-  "AI Software":              { label: "Library / Framework", color: "bg-purple-700/60 text-purple-200 border-purple-600", icon: "📦" },
-  "LLM Endpoint":             { label: "LLM Endpoint",        color: "bg-blue-700/60 text-blue-200 border-blue-600",       icon: "🤖" },
-  "AI Models":                { label: "AI Model",            color: "bg-green-700/60 text-green-200 border-green-600",     icon: "🧠" },
-  "AI Platform-as-a-Service": { label: "AI PaaS",             color: "bg-cyan-700/60 text-cyan-200 border-cyan-600",        icon: "☁️" },
-  "AI Services":              { label: "AI Service",          color: "bg-yellow-700/60 text-yellow-200 border-yellow-600",  icon: "⚙️" },
+  // API resource_type_category values
+  "software_package": { label: "Library / Framework", color: "bg-purple-700/60 text-purple-200 border-purple-600", icon: "📦" },
+  "llm_endpoint":     { label: "LLM Endpoint",        color: "bg-blue-700/60 text-blue-200 border-blue-600",       icon: "🤖" },
+  "model_assets":     { label: "AI Model",            color: "bg-green-700/60 text-green-200 border-green-600",     icon: "🧠" },
+  "cloud_resource":   { label: "Cloud Resource",      color: "bg-cyan-700/60 text-cyan-200 border-cyan-600",        icon: "☁️" },
+  "dataset":          { label: "Dataset / File",      color: "bg-yellow-700/60 text-yellow-200 border-yellow-600",  icon: "📄" },
+  "agentic":          { label: "AI Agent",            color: "bg-orange-700/60 text-orange-200 border-orange-600",  icon: "🤖" },
 };
 
 const CHAIN_LAYER_ORDER = [
-  "AI Software",
-  "AI Platform-as-a-Service",
-  "AI Services",
-  "LLM Endpoint",
-  "AI Models",
+  "software_package",
+  "cloud_resource",
+  "agentic",
+  "llm_endpoint",
+  "model_assets",
+  "dataset",
 ];
 
 function categoryMeta(cat?: string) {
@@ -137,22 +140,26 @@ function categoryMeta(cat?: string) {
 function statusBadge(status?: string) {
   if (!status) return null;
   const lower = status.toLowerCase();
-  if (lower === "approved")    return <span className="text-xs px-2 py-0.5 rounded-full bg-green-800/60 text-green-300 border border-green-700">Approved</span>;
-  if (lower === "rejected")    return <span className="text-xs px-2 py-0.5 rounded-full bg-red-800/60 text-red-300 border border-red-700">Rejected</span>;
-  return                              <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-800/60 text-yellow-300 border border-yellow-700">Unreviewed</span>;
+  if (lower === "approved")   return <span className="text-xs px-2 py-0.5 rounded-full bg-green-800/60 text-green-300 border border-green-700">Approved</span>;
+  if (lower === "unapproved") return <span className="text-xs px-2 py-0.5 rounded-full bg-red-800/60 text-red-300 border border-red-700">Rejected</span>;
+  return                             <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-800/60 text-yellow-300 border border-yellow-700">Unreviewed</span>;
 }
 
 function ResourcePill({ resource }: { resource: AtlasResource }) {
-  const meta = categoryMeta(resource.resource_category);
+  // API returns resource_display_name, resource_type_category, reviewed
+  const name = resource.resource_display_name ?? resource.name ?? "Unnamed";
+  const category = resource.resource_type_category ?? resource.resource_category;
+  const reviewed = resource.reviewed ?? resource.review_status;
+  const meta = categoryMeta(category);
   return (
     <div className={`inline-flex flex-col gap-1 px-3 py-2 rounded-lg border text-xs ${meta.color}`}>
       <div className="flex items-center gap-1.5 font-medium">
         <span>{meta.icon}</span>
-        <span className="truncate max-w-40">{resource.name ?? "Unnamed"}</span>
+        <span className="truncate max-w-40">{name}</span>
       </div>
       <div className="flex items-center gap-1.5 opacity-80">
-        <span>{meta.label}</span>
-        {statusBadge(resource.review_status)}
+        <span>{resource.resource_type_display_name ?? meta.label}</span>
+        {statusBadge(reviewed)}
       </div>
     </div>
   );
@@ -646,7 +653,7 @@ function ChainView({
   // Group by category in supply-chain layer order
   const grouped = CHAIN_LAYER_ORDER.reduce<Record<string, AtlasResource[]>>(
     (acc, cat) => {
-      const items = resources.filter((r) => r.resource_category === cat);
+      const items = resources.filter((r) => (r.resource_type_category ?? r.resource_category) === cat);
       if (items.length) acc[cat] = items;
       return acc;
     },
@@ -654,7 +661,7 @@ function ChainView({
   );
   // Catch any categories not in the ordered list
   for (const r of resources) {
-    const cat = r.resource_category ?? "Unknown";
+    const cat = r.resource_type_category ?? r.resource_category ?? "Unknown";
     if (!CHAIN_LAYER_ORDER.includes(cat)) {
       if (!grouped[cat]) grouped[cat] = [];
       grouped[cat].push(r);
@@ -663,10 +670,10 @@ function ChainView({
 
   const layers = Object.keys(grouped);
 
-  // Count by status for summary
-  const approved   = resources.filter((r) => r.review_status?.toLowerCase() === "approved").length;
-  const unreviewed = resources.filter((r) => !r.review_status || r.review_status.toLowerCase() === "unreviewed").length;
-  const rejected   = resources.filter((r) => r.review_status?.toLowerCase() === "rejected").length;
+  // Count by status — API uses "reviewed" field with values: approved, unreviewed, unapproved
+  const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
+  const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
+  const rejected   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unapproved").length;
 
   return (
     <div className="space-y-6">

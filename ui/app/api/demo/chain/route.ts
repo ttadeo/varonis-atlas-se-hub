@@ -41,13 +41,14 @@ export async function GET() {
     const timeout = AbortSignal.timeout(15000);
 
     // Fetch resources list and dependency graphs in parallel
+    const projectParam = projectId ? `&project=${projectId}` : "";
     const [resourcesRes, graphsRes] = await Promise.all([
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
+        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?per_page=200&page=1${projectParam}`,
         { headers, signal: timeout }
       ),
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/resources/dependency-graph?per_page=50&page=1`,
+        `${ATLAS_API_URL}/v1/inventory/resources/dependency-graph?per_page=50&page=1${projectId ? `&project_id=${projectId}` : ""}`,
         { headers, signal: timeout }
       ),
     ]);
