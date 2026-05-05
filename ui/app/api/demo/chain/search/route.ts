@@ -21,32 +21,36 @@ export async function POST(req: NextRequest) {
     reviewed: r.reviewed,
   }));
 
+  // Deduplicate by name+category to reduce payload — large inventories have many duplicate resource names
+  const seen = new Set<string>();
+  const deduped = compact.filter((r) => {
+    const key = `${r.name}||${r.category}||${r.type}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
   const prompt = `You are an AI security expert analyzing an organization's AI inventory discovered by Varonis Atlas.
 
 The user wants to find: "${query}"
 
-Here is the complete AI inventory (${compact.length} resources):
-${JSON.stringify(compact, null, 2)}
+Here is the AI inventory (${deduped.length} unique resources):
+${JSON.stringify(deduped, null, 2)}
 
 Your task:
-1. Identify which resources from the inventory are relevant to the user's query
-2. Explain WHY each matched resource is relevant in 1 sentence
-3. Provide a 2-3 sentence summary of what the inventory reveals about this use case
+1. Identify which resources are relevant to the user's query
+2. Explain WHY each matched resource is relevant in one short sentence
+3. Provide a 2-3 sentence summary of findings
 
-Return ONLY valid JSON in this exact format:
-{
-  "summary": "2-3 sentence summary of findings",
-  "matches": [
-    { "id": "resource_instance_id", "reason": "one sentence why this is relevant" }
-  ]
-}
+Return ONLY valid JSON — no markdown, no code fences:
+{"summary":"...","matches":[{"id":"resource_instance_id","reason":"..."}]}
 
-If no resources match, return an empty matches array with a summary explaining what's missing from the inventory.`;
+If no resources match, return: {"summary":"...","matches":[]}`;
 
   try {
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });
 
