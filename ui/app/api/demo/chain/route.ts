@@ -32,12 +32,13 @@ export async function GET() {
   try {
     const token = await getAtlasJWT();
     const headers = { Authorization: `Bearer ${token}` };
-    const timeout = AbortSignal.timeout(15000);
+    const timeout = AbortSignal.timeout(30000);
 
     // Fetch resources, dependency graphs, and org+project metadata in parallel
+    // No per_page/page params = Atlas returns ALL resources in one response
     const [resourcesRes, graphsRes, orgProjectsRes] = await Promise.all([
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?per_page=500&page=1`,
+        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
         { headers, signal: timeout }
       ),
       fetch(
