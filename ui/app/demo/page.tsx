@@ -156,14 +156,112 @@ function statusBadge(status?: string) {
   return                             <span className="text-xs px-2 py-0.5 rounded-full bg-yellow-800/60 text-yellow-300 border border-yellow-700">Unreviewed</span>;
 }
 
-function ResourcePill({ resource }: { resource: AtlasResource }) {
-  // API returns resource_display_name, resource_type_category, reviewed
+// ─── Resource Detail Modal ────────────────────────────────────────────────────
+
+function CopyButton({ value, label }: { value: string; label: string }) {
+  const [copied, setCopied] = useState(false);
+  function copy() {
+    navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  }
+  return (
+    <button
+      onClick={copy}
+      className="shrink-0 text-xs px-2 py-1 rounded bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+    >
+      {copied ? "Copied!" : `Copy ${label}`}
+    </button>
+  );
+}
+
+function ResourceDetailModal({ resource, onClose }: { resource: AtlasResource; onClose: () => void }) {
+  const name = resource.resource_display_name ?? resource.name ?? "Unnamed";
+  const category = resource.resource_type_category ?? resource.resource_category;
+  const reviewed = resource.reviewed ?? resource.review_status;
+  const meta = categoryMeta(category);
+  const id = resource.resource_instance_id ?? resource.id ?? "";
+  const projectIds: string[] = Array.isArray(resource.project_ids) ? resource.project_ids : (resource.project_id ? [resource.project_id] : []);
+  const technologies: string[] = Array.isArray(resource.technology_types) ? resource.technology_types : [];
+
+  const fields = [
+    { label: "Resource ID",    value: id,                                              copyLabel: "ID" },
+    { label: "Display Name",   value: name,                                            copyLabel: "Name" },
+    { label: "Type",           value: resource.resource_type_display_name ?? resource.resource_type ?? "—", copyLabel: null },
+    { label: "Category",       value: meta.label,                                      copyLabel: null },
+    { label: "Technologies",   value: technologies.join(", ") || "—",                  copyLabel: null },
+    { label: "Review Status",  value: reviewed ?? "—",                                 copyLabel: null },
+    { label: "Active Status",  value: resource.status ?? "—",                          copyLabel: null },
+    { label: "Project ID(s)",  value: projectIds.join(", ") || "—",                    copyLabel: projectIds.length > 0 ? "Project ID" : null },
+    { label: "Discovery Scan", value: resource.discovery_scan_id ?? "—",              copyLabel: resource.discovery_scan_id ? "Scan ID" : null },
+  ];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
+      <div
+        className="bg-gray-900 border border-gray-700 rounded-2xl w-full max-w-lg shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className={`flex items-start gap-3 px-5 py-4 rounded-t-2xl border-b border-gray-700 ${meta.color}`}>
+          <span className="text-2xl mt-0.5">{meta.icon}</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-white truncate">{name}</p>
+            <p className="text-xs opacity-80 mt-0.5">{resource.resource_type_display_name ?? meta.label}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-lg leading-none ml-2">✕</button>
+        </div>
+
+        {/* Fields */}
+        <div className="px-5 py-4 space-y-3">
+          {fields.map(({ label, value, copyLabel }) => (
+            <div key={label} className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-gray-500 mb-0.5">{label}</p>
+                <p className="text-sm text-gray-200 break-all font-mono">{value}</p>
+              </div>
+              {copyLabel && value !== "—" && <CopyButton value={value} label={copyLabel} />}
+            </div>
+          ))}
+        </div>
+
+        {/* Footer — copy all for Atlas UI search */}
+        <div className="px-5 pb-4 pt-1 border-t border-gray-800 flex gap-2">
+          <button
+            onClick={() => {
+              const text = [
+                `Name: ${name}`,
+                `ID: ${id}`,
+                `Type: ${resource.resource_type_display_name ?? resource.resource_type ?? ""}`,
+                `Category: ${meta.label}`,
+                `Project ID(s): ${projectIds.join(", ")}`,
+                `Review Status: ${reviewed ?? ""}`,
+              ].join("\n");
+              navigator.clipboard.writeText(text);
+            }}
+            className="flex-1 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl px-4 py-2 text-sm font-medium transition-colors"
+          >
+            Copy All Details
+          </button>
+          <button onClick={onClose} className="bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-xl px-4 py-2 text-sm transition-colors">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ResourcePill({ resource, onClick }: { resource: AtlasResource; onClick: () => void }) {
   const name = resource.resource_display_name ?? resource.name ?? "Unnamed";
   const category = resource.resource_type_category ?? resource.resource_category;
   const reviewed = resource.reviewed ?? resource.review_status;
   const meta = categoryMeta(category);
   return (
-    <div className={`inline-flex flex-col gap-1 px-3 py-2 rounded-lg border text-xs ${meta.color}`}>
+    <button
+      onClick={onClick}
+      className={`inline-flex flex-col gap-1 px-3 py-2 rounded-lg border text-xs text-left cursor-pointer hover:brightness-125 transition-all ${meta.color}`}
+    >
       <div className="flex items-center gap-1.5 font-medium">
         <span>{meta.icon}</span>
         <span className="truncate max-w-40">{name}</span>
@@ -172,7 +270,7 @@ function ResourcePill({ resource }: { resource: AtlasResource }) {
         <span>{resource.resource_type_display_name ?? meta.label}</span>
         {statusBadge(reviewed)}
       </div>
-    </div>
+    </button>
   );
 }
 
@@ -728,6 +826,7 @@ function ProjectChain({
   const grouped = groupByCategory(resources);
   const layers = Object.keys(grouped);
   const [expandedLayers, setExpandedLayers] = useState<Record<string, boolean>>({});
+  const [selectedResource, setSelectedResource] = useState<AtlasResource | null>(null);
 
   const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
   const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
@@ -760,6 +859,10 @@ function ProjectChain({
         </div>
       </div>
 
+      {selectedResource && (
+        <ResourceDetailModal resource={selectedResource} onClose={() => setSelectedResource(null)} />
+      )}
+
       {/* Layer chain */}
       <div className="space-y-2">
         {layers.map((cat, idx) => {
@@ -781,7 +884,7 @@ function ProjectChain({
                     const isMatch = matchedIds.has(rid);
                     return (
                       <div key={rid} className={isMatch ? "ring-2 ring-emerald-500 rounded-lg" : ""}>
-                        <ResourcePill resource={r} />
+                        <ResourcePill resource={r} onClick={() => setSelectedResource(r)} />
                       </div>
                     );
                   })}
