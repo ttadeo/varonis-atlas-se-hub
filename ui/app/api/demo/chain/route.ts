@@ -40,15 +40,14 @@ export async function GET() {
     const headers = { Authorization: `Bearer ${token}` };
     const timeout = AbortSignal.timeout(15000);
 
-    // Fetch resources list and dependency graphs in parallel
-    const projectParam = projectId ? `&project=${projectId}` : "";
+    // Fetch all resources across all projects (no project filter) + dependency graphs
     const [resourcesRes, graphsRes] = await Promise.all([
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?per_page=200&page=1${projectParam}`,
+        `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?per_page=500&page=1`,
         { headers, signal: timeout }
       ),
       fetch(
-        `${ATLAS_API_URL}/v1/inventory/resources/dependency-graph?per_page=50&page=1${projectId ? `&project_id=${projectId}` : ""}`,
+        `${ATLAS_API_URL}/v1/inventory/resources/dependency-graph?per_page=50&page=1`,
         { headers, signal: timeout }
       ),
     ]);
@@ -64,7 +63,7 @@ export async function GET() {
       );
     }
 
-    return NextResponse.json({ resources, dependency_graphs: graphs, project_id: projectId });
+    return NextResponse.json({ resources, dependency_graphs: graphs });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

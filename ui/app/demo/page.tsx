@@ -20,7 +20,6 @@ interface AtlasResource {
 interface ChainScanResult {
   resources: { resources?: AtlasResource[]; [key: string]: unknown } | null;
   dependency_graphs: unknown;
-  project_id: string;
 }
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -637,6 +636,83 @@ export default function DemoPage() {
 
 // ─── Chain of Custody View ────────────────────────────────────────────────────
 
+function groupByCategory(resources: AtlasResource[]): Record<string, AtlasResource[]> {
+  const grouped = CHAIN_LAYER_ORDER.reduce<Record<string, AtlasResource[]>>(
+    (acc, cat) => {
+      const items = resources.filter((r) => (r.resource_type_category ?? r.resource_category) === cat);
+      if (items.length) acc[cat] = items;
+      return acc;
+    },
+    {}
+  );
+  for (const r of resources) {
+    const cat = r.resource_type_category ?? r.resource_category ?? "unknown";
+    if (!CHAIN_LAYER_ORDER.includes(cat)) {
+      if (!grouped[cat]) grouped[cat] = [];
+      grouped[cat].push(r);
+    }
+  }
+  return grouped;
+}
+
+function ProjectChain({ projectId, resources }: { projectId: string; resources: AtlasResource[] }) {
+  const grouped = groupByCategory(resources);
+  const layers = Object.keys(grouped);
+  const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
+  const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
+  const rejected   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unapproved").length;
+  const categoryCount = layers.length;
+
+  return (
+    <div className="bg-gray-800/50 border border-gray-700 rounded-xl p-4 space-y-4">
+      {/* Project header */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-mono text-gray-500">{projectId}</p>
+          <div className="flex gap-3 mt-1 text-xs">
+            <span className="text-gray-300">{resources.length} resources</span>
+            <span className="text-gray-600">·</span>
+            <span className="text-gray-300">{categoryCount} layer{categoryCount !== 1 ? "s" : ""}</span>
+            <span className="text-gray-600">·</span>
+            <span className="text-green-400">{approved} approved</span>
+            {unreviewed > 0 && <><span className="text-gray-600">·</span><span className="text-yellow-400">{unreviewed} unreviewed</span></>}
+            {rejected > 0 && <><span className="text-gray-600">·</span><span className="text-red-400">{rejected} rejected</span></>}
+          </div>
+        </div>
+      </div>
+
+      {/* Layer chain */}
+      <div className="space-y-2">
+        {layers.map((cat, idx) => {
+          const meta = categoryMeta(cat);
+          return (
+            <div key={cat}>
+              <div className="bg-gray-900/60 border border-gray-700/60 rounded-lg p-3">
+                <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                  {meta.icon} {meta.label} ({grouped[cat].length})
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {grouped[cat].slice(0, 10).map((r, i) => (
+                    <ResourcePill key={r.resource_instance_id ?? r.id ?? i} resource={r} />
+                  ))}
+                  {grouped[cat].length > 10 && (
+                    <span className="inline-flex items-center px-3 py-2 rounded-lg border border-gray-600 text-xs text-gray-500">
+                      +{grouped[cat].length - 10} more
+                    </span>
+                  )}
+                </div>
+              </div>
+              {idx < layers.length - 1 && (
+                <div className="flex justify-center py-1 text-gray-600 text-lg select-none">↓</div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function ChainView({
   scanning,
   scanError,
@@ -650,27 +726,23 @@ function ChainView({
 }) {
   const resources: AtlasResource[] = chainResult?.resources?.resources ?? [];
 
-  // Group by category in supply-chain layer order
-  const grouped = CHAIN_LAYER_ORDER.reduce<Record<string, AtlasResource[]>>(
-    (acc, cat) => {
-      const items = resources.filter((r) => (r.resource_type_category ?? r.resource_category) === cat);
-      if (items.length) acc[cat] = items;
-      return acc;
-    },
-    {}
-  );
-  // Catch any categories not in the ordered list
-  for (const r of resources) {
-    const cat = r.resource_type_category ?? r.resource_category ?? "Unknown";
-    if (!CHAIN_LAYER_ORDER.includes(cat)) {
-      if (!grouped[cat]) grouped[cat] = [];
-      grouped[cat].push(r);
-    }
-  }
+  // Group by project_id first
+  const byProject = resources.reduce<Record<string, AtlasResource[]>>((acc, r) => {
+    const pid = r.project_id ?? r.project ?? "No Project";
+    if (!acc[pid]) acc[pid] = [];
+    acc[pid].push(r);
+    return acc;
+  }, {});
 
-  const layers = Object.keys(grouped);
+  const projectIds = Object.keys(byProject);
 
-  // Count by status — API uses "reviewed" field with values: approved, unreviewed, unapproved
+  // Sort: projects with more category diversity first (better chains at the top)
+  projectIds.sort((a, b) => {
+    const catsA = new Set(byProject[a].map((r) => r.resource_type_category ?? r.resource_category)).size;
+    const catsB = new Set(byProject[b].map((r) => r.resource_type_category ?? r.resource_category)).size;
+    return catsB - catsA;
+  });
+
   const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
   const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
   const rejected   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unapproved").length;
@@ -681,7 +753,7 @@ function ChainView({
       <div>
         <h2 className="text-lg font-semibold text-white mb-1">AI Chain of Custody</h2>
         <p className="text-sm text-gray-400">
-          Scan the Atlas AI Inventory to discover every AI artifact in your project
+          Scan the Atlas AI Inventory to discover every AI artifact across all projects
           and visualize how they&apos;re connected — from libraries and frameworks
           through to LLM endpoints and models.
         </p>
@@ -703,11 +775,10 @@ function ChainView({
         </div>
       )}
 
-      {/* Results */}
+      {/* Empty */}
       {chainResult && resources.length === 0 && !scanError && (
         <div className="bg-gray-800 border border-gray-700 rounded-xl px-5 py-8 text-center text-sm text-gray-400">
-          No resources found in this project. Link a cloud account or code repository
-          in Atlas AI Inventory to begin discovery.
+          No resources found. Link a cloud account or code repository in Atlas AI Inventory to begin discovery.
         </div>
       )}
 
@@ -716,10 +787,10 @@ function ChainView({
           {/* Summary stats */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[
-              { label: "Total Resources", value: resources.length, color: "text-white" },
-              { label: "Approved",        value: approved,          color: "text-green-400" },
-              { label: "Unreviewed",      value: unreviewed,        color: "text-yellow-400" },
-              { label: "Rejected",        value: rejected,          color: "text-red-400" },
+              { label: "Total Resources", value: resources.length,  color: "text-white" },
+              { label: "Approved",        value: approved,           color: "text-green-400" },
+              { label: "Unreviewed",      value: unreviewed,         color: "text-yellow-400" },
+              { label: "Rejected",        value: rejected,           color: "text-red-400" },
             ].map(({ label, value, color }) => (
               <div key={label} className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-center">
                 <p className={`text-2xl font-bold ${color}`}>{value}</p>
@@ -728,42 +799,17 @@ function ChainView({
             ))}
           </div>
 
-          {/* Chain visualization — layers connected by arrows */}
-          <div>
-            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">
-              AI Supply Chain — by Layer
+          {/* Per-project chains */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
+              AI Supply Chain — by Project ({projectIds.length})
             </h3>
-
-            <div className="space-y-2">
-              {layers.map((cat, idx) => {
-                const meta = categoryMeta(cat);
-                return (
-                  <div key={cat}>
-                    {/* Layer row */}
-                    <div className="bg-gray-800 border border-gray-700 rounded-xl p-4">
-                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-                        {meta.icon} {meta.label} Layer ({grouped[cat].length})
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {grouped[cat].map((r, i) => (
-                          <ResourcePill key={r.id ?? i} resource={r} />
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Arrow connector between layers */}
-                    {idx < layers.length - 1 && (
-                      <div className="flex justify-center py-1 text-gray-600 text-lg select-none">
-                        ↓
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+            {projectIds.map((pid) => (
+              <ProjectChain key={pid} projectId={pid} resources={byProject[pid]} />
+            ))}
           </div>
 
-          {/* Raw response toggle for debugging */}
+          {/* Raw response toggle */}
           <details className="text-xs text-gray-600">
             <summary className="cursor-pointer hover:text-gray-400">Raw API response</summary>
             <pre className="mt-2 bg-gray-900 rounded-lg p-3 overflow-x-auto text-gray-500 text-[11px]">
@@ -773,13 +819,13 @@ function ChainView({
         </>
       )}
 
-      {/* No scan yet — placeholder */}
+      {/* No scan yet */}
       {!chainResult && !scanning && !scanError && (
         <div className="bg-gray-800/50 border border-dashed border-gray-700 rounded-xl px-6 py-12 text-center space-y-2">
           <p className="text-4xl">🔗</p>
           <p className="text-sm font-medium text-gray-300">Ready to scan</p>
           <p className="text-xs text-gray-500">
-            Click &ldquo;Scan AI Inventory&rdquo; to pull live data from Atlas and visualize the AI artifact chain.
+            Click &ldquo;Scan AI Inventory&rdquo; to pull live data from Atlas across all projects.
           </p>
         </div>
       )}
