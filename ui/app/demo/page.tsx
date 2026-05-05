@@ -17,9 +17,21 @@ interface AtlasResource {
   [key: string]: any;
 }
 
+interface AtlasProject {
+  id?: string;
+  project_id?: string;
+  name?: string;
+  display_name?: string;
+  organization_name?: string;
+  organization_id?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
 interface ChainScanResult {
   resources: { resources?: AtlasResource[]; [key: string]: unknown } | null;
   dependency_graphs: unknown;
+  org_projects: unknown;
 }
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
@@ -636,6 +648,51 @@ export default function DemoPage() {
 
 // ─── Chain of Custody View ────────────────────────────────────────────────────
 
+// Build a map of project_id → { name, orgName } from whatever shape Atlas returns
+function buildProjectMap(orgProjects: unknown): Record<string, { name: string; orgName: string }> {
+  const map: Record<string, { name: string; orgName: string }> = {};
+  if (!orgProjects || typeof orgProjects !== "object") return map;
+
+  // Try array of orgs, each with projects array
+  const tryOrgsArray = (orgs: AtlasProject[]) => {
+    for (const org of orgs) {
+      const orgName = org.name ?? org.display_name ?? org.organization_name ?? "";
+      const projects: AtlasProject[] = org.projects ?? [];
+      for (const p of projects) {
+        const pid = p.id ?? p.project_id ?? "";
+        if (pid) map[pid] = { name: p.name ?? p.display_name ?? pid, orgName };
+      }
+    }
+  };
+
+  // Try flat array of projects (each with org info embedded)
+  const tryFlatArray = (items: AtlasProject[]) => {
+    for (const item of items) {
+      const pid = item.id ?? item.project_id ?? "";
+      if (pid) {
+        map[pid] = {
+          name: item.name ?? item.display_name ?? pid,
+          orgName: item.organization_name ?? "",
+        };
+      }
+    }
+  };
+
+  const data = orgProjects as Record<string, unknown>;
+  if (Array.isArray(data)) {
+    // Could be array of orgs or flat array of projects
+    const first = data[0] as AtlasProject | undefined;
+    if (first?.projects) tryOrgsArray(data as AtlasProject[]);
+    else tryFlatArray(data as AtlasProject[]);
+  } else {
+    // Could be { organizations: [...] } or { projects: [...] }
+    if (Array.isArray(data.organizations)) tryOrgsArray(data.organizations as AtlasProject[]);
+    else if (Array.isArray(data.projects)) tryFlatArray(data.projects as AtlasProject[]);
+    else if (Array.isArray(data.data)) tryFlatArray(data.data as AtlasProject[]);
+  }
+  return map;
+}
+
 function groupByCategory(resources: AtlasResource[]): Record<string, AtlasResource[]> {
   const grouped = CHAIN_LAYER_ORDER.reduce<Record<string, AtlasResource[]>>(
     (acc, cat) => {
@@ -655,7 +712,7 @@ function groupByCategory(resources: AtlasResource[]): Record<string, AtlasResour
   return grouped;
 }
 
-function ProjectChain({ projectId, resources }: { projectId: string; resources: AtlasResource[] }) {
+function ProjectChain({ projectId, resources, projectMeta }: { projectId: string; resources: AtlasResource[]; projectMeta?: { name: string; orgName: string } }) {
   const grouped = groupByCategory(resources);
   const layers = Object.keys(grouped);
   const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
@@ -668,7 +725,13 @@ function ProjectChain({ projectId, resources }: { projectId: string; resources: 
       {/* Project header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-mono text-gray-500">{projectId}</p>
+          <p className="text-sm font-semibold text-white">
+            {projectMeta?.name ?? projectId}
+          </p>
+          {projectMeta?.orgName && (
+            <p className="text-xs text-gray-500 mt-0.5">{projectMeta.orgName}</p>
+          )}
+          <p className="text-xs font-mono text-gray-600 mt-0.5">{projectId}</p>
           <div className="flex gap-3 mt-1 text-xs">
             <span className="text-gray-300">{resources.length} resources</span>
             <span className="text-gray-600">·</span>
@@ -725,6 +788,7 @@ function ChainView({
   onScan: () => void;
 }) {
   const resources: AtlasResource[] = chainResult?.resources?.resources ?? [];
+  const projectMap = buildProjectMap(chainResult?.org_projects);
 
   // Group by project_id first
   const byProject = resources.reduce<Record<string, AtlasResource[]>>((acc, r) => {
@@ -805,15 +869,21 @@ function ChainView({
               AI Supply Chain — by Project ({projectIds.length})
             </h3>
             {projectIds.map((pid) => (
-              <ProjectChain key={pid} projectId={pid} resources={byProject[pid]} />
+              <ProjectChain key={pid} projectId={pid} resources={byProject[pid]} projectMeta={projectMap[pid]} />
             ))}
           </div>
 
-          {/* Raw response toggle */}
+          {/* Raw response toggles */}
           <details className="text-xs text-gray-600">
-            <summary className="cursor-pointer hover:text-gray-400">Raw API response</summary>
+            <summary className="cursor-pointer hover:text-gray-400">Raw org/project response</summary>
             <pre className="mt-2 bg-gray-900 rounded-lg p-3 overflow-x-auto text-gray-500 text-[11px]">
-              {JSON.stringify(chainResult, null, 2)}
+              {JSON.stringify(chainResult?.org_projects, null, 2)}
+            </pre>
+          </details>
+          <details className="text-xs text-gray-600">
+            <summary className="cursor-pointer hover:text-gray-400">Raw inventory response</summary>
+            <pre className="mt-2 bg-gray-900 rounded-lg p-3 overflow-x-auto text-gray-500 text-[11px]">
+              {JSON.stringify(chainResult?.resources, null, 2)}
             </pre>
           </details>
         </>
