@@ -817,11 +817,13 @@ function ProjectChain({
   resources,
   projectMeta,
   matchedIds,
+  matchReasons,
 }: {
   projectId: string;
   resources: AtlasResource[];
   projectMeta?: { name: string; orgName: string };
   matchedIds: Set<string>;
+  matchReasons: Record<string, string>;
 }) {
   const grouped = groupByCategory(resources);
   const layers = Object.keys(grouped);
@@ -882,9 +884,19 @@ function ProjectChain({
                   {visible.map((r, i) => {
                     const rid = r.resource_instance_id ?? r.id ?? String(i);
                     const isMatch = matchedIds.has(rid);
+                    const reason = matchReasons[rid];
                     return (
-                      <div key={rid} className={isMatch ? "ring-2 ring-emerald-500 rounded-lg" : ""}>
+                      <div key={rid} className={`flex items-start gap-2 ${isMatch ? "ring-2 ring-emerald-500 rounded-lg" : ""}`}>
                         <ResourcePill resource={r} onClick={() => setSelectedResource(r)} />
+                        {isMatch && reason && (
+                          <div className="flex items-start gap-1.5 bg-emerald-900/40 border border-emerald-700/60 rounded-lg px-2.5 py-1.5 max-w-xs self-stretch">
+                            <span className="text-emerald-400 text-xs shrink-0 mt-0.5">✓</span>
+                            <div>
+                              <p className="text-emerald-300 text-[10px] font-semibold uppercase tracking-wider leading-none mb-1">Use Case Match</p>
+                              <p className="text-emerald-200 text-xs leading-snug">{reason}</p>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     );
                   })}
@@ -976,7 +988,6 @@ function ChainView({
     }
   }
 
-  void matchReasons; // used in tooltip future enhancement
 
   return (
     <div className="space-y-6">
@@ -1085,6 +1096,7 @@ function ChainView({
                 resources={byProject[pid]}
                 projectMeta={projectMap[pid]}
                 matchedIds={matchedIds}
+                matchReasons={matchReasons}
               />
             ))}
           </div>
