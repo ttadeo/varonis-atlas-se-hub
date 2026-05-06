@@ -60,7 +60,7 @@ function LoginForm() {
       });
       const data = await res.json();
       if (res.ok) {
-        router.push(from);
+        window.location.href = from;
       } else {
         setError(data.error ?? "Invalid credentials");
       }
@@ -86,7 +86,7 @@ function LoginForm() {
       const data = await res.json();
 
       if (res.ok) {
-        router.push(from);
+        window.location.href = from;
       } else {
         setError(data.error ?? "Verification failed");
       }
