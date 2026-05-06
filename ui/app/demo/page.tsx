@@ -212,6 +212,18 @@ function ResourceDetailModal({ resource, onClose }: { resource: AtlasResource; o
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg leading-none ml-2">✕</button>
         </div>
 
+        {/* Atlas UI navigation guide */}
+        <div className="mx-5 mt-4 bg-blue-900/30 border border-blue-700/60 rounded-xl px-4 py-3 space-y-1.5">
+          <p className="text-xs font-semibold text-blue-300 uppercase tracking-wider">Find in Atlas UI</p>
+          <p className="text-xs text-blue-400">Atlas search doesn&apos;t support special characters or IDs. Navigate instead:</p>
+          <ol className="text-xs text-blue-200 space-y-0.5 list-decimal list-inside">
+            <li>Go to <span className="text-white font-medium">AI Inventory</span></li>
+            <li>Open <span className="text-white font-medium">{meta.label}</span> panel</li>
+            {projectIds.length > 0 && <li>Filter by project — copy Project ID below</li>}
+            <li>Browse to find <span className="text-white font-medium">{resource.resource_type_display_name ?? meta.label}</span> entries</li>
+          </ol>
+        </div>
+
         {/* Fields */}
         <div className="px-5 py-4 space-y-3">
           {fields.map(({ label, value, copyLabel }) => (
@@ -225,13 +237,13 @@ function ResourceDetailModal({ resource, onClose }: { resource: AtlasResource; o
           ))}
         </div>
 
-        {/* Footer — copy all for Atlas UI search */}
+        {/* Footer */}
         <div className="px-5 pb-4 pt-1 border-t border-gray-800 flex gap-2">
           <button
             onClick={() => {
               const text = [
+                `Resource ID: ${id}`,
                 `Name: ${name}`,
-                `ID: ${id}`,
                 `Type: ${resource.resource_type_display_name ?? resource.resource_type ?? ""}`,
                 `Category: ${meta.label}`,
                 `Project ID(s): ${projectIds.join(", ")}`,
