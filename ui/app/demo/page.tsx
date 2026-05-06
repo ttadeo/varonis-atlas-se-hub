@@ -839,9 +839,12 @@ function ProjectChain({
   const hasSearch = matchedIds.size > 0;
   const projectHasMatch = hasSearch && resources.some((r) => matchedIds.has(r.resource_instance_id ?? ""));
 
+  // Hide non-matching projects entirely when search is active
+  if (hasSearch && !projectHasMatch) return null;
+
   return (
     <div className={`bg-gray-800/50 border rounded-xl p-4 space-y-4 transition-all ${
-      hasSearch ? (projectHasMatch ? "border-emerald-600 shadow-lg shadow-emerald-900/30" : "border-gray-700 opacity-40") : "border-gray-700"
+      hasSearch ? "border-emerald-600 shadow-lg shadow-emerald-900/30" : "border-gray-700"
     }`}>
       {/* Project header */}
       <div className="flex items-start justify-between gap-4">
@@ -865,20 +868,29 @@ function ProjectChain({
         <ResourceDetailModal resource={selectedResource} onClose={() => setSelectedResource(null)} />
       )}
 
-      {/* Layer chain */}
+      {/* Layer chain — when search active, only show layers/resources that matched */}
       <div className="space-y-2">
         {layers.map((cat, idx) => {
           const meta = categoryMeta(cat);
           const items = grouped[cat];
+
+          // When search active, filter to only matched resources in this layer
+          const displayItems = hasSearch
+            ? items.filter((r) => matchedIds.has(r.resource_instance_id ?? r.id ?? ""))
+            : items;
+
+          // Skip this layer entirely if search active and nothing matched
+          if (hasSearch && displayItems.length === 0) return null;
+
           const isExpanded = expandedLayers[cat] ?? false;
-          const visible = isExpanded ? items : items.slice(0, LAYER_PAGE_SIZE);
-          const overflow = items.length - LAYER_PAGE_SIZE;
+          const visible = (hasSearch || isExpanded) ? displayItems : displayItems.slice(0, LAYER_PAGE_SIZE);
+          const overflow = displayItems.length - LAYER_PAGE_SIZE;
 
           return (
             <div key={cat}>
               <div className="bg-gray-900/60 border border-gray-700/60 rounded-lg p-3">
                 <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                  {meta.icon} {meta.label} ({items.length})
+                  {meta.icon} {meta.label} {hasSearch ? `(${displayItems.length} matched)` : `(${items.length})`}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {visible.map((r, i) => {
