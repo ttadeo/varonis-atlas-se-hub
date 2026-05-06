@@ -42,6 +42,10 @@ function getNeo4jDriver() {
 
 // ─── Tool: search_atlas_docs ──────────────────────────────────────────────────
 
+function escapeLucene(q: string): string {
+  return q.replace(/[+\-&|!(){}[\]^"~*?:\\/]/g, " ").replace(/\s+/g, " ").trim();
+}
+
 async function searchAtlasDocs(query: string, section?: string): Promise<string> {
   const embeddingRes = await openai.embeddings.create({
     model: "text-embedding-3-small",
@@ -79,7 +83,7 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
                   node.title AS title, node.section AS section, score
            ORDER BY score DESC
            LIMIT 8`,
-          { query, section: section ?? null }
+          { query: escapeLucene(query), section: section ?? null }
         );
       } finally { await s.close(); }
     })(),
