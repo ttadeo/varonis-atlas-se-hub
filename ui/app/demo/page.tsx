@@ -975,6 +975,26 @@ function ChainView({
   const matchedIds = new Set((searchResult?.matches ?? []).map((m) => m.id));
   const matchReasons = Object.fromEntries((searchResult?.matches ?? []).map((m) => [m.id, m.reason]));
 
+  // Build a name+type → reason map so we can match even when IDs differ due to deduplication
+  const matchedNameKeys = new Set((searchResult?.matches ?? []).map((m) => {
+    const r = resources.find((r) => (r.resource_instance_id ?? r.id) === m.id);
+    return r ? `${r.resource_display_name}||${r.resource_type_category}` : m.id;
+  }));
+  const matchReasonsById: Record<string, string> = {};
+  for (const r of resources) {
+    const nameKey = `${r.resource_display_name}||${r.resource_type_category}`;
+    const directMatch = searchResult?.matches?.find((m) => m.id === (r.resource_instance_id ?? r.id));
+    const nameMatch = matchedNameKeys.has(nameKey)
+      ? searchResult?.matches?.find((m) => {
+          const mr = resources.find((rr) => (rr.resource_instance_id ?? rr.id) === m.id);
+          return mr && `${mr.resource_display_name}||${mr.resource_type_category}` === nameKey;
+        })
+      : undefined;
+    const match = directMatch ?? nameMatch;
+    if (match) matchReasonsById[r.resource_instance_id ?? r.id ?? ""] = match.reason;
+  }
+  const effectiveMatchedIds = new Set(Object.keys(matchReasonsById));
+
   const approved   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "approved").length;
   const unreviewed = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unreviewed").length;
   const rejected   = resources.filter((r) => (r.reviewed ?? r.review_status)?.toLowerCase() === "unapproved").length;
@@ -1107,8 +1127,8 @@ function ChainView({
                 projectId={pid}
                 resources={byProject[pid]}
                 projectMeta={projectMap[pid]}
-                matchedIds={matchedIds}
-                matchReasons={matchReasons}
+                matchedIds={effectiveMatchedIds}
+                matchReasons={matchReasonsById}
               />
             ))}
           </div>
