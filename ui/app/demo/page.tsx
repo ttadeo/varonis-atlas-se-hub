@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import HelpPanel from "@/components/HelpPanel";
 
@@ -176,11 +176,29 @@ function CopyButton({ value, label }: { value: string; label: string }) {
 }
 
 function ResourceDetailModal({ resource, onClose }: { resource: AtlasResource; onClose: () => void }) {
+  const [fullRecord, setFullRecord] = useState<AtlasResource | null>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const [fetching, setFetching] = useState(false);
+
+  const id = resource.resource_instance_id ?? resource.id ?? "";
+
+  // Fetch full record from Atlas on mount
+  useEffect(() => {
+    if (!id) return;
+    setFetching(true);
+    fetch(`/api/demo/chain/resource?id=${encodeURIComponent(id)}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.error) setFetchError(data.error);
+        else setFullRecord(data);
+      })
+      .catch((e) => setFetchError(String(e)))
+      .finally(() => setFetching(false));
+  }, [id]);
   const name = resource.resource_display_name ?? resource.name ?? "Unnamed";
   const category = resource.resource_type_category ?? resource.resource_category;
   const reviewed = resource.reviewed ?? resource.review_status;
   const meta = categoryMeta(category);
-  const id = resource.resource_instance_id ?? resource.id ?? "";
   const projectIds: string[] = Array.isArray(resource.project_ids) ? resource.project_ids : (resource.project_id ? [resource.project_id] : []);
   const technologies: string[] = Array.isArray(resource.technology_types) ? resource.technology_types : [];
 
@@ -211,6 +229,34 @@ function ResourceDetailModal({ resource, onClose }: { resource: AtlasResource; o
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-white text-lg leading-none ml-2">✕</button>
         </div>
+
+        {/* Live record from Atlas */}
+        {fetching && (
+          <div className="mx-5 mt-4 text-xs text-gray-500 animate-pulse">Fetching full record from Atlas…</div>
+        )}
+        {fetchError && (
+          <div className="mx-5 mt-4 text-xs text-red-400">Could not fetch full record: {fetchError}</div>
+        )}
+        {fullRecord && (() => {
+          // Show any extra fields that aren't already in our static list
+          const knownKeys = new Set(["resource_instance_id","resource_display_name","resource_type_display_name","resource_type","resource_type_category","technology_types","project_ids","status","reviewed","discovery_scan_id","has_valid_pentest_connection_details","pentest_connection_last_tested","pentest_connection_last_test_status","pentest_connection_last_test_error_msg","issue_summaries","provider"]);
+          const extraFields = Object.entries(fullRecord).filter(([k, v]) => !knownKeys.has(k) && v !== null && v !== undefined && v !== "");
+          if (extraFields.length === 0) return null;
+          return (
+            <div className="mx-5 mt-4 bg-gray-800/60 border border-gray-700 rounded-xl px-4 py-3 space-y-2">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Additional Fields from Atlas</p>
+              {extraFields.map(([key, val]) => (
+                <div key={key} className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-xs text-gray-500 mb-0.5">{key}</p>
+                    <p className="text-sm text-gray-200 break-all font-mono">{typeof val === "object" ? JSON.stringify(val) : String(val)}</p>
+                  </div>
+                  {typeof val === "string" && val.length > 0 && <CopyButton value={val} label="Value" />}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
 
         {/* Atlas UI navigation guide */}
         <div className="mx-5 mt-4 bg-blue-900/30 border border-blue-700/60 rounded-xl px-4 py-3 space-y-1.5">
