@@ -147,7 +147,7 @@ export default function MeetingPage() {
 
   // Session state
   const [sessionId, setSessionId] = useState<string | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState(true);
   const [sessionSaved, setSessionSaved] = useState(false);
   const [sessionName, setSessionName] = useState("");
   const [sessionDescription, setSessionDescription] = useState("");
