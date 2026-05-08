@@ -260,24 +260,33 @@ export async function POST(req: NextRequest) {
   if (!scenario) return NextResponse.json({ error: `Unknown scenario_id: ${scenario_id}` }, { status: 400 });
 
   const errors: string[] = [];
+  // Unique suffix so re-running a scenario doesn't conflict with prior runs
+  const suffix = Date.now().toString(36);
 
   try {
     const token = await getAtlasJWT();
     const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
     // ── Create resources in one batch call ─────────────────────────────────────
-    // Note: technology_types must be omitted or left empty — Atlas validates against
-    // its own technology catalog and rejects unknown strings with 404.
+    // Note: technology_types must be empty — Atlas validates against its own catalog.
+    // CustomLlmEndpoint uses endpoint_identifier as a unique key, so we append
+    // the per-request suffix to prevent 409 conflicts on repeat runs.
     const resourcePayload = {
-      resources: scenario.resources.map((r) => ({
-        display_name: r.display_name,
-        resource_type: r.resource_type,
-        resource_data: r.resource_data,
-        technology_types: [],
-        project_ids: [project_id],
-        reviewed: r.reviewed,
-        tenant_global_resource: false,
-      })),
+      resources: scenario.resources.map((r) => {
+        let resource_data = r.resource_data;
+        if (r.resource_type === "CustomLlmEndpoint" && typeof resource_data.endpoint_identifier === "string") {
+          resource_data = { ...resource_data, endpoint_identifier: `${resource_data.endpoint_identifier}-${suffix}` };
+        }
+        return {
+          display_name: r.display_name,
+          resource_type: r.resource_type,
+          resource_data,
+          technology_types: [],
+          project_ids: [project_id],
+          reviewed: r.reviewed,
+          tenant_global_resource: false,
+        };
+      }),
     };
 
     const createRes = await fetch(`${ATLAS_API_URL}/v1/inventory/resources`, {
