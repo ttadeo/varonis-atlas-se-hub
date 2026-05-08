@@ -6,17 +6,6 @@ import HelpPanel from "@/components/HelpPanel";
 
 // ─── Chain of Custody types ──────────────────────────────────────────────────
 
-interface AtlasResource {
-  id?: string;
-  name?: string;
-  resource_type?: string;
-  technology?: string;
-  resource_category?: string;
-  review_status?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
-}
-
 interface AtlasProject {
   id?: string;
   project_id?: string;
@@ -24,6 +13,40 @@ interface AtlasProject {
   display_name?: string;
   organization_name?: string;
   organization_id?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
+}
+
+interface ScenarioDef {
+  id: string;
+  name: string;
+  description: string;
+  resource_count: number;
+  layers: string[];
+}
+
+interface CreatedResource {
+  id: string;
+  name: string;
+  resource_type: string;
+  category: string;
+}
+
+interface ScenarioResult {
+  scenario_name: string;
+  project_id: string;
+  created: CreatedResource[];
+  dependencies_linked: boolean;
+  errors: string[];
+}
+
+interface AtlasResource {
+  id?: string;
+  name?: string;
+  resource_type?: string;
+  technology?: string;
+  resource_category?: string;
+  review_status?: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
@@ -359,6 +382,23 @@ export default function DemoPage() {
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [chainResult, setChainResult] = useState<ChainScanResult | null>(null);
+  const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string }[]>([]);
+  const [projectsLoaded, setProjectsLoaded] = useState(false);
+
+  // Auto-load projects when chain tab is activated
+  useEffect(() => {
+    if (mode !== "chain" || projectsLoaded) return;
+    setProjectsLoaded(true);
+    fetch("/api/demo/chain/projects")
+      .then((r) => r.json())
+      .then((data) => {
+        const map = buildProjectMap(data);
+        const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
+        list.sort((a, b) => a.name.localeCompare(b.name));
+        setChainProjects(list);
+      })
+      .catch(() => { /* silently ignore — projects can be entered manually */ });
+  }, [mode, projectsLoaded]);
 
   // ── Chain of Custody: Scan ─────────────────────────────────────────────────
 
@@ -537,7 +577,7 @@ export default function DemoPage() {
         <div className="max-w-3xl mx-auto">
 
           {/* ── Chain of Custody mode ─────────────────────────────────────── */}
-          {mode === "chain" && <ChainView scanning={scanning} scanError={scanError} chainResult={chainResult} onScan={handleChainScan} />}
+          {mode === "chain" && <ChainView scanning={scanning} scanError={scanError} chainResult={chainResult} onScan={handleChainScan} projects={chainProjects} />}
 
           {/* ── Demo Provisioning mode ────────────────────────────────────── */}
           {mode === "provision" && <>
@@ -996,16 +1036,262 @@ interface SearchResult {
   matches: { id: string; reason: string }[];
 }
 
+// ─── Mock Scenario Builder ────────────────────────────────────────────────────
+
+const SCENARIO_ICONS: Record<string, string> = {
+  healthcare: "🏥",
+  finance: "💹",
+  ecommerce: "🛒",
+};
+
+function MockScenarioBuilder({ projects }: { projects: { id: string; name: string; orgName: string }[] }) {
+  const [scenarios, setScenarios] = useState<ScenarioDef[]>([]);
+  const [selectedScenario, setSelectedScenario] = useState<string>("");
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [customProjectId, setCustomProjectId] = useState<string>("");
+  const [creating, setCreating] = useState(false);
+  const [result, setResult] = useState<ScenarioResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
+
+  // Load scenario definitions on first open
+  useEffect(() => {
+    if (!open || scenarios.length > 0) return;
+    fetch("/api/demo/chain/scenario")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data)) setScenarios(data);
+      })
+      .catch(() => { /* ignore */ });
+  }, [open, scenarios.length]);
+
+  // Pre-select project when list loads
+  useEffect(() => {
+    if (projects.length > 0 && !selectedProject) {
+      setSelectedProject(projects[0].id);
+    }
+  }, [projects, selectedProject]);
+
+  const projectId = selectedProject || customProjectId.trim();
+  const canCreate = selectedScenario && projectId && !creating;
+
+  async function handleCreate() {
+    if (!canCreate) return;
+    setCreating(true);
+    setError(null);
+    setResult(null);
+    try {
+      const res = await fetch("/api/demo/chain/scenario", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scenario_id: selectedScenario, project_id: projectId }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail ?? data.error ?? `HTTP ${res.status}`);
+      setResult(data);
+    } catch (err) {
+      setError(String(err));
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  const chosenScenario = scenarios.find((s) => s.id === selectedScenario);
+  const chosenProjectName = projects.find((p) => p.id === projectId)?.name ?? projectId;
+
+  return (
+    <div className="bg-gray-800/50 border border-gray-700 rounded-xl overflow-hidden">
+      {/* Header — toggles open/close */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-700/30 transition-colors text-left"
+      >
+        <div className="flex items-center gap-3">
+          <span className="text-xl">🧪</span>
+          <div>
+            <p className="text-sm font-semibold text-white">Build Mock Scenario</p>
+            <p className="text-xs text-gray-400">
+              Create a realistic &quot;cradle to grave&quot; AI chain in your Atlas project
+            </p>
+          </div>
+        </div>
+        <span className="text-gray-500 text-lg select-none">{open ? "▲" : "▼"}</span>
+      </button>
+
+      {open && (
+        <div className="px-5 pb-5 space-y-5 border-t border-gray-700">
+          <p className="text-xs text-gray-500 pt-4">
+            Select a scenario template and your Atlas project. This will create mock AI artifacts
+            (libraries → LLM endpoint → model → dataset) in Atlas so you can demonstrate a full
+            chain of custody in the inventory.
+          </p>
+
+          {/* Scenario selector */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              Scenario Template
+            </label>
+            <div className="space-y-2">
+              {scenarios.length === 0 && (
+                <p className="text-xs text-gray-500 animate-pulse">Loading scenarios…</p>
+              )}
+              {scenarios.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => { setSelectedScenario(s.id); setResult(null); setError(null); }}
+                  className={`w-full text-left rounded-xl border px-4 py-3 transition-all ${
+                    selectedScenario === s.id
+                      ? "border-emerald-500 bg-emerald-900/20"
+                      : "border-gray-700 hover:border-gray-600 bg-gray-900/40"
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <span className="text-lg mt-0.5">{SCENARIO_ICONS[s.id] ?? "🤖"}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium text-white">{s.name}</p>
+                      <p className="text-xs text-gray-400 mt-0.5 leading-snug">{s.description}</p>
+                      <div className="flex flex-wrap gap-1.5 mt-2">
+                        {s.layers.map((l) => (
+                          <span key={l} className="text-[10px] px-2 py-0.5 rounded-full bg-gray-700 text-gray-300 font-mono">
+                            {l}
+                          </span>
+                        ))}
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-gray-700/50 text-gray-500">
+                          {s.resource_count} resources
+                        </span>
+                      </div>
+                    </div>
+                    {selectedScenario === s.id && (
+                      <span className="text-emerald-400 text-base shrink-0">✓</span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Project selector */}
+          <div>
+            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              Target Atlas Project
+            </label>
+            {projects.length > 0 ? (
+              <select
+                value={selectedProject}
+                onChange={(e) => { setSelectedProject(e.target.value); setResult(null); setError(null); }}
+                className="w-full bg-gray-900 text-gray-100 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 border border-gray-700"
+              >
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}{p.orgName ? ` — ${p.orgName}` : ""}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <div className="space-y-1.5">
+                <input
+                  type="text"
+                  placeholder="Paste your Atlas Project UUID"
+                  value={customProjectId}
+                  onChange={(e) => { setCustomProjectId(e.target.value); setResult(null); setError(null); }}
+                  className="w-full bg-gray-900 text-gray-100 rounded-xl px-4 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-emerald-600 border border-gray-700 placeholder-gray-600"
+                />
+                <p className="text-xs text-gray-500">
+                  Projects will auto-populate after scanning. Paste a project UUID manually if needed.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Error */}
+          {error && (
+            <div className="bg-red-900/40 border border-red-700 rounded-xl px-4 py-3 text-sm text-red-300">
+              {error}
+            </div>
+          )}
+
+          {/* Success result */}
+          {result && (
+            <div className="bg-emerald-900/20 border border-emerald-700/60 rounded-xl px-4 py-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="text-emerald-400 text-lg">✓</span>
+                <p className="text-sm font-semibold text-emerald-300">Scenario Created</p>
+              </div>
+              <p className="text-xs text-emerald-400">{result.scenario_name} → {chosenProjectName}</p>
+
+              <div className="space-y-1.5">
+                {result.created.map((r, i) => (
+                  <div key={r.id} className="flex items-center gap-2 bg-gray-900/60 rounded-lg px-3 py-2">
+                    <span className="text-gray-500 text-xs w-4 shrink-0">{i + 1}</span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-200 truncate">{r.name}</p>
+                      <p className="text-[10px] text-gray-500 font-mono">{r.resource_type} · {r.category || "pending categorization"}</p>
+                    </div>
+                    <span className="text-[10px] font-mono text-gray-600 truncate max-w-24">{r.id.slice(0, 8)}…</span>
+                  </div>
+                ))}
+              </div>
+
+              {result.dependencies_linked && (
+                <div className="flex items-center gap-2 text-xs text-emerald-400">
+                  <span>🔗</span>
+                  <span>Dependencies linked — chain visible in Atlas Inventory</span>
+                </div>
+              )}
+
+              {result.errors.length > 0 && (
+                <div className="space-y-1">
+                  {result.errors.map((e, i) => (
+                    <p key={i} className="text-xs text-yellow-400">⚠ {e}</p>
+                  ))}
+                </div>
+              )}
+
+              <p className="text-xs text-gray-500">
+                Resources are now in your Atlas project. Re-scan the inventory to see them in the chain visualization.
+              </p>
+
+              <button
+                onClick={() => { setResult(null); setSelectedScenario(""); }}
+                className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              >
+                Build another scenario →
+              </button>
+            </div>
+          )}
+
+          {/* Create button */}
+          {!result && (
+            <button
+              onClick={handleCreate}
+              disabled={!canCreate}
+              className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-6 py-3 text-sm font-medium transition-colors"
+            >
+              {creating
+                ? "Creating in Atlas…"
+                : chosenScenario
+                ? `Create "${chosenScenario.name}" in Atlas →`
+                : "Select a scenario to continue"}
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ChainView({
   scanning,
   scanError,
   chainResult,
   onScan,
+  projects,
 }: {
   scanning: boolean;
   scanError: string | null;
   chainResult: ChainScanResult | null;
   onScan: () => void;
+  projects: { id: string; name: string; orgName: string }[];
 }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [searching, setSearching] = useState(false);
@@ -1090,6 +1376,9 @@ function ChainView({
           through to LLM endpoints and models.
         </p>
       </div>
+
+      {/* Mock Scenario Builder */}
+      <MockScenarioBuilder projects={projects} />
 
       {/* Scan button */}
       <button
