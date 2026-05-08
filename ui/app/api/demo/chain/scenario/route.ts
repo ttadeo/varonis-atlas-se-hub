@@ -266,12 +266,14 @@ export async function POST(req: NextRequest) {
     const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
     // ── Create resources in one batch call ─────────────────────────────────────
+    // Note: technology_types must be omitted or left empty — Atlas validates against
+    // its own technology catalog and rejects unknown strings with 404.
     const resourcePayload = {
       resources: scenario.resources.map((r) => ({
         display_name: r.display_name,
         resource_type: r.resource_type,
         resource_data: r.resource_data,
-        technology_types: r.technology_types,
+        technology_types: [],
         project_ids: [project_id],
         reviewed: r.reviewed,
         tenant_global_resource: false,
