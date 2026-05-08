@@ -19,9 +19,53 @@ async function getAtlasJWT(): Promise<string> {
   return data.access_token as string;
 }
 
+// ─── Schema helpers ────────────────────────────────────────────────────────────
+// resource_data schemas discovered from Atlas inventory — exact format required per type
+
+function softwarePkgData(library_name: string, version: string, description: string | null, language = "python") {
+  return {
+    license: null,
+    version,
+    home_page: null,
+    description,
+    library_name,
+    display_fields: [],
+    programming_language: language,
+    second_class_attribute_details: [],
+  };
+}
+
+function customLlmEndpointData(identifier: string, provider: string) {
+  return {
+    type: "custom",
+    api_key: null,
+    provider,
+    endpoint_identifier: identifier,
+    display_fields: [],
+    second_class_attribute_details: [],
+  };
+}
+
+function modelPackageData(org: string, repo: string, modelId: string) {
+  return {
+    credentials: {
+      base_url: "https://huggingface.co",
+      revision: "main",
+      repo_name: repo,
+      model_path: null,
+      display_fields: [],
+      storage_source: "HUGGINGFACE",
+      organization_id: org,
+      token_secret_name: null,
+      hugging_face_model_id: modelId,
+      second_class_attribute_details: [],
+    },
+    display_fields: [],
+    second_class_attribute_details: [],
+  };
+}
+
 // ─── Scenario definitions ──────────────────────────────────────────────────────
-// resource_type must match Atlas's resource-types catalog.
-// Known valid types from Atlas: langchain, openai, anthropic, transformers, hugging_face, chromadb, faiss
 
 interface ScenarioResource {
   display_name: string;
@@ -43,55 +87,48 @@ const SCENARIO_DEFINITIONS: ScenarioDefinition[] = [
     id: "healthcare",
     name: "Healthcare — Clinical Note Summarizer",
     description:
-      "LangChain orchestrates OpenAI GPT-4o to summarize patient notes using a HuggingFace BART model, with training data sourced from a clinical notes dataset. Demonstrates PII risk when patient data flows through unmonitored LLM endpoints.",
+      "LangChain orchestrates OpenAI GPT-4o to summarize patient notes, with a HuggingFace BART model loaded via Transformers. Demonstrates PII risk when patient data flows through unmonitored LLM endpoints.",
     resources: [
       {
         display_name: "LangChain",
         resource_type: "langchain",
-        technology_types: ["python", "llm-orchestration"],
-        resource_data: {
-          version: "0.1.20",
-          package_manager: "pip",
-          package_name: "langchain",
-          source: "PyPI",
-        },
+        technology_types: ["langchain"],
+        resource_data: softwarePkgData("langchain", "0.1.20", "LangChain is a framework for developing applications powered by large language models (LLMs)."),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "OpenAI",
+        resource_type: "openai",
+        technology_types: ["openai"],
+        resource_data: softwarePkgData("openai", "1.30.1", "The official Python library for the OpenAI API"),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "HuggingFace Hub",
+        resource_type: "huggingface_hub",
+        technology_types: ["huggingface_hub"],
+        resource_data: softwarePkgData("huggingface_hub", "0.23.0", null),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "Transformers",
+        resource_type: "transformers",
+        technology_types: ["transformers"],
+        resource_data: softwarePkgData("transformers", "4.40.2", null),
         reviewed: "unreviewed",
       },
       {
         display_name: "OpenAI GPT-4o (Clinical Summarizer)",
-        resource_type: "openai",
-        technology_types: ["llm", "openai", "gpt-4"],
-        resource_data: {
-          model: "gpt-4o",
-          endpoint_url: "https://api.openai.com/v1/chat/completions",
-          use_case: "clinical note summarization",
-          temperature: 0,
-        },
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["openai-api-key"],
+        resource_data: customLlmEndpointData("openai-gpt4o-clinical-summarizer", "OpenAI"),
         reviewed: "unapproved",
       },
       {
         display_name: "facebook/bart-large-cnn",
-        resource_type: "hugging_face",
-        technology_types: ["transformers", "summarization", "pytorch"],
-        resource_data: {
-          model_id: "facebook/bart-large-cnn",
-          framework: "transformers",
-          task: "summarization",
-          source: "HuggingFace Hub",
-        },
-        reviewed: "unreviewed",
-      },
-      {
-        display_name: "Clinical Notes Training Dataset",
-        resource_type: "dataset",
-        technology_types: ["csv", "pii", "healthcare"],
-        resource_data: {
-          format: "csv",
-          contains_pii: true,
-          description: "Synthetic de-identified clinical notes used for model fine-tuning",
-          estimated_rows: 50000,
-          data_classification: "sensitive",
-        },
+        resource_type: "ModelPackage",
+        technology_types: ["transformers", "summarization"],
+        resource_data: modelPackageData("facebook", "bart-large-cnn", "facebook/bart-large-cnn"),
         reviewed: "unreviewed",
       },
     ],
@@ -100,56 +137,42 @@ const SCENARIO_DEFINITIONS: ScenarioDefinition[] = [
     id: "finance",
     name: "Financial Services — AI Risk Analyzer",
     description:
-      "LangChain + Anthropic Claude 3 Opus analyzes market risk using a fine-tuned FinBERT model trained on proprietary transaction data. Demonstrates Shadow AI risk in financial workflows.",
+      "LangChain + Anthropic Claude 3 Opus analyzes market risk using a fine-tuned FinBERT model. Demonstrates Shadow AI risk in financial workflows.",
     resources: [
       {
         display_name: "LangChain",
         resource_type: "langchain",
-        technology_types: ["python", "llm-orchestration"],
-        resource_data: {
-          version: "0.1.20",
-          package_manager: "pip",
-          package_name: "langchain",
-          source: "PyPI",
-        },
+        technology_types: ["langchain"],
+        resource_data: softwarePkgData("langchain", "0.1.20", "LangChain is a framework for developing applications powered by large language models (LLMs)."),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "Anthropic",
+        resource_type: "anthropic",
+        technology_types: ["anthropic"],
+        resource_data: softwarePkgData("anthropic", "0.26.0", null),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "Transformers",
+        resource_type: "transformers",
+        technology_types: ["transformers"],
+        resource_data: softwarePkgData("transformers", "4.40.2", null),
         reviewed: "unreviewed",
       },
       {
         display_name: "Anthropic Claude 3 Opus (Risk Analyzer)",
-        resource_type: "anthropic",
-        technology_types: ["llm", "anthropic", "claude"],
-        resource_data: {
-          model: "claude-3-opus-20240229",
-          endpoint_url: "https://api.anthropic.com/v1/messages",
-          use_case: "financial risk analysis",
-        },
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["anthropic-api-key"],
+        resource_data: customLlmEndpointData("anthropic-claude3-opus-risk-analyzer", "Anthropic"),
         reviewed: "unapproved",
       },
       {
-        display_name: "FinBERT (Fine-tuned)",
-        resource_type: "hugging_face",
-        technology_types: ["transformers", "financial-nlp", "bert"],
-        resource_data: {
-          model_id: "ProsusAI/finbert",
-          framework: "transformers",
-          task: "text-classification",
-          fine_tuned: true,
-          source: "HuggingFace Hub",
-        },
+        display_name: "ProsusAI/finbert",
+        resource_type: "ModelPackage",
+        technology_types: ["transformers", "financial-nlp"],
+        resource_data: modelPackageData("ProsusAI", "finbert", "ProsusAI/finbert"),
         reviewed: "unreviewed",
-      },
-      {
-        display_name: "Market Transaction Dataset (Q1-Q4 2024)",
-        resource_type: "dataset",
-        technology_types: ["csv", "financial", "proprietary"],
-        resource_data: {
-          format: "parquet",
-          contains_pii: false,
-          description: "Internal market transaction records used for FinBERT fine-tuning",
-          data_classification: "confidential",
-          retention_policy: "7 years",
-        },
-        reviewed: "unapproved",
       },
     ],
   },
@@ -157,77 +180,50 @@ const SCENARIO_DEFINITIONS: ScenarioDefinition[] = [
     id: "ecommerce",
     name: "E-Commerce — Product Recommendation Engine",
     description:
-      "LangChain + Azure OpenAI powers a product recommendation engine using Sentence Transformers and a customer behavior dataset stored in a vector store. Demonstrates AI sprawl across cloud providers.",
+      "LangChain + Azure OpenAI powers a recommendation engine using Sentence Transformers and ChromaDB for vector search. Demonstrates AI sprawl across cloud providers.",
     resources: [
       {
         display_name: "LangChain",
         resource_type: "langchain",
-        technology_types: ["python", "llm-orchestration"],
-        resource_data: {
-          version: "0.1.20",
-          package_manager: "pip",
-          source: "PyPI",
-        },
+        technology_types: ["langchain"],
+        resource_data: softwarePkgData("langchain", "0.1.20", "LangChain is a framework for developing applications powered by large language models (LLMs)."),
         reviewed: "approved",
       },
       {
-        display_name: "Azure OpenAI (GPT-4 Turbo)",
-        resource_type: "openai",
-        technology_types: ["llm", "azure", "gpt-4"],
-        resource_data: {
-          provider: "Azure",
-          model: "gpt-4-turbo",
-          endpoint_url: "https://my-company.openai.azure.com/openai/deployments/gpt-4-turbo",
-          use_case: "product recommendation generation",
-        },
-        reviewed: "unreviewed",
-      },
-      {
-        display_name: "all-MiniLM-L6-v2 (Sentence Transformer)",
-        resource_type: "hugging_face",
-        technology_types: ["sentence-transformers", "embeddings", "pytorch"],
-        resource_data: {
-          model_id: "sentence-transformers/all-MiniLM-L6-v2",
-          framework: "sentence-transformers",
-          task: "feature-extraction",
-          source: "HuggingFace Hub",
-        },
-        reviewed: "approved",
-      },
-      {
-        display_name: "ChromaDB Vector Store",
+        display_name: "ChromaDB",
         resource_type: "chromadb",
-        technology_types: ["vector-store", "rag", "python"],
-        resource_data: {
-          version: "0.5.0",
-          deployment: "local",
-          collection: "product_catalog_embeddings",
-        },
+        technology_types: ["chromadb"],
+        resource_data: softwarePkgData("chromadb", "0.5.0", "A JavaScript interface for chroma", "python"),
         reviewed: "unreviewed",
       },
       {
-        display_name: "Customer Behavior Dataset",
-        resource_type: "dataset",
-        technology_types: ["parquet", "pii", "behavioral"],
-        resource_data: {
-          format: "parquet",
-          contains_pii: true,
-          description: "Customer purchase history and browsing behavior used for recommendation model training",
-          estimated_rows: 2000000,
-          data_classification: "sensitive",
-        },
+        display_name: "Sentence Transformers",
+        resource_type: "sentence-transformers",
+        technology_types: ["sentence-transformers"],
+        resource_data: softwarePkgData("sentence-transformers", "2.7.0", null),
+        reviewed: "approved",
+      },
+      {
+        display_name: "Azure OpenAI GPT-4 Turbo (Recommendations)",
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["azure-openai-api-key"],
+        resource_data: customLlmEndpointData("azure-openai-gpt4-turbo-recommendations", "Azure OpenAI"),
         reviewed: "unreviewed",
+      },
+      {
+        display_name: "sentence-transformers/all-MiniLM-L6-v2",
+        resource_type: "ModelPackage",
+        technology_types: ["sentence-transformers", "embeddings"],
+        resource_data: modelPackageData("sentence-transformers", "all-MiniLM-L6-v2", "sentence-transformers/all-MiniLM-L6-v2"),
+        reviewed: "approved",
       },
     ],
   },
 ];
 
-// ─── POST /api/demo/chain/scenario ────────────────────────────────────────────
-// Body: { scenario_id: string, project_id: string }
-// Returns: { scenario_name, created: [{id, name, category}], dependencies_linked, errors }
+// ─── GET — return scenario catalog ────────────────────────────────────────────
 
 export async function GET() {
-  // Return available scenario definitions (no Atlas call needed)
   return NextResponse.json(
     SCENARIO_DEFINITIONS.map(({ id, name, description, resources }) => ({
       id,
@@ -238,6 +234,9 @@ export async function GET() {
     }))
   );
 }
+
+// ─── POST — create scenario in Atlas ──────────────────────────────────────────
+// Body: { scenario_id: string, project_id: string }
 
 export async function POST(req: NextRequest) {
   if (!process.env.ATLAS_API_KEY) {
@@ -254,25 +253,19 @@ export async function POST(req: NextRequest) {
   }
 
   const { scenario_id, project_id } = body;
-
   if (!scenario_id) return NextResponse.json({ error: "scenario_id is required" }, { status: 400 });
   if (!project_id) return NextResponse.json({ error: "project_id is required" }, { status: 400 });
 
   const scenario = SCENARIO_DEFINITIONS.find((s) => s.id === scenario_id);
-  if (!scenario) {
-    return NextResponse.json({ error: `Unknown scenario_id: ${scenario_id}` }, { status: 400 });
-  }
+  if (!scenario) return NextResponse.json({ error: `Unknown scenario_id: ${scenario_id}` }, { status: 400 });
 
   const errors: string[] = [];
 
   try {
     const token = await getAtlasJWT();
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
+    const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
-    // ── Step 1: Create all resources in one batch call ─────────────────────────
+    // ── Create resources in one batch call ─────────────────────────────────────
     const resourcePayload = {
       resources: scenario.resources.map((r) => ({
         display_name: r.display_name,
@@ -293,19 +286,20 @@ export async function POST(req: NextRequest) {
     });
 
     if (!createRes.ok) {
-      const body = await createRes.text();
+      const errBody = await createRes.text();
       return NextResponse.json(
-        { error: `Atlas resource creation failed (${createRes.status})`, detail: body },
+        { error: `Atlas resource creation failed (${createRes.status})`, detail: errBody },
         { status: 502 }
       );
     }
 
     const createData = await createRes.json();
 
-    // Extract created resource IDs from response — Atlas may return array or { resources: [] }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const rawCreated: any[] = Array.isArray(createData)
       ? createData
+      : Array.isArray(createData.added_resources)
+      ? createData.added_resources
       : Array.isArray(createData.resources)
       ? createData.resources
       : [];
@@ -313,16 +307,15 @@ export async function POST(req: NextRequest) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const created = rawCreated.map((r: any, idx: number) => ({
       id: r.resource_instance_id ?? r.id ?? `unknown-${idx}`,
-      name: r.resource_display_name ?? r.display_name ?? scenario.resources[idx]?.display_name ?? "Unknown",
+      name: r.display_name ?? r.resource_display_name ?? scenario.resources[idx]?.display_name ?? "Unknown",
       resource_type: r.resource_type ?? scenario.resources[idx]?.resource_type,
       category: r.resource_type_category ?? "unknown",
     }));
 
-    // ── Step 2: Link resources into a chain (sequential dependencies) ──────────
+    // ── Link resources into a sequential chain ─────────────────────────────────
     let dependenciesLinked = false;
 
     if (created.length >= 2) {
-      // Build sequential chain: resource[0] → resource[1] → resource[2] → ...
       const depLinks = created.slice(0, -1).map((r, idx) => ({
         source_resource_id: r.id,
         target_resource_id: created[idx + 1].id,
@@ -354,7 +347,6 @@ export async function POST(req: NextRequest) {
       created,
       dependencies_linked: dependenciesLinked,
       errors,
-      raw_response: createData,
     });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });

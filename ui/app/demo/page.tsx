@@ -850,13 +850,14 @@ function buildProjectMap(orgProjects: unknown): Record<string, { name: string; o
   if (!orgProjects || typeof orgProjects !== "object") return map;
 
   // Try array of orgs, each with projects array
+  // Atlas returns: organization_name, projects: [{ project_id, project_name, ... }]
   const tryOrgsArray = (orgs: AtlasProject[]) => {
     for (const org of orgs) {
-      const orgName = org.name ?? org.display_name ?? org.organization_name ?? "";
+      const orgName = org.organization_name ?? org.name ?? org.display_name ?? "";
       const projects: AtlasProject[] = org.projects ?? [];
       for (const p of projects) {
-        const pid = p.id ?? p.project_id ?? "";
-        if (pid) map[pid] = { name: p.name ?? p.display_name ?? pid, orgName };
+        const pid = p.project_id ?? p.id ?? "";
+        if (pid) map[pid] = { name: p.project_name ?? p.name ?? p.display_name ?? pid, orgName };
       }
     }
   };
@@ -864,10 +865,10 @@ function buildProjectMap(orgProjects: unknown): Record<string, { name: string; o
   // Try flat array of projects (each with org info embedded)
   const tryFlatArray = (items: AtlasProject[]) => {
     for (const item of items) {
-      const pid = item.id ?? item.project_id ?? "";
+      const pid = item.project_id ?? item.id ?? "";
       if (pid) {
         map[pid] = {
-          name: item.name ?? item.display_name ?? pid,
+          name: item.project_name ?? item.name ?? item.display_name ?? pid,
           orgName: item.organization_name ?? "",
         };
       }
