@@ -328,8 +328,8 @@ export async function POST(req: NextRequest) {
 
     if (created.length >= 2) {
       const depLinks = created.slice(0, -1).map((r, idx) => ({
-        source_resource_id: r.id,
-        target_resource_id: created[idx + 1].id,
+        resource_instance_id: r.id,
+        depends_on_resource_instance_id: created[idx + 1].id,
       }));
 
       try {
