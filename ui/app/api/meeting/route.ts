@@ -20,6 +20,8 @@ interface MeetingContext {
   knownConcerns: string;
   customerUrl?: string;
   customerIntel?: string;
+  additionalContext?: string;
+  additionalContextFilename?: string;
 }
 
 interface ConversationMessage {
@@ -276,6 +278,10 @@ function buildSystemPrompt(ctx: MeetingContext | null): Anthropic.Messages.TextB
     ? `\n\nCUSTOMER INTELLIGENCE (scraped from ${ctx.customerUrl}):\n${ctx.customerIntel}\n\nUse this intelligence to personalize every response — reference the customer's specific products, people, priorities, and pain points when relevant.`
     : "";
 
+  const additionalContextSection = ctx.additionalContext
+    ? `\n\nADDITIONAL CONTEXT${ctx.additionalContextFilename ? ` (from: ${ctx.additionalContextFilename})` : ""}:\n${ctx.additionalContext}\n\nUse this additional context to further inform your responses.`
+    : "";
+
   return [
     STATIC_SYSTEM_PROMPT,
     {
@@ -284,7 +290,7 @@ function buildSystemPrompt(ctx: MeetingContext | null): Anthropic.Messages.TextB
 - Customer Industry: ${ctx.industry}
 - Meeting Type: ${ctx.meetingType}
 - People in the room: ${ctx.attendees}
-- Known concerns / objections: ${ctx.knownConcerns || "None specified"}${customerIntelSection}
+- Known concerns / objections: ${ctx.knownConcerns || "None specified"}${customerIntelSection}${additionalContextSection}
 
 Tailor every answer to this customer profile. Reference their industry, the meeting type, and address their known concerns directly when relevant.`,
     },
@@ -571,6 +577,8 @@ async function createSession(
          name: $name,
          description: $description,
          summary: $summary,
+         additional_context_text: $additionalContext,
+         additional_context_filename: $additionalContextFilename,
          embedding: $embedding,
          created_at: datetime()
        })
@@ -585,6 +593,8 @@ async function createSession(
         name: name ?? `${ctx.meetingType} · ${ctx.industry}`,
         description: description ?? "",
         summary,
+        additionalContext: ctx.additionalContext ?? null,
+        additionalContextFilename: ctx.additionalContextFilename ?? null,
         embedding: embeddingRes.data[0].embedding,
       }
     );
@@ -956,9 +966,12 @@ export async function POST(req: NextRequest) {
       console.log(`[quality-gate] score=${chatConfidence.score} passes=${passesGate} question="${question.slice(0, 60)}"`);
     }
 
-    // ── Persist to Neo4j if saving and passes quality gate ────────────────────
+    // ── Persist to Neo4j if saving ────────────────────────────────────────────
+    // Always save to the user's session — passesGate only controls the savedToMemory
+    // badge (flywheel indicator). Gating session saves on quality causes subsequent
+    // chat turns to be lost when the user returns to the session.
     let activeSessionId = sessionId;
-    if (saveSession && meetingContext && passesGate) {
+    if (saveSession && meetingContext) {
       if (!activeSessionId) {
         activeSessionId = await createSession(userId, meetingContext, sessionName || undefined, sessionDescription || undefined);
       }
@@ -967,7 +980,10 @@ export async function POST(req: NextRequest) {
         question,
         finalAnswer,
         model,
-        attachments.length > 0
+        attachments.length > 0,
+        false,
+        false,
+        chatConfidence?.score ?? null
       );
     }
 
@@ -1071,7 +1087,9 @@ export async function GET(req: NextRequest) {
                 s.attendees AS attendees,
                 s.known_concerns AS knownConcerns,
                 s.name AS name,
-                s.description AS description`,
+                s.description AS description,
+                s.additional_context_text AS additionalContext,
+                s.additional_context_filename AS additionalContextFilename`,
         { sessionId }
       );
 
@@ -1109,6 +1127,8 @@ export async function GET(req: NextRequest) {
         knownConcerns: r.get("knownConcerns") ?? "",
         name: r.get("name") ?? "",
         description: r.get("description") ?? "",
+        additionalContext: r.get("additionalContext") ?? "",
+        additionalContextFilename: r.get("additionalContextFilename") ?? null,
         interactions,
       });
     } finally {

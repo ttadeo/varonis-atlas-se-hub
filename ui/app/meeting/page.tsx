@@ -15,6 +15,8 @@ interface MeetingContext {
   knownConcerns: string;
   customerUrl?: string;
   customerIntel?: string;
+  additionalContext?: string;
+  additionalContextFilename?: string;
 }
 
 interface Attachment {
@@ -181,8 +183,13 @@ export default function MeetingPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [showNotifTray, setShowNotifTray] = useState(false);
 
+  // Additional context (file upload / paste)
+  const [extractingContext, setExtractingContext] = useState(false);
+  const [contextFileError, setContextFileError] = useState<string | null>(null);
+
   const bottomRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const contextFileInputRef = useRef<HTMLInputElement>(null);
 
   const [userId, setUserId] = useState<string>("se_default");
 
@@ -267,6 +274,8 @@ export default function MeetingPage() {
         meetingType: data.meetingType,
         attendees: data.attendees,
         knownConcerns: data.knownConcerns,
+        additionalContext: data.additionalContext || "",
+        additionalContextFilename: data.additionalContextFilename || undefined,
       });
       setContextLocked(true);
 
@@ -314,6 +323,34 @@ export default function MeetingPage() {
     setPinnedPoints([]);
     setCustomerUrl("");
     setScrapeError(null);
+  }
+
+  // ── Additional context file upload ───────────────────────────────────────
+
+  async function handleContextFile(file: File) {
+    setContextFileError(null);
+    setExtractingContext(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/extract-context", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) {
+        setContextFileError(data.error ?? "Extraction failed");
+        return;
+      }
+      setContext((c) => ({
+        ...c,
+        additionalContext: data.text,
+        additionalContextFilename: data.filename,
+      }));
+    } catch (err) {
+      setContextFileError(`Upload error: ${String(err)}`);
+    } finally {
+      setExtractingContext(false);
+      // Reset so the same file can be re-uploaded if needed
+      if (contextFileInputRef.current) contextFileInputRef.current.value = "";
+    }
   }
 
   // ── Customer website scraping ─────────────────────────────────────────────
@@ -779,6 +816,8 @@ export default function MeetingPage() {
         meetingType: data.meetingType,
         attendees: data.attendees,
         knownConcerns: data.knownConcerns,
+        additionalContext: data.additionalContext || "",
+        additionalContextFilename: data.additionalContextFilename || undefined,
       });
       setContextLocked(true);
 
@@ -895,6 +934,11 @@ export default function MeetingPage() {
               {context.customerIntel && (
                 <p className="text-xs text-green-400 mt-1">✓ {context.customerUrl} researched</p>
               )}
+              {context.additionalContext && (
+                <p className="text-xs text-blue-400 mt-1">
+                  📄 {context.additionalContextFilename ?? "Additional context added"}
+                </p>
+              )}
               <button
                 onClick={() => setContextLocked(false)}
                 className="text-xs text-blue-400 hover:text-blue-300 mt-2"
@@ -980,6 +1024,52 @@ export default function MeetingPage() {
                 )}
                 {context.customerIntel && (
                   <p className="text-xs text-green-400 mt-1">✓ Company researched</p>
+                )}
+              </div>
+
+              {/* Additional Context / Notes */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs text-gray-400">Additional Context / Notes</label>
+                  <button
+                    type="button"
+                    onClick={() => contextFileInputRef.current?.click()}
+                    disabled={extractingContext}
+                    className="text-xs text-blue-400 hover:text-blue-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                    title="Upload a file to extract text (PDF, Word, CSV, TXT, image)"
+                  >
+                    {extractingContext ? "Extracting…" : "Upload file"}
+                  </button>
+                  <input
+                    ref={contextFileInputRef}
+                    type="file"
+                    className="hidden"
+                    accept=".pdf,.docx,.doc,.txt,.csv,.md,.tsv,.json,.jpg,.jpeg,.png,.gif,.webp"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleContextFile(f);
+                    }}
+                  />
+                </div>
+                {context.additionalContextFilename && (
+                  <p className="text-xs text-blue-400 mb-1 flex items-center gap-1">
+                    <span>📄</span> {context.additionalContextFilename}
+                    <button
+                      onClick={() => setContext((c) => ({ ...c, additionalContext: "", additionalContextFilename: undefined }))}
+                      className="text-gray-500 hover:text-red-400 ml-1"
+                      title="Clear file"
+                    >✕</button>
+                  </p>
+                )}
+                <textarea
+                  rows={3}
+                  placeholder="Paste notes, RFP excerpts, customer emails, or upload a file above…"
+                  value={context.additionalContext ?? ""}
+                  onChange={(e) => setContext((c) => ({ ...c, additionalContext: e.target.value, additionalContextFilename: e.target.value ? c.additionalContextFilename : undefined }))}
+                  className="w-full bg-gray-800 text-sm text-gray-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-blue-600 placeholder-gray-500"
+                />
+                {contextFileError && (
+                  <p className="text-xs text-red-400 mt-1">{contextFileError}</p>
                 )}
               </div>
 
