@@ -120,6 +120,51 @@ export default function ArchitectPage() {
     window.print();
   }
 
+  function handlePopOut() {
+    if (!result) return;
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Atlas Architecture — ${form.industry}</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #030712; color: #f3f4f6; font-family: system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+    header { padding: 16px 24px; border-bottom: 1px solid #1f2937; display: flex; align-items: center; justify-content: space-between; }
+    header h1 { font-size: 14px; font-weight: 600; color: #fff; }
+    header p { font-size: 12px; color: #9ca3af; margin-top: 2px; }
+    main { flex: 1; display: flex; align-items: center; justify-content: center; padding: 32px; overflow: auto; }
+    .diagram-wrap { width: 100%; max-width: 100%; overflow: auto; }
+    .diagram-wrap svg { width: 100% !important; height: auto !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Atlas Reference Architecture</h1>
+      <p>${form.industry}${form.useCase ? ` · ${form.useCase}` : ""}</p>
+    </div>
+    <div style="font-size:11px;color:#6b7280;">Atlas Learning Platform</div>
+  </header>
+  <main>
+    <div class="diagram-wrap">
+      <div class="mermaid">${result.diagram.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</div>
+    </div>
+  </main>
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+  </script>
+</body>
+</html>`;
+    const blob = new Blob([html], { type: "text/html" });
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+    // Revoke after a delay to allow the tab to load
+    setTimeout(() => URL.revokeObjectURL(url), 10_000);
+  }
+
   function handleDownloadMd() {
     if (!result) return;
     const md = `# Atlas Reference Architecture\n\n**Industry:** ${form.industry}  \n**Use Case:** ${form.useCase}  \n**Tech Stack:** ${form.techStack}  \n**Audience:** ${form.audience === "customer" ? "Customer-Facing" : "Internal SE"}\n\n---\n\n## Architecture Diagram\n\n\`\`\`mermaid\n${result.diagram}\n\`\`\`\n\n---\n\n${result.narrative}`;
@@ -250,6 +295,12 @@ export default function ArchitectPage() {
               <p className="text-xs text-gray-400">{form.industry} · {form.audience === "customer" ? "Customer-Facing" : "Internal SE"}</p>
             </div>
             <div className="flex gap-2">
+              <button
+                onClick={handlePopOut}
+                className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+              >
+                ↗ Full Screen
+              </button>
               <button
                 onClick={handleDownloadMd}
                 className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
