@@ -83,6 +83,36 @@ export default function Home() {
             </Link>
           </div>
 
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <Link
+              href="/architect"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-cyan-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="text-3xl mb-3">🏗️</div>
+              <h3 className="font-semibold text-white mb-1">Architecture Builder</h3>
+              <p className="text-sm text-gray-400">
+                Describe the customer environment and generate a full reference architecture diagram with Atlas overlaid.
+              </p>
+              <p className="text-xs text-cyan-400 mt-4 group-hover:text-cyan-300">
+                Mermaid diagram · Narrative · Export PDF →
+              </p>
+            </Link>
+
+            <Link
+              href="/guides"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-violet-500 rounded-2xl p-6 transition-all group"
+            >
+              <div className="text-3xl mb-3">📋</div>
+              <h3 className="font-semibold text-white mb-1">Technical Guide Producer</h3>
+              <p className="text-sm text-gray-400">
+                Generate polished Atlas technical guides — MCP, Gateway, compliance, or custom problem-solution write-ups.
+              </p>
+              <p className="text-xs text-violet-400 mt-4 group-hover:text-violet-300">
+                5 guide types · Internal or customer-facing · Export PDF →
+              </p>
+            </Link>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <Link
               href="/resources"
