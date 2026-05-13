@@ -166,20 +166,65 @@ RESPONSE STYLE:
 
 // ─── Main handler ─────────────────────────────────────────────────────────────
 
+interface IncomingAttachment {
+  name: string;
+  mediaType: string;
+  data: string;       // base64 for images/PDFs; extracted text for others
+  isExtracted: boolean;
+  size: number;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { question, history = [] }: {
+    const { question, history = [], attachments = [] }: {
       question: string;
       history: { role: "user" | "assistant"; content: string }[];
+      attachments: IncomingAttachment[];
     } = await req.json();
 
-    if (!question?.trim()) {
-      return NextResponse.json({ error: "question is required" }, { status: 400 });
+    if (!question?.trim() && attachments.length === 0) {
+      return NextResponse.json({ error: "question or attachment is required" }, { status: 400 });
+    }
+
+    // Build the user content block — text question + any file content
+    type ContentBlock =
+      | Anthropic.Messages.TextBlockParam
+      | Anthropic.Messages.ImageBlockParam
+      | Anthropic.Messages.DocumentBlockParam;
+
+    const userContent: ContentBlock[] = [];
+
+    // Prepend extracted file text as context blocks
+    for (const att of attachments) {
+      if (att.isExtracted) {
+        userContent.push({
+          type: "text",
+          text: `[Attached file: ${att.name}]\n\n${att.data}`,
+        });
+      } else if (att.mediaType.startsWith("image/")) {
+        userContent.push({
+          type: "image",
+          source: {
+            type: "base64",
+            media_type: att.mediaType as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
+            data: att.data,
+          },
+        });
+      } else if (att.mediaType === "application/pdf" || att.name.endsWith(".pdf")) {
+        userContent.push({
+          type: "document",
+          source: { type: "base64", media_type: "application/pdf", data: att.data },
+        } as Anthropic.Messages.DocumentBlockParam);
+      }
+    }
+
+    if (question?.trim()) {
+      userContent.push({ type: "text", text: question });
     }
 
     const messages: Anthropic.Messages.MessageParam[] = [
       ...history.map((m) => ({ role: m.role, content: m.content })),
-      { role: "user" as const, content: question },
+      { role: "user" as const, content: userContent as Anthropic.Messages.ContentBlockParam[] },
     ];
 
     // ── Agentic RAG loop ──────────────────────────────────────────────────────
@@ -250,9 +295,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Return answer + updated history for next turn
+    // History stores plain text only (not binary blocks) so it serialises cleanly
+    const historyQuestion = question?.trim()
+      ? question
+      : attachments.map((a: IncomingAttachment) => `[${a.name}]`).join(" ");
     const updatedHistory = [
       ...history,
-      { role: "user" as const, content: question },
+      { role: "user" as const, content: historyQuestion },
       { role: "assistant" as const, content: finalAnswer },
     ];
 
