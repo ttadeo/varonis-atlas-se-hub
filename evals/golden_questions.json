@@ -306,5 +306,61 @@
     "question_type": "version_check",
     "question": "How does the AI Investigation feature in Atlas help security teams respond to incidents?",
     "expected_topics": ["AI Investigation", "incident", "forensic", "prompt", "session", "timeline", "investigate"]
+  },
+  {
+    "lesson_id": 100,
+    "lesson_title": "V3.3.0 — Claude Code & Cursor Runtime Enforcement",
+    "question_type": "version_check",
+    "question": "A customer's developers are using Claude Code and Cursor as AI coding assistants. What does Atlas V3.3.0 now provide for these tools?",
+    "expected_topics": ["Claude Code", "Cursor", "runtime enforcement", "plugin", "hooks", "governance", "visibility", "policy"]
+  },
+  {
+    "lesson_id": 100,
+    "lesson_title": "V3.3.0 — AI Usage Policies",
+    "question_type": "version_check",
+    "question": "What are AI Usage Policies in Atlas V3.3.0 and how do they relate to SASE integrations like Cloudflare and Netskope?",
+    "expected_topics": ["AI Usage Policies", "SASE", "Cloudflare", "Netskope", "user activity", "tracking", "custom AI services"]
+  },
+  {
+    "lesson_id": 100,
+    "lesson_title": "V3.3.0 — MCP Enhancements",
+    "question_type": "version_check",
+    "question": "What new MCP server registration capabilities were added in Atlas V3.3.0?",
+    "expected_topics": ["STDIO", "MCP server", "OAuth", "registration", "credentials", "VMCP", "governance"]
+  },
+  {
+    "lesson_id": 100,
+    "lesson_title": "V3.3.0 — AI Investigation Access Events",
+    "question_type": "version_check",
+    "question": "What is the new Access Events tab in AI Investigation and what data does it surface?",
+    "expected_topics": ["Access Events", "AI Investigation", "SASE", "Cloudflare", "Netskope", "Island Browser", "user activity"]
+  },
+  {
+    "lesson_id": 100,
+    "lesson_title": "V3.3.0 — What's New Summary",
+    "question_type": "version_check",
+    "question": "What are the most significant new features introduced in Atlas V3.3.0?",
+    "expected_topics": ["Claude Code", "Cursor", "runtime enforcement", "AI Usage Policies", "STDIO MCP", "OAuth MCP", "Island Browser", "Red Team", "VMCP"]
+  },
+  {
+    "lesson_id": 101,
+    "lesson_title": "AI MCP Security",
+    "question_type": "check_question",
+    "question": "What is a Virtual MCP in Atlas and why would an SE recommend it to a customer deploying AI agents?",
+    "expected_topics": ["Virtual MCP", "VMCP", "governed", "proxy", "tool access", "policy", "MCP server", "agents"]
+  },
+  {
+    "lesson_id": 101,
+    "lesson_title": "AI MCP Security",
+    "question_type": "follow_up",
+    "question": "A customer's LangChain agents are calling multiple external MCP servers. What visibility and control does Atlas provide over those tool calls?",
+    "expected_topics": ["MCP", "catalog", "activity monitoring", "policies", "issues", "tool calls", "inventory", "governance"]
+  },
+  {
+    "lesson_id": 102,
+    "lesson_title": "AI Investigation Handbook",
+    "question_type": "check_question",
+    "question": "A security analyst suspects an employee is using an AI tool to exfiltrate customer data. Walk through how you would use Atlas AI Investigation to build the incident timeline.",
+    "expected_topics": ["AI Investigation", "sessions", "events", "prompt", "timeline", "forensic", "investigation", "access events"]
   }
 ]

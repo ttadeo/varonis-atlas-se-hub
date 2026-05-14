@@ -1,6 +1,6 @@
 # policy-automations API Endpoints
 
-## GET /v1/policy-automations -  List Policy Automations
+## GET /v1/policy-automations —  List Policy Automations
 
 **Endpoint**: `GET /v1/policy-automations`
 **Summary**:  List Policy Automations
@@ -21,7 +21,7 @@ List policy automations for the authenticated customer.
 
 ---
 
-## POST /v1/policy-automations -  Create Policy Automation
+## POST /v1/policy-automations —  Create Policy Automation
 
 **Endpoint**: `POST /v1/policy-automations`
 **Summary**:  Create Policy Automation
@@ -29,13 +29,16 @@ List policy automations for the authenticated customer.
 
 Create a new policy automation.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/policy-automations/{automation_id} -  Update Policy Automation
+## PATCH /v1/policy-automations/{automation_id} —  Update Policy Automation
 
 **Endpoint**: `PATCH /v1/policy-automations/{automation_id}`
 **Summary**:  Update Policy Automation
@@ -46,13 +49,16 @@ Update an existing policy automation (partial update).
 **Parameters**:
 - `automation_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/policy-automations/{automation_id} -  Delete Policy Automation
+## DELETE /v1/policy-automations/{automation_id} —  Delete Policy Automation
 
 **Endpoint**: `DELETE /v1/policy-automations/{automation_id}`
 **Summary**:  Delete Policy Automation

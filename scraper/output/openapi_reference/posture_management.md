@@ -1,6 +1,6 @@
 # posture-management API Endpoints
 
-## POST /v1/posture-management/incidents - Create Incident
+## POST /v1/posture-management/incidents — Create Incident
 
 **Endpoint**: `POST /v1/posture-management/incidents`
 **Summary**: Create Incident
@@ -8,13 +8,16 @@
 
 Create Incident with issues
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/incidents -  Get All Incidents
+## GET /v1/posture-management/incidents —  Get All Incidents
 
 **Endpoint**: `GET /v1/posture-management/incidents`
 **Summary**:  Get All Incidents
@@ -32,7 +35,7 @@ Get all Incidents for a customer. If you specify project_id, ignores organizatio
 
 ---
 
-## GET /v1/posture-management/incidents/customer/{customer_id}/incident/{incident_id} - Get Incident
+## GET /v1/posture-management/incidents/customer/{customer_id}/incident/{incident_id} — Get Incident
 
 **Endpoint**: `GET /v1/posture-management/incidents/customer/{customer_id}/incident/{incident_id}`
 **Summary**: Get Incident
@@ -50,7 +53,7 @@ Get Incident by ID
 
 ---
 
-## DELETE /v1/posture-management/incidents/customer/{customer_id}/incident/{incident_id} - Delete Incident
+## DELETE /v1/posture-management/incidents/customer/{customer_id}/incident/{incident_id} — Delete Incident
 
 **Endpoint**: `DELETE /v1/posture-management/incidents/customer/{customer_id}/incident/{incident_id}`
 **Summary**: Delete Incident
@@ -68,7 +71,7 @@ Delete an Incident and its associated IncidentIssue records
 
 ---
 
-## GET /v1/posture-management/incidents/{incident_id} -  Get Incident
+## GET /v1/posture-management/incidents/{incident_id} —  Get Incident
 
 **Endpoint**: `GET /v1/posture-management/incidents/{incident_id}`
 **Summary**:  Get Incident
@@ -83,7 +86,7 @@ Delete an Incident and its associated IncidentIssue records
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id} - Update Incident
+## PATCH /v1/posture-management/incidents/{incident_id} — Update Incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}`
 **Summary**: Update Incident
@@ -94,13 +97,16 @@ Update Incident
 **Parameters**:
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/posture-management/incidents/{incident_id} -  Delete Incident
+## DELETE /v1/posture-management/incidents/{incident_id} —  Delete Incident
 
 **Endpoint**: `DELETE /v1/posture-management/incidents/{incident_id}`
 **Summary**:  Delete Incident
@@ -115,7 +121,7 @@ Update Incident
 
 ---
 
-## GET /v1/posture-management/incidents/customer/{customer_id} - Get All Incidents
+## GET /v1/posture-management/incidents/customer/{customer_id} — Get All Incidents
 
 **Endpoint**: `GET /v1/posture-management/incidents/customer/{customer_id}`
 **Summary**: Get All Incidents
@@ -134,7 +140,7 @@ Get all Incidents for a customer. If you specify project_id, ignores organizatio
 
 ---
 
-## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/update-issues - Update Issue In Incident
+## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/update-issues — Update Issue In Incident
 
 **Endpoint**: `PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/update-issues`
 **Summary**: Update Issue In Incident
@@ -146,13 +152,16 @@ Update Incident with issues
 - `customer_id` (path, required): 
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/update-issues -  Update Issue In Incident
+## PATCH /v1/posture-management/incidents/{incident_id}/update-issues —  Update Issue In Incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/update-issues`
 **Summary**:  Update Issue In Incident
@@ -161,13 +170,16 @@ Update Incident with issues
 **Parameters**:
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/delete-issues - Delete Issue From Incident
+## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/delete-issues — Delete Issue From Incident
 
 **Endpoint**: `PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/delete-issues`
 **Summary**: Delete Issue From Incident
@@ -179,13 +191,16 @@ Delete Issues from Incident
 - `customer_id` (path, required): 
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/delete-issues -  Delete Issue From Incident
+## PATCH /v1/posture-management/incidents/{incident_id}/delete-issues —  Delete Issue From Incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/delete-issues`
 **Summary**:  Delete Issue From Incident
@@ -194,13 +209,16 @@ Delete Issues from Incident
 **Parameters**:
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/status -  Update Incident Status
+## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/status —  Update Incident Status
 
 **Endpoint**: `PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/status`
 **Summary**:  Update Incident Status
@@ -212,13 +230,16 @@ Update Incident status, with a required comment if status is changed to CLOSED
 - `customer_id` (path, required): 
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/status - Update Incident Status
+## PATCH /v1/posture-management/incidents/{incident_id}/status — Update Incident Status
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/status`
 **Summary**: Update Incident Status
@@ -227,13 +248,16 @@ Update Incident status, with a required comment if status is changed to CLOSED
 **Parameters**:
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/assign - Assign Incident
+## PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/assign — Assign Incident
 
 **Endpoint**: `PATCH /v1/posture-management/customer/{customer_id}/incidents/{incident_id}/assign`
 **Summary**: Assign Incident
@@ -245,13 +269,16 @@ Assign an Incident to a user
 - `customer_id` (path, required): 
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/assign -  Assign Incident
+## PATCH /v1/posture-management/incidents/{incident_id}/assign —  Assign Incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/assign`
 **Summary**:  Assign Incident
@@ -260,37 +287,46 @@ Assign an Incident to a user
 **Parameters**:
 - `incident_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/issue -  Update Issue
+## PATCH /v1/posture-management/issue —  Update Issue
 
 **Endpoint**: `PATCH /v1/posture-management/issue`
 **Summary**:  Update Issue
 **Tags**: posture-management
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/posture-management/issue -  Update Issue
+## PATCH /v1/posture-management/posture-management/issue —  Update Issue
 
 **Endpoint**: `PATCH /v1/posture-management/posture-management/issue`
 **Summary**:  Update Issue
 **Tags**: posture-management
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/issues -  Update Issues
+## PATCH /v1/posture-management/issues —  Update Issues
 
 **Endpoint**: `PATCH /v1/posture-management/issues`
 **Summary**:  Update Issues
@@ -298,13 +334,16 @@ Assign an Incident to a user
 
 Update multiple issues in bulk.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/issue-types -  Get Issue Types
+## GET /v1/posture-management/issue-types —  Get Issue Types
 
 **Endpoint**: `GET /v1/posture-management/issue-types`
 **Summary**:  Get Issue Types
@@ -317,7 +356,7 @@ Get all issue types and their display names.
 
 ---
 
-## GET /v1/posture-management/job-status/{job_id} - Get Discovery Job Status
+## GET /v1/posture-management/job-status/{job_id} — Get Discovery Job Status
 
 **Endpoint**: `GET /v1/posture-management/job-status/{job_id}`
 **Summary**: Get Discovery Job Status
@@ -334,7 +373,7 @@ Get the status of a job that was initiated to run a discovery scan.
 
 ---
 
-## GET /v1/posture-management/policies -  Get All Policies
+## GET /v1/posture-management/policies —  Get All Policies
 
 **Endpoint**: `GET /v1/posture-management/policies`
 **Summary**:  Get All Policies
@@ -351,7 +390,7 @@ Get all posture management policies
 
 ---
 
-## GET /v1/posture-management/policy-groups -  Get All Policy Groups
+## GET /v1/posture-management/policy-groups —  Get All Policy Groups
 
 **Endpoint**: `GET /v1/posture-management/policy-groups`
 **Summary**:  Get All Policy Groups
@@ -364,7 +403,7 @@ Get all posture management policy groups
 
 ---
 
-## GET /v1/posture-management/policy-groups/{policy_group_name} -  Get Policy Group
+## GET /v1/posture-management/policy-groups/{policy_group_name} —  Get Policy Group
 
 **Endpoint**: `GET /v1/posture-management/policy-groups/{policy_group_name}`
 **Summary**:  Get Policy Group
@@ -381,7 +420,7 @@ Get a particular posture management policy group
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policies -  Get Customer Policies
+## GET /v1/posture-management/customers/{customer_id}/policies —  Get Customer Policies
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policies`
 **Summary**:  Get Customer Policies
@@ -401,7 +440,7 @@ Get all posture management policies for a customer
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/policies - Add Security Posture Management Policies for a Customer
+## POST /v1/posture-management/customers/{customer_id}/policies — Add Security Posture Management Policies for a Customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/policies`
 **Summary**: Add Security Posture Management Policies for a Customer
@@ -415,13 +454,16 @@ If organization_id or project_id are provided, the activation will be limited to
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name} -  Delete Individual Customer Policies
+## DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name} —  Delete Individual Customer Policies
 
 **Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name}`
 **Summary**:  Delete Individual Customer Policies
@@ -441,7 +483,7 @@ Delete individual posture management policies for a customer
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups -  Get Customer Policy Groups
+## GET /v1/posture-management/customers/{customer_id}/policy-groups —  Get Customer Policy Groups
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups`
 **Summary**:  Get Customer Policy Groups
@@ -460,7 +502,7 @@ Get all posture management policy groups for a customer
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/policy-groups - Add Policy Groups for a Customer
+## POST /v1/posture-management/customers/{customer_id}/policy-groups — Add Policy Groups for a Customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/policy-groups`
 **Summary**: Add Policy Groups for a Customer
@@ -476,13 +518,16 @@ If organization_id or project_id are provided, the activation will be limited to
 - `organization_id` (query, optional): Optional. If provided, the policy groups will only be activated for this specific organization.
 - `project_id` (query, optional): Optional. If provided, the policy groups will only be activated for this specific project.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name} -  Delete Customer Policy Groups
+## DELETE /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name} —  Delete Customer Policy Groups
 
 **Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}`
 **Summary**:  Delete Customer Policy Groups
@@ -502,7 +547,123 @@ Delete posture management policy groups for a customer
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance - Get Customer Policy Groups Compliance
+## GET /v1/posture-management/customers/{customer_id}/component-based-policies/configurable-inputs — List component-based policies + their configurable inputs for a resource type
+
+**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/component-based-policies/configurable-inputs`
+**Summary**: List component-based policies + their configurable inputs for a resource type
+**Tags**: posture-management
+
+Pure read from the in-memory ``ComponentPolicyRegistry`` — no DB
+access. Identical across customers because policy definitions live on
+disk; ``customer_id`` participates in the path for RBAC consistency
+with the rest of ``/customers/{customer_id}/...``.
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `resource_type` (query, required): Resource type to filter on. Returns every component-based policy whose ``bound_resource_types`` includes this value.
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs — List per-resource configurable-input overrides (paginated)
+
+**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs`
+**Summary**: List per-resource configurable-input overrides (paginated)
+**Tags**: posture-management
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `policy_name` (query, optional): Optional. Filter to a single component-based policy.
+- `resource_type` (query, optional): Optional. Filter to overrides anchored to resources of this type. Joined through ``resource_instance.resource_type``.
+- `per_page` (query, optional): 
+- `page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name} — Get a single per-resource configurable-input override
+
+**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name}`
+**Summary**: Get a single per-resource configurable-input override
+**Tags**: posture-management
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `resource_instance_id` (path, required): 
+- `policy_name` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PUT /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name} — Upsert a per-resource configurable-input override
+
+**Endpoint**: `PUT /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name}`
+**Summary**: Upsert a per-resource configurable-input override
+**Tags**: posture-management
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `resource_instance_id` (path, required): 
+- `policy_name` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name} — Delete a per-resource configurable-input override (idempotent)
+
+**Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name}`
+**Summary**: Delete a per-resource configurable-input override (idempotent)
+**Tags**: posture-management
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `resource_instance_id` (path, required): 
+- `policy_name` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/issues/{issue_id}/evidence-tree — Get the materialized evidence-tree snapshot for an agentic issue
+
+**Endpoint**: `GET /v1/posture-management/issues/{issue_id}/evidence-tree`
+**Summary**: Get the materialized evidence-tree snapshot for an agentic issue
+**Tags**: posture-management
+
+Return the JSON-shaped ``FindingEvidenceTree`` for ``issue_id``.
+
+404 when the issue does not exist, belongs to a different tenant,
+or has a NULL tree (legacy issue or engine issue from before the
+column shipped). The 404 is intentional — the FE branches on it to
+hide the affordance rather than render an empty body.
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance — Get Customer Policy Groups Compliance
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance`
 **Summary**: Get Customer Policy Groups Compliance
@@ -521,7 +682,7 @@ Get posture management policy groups compliance for a customer
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/posture-overtime - Get Customer Policy Group Posture Overtime
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/posture-overtime — Get Customer Policy Group Posture Overtime
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/posture-overtime`
 **Summary**: Get Customer Policy Group Posture Overtime
@@ -543,7 +704,7 @@ Get posture management policy group posture overtime for a customer
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/compliance - Get Customer Policy Group Compliance
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/compliance — Get Customer Policy Group Compliance
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/compliance`
 **Summary**: Get Customer Policy Group Compliance
@@ -563,7 +724,7 @@ Get posture management policy group compliance for a customer
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/last_scan_time - Get Customer Policy Group Last Scan Time
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/last_scan_time — Get Customer Policy Group Last Scan Time
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/last_scan_time`
 **Summary**: Get Customer Policy Group Last Scan Time
@@ -583,7 +744,7 @@ Get posture management policy group last scan time for a customer
 
 ---
 
-## GET /v1/posture-management/cloud-configuration/policies -  Get Cloud Configuration Policies
+## GET /v1/posture-management/cloud-configuration/policies —  Get Cloud Configuration Policies
 
 **Endpoint**: `GET /v1/posture-management/cloud-configuration/policies`
 **Summary**:  Get Cloud Configuration Policies
@@ -596,7 +757,7 @@ Get all cloud configuration policies
 
 ---
 
-## GET /v1/posture-management/cloud-configuration/policies/{cloud_provider} -  Get Cloud Configuration Policies For Cloud Provider
+## GET /v1/posture-management/cloud-configuration/policies/{cloud_provider} —  Get Cloud Configuration Policies For Cloud Provider
 
 **Endpoint**: `GET /v1/posture-management/cloud-configuration/policies/{cloud_provider}`
 **Summary**:  Get Cloud Configuration Policies For Cloud Provider
@@ -613,7 +774,7 @@ Get all cloud configuration policies for a specific cloud provider
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/cloud-configuration/check-policies - Generate Cloud Misconfiguration Issues For Customer
+## POST /v1/posture-management/customers/{customer_id}/cloud-configuration/check-policies — Generate Cloud Misconfiguration Issues For Customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/cloud-configuration/check-policies`
 **Summary**: Generate Cloud Misconfiguration Issues For Customer
@@ -622,13 +783,16 @@ Get all cloud configuration policies for a specific cloud provider
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/check-policies - Scan Customers Jupyter Notebooks For Issues
+## POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/check-policies — Scan Customers Jupyter Notebooks For Issues
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/check-policies`
 **Summary**: Scan Customers Jupyter Notebooks For Issues
@@ -644,13 +808,16 @@ Scan a customer's jupyter notebooks for issues
 - `allow_partial_success` (query, optional): If true, will create notebook issues even if some notebooks fail to scan. If false (default) - will only create issues if all notebooks are scanned successfully.
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/agentic-scanning/check-policies - Scan Customers Agentic For Issues
+## POST /v1/posture-management/agentic-scanning/check-policies — Scan Customers Agentic For Issues
 
 **Endpoint**: `POST /v1/posture-management/agentic-scanning/check-policies`
 **Summary**: Scan Customers Agentic For Issues
@@ -662,13 +829,51 @@ Scan a customer's jupyter notebooks for issues
 - `project_id` (query, optional): 
 - `allow_partial_success` (query, optional): If true, will create agentic resource issues even if some resources fail to scan. If false (default) - will only create issues if all resources are scanned successfully.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies - Scan Customers Dataset For Issues Synchronous
+## POST /v1/posture-management/component-based-scanning/check-policies — Trigger an engine-only component-based scan (sibling of /agentic-scanning/check-policies — engine only, no legacy dispatch)
+
+**Endpoint**: `POST /v1/posture-management/component-based-scanning/check-policies`
+**Summary**: Trigger an engine-only component-based scan (sibling of /agentic-scanning/check-policies — engine only, no legacy dispatch)
+**Tags**: posture-management
+
+Engine-only counterpart to ``/agentic-scanning/check-policies``.
+
+Routes to ``start_async_component_based_scan_job_for_customer`` so the
+legacy nine policies are NEVER re-emitted on this path. Customer scope
+comes from the JWT, matching every other trigger endpoint.
+
+The ``allow_partial_success`` flag is forwarded as
+``commit_on_completion=not allow_partial_success`` and threaded
+through ``evaluate_component_based_policies_for_customer`` into
+``dispatch_component_based_policies_for_customer`` where it
+controls the per-policy try/except — see the Query description
+above for precise semantics.
+
+**Parameters**:
+- `resource_type` (query, optional): Optional. Restrict the scan to resources of this `resource_type` (e.g. `CopilotStudioAgent`). When set, only policies whose `bound_resource_types` includes this type run; other enabled component-based policies are skipped for this invocation.
+- `resource_instance_id` (query, optional): 
+- `organization_id` (query, optional): 
+- `project_id` (query, optional): 
+- `allow_partial_success` (query, optional): Controls per-policy failure isolation in the dispatch loop. When ``true`` (lenient), a raising policy is logged and the scan continues with the rest of the enabled component-based policies; findings from the policies that succeeded are persisted. When ``false`` (default, strict), the first per-policy raise is logged and re-raised so the scan transitions to FAILED and no partial findings are persisted. NOTE: persistence itself is incremental (``add_agentic_issue_creates_to_database`` opens a session per finding, mirroring the legacy path) so ``false`` does not provide a true transactional all-or-nothing guarantee if a failure happens AFTER dispatch returns; the flag's effect is scoped to the evaluator stage.
+
+**Request Body**: Optional
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies — Scan Customers Dataset For Issues Synchronous
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies`
 **Summary**: Scan Customers Dataset For Issues Synchronous
@@ -684,13 +889,16 @@ Scan a customer's dataset for issues
 - `allow_partial_success` (query, optional): If true, will create notebook issues even if some dataset files fail to scan. If false (default) - will only create issues if all files are scanned successfully.
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/dataset-scanning/trigger-scan - Trigger Dataset Scanning
+## POST /v1/posture-management/dataset-scanning/trigger-scan — Trigger Dataset Scanning
 
 **Endpoint**: `POST /v1/posture-management/dataset-scanning/trigger-scan`
 **Summary**: Trigger Dataset Scanning
@@ -705,13 +913,16 @@ The jobs are flushed to posture management scan job queue for processing.
 - `project_id` (query, optional): 
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/dataset-scanning/update-job-results - Update Dataset Scanning Job Queue Results
+## POST /v1/posture-management/dataset-scanning/update-job-results — Update Dataset Scanning Job Queue Results
 
 **Endpoint**: `POST /v1/posture-management/dataset-scanning/update-job-results`
 **Summary**: Update Dataset Scanning Job Queue Results
@@ -719,13 +930,16 @@ The jobs are flushed to posture management scan job queue for processing.
 
 Update the results of Dataset Scanning Job in the database.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/dataset-scanning/mark-job-failed - Mark Dataset Job As Failed
+## POST /v1/posture-management/dataset-scanning/mark-job-failed — Mark Dataset Job As Failed
 
 **Endpoint**: `POST /v1/posture-management/dataset-scanning/mark-job-failed`
 **Summary**: Mark Dataset Job As Failed
@@ -733,13 +947,16 @@ Update the results of Dataset Scanning Job in the database.
 
 Mark the dataset scanning job as failed in the database.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/resource-hashing/check-policies - Scan Customers Resource Versions For Issues
+## POST /v1/posture-management/resource-hashing/check-policies — Scan Customers Resource Versions For Issues
 
 **Endpoint**: `POST /v1/posture-management/resource-hashing/check-policies`
 **Summary**: Scan Customers Resource Versions For Issues
@@ -752,13 +969,16 @@ Scan a customer's resource versions for issues
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/resource-hashing/hashed-versions - Get Customers Resource Versions
+## GET /v1/posture-management/resource-hashing/hashed-versions — Get Customers Resource Versions
 
 **Endpoint**: `GET /v1/posture-management/resource-hashing/hashed-versions`
 **Summary**: Get Customers Resource Versions
@@ -773,7 +993,7 @@ Scan a customer's resource versions for issues
 
 ---
 
-## POST /v1/posture-management/resource-hashing/mark-safe - Mark Resource Version Safe
+## POST /v1/posture-management/resource-hashing/mark-safe — Mark Resource Version Safe
 
 **Endpoint**: `POST /v1/posture-management/resource-hashing/mark-safe`
 **Summary**: Mark Resource Version Safe
@@ -791,7 +1011,7 @@ Mark a version of a resource as safe
 
 ---
 
-## POST /v1/posture-management/model-scanning/check-policies - Scan Customers Models For Issues
+## POST /v1/posture-management/model-scanning/check-policies — Scan Customers Models For Issues
 
 **Endpoint**: `POST /v1/posture-management/model-scanning/check-policies`
 **Summary**: Scan Customers Models For Issues
@@ -805,13 +1025,16 @@ Scan a customer's models for issues
 - `project_id` (query, optional): 
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/model-scanning/check-policies - Scan Customers Models For Issues
+## POST /v1/posture-management/customers/{customer_id}/model-scanning/check-policies — Scan Customers Models For Issues
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/model-scanning/check-policies`
 **Summary**: Scan Customers Models For Issues
@@ -825,13 +1048,16 @@ Scan a customer's models for issues
 - `project_id` (query, optional): 
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/model-scanning/trigger-scan - Trigger Model Scanning
+## POST /v1/posture-management/model-scanning/trigger-scan — Trigger Model Scanning
 
 **Endpoint**: `POST /v1/posture-management/model-scanning/trigger-scan`
 **Summary**: Trigger Model Scanning
@@ -846,13 +1072,16 @@ The jobs are flushed to posture management scan job queue for processing.
 - `project_id` (query, optional): 
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/notebook-scanning/trigger-scan - Trigger Notebook Scanning
+## POST /v1/posture-management/notebook-scanning/trigger-scan — Trigger Notebook Scanning
 
 **Endpoint**: `POST /v1/posture-management/notebook-scanning/trigger-scan`
 **Summary**: Trigger Notebook Scanning
@@ -868,13 +1097,16 @@ The jobs are flushed to posture management notebook scan job queue for processin
 - `project_id` (query, optional): 
 - `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/cve/populate-cve - Populate Cves For Customer
+## POST /v1/posture-management/customers/{customer_id}/cve/populate-cve — Populate Cves For Customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/cve/populate-cve`
 **Summary**: Populate Cves For Customer
@@ -891,7 +1123,7 @@ Populate CVEs for a customer inventory of libraries
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/heatmap - Get Heatmap
+## GET /v1/posture-management/customers/{customer_id}/heatmap — Get Heatmap
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/heatmap`
 **Summary**: Get Heatmap
@@ -910,7 +1142,7 @@ Get the heat map.
 
 ---
 
-## GET /v1/posture-management/hugging-face-model-card/customer/{customer_id}/resource/{resource_instance_id} - Get Hugging Face Model Card
+## GET /v1/posture-management/hugging-face-model-card/customer/{customer_id}/resource/{resource_instance_id} — Get Hugging Face Model Card
 
 **Endpoint**: `GET /v1/posture-management/hugging-face-model-card/customer/{customer_id}/resource/{resource_instance_id}`
 **Summary**: Get Hugging Face Model Card
@@ -928,7 +1160,7 @@ Get model card from resource instance id
 
 ---
 
-## DELETE /v1/posture-management/scan-executions/{scan_execution_id} - Delete Posture Management Scan Execution
+## DELETE /v1/posture-management/scan-executions/{scan_execution_id} — Delete Posture Management Scan Execution
 
 **Endpoint**: `DELETE /v1/posture-management/scan-executions/{scan_execution_id}`
 **Summary**: Delete Posture Management Scan Execution
@@ -944,11 +1176,14 @@ Get model card from resource instance id
 
 ---
 
-## POST /v1/posture-management/scan-executions/bulk-delete - Bulk Delete Posture Management Scans
+## POST /v1/posture-management/scan-executions/bulk-delete — Bulk Delete Posture Management Scans
 
 **Endpoint**: `POST /v1/posture-management/scan-executions/bulk-delete`
 **Summary**: Bulk Delete Posture Management Scans
 **Tags**: posture-management
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -956,7 +1191,7 @@ Get model card from resource instance id
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/whitelist-findings - Whitelist Jupyter Notebook Findings
+## POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/whitelist-findings — Whitelist Jupyter Notebook Findings
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/whitelist-findings`
 **Summary**: Whitelist Jupyter Notebook Findings
@@ -974,7 +1209,7 @@ Get model card from resource instance id
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/whitelist-findings - Whitelist Dataset Findings
+## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/whitelist-findings — Whitelist Dataset Findings
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/dataset-scanning/whitelist-findings`
 **Summary**: Whitelist Dataset Findings
@@ -992,7 +1227,7 @@ Get model card from resource instance id
 
 ---
 
-## PATCH /v1/issue-policy - Create or update issue policies for the customer
+## PATCH /v1/issue-policy — Create or update issue policies for the customer
 
 **Endpoint**: `PATCH /v1/issue-policy`
 **Summary**: Create or update issue policies for the customer
@@ -1001,13 +1236,16 @@ Get model card from resource instance id
 Creates or updates multiple issue policies for a customer. If an IssueType is not sent, it will NOT
 update that resource category.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/issue-policy - Resets the issue policies for a customer
+## DELETE /v1/issue-policy — Resets the issue policies for a customer
 
 **Endpoint**: `DELETE /v1/issue-policy`
 **Summary**: Resets the issue policies for a customer
@@ -1024,7 +1262,7 @@ Resets the issue policy for a customer on a particular category.
 
 ---
 
-## GET /v1/issue-policy - Get the issue policy for the customer
+## GET /v1/issue-policy — Get the issue policy for the customer
 
 **Endpoint**: `GET /v1/issue-policy`
 **Summary**: Get the issue policy for the customer
@@ -1039,7 +1277,7 @@ category policy.
 
 ---
 
-## PATCH /v1/issue-policy/issue-type/{issue_type} - Create or update a issue policy for the customer on a particular category
+## PATCH /v1/issue-policy/issue-type/{issue_type} — Create or update a issue policy for the customer on a particular category
 
 **Endpoint**: `PATCH /v1/issue-policy/issue-type/{issue_type}`
 **Summary**: Create or update a issue policy for the customer on a particular category
@@ -1050,13 +1288,16 @@ Creates or updates the issue policy for a customer on a particular category.
 **Parameters**:
 - `issue_type` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/issue-policy/issue-type/{issue_type} - Resets the issue policy for a customer
+## DELETE /v1/issue-policy/issue-type/{issue_type} — Resets the issue policy for a customer
 
 **Endpoint**: `DELETE /v1/issue-policy/issue-type/{issue_type}`
 **Summary**: Resets the issue policy for a customer
@@ -1073,7 +1314,7 @@ Resets the issue policy for a customer on a particular category.
 
 ---
 
-## GET /v1/issue-policy/issue-type/{issue_type} - Get the issue policy for the customer on a particular category
+## GET /v1/issue-policy/issue-type/{issue_type} — Get the issue policy for the customer on a particular category
 
 **Endpoint**: `GET /v1/issue-policy/issue-type/{issue_type}`
 **Summary**: Get the issue policy for the customer on a particular category
@@ -1092,7 +1333,7 @@ category policy.
 
 ---
 
-## PATCH /v1/issue-policy/customer/{customer_id}/issue_policy - Create or update issue policies for the customer
+## PATCH /v1/issue-policy/customer/{customer_id}/issue_policy — Create or update issue policies for the customer
 
 **Endpoint**: `PATCH /v1/issue-policy/customer/{customer_id}/issue_policy`
 **Summary**: Create or update issue policies for the customer
@@ -1104,13 +1345,16 @@ update that resource category.
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/issue-policy/customer/{customer_id}/issue_policy - Resets the issue policies for a customer
+## DELETE /v1/issue-policy/customer/{customer_id}/issue_policy — Resets the issue policies for a customer
 
 **Endpoint**: `DELETE /v1/issue-policy/customer/{customer_id}/issue_policy`
 **Summary**: Resets the issue policies for a customer
@@ -1128,7 +1372,7 @@ Resets the issue policy for a customer on a particular category.
 
 ---
 
-## GET /v1/issue-policy/customer/{customer_id}/issue_policy - Get the issue policy for the customer
+## GET /v1/issue-policy/customer/{customer_id}/issue_policy — Get the issue policy for the customer
 
 **Endpoint**: `GET /v1/issue-policy/customer/{customer_id}/issue_policy`
 **Summary**: Get the issue policy for the customer
@@ -1147,7 +1391,7 @@ category policy.
 
 ---
 
-## PATCH /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type} - Create or update a issue policy for the customer on a particular category
+## PATCH /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type} — Create or update a issue policy for the customer on a particular category
 
 **Endpoint**: `PATCH /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type}`
 **Summary**: Create or update a issue policy for the customer on a particular category
@@ -1159,13 +1403,16 @@ Creates or updates the issue policy for a customer on a particular category.
 - `issue_type` (path, required): 
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type} - Resets the issue policy for a customer
+## DELETE /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type} — Resets the issue policy for a customer
 
 **Endpoint**: `DELETE /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type}`
 **Summary**: Resets the issue policy for a customer
@@ -1183,7 +1430,7 @@ Resets the issue policy for a customer on a particular category.
 
 ---
 
-## GET /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type} - Get the issue policy for the customer on a particular category
+## GET /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type} — Get the issue policy for the customer on a particular category
 
 **Endpoint**: `GET /v1/issue-policy/customer/{customer_id}/issue_policy/{issue_type}`
 **Summary**: Get the issue policy for the customer on a particular category
@@ -1203,7 +1450,7 @@ category policy.
 
 ---
 
-## GET /v1/shadow-ai/issue-policy - Get the issue policy for the customer
+## GET /v1/shadow-ai/issue-policy — Get the issue policy for the customer
 
 **Endpoint**: `GET /v1/shadow-ai/issue-policy`
 **Summary**: Get the issue policy for the customer
@@ -1217,7 +1464,7 @@ If the policy does not exist in the database, gets a default.
 
 ---
 
-## PUT /v1/shadow-ai/issue-policy - Update the shadow ai issue policy for a customer
+## PUT /v1/shadow-ai/issue-policy — Update the shadow ai issue policy for a customer
 
 **Endpoint**: `PUT /v1/shadow-ai/issue-policy`
 **Summary**: Update the shadow ai issue policy for a customer
@@ -1225,13 +1472,19 @@ If the policy does not exist in the database, gets a default.
 
 Updates the shadow AI issue policy for a customer.
 
+Issue regeneration runs out-of-band in the periodic ETL — this endpoint
+only persists the policy.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/model-scanning/update-job-results - Update Model Scanning Job Queue Results
+## POST /v2/posture-management/model-scanning/update-job-results — Update Model Scanning Job Queue Results
 
 **Endpoint**: `POST /v2/posture-management/model-scanning/update-job-results`
 **Summary**: Update Model Scanning Job Queue Results
@@ -1239,13 +1492,16 @@ Updates the shadow AI issue policy for a customer.
 
 Update the results of Model Scanning Job in the database.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/model-scanning/mark-job-failed - Mark Model Scanning Job As Failed
+## POST /v2/posture-management/model-scanning/mark-job-failed — Mark Model Scanning Job As Failed
 
 **Endpoint**: `POST /v2/posture-management/model-scanning/mark-job-failed`
 **Summary**: Mark Model Scanning Job As Failed
@@ -1253,13 +1509,16 @@ Update the results of Model Scanning Job in the database.
 
 Mark the Model Scanning Job as failed in the database.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/model-scanning/flush-job-queue - Flush Model Scan Job Queue
+## POST /v2/posture-management/model-scanning/flush-job-queue — Flush Model Scan Job Queue
 
 **Endpoint**: `POST /v2/posture-management/model-scanning/flush-job-queue`
 **Summary**: Flush Model Scan Job Queue
@@ -1269,13 +1528,16 @@ Flush the Model Scan Job Queue, processing pending jobs and the jobs up for retr
 
 If `scan_id` is provided, only jobs related to scan id will be marked processed.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/model-scanning/expire-jobs - Expire Jobs In Job Queue
+## POST /v2/posture-management/model-scanning/expire-jobs — Expire Jobs In Job Queue
 
 **Endpoint**: `POST /v2/posture-management/model-scanning/expire-jobs`
 **Summary**: Expire Jobs In Job Queue
@@ -1288,13 +1550,16 @@ If `scan_id` is provided, only jobs related to scan id will be marked expired.
 **Parameters**:
 - `expire_on_commit` (query, optional): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/posture-management/model-scanning/post-process-expired-jobs - Post Process Expired Jobs
+## GET /v2/posture-management/model-scanning/post-process-expired-jobs — Post Process Expired Jobs
 
 **Endpoint**: `GET /v2/posture-management/model-scanning/post-process-expired-jobs`
 **Summary**: Post Process Expired Jobs
@@ -1312,7 +1577,7 @@ All the jobs in job queue must be in FAILED or SUCCESS state in order for post p
 
 ---
 
-## POST /v2/posture-management/notebook-scanning/update-job-results - Update Notebook Scanning Job Queue Results
+## POST /v2/posture-management/notebook-scanning/update-job-results — Update Notebook Scanning Job Queue Results
 
 **Endpoint**: `POST /v2/posture-management/notebook-scanning/update-job-results`
 **Summary**: Update Notebook Scanning Job Queue Results
@@ -1320,13 +1585,16 @@ All the jobs in job queue must be in FAILED or SUCCESS state in order for post p
 
 Update the results of Notebook Scanning Job in the database.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/notebook-scanning/mark-job-failed - Mark Notebook Scan Job As Failed
+## POST /v2/posture-management/notebook-scanning/mark-job-failed — Mark Notebook Scan Job As Failed
 
 **Endpoint**: `POST /v2/posture-management/notebook-scanning/mark-job-failed`
 **Summary**: Mark Notebook Scan Job As Failed
@@ -1334,13 +1602,16 @@ Update the results of Notebook Scanning Job in the database.
 
 Mark the Notebook Scanning Job as failed in the database.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/notebook-scanning/flush-job-queue - Flush Notebook Scan Job Queue
+## POST /v2/posture-management/notebook-scanning/flush-job-queue — Flush Notebook Scan Job Queue
 
 **Endpoint**: `POST /v2/posture-management/notebook-scanning/flush-job-queue`
 **Summary**: Flush Notebook Scan Job Queue
@@ -1349,13 +1620,16 @@ Mark the Notebook Scanning Job as failed in the database.
 Flush the Notebook Scan Job Queue, processing pending jobs and the jobs up for retry.
 If `scan_id` is provided, only jobs related to scan id will be marked processed.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v2/posture-management/notebook-scanning/expire-jobs - Expire Jobs In Job Queue
+## POST /v2/posture-management/notebook-scanning/expire-jobs — Expire Jobs In Job Queue
 
 **Endpoint**: `POST /v2/posture-management/notebook-scanning/expire-jobs`
 **Summary**: Expire Jobs In Job Queue
@@ -1364,13 +1638,16 @@ If `scan_id` is provided, only jobs related to scan id will be marked processed.
 Expire stale notebook scan jobs in the job queue.
 If `scan_id` is provided, only jobs related to scan id will be marked expired.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/posture-management/notebook-scanning/post-process-expired-jobs - Post Process Expired Jobs
+## GET /v2/posture-management/notebook-scanning/post-process-expired-jobs — Post Process Expired Jobs
 
 **Endpoint**: `GET /v2/posture-management/notebook-scanning/post-process-expired-jobs`
 **Summary**: Post Process Expired Jobs

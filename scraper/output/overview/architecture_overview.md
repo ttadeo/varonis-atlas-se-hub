@@ -14,7 +14,7 @@ The system comprises two infrastructure components, called "planes." The control
 
 - 
 Are AI Runtime Protection and Observability part of the data plane?
-Yes. AI Runtime Protection and the Observability layer (OpenSearch instance) both reside on the data plane, which is deployed in the customer's own AWS environment (VPC).
+Yes. AI Runtime Protection and the Observability layer both reside on the data plane, which is deployed in the customer's own AWS environment (VPC).
 
 - 
 What customer data does the data plane collect and store?

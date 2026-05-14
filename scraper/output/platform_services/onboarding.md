@@ -27,7 +27,7 @@ The next step in the onboarding process is to install the Data Plane, which is n
 Manually using the AWS Management Console.
 - By running a command via terminal.
 
-Follow the provided instructions based on your selected method. You will need to choose a region, create a stack, and input specific parameters such as the OpenSearchPassword and SecretKey, as shown in the instructions.
+Follow the provided instructions based on your selected method. You will need to choose a region and input specific parameters such as an AWS Account ID, as shown in the instructions.
 
 The installation process can take up to 30 minutes. You can either wait and click the "Test Connection" button once the installation is complete or proceed to the next step by selecting "Go to next step." If you wait and the installation succeeds, you will automatically move to the next step. If it fails, you will receive an error message.
 

@@ -1,10 +1,13 @@
 # vmcp API Endpoints
 
-## POST /v1/vmcp - Create Vmcp
+## POST /v1/vmcp — Create Vmcp
 
 **Endpoint**: `POST /v1/vmcp`
 **Summary**: Create Vmcp
 **Tags**: vmcp
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -12,7 +15,7 @@
 
 ---
 
-## GET /v1/vmcp - Get Vmcps
+## GET /v1/vmcp — Get Vmcps
 
 **Endpoint**: `GET /v1/vmcp`
 **Summary**: Get Vmcps
@@ -27,7 +30,7 @@
 
 ---
 
-## GET /v1/vmcp/{vmcp_id} - Get Vmcp
+## GET /v1/vmcp/{vmcp_id} — Get Vmcp
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}`
 **Summary**: Get Vmcp
@@ -42,7 +45,7 @@
 
 ---
 
-## PATCH /v1/vmcp/{vmcp_id} - Update Vmcp
+## PATCH /v1/vmcp/{vmcp_id} — Update Vmcp
 
 **Endpoint**: `PATCH /v1/vmcp/{vmcp_id}`
 **Summary**: Update Vmcp
@@ -51,13 +54,16 @@
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/vmcp/{vmcp_id} - Delete Vmcp
+## DELETE /v1/vmcp/{vmcp_id} — Delete Vmcp
 
 **Endpoint**: `DELETE /v1/vmcp/{vmcp_id}`
 **Summary**: Delete Vmcp
@@ -78,7 +84,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft - Get Or Create Draft
+## POST /v1/vmcp/{vmcp_id}/draft — Get Or Create Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft`
 **Summary**: Get Or Create Draft
@@ -93,7 +99,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/draft - Get Draft
+## GET /v1/vmcp/{vmcp_id}/draft — Get Draft
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/draft`
 **Summary**: Get Draft
@@ -108,7 +114,7 @@ and audit trails.
 
 ---
 
-## DELETE /v1/vmcp/{vmcp_id}/draft - Delete Draft
+## DELETE /v1/vmcp/{vmcp_id}/draft — Delete Draft
 
 **Endpoint**: `DELETE /v1/vmcp/{vmcp_id}/draft`
 **Summary**: Delete Draft
@@ -123,7 +129,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/publish - Publish Draft
+## POST /v1/vmcp/{vmcp_id}/draft/publish — Publish Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/publish`
 **Summary**: Publish Draft
@@ -138,7 +144,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/rollback - Rollback To Version
+## POST /v1/vmcp/{vmcp_id}/rollback — Rollback To Version
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/rollback`
 **Summary**: Rollback To Version
@@ -147,13 +153,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/versions/{vmcp_version_id} - List Vmcp Versions
+## GET /v1/vmcp/{vmcp_id}/versions/{vmcp_version_id} — List Vmcp Versions
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/versions/{vmcp_version_id}`
 **Summary**: List Vmcp Versions
@@ -172,7 +181,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/versions - List Vmcp Versions
+## GET /v1/vmcp/{vmcp_id}/versions — List Vmcp Versions
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/versions`
 **Summary**: List Vmcp Versions
@@ -191,7 +200,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/versions/{vmcp_version_id} - Get Vmcp Version
+## GET /v1/vmcp/versions/{vmcp_version_id} — Get Vmcp Version
 
 **Endpoint**: `GET /v1/vmcp/versions/{vmcp_version_id}`
 **Summary**: Get Vmcp Version
@@ -206,7 +215,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/versions/{vmcp_version_id}/details - Get Vmcp Version Details
+## GET /v1/vmcp/versions/{vmcp_version_id}/details — Get Vmcp Version Details
 
 **Endpoint**: `GET /v1/vmcp/versions/{vmcp_version_id}/details`
 **Summary**: Get Vmcp Version Details
@@ -221,7 +230,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/versions/published - Get Published Version
+## GET /v1/vmcp/{vmcp_id}/versions/published — Get Published Version
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/versions/published`
 **Summary**: Get Published Version
@@ -236,7 +245,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/versions/published/details - Get Published Version Details
+## GET /v1/vmcp/{vmcp_id}/versions/published/details — Get Published Version Details
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/versions/published/details`
 **Summary**: Get Published Version Details
@@ -251,7 +260,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/servers - Add Servers To Draft
+## POST /v1/vmcp/{vmcp_id}/draft/servers — Add Servers To Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/servers`
 **Summary**: Add Servers To Draft
@@ -260,13 +269,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id} - Remove Server From Draft
+## DELETE /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id} — Remove Server From Draft
 
 **Endpoint**: `DELETE /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}`
 **Summary**: Remove Server From Draft
@@ -282,7 +294,7 @@ and audit trails.
 
 ---
 
-## PATCH /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/policy - Update Mcp Server In Draft
+## PATCH /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/policy — Update Mcp Server In Draft
 
 **Endpoint**: `PATCH /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/policy`
 **Summary**: Update Mcp Server In Draft
@@ -292,13 +304,16 @@ and audit trails.
 - `vmcp_id` (path, required): 
 - `mcp_server_resource_instance_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/tools - Add Tools To Draft
+## POST /v1/vmcp/{vmcp_id}/draft/tools — Add Tools To Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/tools`
 **Summary**: Add Tools To Draft
@@ -307,13 +322,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/vmcp/{vmcp_id}/draft/tools/{mcp_tool_resource_instance_id} - Remove Tool From Draft
+## DELETE /v1/vmcp/{vmcp_id}/draft/tools/{mcp_tool_resource_instance_id} — Remove Tool From Draft
 
 **Endpoint**: `DELETE /v1/vmcp/{vmcp_id}/draft/tools/{mcp_tool_resource_instance_id}`
 **Summary**: Remove Tool From Draft
@@ -329,7 +347,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides - Add Tool Override To Draft
+## POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides — Add Tool Override To Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides`
 **Summary**: Add Tool Override To Draft
@@ -339,13 +357,16 @@ and audit trails.
 - `vmcp_id` (path, required): 
 - `mcp_server_resource_instance_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/batch - Add Tool Override Batch To Draft
+## POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/batch — Add Tool Override Batch To Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/batch`
 **Summary**: Add Tool Override Batch To Draft
@@ -355,13 +376,16 @@ and audit trails.
 - `vmcp_id` (path, required): 
 - `mcp_server_resource_instance_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk - Add Tool Override Bulk To Draft
+## POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk — Add Tool Override Bulk To Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk`
 **Summary**: Add Tool Override Bulk To Draft
@@ -370,13 +394,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/{mcp_tool_resource_instance_id} - Remove Tool Override From Draft
+## DELETE /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/{mcp_tool_resource_instance_id} — Remove Tool Override From Draft
 
 **Endpoint**: `DELETE /v1/vmcp/{vmcp_id}/draft/servers/{mcp_server_resource_instance_id}/tool-overrides/{mcp_tool_resource_instance_id}`
 **Summary**: Remove Tool Override From Draft
@@ -393,7 +420,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk-delete - Remove Tool Overrides Bulk From Draft
+## POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk-delete — Remove Tool Overrides Bulk From Draft
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/draft/tool-overrides/bulk-delete`
 **Summary**: Remove Tool Overrides Bulk From Draft
@@ -402,13 +429,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/assignment - Assign Vmcp To Scope
+## POST /v1/vmcp/{vmcp_id}/assignment — Assign Vmcp To Scope
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/assignment`
 **Summary**: Assign Vmcp To Scope
@@ -417,13 +447,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/assignment - Get Vmcp Assignments
+## GET /v1/vmcp/{vmcp_id}/assignment — Get Vmcp Assignments
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/assignment`
 **Summary**: Get Vmcp Assignments
@@ -438,7 +471,7 @@ and audit trails.
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/assignments - Assign Vmcp To Scope In Bulk
+## POST /v1/vmcp/{vmcp_id}/assignments — Assign Vmcp To Scope In Bulk
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/assignments`
 **Summary**: Assign Vmcp To Scope In Bulk
@@ -447,13 +480,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/vmcp/{vmcp_id}/assignment/delete - Delete Vmcp Assignment
+## POST /v1/vmcp/{vmcp_id}/assignment/delete — Delete Vmcp Assignment
 
 **Endpoint**: `POST /v1/vmcp/{vmcp_id}/assignment/delete`
 **Summary**: Delete Vmcp Assignment
@@ -462,13 +498,16 @@ and audit trails.
 **Parameters**:
 - `vmcp_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `204`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/effective-tools - Get Effective Tools For Vmcp
+## GET /v1/vmcp/{vmcp_id}/effective-tools — Get Effective Tools For Vmcp
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/effective-tools`
 **Summary**: Get Effective Tools For Vmcp
@@ -485,7 +524,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/llm-endpoint/{resource_instance_id}/effective-tools - Get Effective Tools For Resource Instance
+## GET /v1/vmcp/llm-endpoint/{resource_instance_id}/effective-tools — Get Effective Tools For Resource Instance
 
 **Endpoint**: `GET /v1/vmcp/llm-endpoint/{resource_instance_id}/effective-tools`
 **Summary**: Get Effective Tools For Resource Instance
@@ -500,7 +539,7 @@ and audit trails.
 
 ---
 
-## GET /v1/vmcp/{vmcp_id}/pending-review-tools - Get Tools Pending Review
+## GET /v1/vmcp/{vmcp_id}/pending-review-tools — Get Tools Pending Review
 
 **Endpoint**: `GET /v1/vmcp/{vmcp_id}/pending-review-tools`
 **Summary**: Get Tools Pending Review

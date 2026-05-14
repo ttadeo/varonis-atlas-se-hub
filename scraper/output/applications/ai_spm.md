@@ -32,10 +32,11 @@ To run a pentest on an LLM Endpoint:
 - Select your LLM Endpoint – Choose the target resource from your inventory. Note that this can be a custom LLM endpoint that is essentially your application API.
 - Describe the System – Provide a brief system description that will appear in the report.
 - Select the Model (if applicable) – If the endpoint supports multiple models, choose the one to test. If this is a custom LLM endpoint (an application), no selection is appropriate and the dropdown will be disabled.
-- Choose or Create a Template – Templates group test categories and define your testing scope:
+- Choose or Create a Template – Templates group test categories, strategies, and configurations that define your testing scope:
 
 Start with the Varonis Default Template, preloaded with test categories aligned to OWASP and MITRE ATLAS.
 - Customize test categories, adjust severity levels, or override evaluation mechanisms to reflect your specific use case.
+- Select which [strategies](#categories-and-strategies) to use for each category.
 - Add custom categories globally (available across all projects) or within a specific template.
 
 - (Optional) There are a number of additional configuration parameters with which you can enhance the test:
@@ -66,16 +67,47 @@ Note regarding LLMs deployed as Watson.x endpoints: You can pentest /chat LLM en
 ```
 You can only pentest endpoints that implement the function_text_chat function and a chat interface.
 
+### Categories and Strategies[​](#categories-and-strategies)
+Pentest configuration separates two distinct concepts: **categories** and **strategies**.
+
+- **Category** — defines *what* type of vulnerability you are testing for (e.g., Prompt Injection, Harm, Data Exfiltration).
+- **Strategy** — defines *how* the system generates and executes test cases for that category.
+
+A single category can support multiple strategies, and you select which strategies to use on a per-category basis when configuring a template.
+
+#### Available Strategies[​](#available-strategies)
+StrategyDescription**Static**Uses pre-defined test cases for the category. These test cases are executed exactly as written.**Basic**Generates test cases dynamically based on the category definition and any provided system context.
+Not all strategies apply to every category. When you open a category in a template, the system shows which strategies are supported for that category and resource type. Unsupported strategies appear greyed out.
+
+#### Selecting Strategies in a Template[​](#selecting-strategies-in-a-template)
+When you create or edit a template, the workflow includes a strategy selection step:
+
+- **Template Details** — name and describe the template.
+- **Category Configuration** — select which categories to include and configure their severity levels.
+- **Strategy Selection** — for each selected category, choose one or more strategies to use during the test.
+
+For each category, you can also configure strategy-specific settings:
+
+- **Static strategy** — view or edit the individual test cases that will be executed.
+- **Basic strategy** — configure parameters that control dynamic test generation, including the number of test cases per strategy and the maximum token length.
+
+The number of test cases you set applies across all dynamic strategies selected for a category.
+
+#### Strategies in Results[​](#strategies-in-results)
+After a pentest completes, results include both category and strategy information. Each test case is attributed to a specific category and strategy, so you can understand both *what* was tested and *how* it was tested.
+
 ### Custom Categories[​](#custom-categories)
 The following outlines the process and options available for configuring custom pentest categories:
 
 #### Creating Custom Categories:[​](#creating-custom-categories)
 
-- You can create custom categories tailored to specific testing needs by accessing the SPM PenTests module, selecting the Categories tab, and clicking "Add Category."
+- You can create custom categories tailored to specific testing needs by accessing the SPM PenTests module, selecting the Categories tab, and clicking **Add Category**.
 - Provide a name and description (e.g., "Refusal Category that checks if the model refuses to answer") and select a severity level (Low, Medium, High).
 - Once saved, custom categories become available for all future scans.
 - Categories can also be added at the Template level, in which case they are only accessible by that Template.
 - Categories can be cloned in the editor.
+
+Note: Custom categories currently support the **Static** strategy only. You define individual test cases manually when configuring the category.
 
 When creating a custom category, choose an Evaluation Mechanism from the dropdown. This defines the "Evaluation Criteria" for how the LLM's response will be assessed. You can hover over the information icon for each option in the UI to see its description:
 
@@ -325,4 +357,4 @@ NOTE: If a dependency entry (e.g., numpy instead of numpy==1.23.0) does not spec
 
 ## Report[​](#report)
 Use the AI SPM report to search through all AI SPM events, present or past.
-[PreviousAI Usage](/_docs/docs/applications/ai_usage)[NextAI Runtime Protection](/_docs/docs/applications/ai_gateway)- [Dashboard](#dashboard)- [Policies](#policies)- [PenTests](#pentests)[LLM Endpoint Pentests](#llm-endpoint-pentests)- [Custom Categories](#custom-categories)- [AI Model Scans](#ai-model-scans)- [PenTesting a Custom Endpoint](#pentesting-a-custom-endpoint)- [Header Based Authorization](#header-based-authorization)[Requirements for Header-Based Authorization](#requirements-for-header-based-authorization)- [Registering a New Custom Endpoint](#registering-a-new-custom-endpoint)- [Explanation of Fields](#explanation-of-fields)- [DSL Configuration Based Authorization](#dsl-configuration-based-authorization)[DSL Configuration](#dsl-configuration)- [Creating a DSL Configuration](#creating-a-dsl-configuration)- [DSL Specification](#dsl-specification)- [Issues](#issues)- [Report](#report)
+[PreviousAI Usage](/_docs/docs/applications/ai_usage)[NextAI Runtime Protection](/_docs/docs/applications/ai_gateway)- [Dashboard](#dashboard)- [Policies](#policies)- [PenTests](#pentests)[LLM Endpoint Pentests](#llm-endpoint-pentests)- [Categories and Strategies](#categories-and-strategies)- [Custom Categories](#custom-categories)- [AI Model Scans](#ai-model-scans)- [PenTesting a Custom Endpoint](#pentesting-a-custom-endpoint)- [Header Based Authorization](#header-based-authorization)[Requirements for Header-Based Authorization](#requirements-for-header-based-authorization)- [Registering a New Custom Endpoint](#registering-a-new-custom-endpoint)- [Explanation of Fields](#explanation-of-fields)- [DSL Configuration Based Authorization](#dsl-configuration-based-authorization)[DSL Configuration](#dsl-configuration)- [Creating a DSL Configuration](#creating-a-dsl-configuration)- [DSL Specification](#dsl-specification)- [Issues](#issues)- [Report](#report)

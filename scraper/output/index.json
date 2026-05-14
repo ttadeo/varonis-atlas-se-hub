@@ -200,6 +200,14 @@
     "file": "integration_examples/microsoft_copilot_studio_integration.md"
   },
   {
+    "title": "Coding Agent Integrations",
+    "url": "https://prod.alltrue-be.com/_docs/docs/integration_examples/coding_agents",
+    "section": "integration_examples",
+    "path": "integration_examples/coding_agents",
+    "status": "success",
+    "file": "integration_examples/coding_agent_integrations.md"
+  },
+  {
     "title": "LLM Pentest Execution Workflow Using REST API",
     "url": "https://prod.alltrue-be.com/_docs/docs/integration_examples/llm_pentest",
     "section": "integration_examples",
@@ -238,6 +246,14 @@
     "path": "",
     "status": "success",
     "file": "/graphql_api_reference.md"
+  },
+  {
+    "title": "What's New in V3.3.0",
+    "url": "https://prod.alltrue-be.com/_docs/docs/release_notes/330",
+    "section": "release_notes",
+    "path": "release_notes/330",
+    "status": "success",
+    "file": "release_notes/whats_new_in_v330.md"
   },
   {
     "title": "What's New in V3.2.0",

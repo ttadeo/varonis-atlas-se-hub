@@ -1,6 +1,6 @@
 # admin API Endpoints
 
-## POST /v1/admin/auth0-customer/{customer_id}/users - Create User
+## POST /v1/admin/auth0-customer/{customer_id}/users — Create User
 
 **Endpoint**: `POST /v1/admin/auth0-customer/{customer_id}/users`
 **Summary**: Create User
@@ -26,13 +26,16 @@ Raises:
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/auth0-customer/{customer_id}/users - Get Users For Organization
+## GET /v1/admin/auth0-customer/{customer_id}/users — Get Users For Organization
 
 **Endpoint**: `GET /v1/admin/auth0-customer/{customer_id}/users`
 **Summary**: Get Users For Organization
@@ -61,7 +64,7 @@ Returns:
 
 ---
 
-## GET /v1/admin/auth0-customer/{customer_id}/guest-users - Get Guest Users For Organization
+## GET /v1/admin/auth0-customer/{customer_id}/guest-users — Get Guest Users For Organization
 
 **Endpoint**: `GET /v1/admin/auth0-customer/{customer_id}/guest-users`
 **Summary**: Get Guest Users For Organization
@@ -89,7 +92,7 @@ Returns:
 
 ---
 
-## PATCH /v1/admin/auth0-customer/{customer_id}/users/{user_id} - Update User
+## PATCH /v1/admin/auth0-customer/{customer_id}/users/{user_id} — Update User
 
 **Endpoint**: `PATCH /v1/admin/auth0-customer/{customer_id}/users/{user_id}`
 **Summary**: Update User
@@ -99,13 +102,16 @@ Returns:
 - `customer_id` (path, required): 
 - `user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id} - Delete User
+## DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id} — Delete User
 
 **Endpoint**: `DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id}`
 **Summary**: Delete User
@@ -123,7 +129,7 @@ Delete a user from Auth0.
 
 ---
 
-## GET /v1/admin/auth0-customer/{customer_id}/users/{user_id} - Get User
+## GET /v1/admin/auth0-customer/{customer_id}/users/{user_id} — Get User
 
 **Endpoint**: `GET /v1/admin/auth0-customer/{customer_id}/users/{user_id}`
 **Summary**: Get User
@@ -141,7 +147,7 @@ Get a user's information in Auth0 within a specific organization.
 
 ---
 
-## DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id}/reset-mfa - Reset User Mfa
+## DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id}/reset-mfa — Reset User Mfa
 
 **Endpoint**: `DELETE /v1/admin/auth0-customer/{customer_id}/users/{user_id}/reset-mfa`
 **Summary**: Reset User Mfa
@@ -162,7 +168,7 @@ requiring them to re-enroll in MFA on their next login.
 
 ---
 
-## POST /v1/admin/auth0-customer/{customer_id}/users/{user_id}/roles -  Add Roles To User
+## POST /v1/admin/auth0-customer/{customer_id}/users/{user_id}/roles —  Add Roles To User
 
 **Endpoint**: `POST /v1/admin/auth0-customer/{customer_id}/users/{user_id}/roles`
 **Summary**:  Add Roles To User
@@ -172,13 +178,16 @@ requiring them to re-enroll in MFA on their next login.
 - `customer_id` (path, required): 
 - `user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/auth0-customer/{customer_id}/users/{user_id}/roles/delete - Remove User Roles
+## POST /v1/admin/auth0-customer/{customer_id}/users/{user_id}/roles/delete — Remove User Roles
 
 **Endpoint**: `POST /v1/admin/auth0-customer/{customer_id}/users/{user_id}/roles/delete`
 **Summary**: Remove User Roles
@@ -188,13 +197,16 @@ requiring them to re-enroll in MFA on their next login.
 - `customer_id` (path, required): 
 - `user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/gateway-cost/summary - Get Gw Cost Summary
+## GET /v1/admin/gateway-cost/summary — Get Gw Cost Summary
 
 **Endpoint**: `GET /v1/admin/gateway-cost/summary`
 **Summary**: Get Gw Cost Summary
@@ -205,31 +217,37 @@ requiring them to re-enroll in MFA on their next login.
 
 ---
 
-## PATCH /v1/admin/gateway-cost/configuration - Set Gw Cost Config
+## PATCH /v1/admin/gateway-cost/configuration — Set Gw Cost Config
 
 **Endpoint**: `PATCH /v1/admin/gateway-cost/configuration`
 **Summary**: Set Gw Cost Config
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/gateway-cost/spend-timeseries - Retrieve Gw Spend Timeseries
+## POST /v1/admin/gateway-cost/spend-timeseries — Retrieve Gw Spend Timeseries
 
 **Endpoint**: `POST /v1/admin/gateway-cost/spend-timeseries`
 **Summary**: Retrieve Gw Spend Timeseries
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/support-access/grants -  List Customer Support Access Grants
+## GET /v1/admin/support-access/grants —  List Customer Support Access Grants
 
 **Endpoint**: `GET /v1/admin/support-access/grants`
 **Summary**:  List Customer Support Access Grants
@@ -247,7 +265,7 @@ Optionally filter by active status using ?active=active or ?active=inactive.
 
 ---
 
-## POST /v1/admin/support-access/grants/{grant_id}/revoke -  Revoke Customer Support Access Grant
+## POST /v1/admin/support-access/grants/{grant_id}/revoke —  Revoke Customer Support Access Grant
 
 **Endpoint**: `POST /v1/admin/support-access/grants/{grant_id}/revoke`
 **Summary**:  Revoke Customer Support Access Grant
@@ -264,7 +282,7 @@ Revoke a specific support access grant by its ID.
 
 ---
 
-## GET /v1/admin/audit-logs - List Audit Logs
+## GET /v1/admin/audit-logs — List Audit Logs
 
 **Endpoint**: `GET /v1/admin/audit-logs`
 **Summary**: List Audit Logs
@@ -289,7 +307,7 @@ Revoke a specific support access grant by its ID.
 
 ---
 
-## GET /v1/admin/audit-logs/paths - List Audit Log Paths
+## GET /v1/admin/audit-logs/paths — List Audit Log Paths
 
 **Endpoint**: `GET /v1/admin/audit-logs/paths`
 **Summary**: List Audit Log Paths
@@ -300,7 +318,7 @@ Revoke a specific support access grant by its ID.
 
 ---
 
-## GET /v1/admin/customers/{customer_id} -  Get Customer By Id
+## GET /v1/admin/customers/{customer_id} —  Get Customer By Id
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}`
 **Summary**:  Get Customer By Id
@@ -315,7 +333,7 @@ Revoke a specific support access grant by its ID.
 
 ---
 
-## PUT /v1/admin/customers/{customer_id} -  Update Customer
+## PUT /v1/admin/customers/{customer_id} —  Update Customer
 
 **Endpoint**: `PUT /v1/admin/customers/{customer_id}`
 **Summary**:  Update Customer
@@ -324,25 +342,31 @@ Revoke a specific support access grant by its ID.
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/organizations -  Add Organization
+## POST /v1/admin/organizations —  Add Organization
 
 **Endpoint**: `POST /v1/admin/organizations`
 **Summary**:  Add Organization
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/organizations/{organization_id}/white-list -  Get White List
+## GET /v1/admin/organizations/{organization_id}/white-list —  Get White List
 
 **Endpoint**: `GET /v1/admin/organizations/{organization_id}/white-list`
 **Summary**:  Get White List
@@ -357,7 +381,7 @@ Revoke a specific support access grant by its ID.
 
 ---
 
-## POST /v1/admin/organizations/{organization_id}/white-list/delete -  Delete White List
+## POST /v1/admin/organizations/{organization_id}/white-list/delete —  Delete White List
 
 **Endpoint**: `POST /v1/admin/organizations/{organization_id}/white-list/delete`
 **Summary**:  Delete White List
@@ -366,13 +390,16 @@ Revoke a specific support access grant by its ID.
 **Parameters**:
 - `organization_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/organizations/{organization_id}/white-list/add -  Add Cidr For Organization
+## POST /v1/admin/organizations/{organization_id}/white-list/add —  Add Cidr For Organization
 
 **Endpoint**: `POST /v1/admin/organizations/{organization_id}/white-list/add`
 **Summary**:  Add Cidr For Organization
@@ -381,25 +408,31 @@ Revoke a specific support access grant by its ID.
 **Parameters**:
 - `organization_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/vendor -  Add Vendor
+## POST /v1/admin/vendor —  Add Vendor
 
 **Endpoint**: `POST /v1/admin/vendor`
 **Summary**:  Add Vendor
 **Tags**: admin, internal
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/projects - Get Projects
+## GET /v1/admin/customers/{customer_id}/projects — Get Projects
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/projects`
 **Summary**: Get Projects
@@ -415,7 +448,7 @@ Revoke a specific support access grant by its ID.
 
 ---
 
-## POST /v1/admin/projects - Create Project
+## POST /v1/admin/projects — Create Project
 
 **Endpoint**: `POST /v1/admin/projects`
 **Summary**: Create Project
@@ -423,17 +456,23 @@ Revoke a specific support access grant by its ID.
 
 Create a new project for the specified organization.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/projects/bulk - Create Projects
+## POST /v1/admin/projects/bulk — Create Projects
 
 **Endpoint**: `POST /v1/admin/projects/bulk`
 **Summary**: Create Projects
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -441,7 +480,7 @@ Create a new project for the specified organization.
 
 ---
 
-## GET /v1/admin/projects/{project_id} - Get Project
+## GET /v1/admin/projects/{project_id} — Get Project
 
 **Endpoint**: `GET /v1/admin/projects/{project_id}`
 **Summary**: Get Project
@@ -456,7 +495,7 @@ Create a new project for the specified organization.
 
 ---
 
-## PUT /v1/admin/projects/{project_id} - Update Project
+## PUT /v1/admin/projects/{project_id} — Update Project
 
 **Endpoint**: `PUT /v1/admin/projects/{project_id}`
 **Summary**: Update Project
@@ -465,13 +504,16 @@ Create a new project for the specified organization.
 **Parameters**:
 - `project_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/admin/projects/{project_id}/set-project-status - Update Project Status
+## PUT /v1/admin/projects/{project_id}/set-project-status — Update Project Status
 
 **Endpoint**: `PUT /v1/admin/projects/{project_id}/set-project-status`
 **Summary**: Update Project Status
@@ -487,7 +529,7 @@ Create a new project for the specified organization.
 
 ---
 
-## PUT /v1/admin/organizations/{organization_id}/set-organization-status - Update Organization Status
+## PUT /v1/admin/organizations/{organization_id}/set-organization-status — Update Organization Status
 
 **Endpoint**: `PUT /v1/admin/organizations/{organization_id}/set-organization-status`
 **Summary**: Update Organization Status
@@ -503,7 +545,7 @@ Create a new project for the specified organization.
 
 ---
 
-## GET /v1/admin/projects/{project_id}/discovered-resources - Get Discovery Assets For Project
+## GET /v1/admin/projects/{project_id}/discovered-resources — Get Discovery Assets For Project
 
 **Endpoint**: `GET /v1/admin/projects/{project_id}/discovered-resources`
 **Summary**: Get Discovery Assets For Project
@@ -518,7 +560,7 @@ Create a new project for the specified organization.
 
 ---
 
-## POST /v1/admin/projects/{project_id}/unassign-resource - Unassign Resource From Project
+## POST /v1/admin/projects/{project_id}/unassign-resource — Unassign Resource From Project
 
 **Endpoint**: `POST /v1/admin/projects/{project_id}/unassign-resource`
 **Summary**: Unassign Resource From Project
@@ -534,7 +576,7 @@ Create a new project for the specified organization.
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/organizations - Get Customer Organizations
+## GET /v1/admin/customers/{customer_id}/organizations — Get Customer Organizations
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/organizations`
 **Summary**: Get Customer Organizations
@@ -550,7 +592,7 @@ Create a new project for the specified organization.
 
 ---
 
-## PUT /v1/admin/organizations/{organization_id} - Update Organization
+## PUT /v1/admin/organizations/{organization_id} — Update Organization
 
 **Endpoint**: `PUT /v1/admin/organizations/{organization_id}`
 **Summary**: Update Organization
@@ -559,13 +601,16 @@ Create a new project for the specified organization.
 **Parameters**:
 - `organization_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/organizations/{organization_id}/projects -  Get Projects Sorted By Organization
+## GET /v1/admin/customers/{customer_id}/organizations/{organization_id}/projects —  Get Projects Sorted By Organization
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/organizations/{organization_id}/projects`
 **Summary**:  Get Projects Sorted By Organization
@@ -581,7 +626,7 @@ Create a new project for the specified organization.
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/organizations/projects -  Get All Projects Sorted By Organization
+## GET /v1/admin/customers/{customer_id}/organizations/projects —  Get All Projects Sorted By Organization
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/organizations/projects`
 **Summary**:  Get All Projects Sorted By Organization
@@ -598,7 +643,7 @@ Create a new project for the specified organization.
 
 ---
 
-## GET /v1/admin/cloud-providers -  Get Cloud Providers
+## GET /v1/admin/cloud-providers —  Get Cloud Providers
 
 **Endpoint**: `GET /v1/admin/cloud-providers`
 **Summary**:  Get Cloud Providers
@@ -609,7 +654,7 @@ Create a new project for the specified organization.
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/cloud-accounts -  Get Cloud Provider Accounts
+## GET /v1/admin/customers/{customer_id}/cloud-accounts —  Get Cloud Provider Accounts
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/cloud-accounts`
 **Summary**:  Get Cloud Provider Accounts
@@ -627,7 +672,7 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/cloud-accounts -  Get Cloud Provider Accounts 2
+## GET /v1/admin/cloud-accounts —  Get Cloud Provider Accounts 2
 
 **Endpoint**: `GET /v1/admin/cloud-accounts`
 **Summary**:  Get Cloud Provider Accounts 2
@@ -642,11 +687,14 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## POST /v1/admin/cloud-accounts -  Register Cloud Account 2
+## POST /v1/admin/cloud-accounts —  Register Cloud Account 2
 
 **Endpoint**: `POST /v1/admin/cloud-accounts`
 **Summary**:  Register Cloud Account 2
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `201`: Successful Response
@@ -654,7 +702,7 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/cloud-accounts-details -  Get Cloud Provider Accounts 3
+## GET /v1/admin/cloud-accounts-details —  Get Cloud Provider Accounts 3
 
 **Endpoint**: `GET /v1/admin/cloud-accounts-details`
 **Summary**:  Get Cloud Provider Accounts 3
@@ -671,14 +719,17 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/cloud-account/resources -  Get Cloud Account Resources
+## GET /v1/admin/cloud-account/resources —  Get Cloud Account Resources
 
 **Endpoint**: `GET /v1/admin/cloud-account/resources`
 **Summary**:  Get Cloud Account Resources
 **Tags**: admin
 
 **Parameters**:
-- `cloud_provider_account_ids` (query, required): 
+- `cloud_provider_account_id` (query, required): 
+- `resource_type` (query, optional): 
+- `page` (query, optional): 
+- `per_page` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -686,7 +737,7 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/cloud-account/scan-info -  Get Unscanned Cloud Accounts
+## GET /v1/admin/cloud-account/scan-info —  Get Unscanned Cloud Accounts
 
 **Endpoint**: `GET /v1/admin/cloud-account/scan-info`
 **Summary**:  Get Unscanned Cloud Accounts
@@ -697,7 +748,7 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/get-cloud-account-cfn-template -  Get Cloud Account Cfn Template
+## GET /v1/admin/customers/{customer_id}/get-cloud-account-cfn-template —  Get Cloud Account Cfn Template
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/get-cloud-account-cfn-template`
 **Summary**:  Get Cloud Account Cfn Template
@@ -712,7 +763,7 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/get-cloud-account-azure-template -  Get Cloud Account Azure Template
+## GET /v1/admin/customers/{customer_id}/get-cloud-account-azure-template —  Get Cloud Account Azure Template
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/get-cloud-account-azure-template`
 **Summary**:  Get Cloud Account Azure Template
@@ -727,7 +778,7 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/get-cloud-account-gcp-template -  Get Cloud Account Gcp Template
+## GET /v1/admin/customers/{customer_id}/get-cloud-account-gcp-template —  Get Cloud Account Gcp Template
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/get-cloud-account-gcp-template`
 **Summary**:  Get Cloud Account Gcp Template
@@ -742,7 +793,22 @@ Deprecated: use /cloud-accounts endpoint
 
 ---
 
-## POST /v1/admin/register-cloud-accounts/customer/{customer_id} - Register Cloud Account
+## POST /v1/admin/cloud-accounts/snowflake-v2/bootstrap —  Generate Snowflake V2 Bootstrap
+
+**Endpoint**: `POST /v1/admin/cloud-accounts/snowflake-v2/bootstrap`
+**Summary**:  Generate Snowflake V2 Bootstrap
+**Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/admin/register-cloud-accounts/customer/{customer_id} — Register Cloud Account
 
 **Endpoint**: `POST /v1/admin/register-cloud-accounts/customer/{customer_id}`
 **Summary**: Register Cloud Account
@@ -754,13 +820,16 @@ Deprecated: Use /cloud-accounts endpoint instead.
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/cloud-account/validate -  Validate Cloud Account
+## POST /v1/admin/cloud-account/validate —  Validate Cloud Account
 
 **Endpoint**: `POST /v1/admin/cloud-account/validate`
 **Summary**:  Validate Cloud Account
@@ -775,11 +844,14 @@ Deprecated: Use /cloud-accounts endpoint instead.
 
 ---
 
-## PUT /v1/admin/cloud-accounts/projects - Assign Cloud Account To Project
+## PUT /v1/admin/cloud-accounts/projects — Assign Cloud Account To Project
 
 **Endpoint**: `PUT /v1/admin/cloud-accounts/projects`
 **Summary**: Assign Cloud Account To Project
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `204`: Successful Response
@@ -787,7 +859,7 @@ Deprecated: Use /cloud-accounts endpoint instead.
 
 ---
 
-## PUT /v1/admin/cloud-account/unlink-from-project - Unlink Cloud Account From Project
+## PUT /v1/admin/cloud-account/unlink-from-project — Unlink Cloud Account From Project
 
 **Endpoint**: `PUT /v1/admin/cloud-account/unlink-from-project`
 **Summary**: Unlink Cloud Account From Project
@@ -802,11 +874,14 @@ Deprecated: Use /cloud-accounts endpoint instead.
 
 ---
 
-## PUT /v1/admin/cloud-accounts/bulk-unlink-from-project - Bulk Unlink Cloud Accounts From Project
+## PUT /v1/admin/cloud-accounts/bulk-unlink-from-project — Bulk Unlink Cloud Accounts From Project
 
 **Endpoint**: `PUT /v1/admin/cloud-accounts/bulk-unlink-from-project`
 **Summary**: Bulk Unlink Cloud Accounts From Project
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -814,7 +889,7 @@ Deprecated: Use /cloud-accounts endpoint instead.
 
 ---
 
-## DELETE /v1/admin/cloud-account - Delete Cloud Account
+## DELETE /v1/admin/cloud-account — Delete Cloud Account
 
 **Endpoint**: `DELETE /v1/admin/cloud-account`
 **Summary**: Delete Cloud Account
@@ -829,11 +904,14 @@ Deprecated: Use /cloud-accounts endpoint instead.
 
 ---
 
-## DELETE /v1/admin/cloud-accounts-bulk - Bulk Delete Cloud Account
+## DELETE /v1/admin/cloud-accounts-bulk — Bulk Delete Cloud Account
 
 **Endpoint**: `DELETE /v1/admin/cloud-accounts-bulk`
 **Summary**: Bulk Delete Cloud Account
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -841,7 +919,7 @@ Deprecated: Use /cloud-accounts endpoint instead.
 
 ---
 
-## GET /v1/admin/connections - Get Connections
+## GET /v1/admin/connections — Get Connections
 
 **Endpoint**: `GET /v1/admin/connections`
 **Summary**: Get Connections
@@ -854,7 +932,7 @@ Retrieves enabled connections for the customer.
 
 ---
 
-## POST /v1/admin/invitations - Invite User
+## POST /v1/admin/invitations — Invite User
 
 **Endpoint**: `POST /v1/admin/invitations`
 **Summary**: Invite User
@@ -874,13 +952,16 @@ The client is responsible for calling the appropriate Assign Organizations/Proje
 
 Note: This is a temporary solution, and we may refine it in the future.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/invitations - List Invitations
+## GET /v1/admin/invitations — List Invitations
 
 **Endpoint**: `GET /v1/admin/invitations`
 **Summary**: List Invitations
@@ -903,7 +984,7 @@ Wraps the Auth0 Management API `GET /api/v2/organizations/{id}/invitations` endp
 
 ---
 
-## GET /v1/admin/invitations/{invitation_id} - Get Invitation
+## GET /v1/admin/invitations/{invitation_id} — Get Invitation
 
 **Endpoint**: `GET /v1/admin/invitations/{invitation_id}`
 **Summary**: Get Invitation
@@ -922,7 +1003,7 @@ Wraps the Auth0 Management API `GET /api/v2/organizations/{id}/invitations/{invi
 
 ---
 
-## DELETE /v1/admin/invitations/{invitation_id} - Delete Invitation
+## DELETE /v1/admin/invitations/{invitation_id} — Delete Invitation
 
 **Endpoint**: `DELETE /v1/admin/invitations/{invitation_id}`
 **Summary**: Delete Invitation
@@ -941,7 +1022,7 @@ Wraps the Auth0 Management API `DELETE /api/v2/organizations/{id}/invitations/{i
 
 ---
 
-## POST /v1/admin/current-user/assign-pending-organizations-and-projects - Assign Pending Organizations And Projects To User
+## POST /v1/admin/current-user/assign-pending-organizations-and-projects — Assign Pending Organizations And Projects To User
 
 **Endpoint**: `POST /v1/admin/current-user/assign-pending-organizations-and-projects`
 **Summary**: Assign Pending Organizations And Projects To User
@@ -957,7 +1038,7 @@ during user invitation, are properly assigned to the user.
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects - Get Projects For User
+## GET /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects — Get Projects For User
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects`
 **Summary**: Get Projects For User
@@ -975,7 +1056,7 @@ Get all projects assigned to a user in a customer.
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects - Assign Projects To User
+## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects — Assign Projects To User
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects`
 **Summary**: Assign Projects To User
@@ -987,13 +1068,16 @@ Assign projects to a user in a customer.
 - `customer_id` (path, required): 
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/users/{auth0_user_id}/projects - Get Projects For User New
+## GET /v1/admin/users/{auth0_user_id}/projects — Get Projects For User New
 
 **Endpoint**: `GET /v1/admin/users/{auth0_user_id}/projects`
 **Summary**: Get Projects For User New
@@ -1010,7 +1094,7 @@ Get all projects assigned to a user in a customer.
 
 ---
 
-## POST /v1/admin/users/{auth0_user_id}/projects - Assign Projects To User New
+## POST /v1/admin/users/{auth0_user_id}/projects — Assign Projects To User New
 
 **Endpoint**: `POST /v1/admin/users/{auth0_user_id}/projects`
 **Summary**: Assign Projects To User New
@@ -1021,13 +1105,16 @@ Assign projects to a user in a customer.
 **Parameters**:
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects/delete - Remove Projects From User
+## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects/delete — Remove Projects From User
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/projects/delete`
 **Summary**: Remove Projects From User
@@ -1039,13 +1126,16 @@ Remove projects from a user in a customer.
 - `customer_id` (path, required): 
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/users/{auth0_user_id}/projects/delete - Remove Projects From User New
+## POST /v1/admin/users/{auth0_user_id}/projects/delete — Remove Projects From User New
 
 **Endpoint**: `POST /v1/admin/users/{auth0_user_id}/projects/delete`
 **Summary**: Remove Projects From User New
@@ -1056,13 +1146,16 @@ Remove projects from a user in a customer.
 **Parameters**:
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations - Get Organizations For User
+## GET /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations — Get Organizations For User
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations`
 **Summary**: Get Organizations For User
@@ -1080,7 +1173,7 @@ Get all organizations assigned to a user in a customer.
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations - Assign Organizations To User
+## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations — Assign Organizations To User
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations`
 **Summary**: Assign Organizations To User
@@ -1092,13 +1185,16 @@ Assign organizations to a user in a customer.
 - `customer_id` (path, required): 
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/users/{auth0_user_id}/organizations - Get Organizations For User New
+## GET /v1/admin/users/{auth0_user_id}/organizations — Get Organizations For User New
 
 **Endpoint**: `GET /v1/admin/users/{auth0_user_id}/organizations`
 **Summary**: Get Organizations For User New
@@ -1115,7 +1211,7 @@ Get all organizations assigned to a user in a customer.
 
 ---
 
-## POST /v1/admin/users/{auth0_user_id}/organizations - Assign Organizations To User New
+## POST /v1/admin/users/{auth0_user_id}/organizations — Assign Organizations To User New
 
 **Endpoint**: `POST /v1/admin/users/{auth0_user_id}/organizations`
 **Summary**: Assign Organizations To User New
@@ -1126,13 +1222,16 @@ Assign organizations to a user in a customer.
 **Parameters**:
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations/delete - Remove Organizations From User
+## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations/delete — Remove Organizations From User
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/organizations/delete`
 **Summary**: Remove Organizations From User
@@ -1144,13 +1243,16 @@ Remove organizations from a user in a customer.
 - `customer_id` (path, required): 
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/users/{auth0_user_id}/organizations/delete - Remove Organizations From User New
+## POST /v1/admin/users/{auth0_user_id}/organizations/delete — Remove Organizations From User New
 
 **Endpoint**: `POST /v1/admin/users/{auth0_user_id}/organizations/delete`
 **Summary**: Remove Organizations From User New
@@ -1161,13 +1263,16 @@ Remove organizations from a user in a customer.
 **Parameters**:
 - `auth0_user_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/reset-assignments - Reset User Assignments
+## POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/reset-assignments — Reset User Assignments
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/users/{auth0_user_id}/reset-assignments`
 **Summary**: Reset User Assignments
@@ -1185,7 +1290,7 @@ Reset the project and organization assignments for a user to match the database.
 
 ---
 
-## POST /v1/admin/users/{auth0_user_id}/reset-assignments - Reset User Assignments New
+## POST /v1/admin/users/{auth0_user_id}/reset-assignments — Reset User Assignments New
 
 **Endpoint**: `POST /v1/admin/users/{auth0_user_id}/reset-assignments`
 **Summary**: Reset User Assignments New
@@ -1202,7 +1307,7 @@ Reset the project and organization assignments for a user to match the database.
 
 ---
 
-## GET /v1/admin/current-user - Get Current User Info
+## GET /v1/admin/current-user — Get Current User Info
 
 **Endpoint**: `GET /v1/admin/current-user`
 **Summary**: Get Current User Info
@@ -1216,11 +1321,14 @@ If this is the users first time logging in, ALL user info for this customer will
 
 ---
 
-## PATCH /v1/admin/current-user - Update Current User
+## PATCH /v1/admin/current-user — Update Current User
 
 **Endpoint**: `PATCH /v1/admin/current-user`
 **Summary**: Update Current User
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -1228,7 +1336,7 @@ If this is the users first time logging in, ALL user info for this customer will
 
 ---
 
-## GET /v1/admin/current-user/permissions - Get Current User Permissions
+## GET /v1/admin/current-user/permissions — Get Current User Permissions
 
 **Endpoint**: `GET /v1/admin/current-user/permissions`
 **Summary**: Get Current User Permissions
@@ -1241,7 +1349,7 @@ Get permissions for the current user based on the token payload
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/roles - Get Customer Roles
+## GET /v1/admin/customers/{customer_id}/roles — Get Customer Roles
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/roles`
 **Summary**: Get Customer Roles
@@ -1266,7 +1374,7 @@ Returns:
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/roles - Create Customer Role
+## POST /v1/admin/customers/{customer_id}/roles — Create Customer Role
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/roles`
 **Summary**: Create Customer Role
@@ -1289,13 +1397,16 @@ Response:
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/guest-roles - Get Customer Guest Roles
+## GET /v1/admin/customers/{customer_id}/guest-roles — Get Customer Guest Roles
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/guest-roles`
 **Summary**: Get Customer Guest Roles
@@ -1318,7 +1429,7 @@ Returns:
 
 ---
 
-## PUT /v1/admin/customers/{customer_id}/roles/{role_id} - Update Customer Role
+## PUT /v1/admin/customers/{customer_id}/roles/{role_id} — Update Customer Role
 
 **Endpoint**: `PUT /v1/admin/customers/{customer_id}/roles/{role_id}`
 **Summary**: Update Customer Role
@@ -1343,13 +1454,16 @@ Raises:
 - `customer_id` (path, required): 
 - `role_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/admin/customers/{customer_id}/roles/{role_id} - Delete Customer Role
+## DELETE /v1/admin/customers/{customer_id}/roles/{role_id} — Delete Customer Role
 
 **Endpoint**: `DELETE /v1/admin/customers/{customer_id}/roles/{role_id}`
 **Summary**: Delete Customer Role
@@ -1379,7 +1493,7 @@ Raises:
 
 ---
 
-## GET /v1/admin/permissions - Get Permissions
+## GET /v1/admin/permissions — Get Permissions
 
 **Endpoint**: `GET /v1/admin/permissions`
 **Summary**: Get Permissions
@@ -1398,7 +1512,7 @@ Returns:
 
 ---
 
-## POST /v1/admin/permissions - Create Permission
+## POST /v1/admin/permissions — Create Permission
 
 **Endpoint**: `POST /v1/admin/permissions`
 **Summary**: Create Permission
@@ -1413,13 +1527,16 @@ Args:
 Returns:
     PermissionResponse: The newly created permission.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/roles/{role_id}/permissions - Assign Permissions To Role
+## POST /v1/admin/customers/{customer_id}/roles/{role_id}/permissions — Assign Permissions To Role
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/roles/{role_id}/permissions`
 **Summary**: Assign Permissions To Role
@@ -1443,13 +1560,16 @@ Raises:
 - `customer_id` (path, required): 
 - `role_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/roles/{role_id}/permissions - Get Role Permissions
+## GET /v1/admin/customers/{customer_id}/roles/{role_id}/permissions — Get Role Permissions
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/roles/{role_id}/permissions`
 **Summary**: Get Role Permissions
@@ -1479,7 +1599,7 @@ Raises:
 
 ---
 
-## DELETE /v1/admin/customers/{customer_id}/roles/{role_id}/permissions/{permission_id} - Unassign Permission From Role
+## DELETE /v1/admin/customers/{customer_id}/roles/{role_id}/permissions/{permission_id} — Unassign Permission From Role
 
 **Endpoint**: `DELETE /v1/admin/customers/{customer_id}/roles/{role_id}/permissions/{permission_id}`
 **Summary**: Unassign Permission From Role
@@ -1495,7 +1615,7 @@ Raises:
 
 ---
 
-## POST /v1/admin/customers/{customer_id}/logo -  Generate Customer Logo Upload Presigned Url
+## POST /v1/admin/customers/{customer_id}/logo —  Generate Customer Logo Upload Presigned Url
 
 **Endpoint**: `POST /v1/admin/customers/{customer_id}/logo`
 **Summary**:  Generate Customer Logo Upload Presigned Url
@@ -1504,13 +1624,16 @@ Raises:
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/admin/customers/{customer_id}/logo -  Upload Customer Logo
+## PUT /v1/admin/customers/{customer_id}/logo —  Upload Customer Logo
 
 **Endpoint**: `PUT /v1/admin/customers/{customer_id}/logo`
 **Summary**:  Upload Customer Logo
@@ -1519,13 +1642,16 @@ Raises:
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/admin/entitlements - Get Customer Entitlements
+## GET /v1/admin/entitlements — Get Customer Entitlements
 
 **Endpoint**: `GET /v1/admin/entitlements`
 **Summary**: Get Customer Entitlements
@@ -1538,7 +1664,7 @@ Get the list of entitlement tiers for a customer.
 
 ---
 
-## GET /v1/admin/customers/{customer_id}/entitlements - Get Customer Entitlements
+## GET /v1/admin/customers/{customer_id}/entitlements — Get Customer Entitlements
 
 **Endpoint**: `GET /v1/admin/customers/{customer_id}/entitlements`
 **Summary**: Get Customer Entitlements
@@ -1551,7 +1677,7 @@ Get the list of entitlement tiers for a customer.
 
 ---
 
-## GET /v1/admin/customer/logging-token - Get Customer Logging Token
+## GET /v1/admin/customer/logging-token — Get Customer Logging Token
 
 **Endpoint**: `GET /v1/admin/customer/logging-token`
 **Summary**: Get Customer Logging Token
@@ -1562,7 +1688,7 @@ Get the list of entitlement tiers for a customer.
 
 ---
 
-## POST /v1/admin/send-ecs-task-failure -  Send Ecs Task Failure
+## POST /v1/admin/send-ecs-task-failure —  Send Ecs Task Failure
 
 **Endpoint**: `POST /v1/admin/send-ecs-task-failure`
 **Summary**:  Send Ecs Task Failure
@@ -1572,13 +1698,16 @@ Send a notification about ECS task failure in customer plane.
 
 Returns a success message upon completion.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/register-user -  Register User If Not Present
+## POST /v1/admin/register-user —  Register User If Not Present
 
 **Endpoint**: `POST /v1/admin/register-user`
 **Summary**:  Register User If Not Present
@@ -1589,7 +1718,7 @@ Returns a success message upon completion.
 
 ---
 
-## POST /v1/admin/get-external-secret-manager -  Get External Secret Manager
+## POST /v1/admin/get-external-secret-manager —  Get External Secret Manager
 
 **Endpoint**: `POST /v1/admin/get-external-secret-manager`
 **Summary**:  Get External Secret Manager
@@ -1599,73 +1728,104 @@ Get the external secret manager configuration for a customer.
 
 Returns the external secret manager details upon completion.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/bulk/invitations - Bulk Invite Users
+## POST /v1/admin/bulk/invitations — Bulk Invite Users
 
 **Endpoint**: `POST /v1/admin/bulk/invitations`
 **Summary**: Bulk Invite Users
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/bulk/delete-users - Bulk Delete Users
+## POST /v1/admin/bulk/delete-users — Bulk Delete Users
 
 **Endpoint**: `POST /v1/admin/bulk/delete-users`
 **Summary**: Bulk Delete Users
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/bulk/assign-roles - Bulk Assign Roles
+## POST /v1/admin/bulk/assign-roles — Bulk Assign Roles
 
 **Endpoint**: `POST /v1/admin/bulk/assign-roles`
 **Summary**: Bulk Assign Roles
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/bulk/assign-projects - Bulk Assign Projects
+## POST /v1/admin/bulk/assign-projects — Bulk Assign Projects
 
 **Endpoint**: `POST /v1/admin/bulk/assign-projects`
 **Summary**: Bulk Assign Projects
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/admin/bulk/assign-organizations - Bulk Assign Organizations
+## POST /v1/admin/bulk/assign-organizations — Bulk Assign Organizations
 
 **Endpoint**: `POST /v1/admin/bulk/assign-organizations`
 **Summary**: Bulk Assign Organizations
 **Tags**: admin
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/notification-settings/customer -  Get Customer Notification Settings
+## GET /v1/admin/control-plane-public-ips — Get Control Plane Public Ips
+
+**Endpoint**: `GET /v1/admin/control-plane-public-ips`
+**Summary**: Get Control Plane Public Ips
+**Tags**: admin
+
+Return the public IP CIDRs of the control plane.
+
+**Responses**:
+- `200`: Successful Response
+
+---
+
+## GET /v1/notification-settings/customer —  Get Customer Notification Settings
 
 **Endpoint**: `GET /v1/notification-settings/customer`
 **Summary**:  Get Customer Notification Settings
@@ -1678,7 +1838,7 @@ Get the notification settings on a customer level for the tokens customer.
 
 ---
 
-## PUT /v1/notification-settings/customer -  Update Customer Notification Settings
+## PUT /v1/notification-settings/customer —  Update Customer Notification Settings
 
 **Endpoint**: `PUT /v1/notification-settings/customer`
 **Summary**:  Update Customer Notification Settings
@@ -1686,13 +1846,16 @@ Get the notification settings on a customer level for the tokens customer.
 
 Update the notification settings on a customer level for the tokens customer.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/notification-settings/customer -  Delete Customer Notification Settings
+## DELETE /v1/notification-settings/customer —  Delete Customer Notification Settings
 
 **Endpoint**: `DELETE /v1/notification-settings/customer`
 **Summary**:  Delete Customer Notification Settings
@@ -1705,7 +1868,7 @@ Delete the notification settings on a customer level for the tokens customer.
 
 ---
 
-## GET /v1/notification-settings/user -  Get User Notification Settings
+## GET /v1/notification-settings/user —  Get User Notification Settings
 
 **Endpoint**: `GET /v1/notification-settings/user`
 **Summary**:  Get User Notification Settings
@@ -1718,7 +1881,7 @@ Get the notification settings on a customer level for the tokens user.
 
 ---
 
-## PUT /v1/notification-settings/user -  Update User Notification Settings
+## PUT /v1/notification-settings/user —  Update User Notification Settings
 
 **Endpoint**: `PUT /v1/notification-settings/user`
 **Summary**:  Update User Notification Settings
@@ -1726,13 +1889,16 @@ Get the notification settings on a customer level for the tokens user.
 
 Update the notification settings on a customer level for the tokens user.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/notification-settings/user -  Delete User Notification Settings
+## DELETE /v1/notification-settings/user —  Delete User Notification Settings
 
 **Endpoint**: `DELETE /v1/notification-settings/user`
 **Summary**:  Delete User Notification Settings
@@ -1745,7 +1911,7 @@ Delete the notification settings (restoring the default) for the tokens user.
 
 ---
 
-## GET /v1/gateway/logging-defaults - Get Admin Logging Defaults
+## GET /v1/gateway/logging-defaults — Get Admin Logging Defaults
 
 **Endpoint**: `GET /v1/gateway/logging-defaults`
 **Summary**: Get Admin Logging Defaults
@@ -1756,11 +1922,14 @@ Delete the notification settings (restoring the default) for the tokens user.
 
 ---
 
-## PATCH /v1/gateway/logging-defaults - Patch Admin Logging Defaults
+## PATCH /v1/gateway/logging-defaults — Patch Admin Logging Defaults
 
 **Endpoint**: `PATCH /v1/gateway/logging-defaults`
 **Summary**: Patch Admin Logging Defaults
 **Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response

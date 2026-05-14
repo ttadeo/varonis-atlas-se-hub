@@ -402,7 +402,7 @@ Roles are groups of system permissions and are assigned to users and to API keys
 - DataDog Admin - Permissions required for setting up integration with Datadog or the Datadog listener
 - Splunk Admin - Permissions required for setting up integration with Splunk HEC or the Splunk HEC listener
 
-In addition, the following roles govern access to the Observability layer of the system, which is based on OpenSearch:
+In addition, the following roles govern access to the Observability layer of the system:
 
 - ObservabilityAdministrator - Full access to AI Observability and Report features, plus the ability to view Varonis Audit Logs in the Admin Console. Ideal for senior security analysts and managers overseeing observability operations.
 - ObservabilityViewer - Read-only access to all AI Observability and Report pages. Perfect for team members who need to monitor and analyze observability data without making changes.
@@ -425,5 +425,5 @@ Create an API key when your applications/scripts need to call TRiSM Hub APIs. Ea
 Once you have your API key, assign it the roles that govern the API calls you will use. You only need to assign roles for the Custom Integrations type -- a Splunk Listener key will always have the SplunkAdmin role (and only that role), and so forth.
 
 ### Audit Logs[​](#audit-logs)
-Actions performed by users in the application are logged to an OpenSearch instance. Because everything in the system is an API call, the audit trail is shown at the API call level. Each event records the user performing the action, the API called, the API tag, whether it was a GET or POST, and the roles assigned to the user performing the action.
+Actions performed by users in the application are logged. Because everything in the system is an API call, the audit trail is shown at the API call level. Each event records the user performing the action, the API called, the API tag, whether it was a GET or POST, and the roles assigned to the user performing the action.
 [PreviousOnboarding](/_docs/docs/platform_services/onboarding)[NextIntegrations](/_docs/docs/platform_services/integration)- [System Settings](#system-settings)[Profile](#profile)- [SIEM Endpoint Configuration](#siem-endpoint-configuration)- [QRadar Integration](#qradar-integration)- [Service Management Configuration](#service-management-configuration)- [Evaluator LLM](#evaluator-llm)- [Directory](#directory)[Organizations](#organizations)- [Projects](#projects)- [Users](#users)- [User Roles](#user-roles)- [Permissions](#permissions)- [API Keys](#api-keys)- [Audit Logs](#audit-logs)

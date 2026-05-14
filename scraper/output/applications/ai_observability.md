@@ -7,9 +7,9 @@ section: applications
 # AI Observability
 
 - [](/_docs/)- Applications- AI ObservabilityOn this page# AI Observability
-The TRiSM Hub provides an AI observability layer. The core technology for the observability layer is an OpenSearch service that runs on your data plane and maintains AI logs within your AWS account. Events pertaining to various activities on the system are funneled into this observability layer. You can use both out-of-the-box dashboards and build your own dashboards and reports using this data. The TRiSM Hub embeds a fully integrated, AWS-provided OpenSearch service. The service works within the authentication and authorization models and is embedded within the GUI. It is a fully functioning OpenSearch service providing openness, extensibility, and the ability to customize. For more information on the APIs and capabilities of this service, [click here](https://docs.aws.amazon.com/opensearch-service/).
+The TRiSM Hub provides an AI observability layer that runs on a Data Plane deployed within your own AWS or Azure cloud account. Once installed, the Data Plane captures and maintains AI activity logs inside your tenant, ensuring that telemetry stays within your security boundary. Events relating to AI usage, runtime protection, and investigation activities are funneled into this observability layer, where they power the Hub's monitoring and analysis capabilities.
 
-For information on how to use dashboards, visualizations, alerting, and anomaly detection, please refer to the OpenSearch documentation.
+The observability layer comes with a set of built-in dashboards that surface key signals out of the box, and it also exposes the underlying log data so you can build your own dashboards, visualizations, and reports tailored to your organization's needs. Because the Data Plane is provisioned directly in your cloud account (via CloudFormation on AWS or the equivalent deployment on Azure) and operates within the TRiSM Hub's authentication and authorization model, all access to logs, dashboards, and analytics is governed by the same role-based controls used elsewhere in the product.
 
 You can use APIs in order to funnel additional data from your own AI and AI-related systems to the observability layer.
 

@@ -466,7 +466,7 @@ curl --request POST \
 ## Calling Guardrails Directly[​](#calling-guardrails-directly)
 The proxy calls the policy execution system / guardrails system for evaluating prompts and responses. You can call these directly using a Python SDK or REST APIs.
 
-The Python SDK is available [here](https://github.com/AllTrue-ai/alltrue-llm-observability).
+The Python SDK is available [here](https://github.com/Varonis-Systems/Atlas-alltrue-llm-observability).
 
 In addition to SDK and proxy, you can use the Rule Processing APIs.
 

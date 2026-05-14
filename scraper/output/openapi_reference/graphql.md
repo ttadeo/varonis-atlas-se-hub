@@ -1,6 +1,6 @@
 # graphql API Endpoints
 
-## GET /v1/graphql - Handle Http Get
+## GET /v1/graphql — Handle Http Get
 
 **Endpoint**: `GET /v1/graphql`
 **Summary**: Handle Http Get
@@ -12,7 +12,7 @@
 
 ---
 
-## POST /v1/graphql - Handle Http Post
+## POST /v1/graphql — Handle Http Post
 
 **Endpoint**: `POST /v1/graphql`
 **Summary**: Handle Http Post
@@ -23,7 +23,7 @@
 
 ---
 
-## GET /v2/graphql - Handle Http Get
+## GET /v2/graphql — Handle Http Get
 
 **Endpoint**: `GET /v2/graphql`
 **Summary**: Handle Http Get
@@ -35,7 +35,7 @@
 
 ---
 
-## POST /v2/graphql - Handle Http Post
+## POST /v2/graphql — Handle Http Post
 
 **Endpoint**: `POST /v2/graphql`
 **Summary**: Handle Http Post

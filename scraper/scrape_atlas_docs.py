@@ -98,7 +98,7 @@ async def login(page):
     print("ACTION REQUIRED: Manual login needed")
     print("="*50)
     await page.goto(DOCS_BASE + "/overview/platform_and_applications")
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_load_state("domcontentloaded", timeout=60000)
 
     # Check if we landed on a login page
     current_url = page.url
@@ -108,12 +108,13 @@ async def login(page):
         print("Waiting for you to complete login...")
         print("(The script will continue automatically once you're logged in)\n")
 
-        # Wait until we're redirected away from auth pages
+        # Wait until we land back on the Atlas docs domain
         await page.wait_for_url(
-            lambda url: "auth0" not in url and "login" not in url,
+            lambda url: "prod.alltrue-be.com" in url,
             timeout=120000  # 2 minute timeout to log in
         )
-        await page.wait_for_load_state("networkidle")
+        await page.wait_for_load_state("load", timeout=30000)
+        await page.wait_for_timeout(3000)  # Extra buffer for session cookie to settle
 
     print("✓ Login successful — continuing with scrape")
 
@@ -124,9 +125,11 @@ async def discover_nav_links(page) -> list[dict]:
     including expanding collapsed sections.
     """
     print("Discovering navigation links...")
-    await page.goto(f"{DOCS_BASE}/overview/platform_and_applications")
-    await page.wait_for_load_state("networkidle")
-    await page.wait_for_timeout(2000)
+    # Already on the docs page after login — only navigate if we're not there
+    if DOCS_BASE not in page.url:
+        await page.goto(f"{DOCS_BASE}/overview/platform_and_applications")
+        await page.wait_for_load_state("load", timeout=30000)
+        await page.wait_for_timeout(3000)
 
     # Save screenshot and HTML for debugging
     debug_dir = OUTPUT_DIR / "debug"
@@ -187,11 +190,16 @@ async def scrape_page(page, url: str, title: str) -> dict:
     """Scrape a single documentation page and return its content."""
     try:
         await page.goto(url)
-        await page.wait_for_load_state("networkidle", timeout=15000)
+        await page.wait_for_load_state("domcontentloaded", timeout=15000)
+        # Wait for Docusaurus React content to render
+        await page.wait_for_selector(
+            ".theme-doc-markdown, .markdown, main, article",
+            timeout=15000
+        )
 
         # Get the main content area
         content_html = await page.eval_on_selector(
-            "main, article, .content, .docs-content, [role='main']",
+            ".theme-doc-markdown, .markdown, main, article, .content, .docs-content, [role='main']",
             "el => el.innerHTML"
         )
 

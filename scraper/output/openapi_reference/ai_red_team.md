@@ -1,6 +1,6 @@
 # ai-red-team API Endpoints
 
-## GET /v2/ai-red-team/targets - Get Targets Paginated
+## GET /v2/ai-red-team/targets — Get Targets Paginated
 
 **Endpoint**: `GET /v2/ai-red-team/targets`
 **Summary**: Get Targets Paginated

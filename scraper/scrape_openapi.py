@@ -41,29 +41,26 @@ async def login_and_get_spec(page):
 
     print(f"Navigating to {OPENAPI_URL}...")
     await page.goto(OPENAPI_URL)
-    await page.wait_for_load_state("networkidle")
+    await page.wait_for_load_state("load", timeout=30000)
 
     # Handle login if redirected
     current_url = page.url
     if "auth0" in current_url or "login" in current_url:
         print("Login required — please log in manually...")
         await page.wait_for_url(
-            lambda url: "auth0" not in url and "login" not in url,
+            lambda url: "prod.alltrue-be.com" in url,
             timeout=120000
         )
-        await page.wait_for_load_state("networkidle")
+        await page.wait_for_load_state("load", timeout=30000)
+        await page.wait_for_timeout(3000)
         # Navigate back to OpenAPI page after login so SPA loads the spec
         print("Navigating back to OpenAPI page after login...")
         await page.goto(OPENAPI_URL)
-        await page.wait_for_load_state("networkidle")
+        await page.wait_for_load_state("load", timeout=30000)
 
     # Wait for SPA to hydrate and fetch the spec
     print("Waiting for SPA to load spec...")
     await page.wait_for_timeout(6000)
-    try:
-        await page.wait_for_load_state("networkidle", timeout=15000)
-    except Exception:
-        pass
 
     # Save debug snapshot
     debug_dir = OUTPUT_DIR / "debug"
@@ -221,7 +218,7 @@ async def main():
                 else:
                     # Navigate the browser to the spec URL so auth cookies are sent
                     await page.goto(spec_url)
-                    await page.wait_for_load_state("networkidle", timeout=15000)
+                    await page.wait_for_load_state("load", timeout=15000)
                     raw = await page.evaluate("() => document.body.innerText")
 
                 if not raw or raw.strip().startswith("<"):

@@ -1,6 +1,6 @@
 # internal API Endpoints
 
-## GET /v1/internal/microservice-settings -  Get Microservice Settings
+## GET /v1/internal/microservice-settings —  Get Microservice Settings
 
 **Endpoint**: `GET /v1/internal/microservice-settings`
 **Summary**:  Get Microservice Settings
@@ -13,7 +13,7 @@ Get microservice settings for all microservices
 
 ---
 
-## PUT /v1/internal/microservice-settings -  Update Microservice Setting
+## PUT /v1/internal/microservice-settings —  Update Microservice Setting
 
 **Endpoint**: `PUT /v1/internal/microservice-settings`
 **Summary**:  Update Microservice Setting
@@ -21,13 +21,16 @@ Get microservice settings for all microservices
 
 Update microservice setting to run on dataplane or not
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/internal/session-policy/alerts -  Post Session Policy Callback
+## POST /v1/internal/session-policy/alerts —  Post Session Policy Callback
 
 **Endpoint**: `POST /v1/internal/session-policy/alerts`
 **Summary**:  Post Session Policy Callback
@@ -40,13 +43,16 @@ queries, a row-level ``SELECT ... FOR UPDATE``, and a savepoint. Running
 those under ``async def`` with a sync session blocks the event loop;
 using plain ``def`` lets FastAPI dispatch to the threadpool.
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /verify-connection - Verify Connection
+## GET /verify-connection — Verify Connection
 
 **Endpoint**: `GET /verify-connection`
 **Summary**: Verify Connection
@@ -57,7 +63,7 @@ using plain ``def`` lets FastAPI dispatch to the threadpool.
 
 ---
 
-## GET /openapi/external - Get Openapi For External Tag
+## GET /openapi/external — Get Openapi For External Tag
 
 **Endpoint**: `GET /openapi/external`
 **Summary**: Get Openapi For External Tag

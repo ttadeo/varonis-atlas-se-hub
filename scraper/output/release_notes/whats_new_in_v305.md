@@ -30,7 +30,7 @@ A new “Configure Proxy” button on the AI Runtime Protection Policies page si
 ### Observability SDK[​](#observability-sdk)
 The new Observability SDK enables you to enforce AI Runtime Protection guardrails and capture prompt-level logs—without needing to route traffic through a proxy. This lightweight integration offers the same protection and visibility, with support for asynchronous mode to accommodate latency-sensitive environments.
 
-The SDK is available [here](https://github.com/AllTrue-ai/alltrue-llm-observability).
+The SDK is available [here](https://github.com/Varonis-Systems/Atlas-alltrue-llm-observability).
 
 ## AI Compliance[​](#ai-compliance)
 ### Compliance Compass[​](#compliance-compass)

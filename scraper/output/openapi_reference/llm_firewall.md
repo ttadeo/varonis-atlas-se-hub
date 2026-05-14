@@ -1,13 +1,26 @@
 # llm-firewall API Endpoints
 
-## POST /v1/llm-firewall/chat/log/{process_stage} - Log Chat Record
+## POST /v1/llm-firewall/chat/log/{process_stage} — Log Chat Record
 
 **Endpoint**: `POST /v1/llm-firewall/chat/log/{process_stage}`
 **Summary**: Log Chat Record
 **Tags**: llm-firewall
 
+Single-record chat log endpoint.
+
+WB-h396 Phase 7 retired the legacy split between proxy/LiteLLM/Copilot-Studio
+(legacy request-based tables) and Cursor/Claude Code (event-based tables);
+every provider now flows through ``process_chat_log_record`` ->
+``persist_chat_record_as_events``.  The deferred-task wrapper here is
+identical to the batch endpoint's per-record dispatch and the
+reporting-ingest worker's per-record call (production prompt-reporting
+pipeline).
+
 **Parameters**:
 - `process_stage` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `201`: Successful Response
@@ -15,70 +28,67 @@
 
 ---
 
-## POST /v1/llm-firewall/chat/log-batch - Log Chat Record Batch
+## POST /v1/llm-firewall/chat/log-batch — Log Chat Record Batch
 
 **Endpoint**: `POST /v1/llm-firewall/chat/log-batch`
 **Summary**: Log Chat Record Batch
 **Tags**: llm-firewall
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/ingestion/events - Post Ingestion Events
+## POST /v1/llm-firewall/ingestion/events — Post Ingestion Events
 
 **Endpoint**: `POST /v1/llm-firewall/ingestion/events`
 **Summary**: Post Ingestion Events
 **Tags**: llm-firewall
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `202`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/llm-firewall/chat/session/{session_id} - Get Chat Session
-
-**Endpoint**: `GET /v1/llm-firewall/chat/session/{session_id}`
-**Summary**: Get Chat Session
-**Tags**: llm-firewall
-
-**Parameters**:
-- `session_id` (path, required): 
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/llm-firewall/fastgate/corpus/requests - Submit Fastgate Corpus Mark Request
+## POST /v1/llm-firewall/fastgate/corpus/requests — Submit Fastgate Corpus Mark Request
 
 **Endpoint**: `POST /v1/llm-firewall/fastgate/corpus/requests`
 **Summary**: Submit Fastgate Corpus Mark Request
 **Tags**: llm-firewall
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/fastgate/corpus/generation - Submit Fastgate Corpus New Generation Request
+## POST /v1/llm-firewall/fastgate/corpus/generation — Submit Fastgate Corpus New Generation Request
 
 **Endpoint**: `POST /v1/llm-firewall/fastgate/corpus/generation`
 **Summary**: Submit Fastgate Corpus New Generation Request
 **Tags**: llm-firewall
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/llm-firewall/rules - Get Rules
+## GET /v1/llm-firewall/rules — Get Rules
 
 **Endpoint**: `GET /v1/llm-firewall/rules`
 **Summary**: Get Rules
@@ -89,7 +99,7 @@
 
 ---
 
-## GET /v1/llm-firewall/rules/{rule_type} - Get Rule By Type
+## GET /v1/llm-firewall/rules/{rule_type} — Get Rule By Type
 
 **Endpoint**: `GET /v1/llm-firewall/rules/{rule_type}`
 **Summary**: Get Rule By Type
@@ -104,7 +114,7 @@
 
 ---
 
-## GET /v1/llm-firewall/templates/status - Get rules template statuses
+## GET /v1/llm-firewall/templates/status — Get rules template statuses
 
 **Endpoint**: `GET /v1/llm-firewall/templates/status`
 **Summary**: Get rules template statuses
@@ -124,7 +134,7 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 
 ---
 
-## POST /v1/llm-firewall/templates/apply - Apply a rules template to a hierarchy
+## POST /v1/llm-firewall/templates/apply — Apply a rules template to a hierarchy
 
 **Endpoint**: `POST /v1/llm-firewall/templates/apply`
 **Summary**: Apply a rules template to a hierarchy
@@ -143,7 +153,7 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 
 ---
 
-## GET /v1/llm-firewall/templates - List all rules templates
+## GET /v1/llm-firewall/templates — List all rules templates
 
 **Endpoint**: `GET /v1/llm-firewall/templates`
 **Summary**: List all rules templates
@@ -154,11 +164,14 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 
 ---
 
-## POST /v1/llm-firewall/templates - Create a rules template
+## POST /v1/llm-firewall/templates — Create a rules template
 
 **Endpoint**: `POST /v1/llm-firewall/templates`
 **Summary**: Create a rules template
 **Tags**: llm-firewall, internal
+
+**Request Body**: Required
+- Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
@@ -166,7 +179,7 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 
 ---
 
-## PUT /v1/llm-firewall/templates/{template_name} - Update a rules template
+## PUT /v1/llm-firewall/templates/{template_name} — Update a rules template
 
 **Endpoint**: `PUT /v1/llm-firewall/templates/{template_name}`
 **Summary**: Update a rules template
@@ -176,13 +189,16 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 - `template_name` (path, required): 
 - `is_global` (query, optional): Whether this is a global template
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/llm-firewall/templates/{template_name} - Delete a rules template
+## DELETE /v1/llm-firewall/templates/{template_name} — Delete a rules template
 
 **Endpoint**: `DELETE /v1/llm-firewall/templates/{template_name}`
 **Summary**: Delete a rules template
@@ -198,7 +214,7 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 
 ---
 
-## GET /v1/llm-firewall/templates/{template_name} - Get a rules template
+## GET /v1/llm-firewall/templates/{template_name} — Get a rules template
 
 **Endpoint**: `GET /v1/llm-firewall/templates/{template_name}`
 **Summary**: Get a rules template
@@ -214,7 +230,7 @@ Retrieve the status of rules templates for a hierarchy. Optional hierarchy level
 
 ---
 
-## POST /v1/llm-firewall/templates/snapshot - Create a snapshot of rules templates
+## POST /v1/llm-firewall/templates/snapshot — Create a snapshot of rules templates
 
 **Endpoint**: `POST /v1/llm-firewall/templates/snapshot`
 **Summary**: Create a snapshot of rules templates
@@ -227,13 +243,16 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 - `project_id` (query, optional): Optional project ID
 - `resource_instance_id` (query, optional): Optional resource ID
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/llm-firewall/rules-default-settings/{rule_type} - Get Default Settings For Rule
+## GET /v1/llm-firewall/rules-default-settings/{rule_type} — Get Default Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/rules-default-settings/{rule_type}`
 **Summary**: Get Default Settings For Rule
@@ -249,7 +268,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/rule-settings-schema/{rule_type} - Get Settings Schema For Rule
+## GET /v1/llm-firewall/rule-settings-schema/{rule_type} — Get Settings Schema For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/rule-settings-schema/{rule_type}`
 **Summary**: Get Settings Schema For Rule
@@ -264,7 +283,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/rule-configs/{rule_type} - Get Rule Config
+## GET /v1/llm-firewall/rule-configs/{rule_type} — Get Rule Config
 
 **Endpoint**: `GET /v1/llm-firewall/rule-configs/{rule_type}`
 **Summary**: Get Rule Config
@@ -279,7 +298,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/rule-configs - Get All Rule Configs
+## GET /v1/llm-firewall/rule-configs — Get All Rule Configs
 
 **Endpoint**: `GET /v1/llm-firewall/rule-configs`
 **Summary**: Get All Rule Configs
@@ -290,7 +309,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/rule/{rule_type} - Get Installed Rule Settings For Customer
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/rule/{rule_type} — Get Installed Rule Settings For Customer
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/rule/{rule_type}`
 **Summary**: Get Installed Rule Settings For Customer
@@ -306,7 +325,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id} - Get All Installed Rules Settings For Customer
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id} — Get All Installed Rules Settings For Customer
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}`
 **Summary**: Get All Installed Rules Settings For Customer
@@ -322,7 +341,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} - Get Installed Rule Settings For Organization
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} — Get Installed Rule Settings For Organization
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type}`
 **Summary**: Get Installed Rule Settings For Organization
@@ -339,7 +358,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id} - Get All Installed Rules Settings For Organization
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id} — Get All Installed Rules Settings For Organization
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Get All Installed Rules Settings For Organization
@@ -356,7 +375,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} - Get Installed Rule Settings For Project
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} — Get Installed Rule Settings For Project
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type}`
 **Summary**: Get Installed Rule Settings For Project
@@ -374,7 +393,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Get All Installed Rules Settings For Project
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Get All Installed Rules Settings For Project
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Get All Installed Rules Settings For Project
@@ -392,7 +411,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} - Get Installed Rule Settings For Resource
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} — Get Installed Rule Settings For Resource
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type}`
 **Summary**: Get Installed Rule Settings For Resource
@@ -411,7 +430,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} - Get All Installed Rules Settings For Resource
+## GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} — Get All Installed Rules Settings For Resource
 
 **Endpoint**: `GET /v1/llm-firewall/installed-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}`
 **Summary**: Get All Installed Rules Settings For Resource
@@ -430,7 +449,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/rule/{rule_type} - Get Staged Customer Settings For Rule
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/rule/{rule_type} — Get Staged Customer Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/rule/{rule_type}`
 **Summary**: Get Staged Customer Settings For Rule
@@ -446,7 +465,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-status/customer/{customer_id}/rule/{rule_type} - Get Staged Customer Enabled For Rule
+## GET /v1/llm-firewall/staged-status/customer/{customer_id}/rule/{rule_type} — Get Staged Customer Enabled For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-status/customer/{customer_id}/rule/{rule_type}`
 **Summary**: Get Staged Customer Enabled For Rule
@@ -462,7 +481,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id} - Get All Staged Rules Settings For Customer
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id} — Get All Staged Rules Settings For Customer
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}`
 **Summary**: Get All Staged Rules Settings For Customer
@@ -478,7 +497,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} - Get Staged Organization Settings For Rule
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} — Get Staged Organization Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type}`
 **Summary**: Get Staged Organization Settings For Rule
@@ -495,7 +514,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} - Get Staged Organization Enabled For Rule
+## GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} — Get Staged Organization Enabled For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/rule/{rule_type}`
 **Summary**: Get Staged Organization Enabled For Rule
@@ -512,7 +531,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id} - Get All Staged Rules Settings For Organization
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id} — Get All Staged Rules Settings For Organization
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Get All Staged Rules Settings For Organization
@@ -529,7 +548,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} - Get Staged Project Settings For Rule
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} — Get Staged Project Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type}`
 **Summary**: Get Staged Project Settings For Rule
@@ -547,7 +566,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} - Get Staged Project Enabled For Rule
+## GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} — Get Staged Project Enabled For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type}`
 **Summary**: Get Staged Project Enabled For Rule
@@ -565,7 +584,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Get All Staged Rules Settings For Project
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Get All Staged Rules Settings For Project
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Get All Staged Rules Settings For Project
@@ -583,7 +602,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} - Get Staged Resource Settings For Rule
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} — Get Staged Resource Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type}`
 **Summary**: Get Staged Resource Settings For Rule
@@ -602,7 +621,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} - Get Staged Resource Enabled For Rule
+## GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} — Get Staged Resource Enabled For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/staged-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type}`
 **Summary**: Get Staged Resource Enabled For Rule
@@ -621,7 +640,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} - Get All Staged Rules Settings For Resource
+## GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} — Get All Staged Rules Settings For Resource
 
 **Endpoint**: `GET /v1/llm-firewall/staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}`
 **Summary**: Get All Staged Rules Settings For Resource
@@ -640,7 +659,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} - Get Inherited Organization Settings For Rule
+## GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type} — Get Inherited Organization Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/rule/{rule_type}`
 **Summary**: Get Inherited Organization Settings For Rule
@@ -657,7 +676,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} - Get Inherited Project Settings For Rule
+## GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type} — Get Inherited Project Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/rule/{rule_type}`
 **Summary**: Get Inherited Project Settings For Rule
@@ -675,7 +694,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} - Get Inherited Resource Settings For Rule
+## GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type} — Get Inherited Resource Settings For Rule
 
 **Endpoint**: `GET /v1/llm-firewall/inherited-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}/rule/{rule_type}`
 **Summary**: Get Inherited Resource Settings For Rule
@@ -694,7 +713,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/all-endpoint-settings - Retrieve all sanctioned endpoint settings per customer
+## GET /v1/llm-firewall/all-endpoint-settings — Retrieve all sanctioned endpoint settings per customer
 
 **Endpoint**: `GET /v1/llm-firewall/all-endpoint-settings`
 **Summary**: Retrieve all sanctioned endpoint settings per customer
@@ -710,7 +729,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/all-endpoint-vmcp-effective-tools - Retrieves all the tools in VMCPs assigned to each endpoint for a customer
+## GET /v1/llm-firewall/all-endpoint-vmcp-effective-tools — Retrieves all the tools in VMCPs assigned to each endpoint for a customer
 
 **Endpoint**: `GET /v1/llm-firewall/all-endpoint-vmcp-effective-tools`
 **Summary**: Retrieves all the tools in VMCPs assigned to each endpoint for a customer
@@ -726,7 +745,7 @@ Create a snapshot of the current rules templates hierarchy for backup or replica
 
 ---
 
-## GET /v1/llm-firewall/endpoint-settings - Retrieve endpoint settings by endpoint identifier (provider-agnostic)
+## GET /v1/llm-firewall/endpoint-settings — Retrieve endpoint settings by endpoint identifier (provider-agnostic)
 
 **Endpoint**: `GET /v1/llm-firewall/endpoint-settings`
 **Summary**: Retrieve endpoint settings by endpoint identifier (provider-agnostic)
@@ -746,7 +765,7 @@ endpoint is resolved solely by endpoint_identifier.
 
 ---
 
-## GET /v1/llm-firewall/endpoint-settings/{api_provider} - Retrieve endpoint settings per customer and api key from cache
+## GET /v1/llm-firewall/endpoint-settings/{api_provider} — Retrieve endpoint settings per customer and api key from cache
 
 **Endpoint**: `GET /v1/llm-firewall/endpoint-settings/{api_provider}`
 **Summary**: Retrieve endpoint settings per customer and api key from cache
@@ -766,7 +785,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/settings-summary/customer/{customer_id} - Get Settings Summary For Customer
+## GET /v1/llm-firewall/settings-summary/customer/{customer_id} — Get Settings Summary For Customer
 
 **Endpoint**: `GET /v1/llm-firewall/settings-summary/customer/{customer_id}`
 **Summary**: Get Settings Summary For Customer
@@ -782,7 +801,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/overruling-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Get Overruling Settings
+## GET /v1/llm-firewall/overruling-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Get Overruling Settings
 
 **Endpoint**: `GET /v1/llm-firewall/overruling-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Get Overruling Settings
@@ -800,7 +819,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/overruling-settings/customer/{customer_id}/organization/{organization_id} - Get Overruling Settings
+## GET /v1/llm-firewall/overruling-settings/customer/{customer_id}/organization/{organization_id} — Get Overruling Settings
 
 **Endpoint**: `GET /v1/llm-firewall/overruling-settings/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Get Overruling Settings
@@ -818,7 +837,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/overruling-settings/customer/{customer_id} - Get Overruling Settings
+## GET /v1/llm-firewall/overruling-settings/customer/{customer_id} — Get Overruling Settings
 
 **Endpoint**: `GET /v1/llm-firewall/overruling-settings/customer/{customer_id}`
 **Summary**: Get Overruling Settings
@@ -836,7 +855,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id} - Get Settings Summary For Organization
+## GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id} — Get Settings Summary For Organization
 
 **Endpoint**: `GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Get Settings Summary For Organization
@@ -853,7 +872,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Get Settings Summary For Project
+## GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Get Settings Summary For Project
 
 **Endpoint**: `GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Get Settings Summary For Project
@@ -871,7 +890,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} - Get Settings Summary For Resource
+## GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} — Get Settings Summary For Resource
 
 **Endpoint**: `GET /v1/llm-firewall/settings-summary/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}`
 **Summary**: Get Settings Summary For Resource
@@ -890,7 +909,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## POST /v1/llm-firewall/stage-settings/customer/{customer_id} - Stage Customer Settings
+## POST /v1/llm-firewall/stage-settings/customer/{customer_id} — Stage Customer Settings
 
 **Endpoint**: `POST /v1/llm-firewall/stage-settings/customer/{customer_id}`
 **Summary**: Stage Customer Settings
@@ -899,13 +918,16 @@ other levels are optional and can be passed as query params.
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id} - Stage Organization Settings
+## POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id} — Stage Organization Settings
 
 **Endpoint**: `POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Stage Organization Settings
@@ -915,13 +937,16 @@ other levels are optional and can be passed as query params.
 - `customer_id` (path, required): 
 - `organization_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Stage Project Settings
+## POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Stage Project Settings
 
 **Endpoint**: `POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Stage Project Settings
@@ -932,13 +957,16 @@ other levels are optional and can be passed as query params.
 - `organization_id` (path, required): 
 - `project_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} - Stage Resource Settings
+## POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} — Stage Resource Settings
 
 **Endpoint**: `POST /v1/llm-firewall/stage-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}`
 **Summary**: Stage Resource Settings
@@ -950,13 +978,16 @@ other levels are optional and can be passed as query params.
 - `project_id` (path, required): 
 - `resource_instance_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id} - Stage Customer Settings Status
+## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id} — Stage Customer Settings Status
 
 **Endpoint**: `POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}`
 **Summary**: Stage Customer Settings Status
@@ -965,13 +996,16 @@ other levels are optional and can be passed as query params.
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id} - Stage Organization Settings Status
+## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id} — Stage Organization Settings Status
 
 **Endpoint**: `POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Stage Organization Settings Status
@@ -981,13 +1015,16 @@ other levels are optional and can be passed as query params.
 - `customer_id` (path, required): 
 - `organization_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Stage Project Settings Status
+## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Stage Project Settings Status
 
 **Endpoint**: `POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Stage Project Settings Status
@@ -998,13 +1035,16 @@ other levels are optional and can be passed as query params.
 - `organization_id` (path, required): 
 - `project_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} - Stage Resource Settings Status
+## POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} — Stage Resource Settings Status
 
 **Endpoint**: `POST /v1/llm-firewall/stage-rule-status/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}`
 **Summary**: Stage Resource Settings Status
@@ -1016,13 +1056,16 @@ other levels are optional and can be passed as query params.
 - `project_id` (path, required): 
 - `resource_instance_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id} - Discard Staged Customer Settings
+## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id} — Discard Staged Customer Settings
 
 **Endpoint**: `DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}`
 **Summary**: Discard Staged Customer Settings
@@ -1038,7 +1081,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id} - Discard Staged Organization Settings
+## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id} — Discard Staged Organization Settings
 
 **Endpoint**: `DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}`
 **Summary**: Discard Staged Organization Settings
@@ -1055,7 +1098,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} - Discard Staged Project Settings
+## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id} — Discard Staged Project Settings
 
 **Endpoint**: `DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}`
 **Summary**: Discard Staged Project Settings
@@ -1073,7 +1116,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} - Discard Staged Resource Settings
+## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id} — Discard Staged Resource Settings
 
 **Endpoint**: `DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/organization/{organization_id}/project/{project_id}/resource/{resource_instance_id}`
 **Summary**: Discard Staged Resource Settings
@@ -1092,7 +1135,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/all - Discard Staged Customer Settings All
+## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/all — Discard Staged Customer Settings All
 
 **Endpoint**: `DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/all`
 **Summary**: Discard Staged Customer Settings All
@@ -1107,7 +1150,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/policies - Discard Staged Settings By Policies
+## DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/policies — Discard Staged Settings By Policies
 
 **Endpoint**: `DELETE /v1/llm-firewall/discard-staged-settings/customer/{customer_id}/policies`
 **Summary**: Discard Staged Settings By Policies
@@ -1125,13 +1168,16 @@ Backend will:
 **Parameters**:
 - `customer_id` (path, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## POST /v1/llm-firewall/install-staged-settings -  Install Staged Configs For Customer
+## POST /v1/llm-firewall/install-staged-settings —  Install Staged Configs For Customer
 
 **Endpoint**: `POST /v1/llm-firewall/install-staged-settings`
 **Summary**:  Install Staged Configs For Customer
@@ -1141,13 +1187,16 @@ Backend will:
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v1/llm-firewall/settings-versions/versions/customer/{customer_id} - Get Installed Versions
+## GET /v1/llm-firewall/settings-versions/versions/customer/{customer_id} — Get Installed Versions
 
 **Endpoint**: `GET /v1/llm-firewall/settings-versions/versions/customer/{customer_id}`
 **Summary**: Get Installed Versions
@@ -1165,7 +1214,7 @@ indication of whether it is the active version.
 
 ---
 
-## GET /v1/llm-firewall/settings-versions/active-version/customer/{customer_id} -  Get Active Version For Customer
+## GET /v1/llm-firewall/settings-versions/active-version/customer/{customer_id} —  Get Active Version For Customer
 
 **Endpoint**: `GET /v1/llm-firewall/settings-versions/active-version/customer/{customer_id}`
 **Summary**:  Get Active Version For Customer
@@ -1182,7 +1231,7 @@ Get the active version for a project
 
 ---
 
-## POST /v1/llm-firewall/settings-versions/rollback/customer/{customer_id}/version/{version_id} - Rollback To Version
+## POST /v1/llm-firewall/settings-versions/rollback/customer/{customer_id}/version/{version_id} — Rollback To Version
 
 **Endpoint**: `POST /v1/llm-firewall/settings-versions/rollback/customer/{customer_id}/version/{version_id}`
 **Summary**: Rollback To Version
@@ -1200,7 +1249,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info -  Get Proxy Info For Gateway Resource
+## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info —  Get Proxy Info For Gateway Resource
 
 **Endpoint**: `GET /v1/llm-firewall/admin/resource/{resource_instance_id}/proxy-info`
 **Summary**:  Get Proxy Info For Gateway Resource
@@ -1216,7 +1265,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/guardrail-integration-config -  Get Guardrail Integration Config For Gateway Resource
+## GET /v1/llm-firewall/admin/resource/{resource_instance_id}/guardrail-integration-config —  Get Guardrail Integration Config For Gateway Resource
 
 **Endpoint**: `GET /v1/llm-firewall/admin/resource/{resource_instance_id}/guardrail-integration-config`
 **Summary**:  Get Guardrail Integration Config For Gateway Resource
@@ -1232,7 +1281,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/user-sessions - List User Sessions
+## GET /v1/llm-firewall/user-sessions — List User Sessions
 
 **Endpoint**: `GET /v1/llm-firewall/user-sessions`
 **Summary**: List User Sessions
@@ -1267,7 +1316,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/user-session-filters - Get User Session Filters
+## GET /v1/llm-firewall/user-session-filters — Get User Session Filters
 
 **Endpoint**: `GET /v1/llm-firewall/user-session-filters`
 **Summary**: Get User Session Filters
@@ -1286,7 +1335,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/llm-session/{session_id} - Get User Session Detail By Session Id
+## GET /v1/llm-firewall/llm-session/{session_id} — Get User Session Detail By Session Id
 
 **Endpoint**: `GET /v1/llm-firewall/llm-session/{session_id}`
 **Summary**: Get User Session Detail By Session Id
@@ -1301,7 +1350,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/user-sessions/{user_session_id} - Get User Session Detail
+## GET /v1/llm-firewall/user-sessions/{user_session_id} — Get User Session Detail
 
 **Endpoint**: `GET /v1/llm-firewall/user-sessions/{user_session_id}`
 **Summary**: Get User Session Detail
@@ -1316,7 +1365,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/user-sessions/{user_session_id}/session - Get User Session Llm Request Detail
+## GET /v1/llm-firewall/user-sessions/{user_session_id}/session — Get User Session Llm Request Detail
 
 **Endpoint**: `GET /v1/llm-firewall/user-sessions/{user_session_id}/session`
 **Summary**: Get User Session Llm Request Detail
@@ -1332,7 +1381,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/user-sessions/{user_session_id}/tool-call/{tool_call_id} - Get User Session Tool Call Detail
+## GET /v1/llm-firewall/user-sessions/{user_session_id}/tool-call/{tool_call_id} — Get User Session Tool Call Detail
 
 **Endpoint**: `GET /v1/llm-firewall/user-sessions/{user_session_id}/tool-call/{tool_call_id}`
 **Summary**: Get User Session Tool Call Detail
@@ -1348,7 +1397,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/user-sessions/{user_session_id}/session-context/{session_id} - Get User Session Context
+## GET /v1/llm-firewall/user-sessions/{user_session_id}/session-context/{session_id} — Get User Session Context
 
 **Endpoint**: `GET /v1/llm-firewall/user-sessions/{user_session_id}/session-context/{session_id}`
 **Summary**: Get User Session Context
@@ -1364,7 +1413,7 @@ Rollback to a particular version for a project
 
 ---
 
-## GET /v1/llm-firewall/combined-settings-all - Retrieve combined, settings for all levels
+## GET /v1/llm-firewall/combined-settings-all — Retrieve combined, settings for all levels
 
 **Endpoint**: `GET /v1/llm-firewall/combined-settings-all`
 **Summary**: Retrieve combined, settings for all levels
@@ -1386,7 +1435,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/llm-firewall/combined-settings-all/customer/{customer_id} - Retrieve combined, settings for all levels
+## GET /v1/llm-firewall/combined-settings-all/customer/{customer_id} — Retrieve combined, settings for all levels
 
 **Endpoint**: `GET /v1/llm-firewall/combined-settings-all/customer/{customer_id}`
 **Summary**: Retrieve combined, settings for all levels
@@ -1408,7 +1457,7 @@ other levels are optional and can be passed as query params.
 
 ---
 
-## GET /v1/gateway/logging-settings - Get Resource Logging Policy
+## GET /v1/gateway/logging-settings — Get Resource Logging Policy
 
 **Endpoint**: `GET /v1/gateway/logging-settings`
 **Summary**: Get Resource Logging Policy
@@ -1425,7 +1474,7 @@ Returns the explicit resource override, or null if inheriting admin defaults.
 
 ---
 
-## POST /v1/gateway/logging-settings - Create Resource Logging Policy
+## POST /v1/gateway/logging-settings — Create Resource Logging Policy
 
 **Endpoint**: `POST /v1/gateway/logging-settings`
 **Summary**: Create Resource Logging Policy
@@ -1434,13 +1483,16 @@ Returns the explicit resource override, or null if inheriting admin defaults.
 **Parameters**:
 - `resource_instance_id` (query, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/gateway/logging-settings - Patch Resource Logging Policy
+## PATCH /v1/gateway/logging-settings — Patch Resource Logging Policy
 
 **Endpoint**: `PATCH /v1/gateway/logging-settings`
 **Summary**: Patch Resource Logging Policy
@@ -1449,13 +1501,16 @@ Returns the explicit resource override, or null if inheriting admin defaults.
 **Parameters**:
 - `resource_instance_id` (query, required): 
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/gateway/logging-settings - Delete Resource Logging Policy
+## DELETE /v1/gateway/logging-settings — Delete Resource Logging Policy
 
 **Endpoint**: `DELETE /v1/gateway/logging-settings`
 **Summary**: Delete Resource Logging Policy

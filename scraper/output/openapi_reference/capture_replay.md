@@ -1,6 +1,6 @@
 # capture-replay API Endpoints
 
-## GET /v2/capture-replay/customer/{customer_id}/requests/search - Search Llm Firewall Requests Route
+## GET /v2/capture-replay/customer/{customer_id}/requests/search — Search Llm Firewall Requests Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/requests/search`
 **Summary**: Search Llm Firewall Requests Route
@@ -91,13 +91,16 @@ Each request returns directional governance tags:
 - `page` (query, optional): 
 - `per_page` (query, optional): 
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/requests/filter-options - Get dynamic filter options for LLM firewall requests
+## GET /v2/capture-replay/customer/{customer_id}/requests/filter-options — Get dynamic filter options for LLM firewall requests
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/requests/filter-options`
 **Summary**: Get dynamic filter options for LLM firewall requests
@@ -138,8 +141,8 @@ Get comprehensive filter options based on actual data in LLM Firewall Requests t
     - `user_session_application_version`: Filter by application version (partial match)
 
     **Date Range Filter Parameters (via filter_params):**
-    - `created_at_start`: Filter by start date/time (ISO 8601 datetime)
-    - `created_at_end`: Filter by end date/time (ISO 8601 datetime, inclusive)
+    - `created_at_start`: Filter by request event start time (`request_start_at`, falling back to `created_at` for legacy rows)
+    - `created_at_end`: Filter by request event end time (`request_start_at`, falling back to `created_at` for legacy rows, inclusive)
 
     **Message & Token Filter Parameters (via filter_params):**
     - `min_input_prompt_messages`: Minimum input prompt messages (integer >= 0)
@@ -199,13 +202,16 @@ Get comprehensive filter options based on actual data in LLM Firewall Requests t
 - `max_input_prompt_tokens` (query, optional): 
 - `governance_target` (query, optional): 
 
+**Request Body**: Optional
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/requests/{request_id} - Get Firewall Request Details Route
+## GET /v2/capture-replay/customer/{customer_id}/requests/{request_id} — Get Firewall Request Details Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/requests/{request_id}`
 **Summary**: Get Firewall Request Details Route
@@ -226,7 +232,7 @@ output_actions, and related session info.
 
 ---
 
-## POST /v2/capture-replay/customer/{customer_id}/datasets - Create Dataset Route
+## POST /v2/capture-replay/customer/{customer_id}/datasets — Create Dataset Route
 
 **Endpoint**: `POST /v2/capture-replay/customer/{customer_id}/datasets`
 **Summary**: Create Dataset Route
@@ -240,13 +246,16 @@ in AI validation, pentest, and evaluation workflows.
 **Parameters**:
 - `customer_id` (path, required): The customer ID
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `201`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets - List Datasets Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets — List Datasets Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets`
 **Summary**: List Datasets Route
@@ -291,7 +300,7 @@ Uses Pydantic model validation for robust input handling.
 
 ---
 
-## POST /v2/capture-replay/datasets/bulk-delete - Bulk Delete Datasets
+## POST /v2/capture-replay/datasets/bulk-delete — Bulk Delete Datasets
 
 **Endpoint**: `POST /v2/capture-replay/datasets/bulk-delete`
 **Summary**: Bulk Delete Datasets
@@ -299,13 +308,16 @@ Uses Pydantic model validation for robust input handling.
 
 Delete multiple capture replay datasets in a single operation
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} - Get Dataset Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Get Dataset Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}`
 **Summary**: Get Dataset Route
@@ -327,7 +339,7 @@ Returns the full dataset details including all request IDs and metadata.
 
 ---
 
-## PATCH /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} - Update Dataset Route
+## PATCH /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Update Dataset Route
 
 **Endpoint**: `PATCH /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}`
 **Summary**: Update Dataset Route
@@ -341,6 +353,9 @@ Supports partial updates (only specified fields will be updated).
 - `customer_id` (path, required): The customer ID
 - `dataset_id` (path, required): The dataset ID
 
+**Request Body**: Required
+- Content-Type: `application/json`
+
 **Responses**:
 - `200`: Successful Response
 - `404`: Not Found
@@ -349,7 +364,7 @@ Supports partial updates (only specified fields will be updated).
 
 ---
 
-## DELETE /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} - Delete Dataset Route
+## DELETE /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Delete Dataset Route
 
 **Endpoint**: `DELETE /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}`
 **Summary**: Delete Dataset Route
@@ -371,7 +386,7 @@ Permanently removes the dataset and its metadata (does not affect the underlying
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/requests - Get Dataset Requests Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/requests — Get Dataset Requests Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/requests`
 **Summary**: Get Dataset Requests Route
@@ -399,7 +414,7 @@ Legacy governance summary fields are omitted from this list endpoint.
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/export - Export Dataset Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/export — Export Dataset Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/export`
 **Summary**: Export Dataset Route
@@ -424,7 +439,7 @@ of large datasets.
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/export-csv - Export Dataset Csv Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/export-csv — Export Dataset Csv Route
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/export-csv`
 **Summary**: Export Dataset Csv Route
