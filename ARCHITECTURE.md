@@ -1,7 +1,7 @@
 # Atlas Learning Platform — Architecture & Security Documentation
 
 **Audience:** Internal (Varonis SEs and technical staff)  
-**Last Updated:** 2026-05-15  
+**Last Updated:** 2026-05-15 (rev 2 — added Cloudflare, email infrastructure, dev tooling)  
 **Purpose:** Comprehensive reference covering system architecture, authentication/security, software stack, and data stores.
 
 ---
@@ -188,7 +188,85 @@ All protected routes check for a valid `atlas_session` cookie on the server side
 
 ---
 
-## 5. Software Stack
+## 5. Email Infrastructure & Domain Configuration
+
+OTP login codes are sent from `ttadeo@timthecoder.net`. Delivering email reliably and securely from a custom domain requires three coordinated layers — domain DNS, email authentication records, and the sending service. Here's how they fit together:
+
+### Domain: timthecoder.net
+
+| Property | Value |
+|---|---|
+| Domain registrar | Google Domains |
+| DNS management | Cloudflare (Full DNS setup) |
+| Cloudflare nameservers | `amanda.ns.cloudflare.com`, `giancarlo.ns.cloudflare.com` |
+
+The domain is registered through Google but **DNS is fully delegated to Cloudflare**. All DNS records (MX, TXT, CNAME) are managed in the Cloudflare dashboard, not in Google.
+
+### Google Workspace (Email Receiving)
+
+`ttadeo@timthecoder.net` is a Google Workspace mailbox. Inbound email is routed to Google via MX records in Cloudflare:
+
+| Type | Name | Content |
+|---|---|---|
+| MX | timthecoder.net | aspmx.l.google.com (priority 1) |
+| MX | timthecoder.net | alt1.aspmx.l.google.com (priority 5) |
+| MX | timthecoder.net | alt2.aspmx.l.google.com (priority 5) |
+| MX | timthecoder.net | alt3.aspmx.l.google.com (priority 10) |
+| MX | timthecoder.net | alt4.aspmx.l.google.com (priority 10) |
+| TXT | timthecoder.net | `v=spf1 include:_spf.google.com ~all` |
+| TXT | google._domainkey | Google DKIM public key |
+
+### Resend (Email Sending — OTP Codes)
+
+**Resend** is the transactional email service that sends OTP login codes from `ttadeo@timthecoder.net` to `@varonis.com` recipients. Resend uses Amazon SES as its sending infrastructure under the hood.
+
+For Resend to send *from* a Google Workspace domain without being flagged as spam, three DNS records are added to Cloudflare to authenticate Resend as an authorized sender:
+
+| Type | Name | Content | Purpose |
+|---|---|---|---|
+| TXT | resend._domainkey | `p=MIGfMA0GCSqGSIb3D...` | DKIM — proves Resend signed the email |
+| MX | send | feedback-smtp.us-east-1.amazonses.com | Bounce/complaint handling back to Resend |
+| TXT | send | `v=spf1 include:amazonses.com ~all` | SPF — authorizes Amazon SES to send for this subdomain |
+
+**Email authentication chain for an OTP email:**
+```
+1. SE enters @varonis.com email on /login
+2. Next.js API calls Resend API with: from="ttadeo@timthecoder.net", to="{se}@varonis.com"
+3. Resend routes through Amazon SES infrastructure
+4. Receiving mail server (Google/Microsoft) validates:
+   - SPF: send.timthecoder.net includes amazonses.com ✓
+   - DKIM: resend._domainkey.timthecoder.net signature matches ✓
+5. Email delivered to SE's @varonis.com inbox — "Your Atlas login code"
+6. SE enters 6-digit code → verified against Upstash Redis → JWT issued
+```
+
+### Cloudflare Additional Features in Use
+
+| Feature | Configuration |
+|---|---|
+| DNS management | Full (all records managed in Cloudflare) |
+| AI crawler blocking | Enabled — "Block on all pages" (Cloudflare-managed rule) |
+| robots.txt | "Instruct AI bot traffic with robots.txt" |
+| Proxy status | `_domainconnect` CNAME is proxied; all email-related records are DNS-only (required for email auth) |
+
+---
+
+## 6. Development & Testing Tools
+
+These tools were used during development and are not part of the production runtime.
+
+| Tool | Purpose |
+|---|---|
+| **webhook.site** | Used during n8n workflow development to inspect raw webhook payloads — paste a webhook.site URL as the n8n webhook target to see exact JSON structure before wiring up real endpoints |
+| **n8n webhook-test URLs** | n8n provides `-test` variants of every webhook URL (e.g., `/webhook-test/atlas-rag-query`) — used during active workflow editing; production uses `/webhook/...` |
+| **Neo4j Browser** (localhost:7474) | GUI for running Cypher queries directly against the local Neo4j instance during development |
+| **TruLens** | RAG evaluation framework — runs 52 golden questions against the live system, scores Answer Relevance, Context Relevance, and Groundedness |
+
+---
+
+## 7. Software Stack
+
+
 
 ### Frontend
 
@@ -241,7 +319,7 @@ All protected routes check for a valid `atlas_session` cookie on the server side
 
 ---
 
-## 6. Data Stores
+## 8. Data Stores
 
 ### Neo4j (Primary Knowledge & Session Store)
 
@@ -301,7 +379,7 @@ Vercel hosts the Next.js application. No database or file storage is used on Ver
 
 ---
 
-## 7. n8n Workflows
+## 9. n8n Workflows
 
 All agentic pipelines run in **n8n Cloud** (`ttadeo.app.n8n.cloud`). The Next.js API routes call these workflows via authenticated webhooks.
 
@@ -321,7 +399,7 @@ All agentic pipelines run in **n8n Cloud** (`ttadeo.app.n8n.cloud`). The Next.js
 
 ---
 
-## 8. Atlas API Integration
+## 10. Atlas API Integration
 
 The platform integrates directly with the Varonis Atlas API for demo provisioning and resource management.
 
@@ -343,7 +421,7 @@ The platform integrates directly with the Varonis Atlas API for demo provisionin
 
 ---
 
-## 9. Infrastructure Diagram (Detailed)
+## 11. Infrastructure Diagram (Detailed)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -384,7 +462,7 @@ External APIs called from Next.js API routes:
 
 ---
 
-## 10. Data Flow — RAG Query (/ask)
+## 12. Data Flow — RAG Query (/ask)
 
 ```
 1. SE types question in /ask
@@ -404,7 +482,7 @@ External APIs called from Next.js API routes:
 
 ---
 
-## 11. Local Infrastructure (Linux Server)
+## 13. Local Infrastructure (Linux Server)
 
 | Property | Value |
 |---|---|
@@ -430,7 +508,7 @@ External APIs called from Next.js API routes:
 
 ---
 
-## 12. Deployment Process
+## 14. Deployment Process
 
 1. Code changes committed to `main` branch on GitHub
 2. Vercel detects push → automatic build and deploy (CI/CD)
