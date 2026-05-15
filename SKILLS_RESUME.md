@@ -2,6 +2,22 @@
 
 ---
 
+## Work Experience
+
+**Varonis | Cloud Security Architect | 2025**
+
+Designed and deployed an internal AI-powered learning and enablement platform for the Varonis SE organization, built on a production agentic RAG architecture integrating Neo4j knowledge graphs, Anthropic Claude, and n8n Cloud workflow orchestration — reducing ramp time for new SEs and creating a repeatable, always-current knowledge resource grounded in official Atlas documentation.
+
+Engineered a full-stack authenticated web application (Next.js, Vercel) with OTP-based access control, JWT session management, and domain-restricted login — enabling secure, auditable multi-user access across the SE team without relying on shared credentials or manual access provisioning.
+
+Built and continuously evaluated a 3,038-chunk RAG knowledge base from the Varonis Atlas AI Security Platform documentation, achieving Answer Relevance and Context Relevance scores of 1.000 across a 52-question golden evaluation set using TruLens RAG Triad scoring — ensuring every AI-generated response is grounded, relevant, and measurably accurate.
+
+Integrated directly with the Varonis Atlas API and AI Gateway to automate demo provisioning, resource chain visualization, and live AI traffic simulation — enabling SEs to stand up fully configured, policy-enforced customer demonstrations in minutes rather than hours, directly accelerating deal velocity.
+
+Guided customer discovery sessions and delivered live demonstrations of the Varonis Atlas AI Security Platform, translating complex AI governance capabilities — including runtime policy enforcement, AI inventory discovery, red team assessment, and compliance mapping — into customer-specific risk narratives that accelerated pipeline progression and shortened the path from technical evaluation to purchase decision.
+
+---
+
 ## AI Engineering & Agentic Systems
 
 **RAG Architecture Design (Retrieval-Augmented Generation)**
