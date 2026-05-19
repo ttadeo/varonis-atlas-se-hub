@@ -226,7 +226,7 @@ export default function RuntimePage() {
                 Simulation Results — {result.prompts_fired} prompts fired through Atlas Gateway
               </h2>
               <a
-                href="https://app.prod.alltrue-be.com/investigation"
+                href="https://prod.alltrue-be.com/ai-investigation"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-xs text-red-400 hover:text-red-300 transition-colors"
