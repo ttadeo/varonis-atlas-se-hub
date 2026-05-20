@@ -378,16 +378,14 @@ export default function DemoPage() {
   const [applied, setApplied] = useState<ApplyResult | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
 
-  // ── Chain of Custody state ──────────────────────────────────────────────────
-  const [scanning, setScanning] = useState(false);
-  const [scanError, setScanError] = useState<string | null>(null);
-  const [chainResult, setChainResult] = useState<ChainScanResult | null>(null);
+  // ── Project selection (shared between provision + chain) ───────────────────
+  const [selectedProjectId, setSelectedProjectId] = useState("");
   const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string }[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
 
-  // Auto-load projects when chain tab is activated
+  // Load projects on mount — needed for both provision and chain modes
   useEffect(() => {
-    if (mode !== "chain" || projectsLoaded) return;
+    if (projectsLoaded) return;
     setProjectsLoaded(true);
     fetch("/api/demo/chain/projects")
       .then((r) => r.json())
@@ -396,9 +394,15 @@ export default function DemoPage() {
         const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
         list.sort((a, b) => a.name.localeCompare(b.name));
         setChainProjects(list);
+        if (list.length > 0) setSelectedProjectId(list[0].id);
       })
-      .catch(() => { /* silently ignore — projects can be entered manually */ });
-  }, [mode, projectsLoaded]);
+      .catch(() => {});
+  }, [projectsLoaded]);
+
+  // ── Chain of Custody state ──────────────────────────────────────────────────
+  const [scanning, setScanning] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+  const [chainResult, setChainResult] = useState<ChainScanResult | null>(null);
 
   // ── Chain of Custody: Scan ─────────────────────────────────────────────────
 
@@ -453,6 +457,7 @@ export default function DemoPage() {
     await applyTemplate({
       selection_type: "existing",
       template_name: templateName,
+      project_id: selectedProjectId,
     });
   }
 
@@ -462,6 +467,7 @@ export default function DemoPage() {
       selection_type: "custom",
       demo_name: result.custom_recommendation.suggested_name,
       description: result.custom_recommendation.description,
+      project_id: selectedProjectId,
       rules: result.custom_recommendation.rules.map((r) => ({
         rule_type: r.rule_type,
       })),
@@ -642,6 +648,34 @@ export default function DemoPage() {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              {/* Project selector */}
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Atlas Project <span className="text-gray-500 font-normal">(template will be scoped here)</span>
+                </label>
+                {chainProjects.length > 0 ? (
+                  <select
+                    className="w-full bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                  >
+                    {chainProjects.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} — {p.orgName}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    className="w-full bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600 placeholder-gray-500"
+                    placeholder="Paste Atlas project ID (loading projects…)"
+                    value={selectedProjectId}
+                    onChange={(e) => setSelectedProjectId(e.target.value)}
+                  />
+                )}
               </div>
 
               {discoverError && (
