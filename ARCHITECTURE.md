@@ -1,7 +1,7 @@
 # Atlas Learning Platform — Architecture & Security Documentation
 
 **Audience:** Internal (Varonis SEs and technical staff)  
-**Last Updated:** 2026-05-15 (rev 2 — added Cloudflare, email infrastructure, dev tooling)  
+**Last Updated:** 2026-05-20 (rev 3 — added AI Runtime Demo, Atlas Gateway active, auto-deploy, project scoping)  
 **Purpose:** Comprehensive reference covering system architecture, authentication/security, software stack, and data stores.
 
 ---
@@ -14,7 +14,8 @@ The Atlas Learning Platform is an internal AI-powered tool for Varonis SEs. It p
 - **Architecture Builder** — generates reference architectures grounded in Atlas documentation
 - **Technical Guide Producer** — generates deployment and integration guides
 - **Meeting Co-Pilot** — real-time Q&A support during customer calls
-- **Demo Provisioning** — creates realistic Atlas resource chains and scenarios for demos
+- **Demo Provisioning** — describe a customer use case → Claude matches and auto-deploys Atlas policy templates
+- **AI Runtime Demo** — fires live prompt traffic through the Atlas Gateway to demonstrate real-time policy enforcement and AI Investigation visibility
 - **Agentic RAG** — all responses are grounded in official Atlas documentation via vector + semantic search
 
 ---
@@ -70,7 +71,8 @@ Browser (SE / Internal User)
 | Learn | `/learn` | 3-tier interactive course (22 lessons) |
 | Ask | `/ask` | Agentic RAG Q&A — direct Atlas knowledge queries |
 | Meeting | `/meeting` | Meeting Co-Pilot — live customer Q&A with context |
-| Demo | `/demo` | Demo provisioning, Chain of Custody, scenario builder |
+| Demo | `/demo` | Demo Provisioning (use case → template match → auto-deploy), Chain of Custody, Mock Scenario Builder |
+| Runtime | `/runtime` | AI Runtime Demo — fires prompt traffic through Atlas Gateway, shows live policy enforcement in Atlas AI Investigation |
 | Architect | `/architect` | Architecture Builder — Mermaid diagram + narrative |
 | Guides | `/guides` | Technical Guide Producer |
 | Analytics | `/analytics` | Interaction analytics dashboard |
@@ -92,13 +94,14 @@ Browser (SE / Internal User)
 | `/api/architect` | POST | Proxy to n8n Architecture Builder workflow |
 | `/api/guides` | POST | Proxy to n8n Guide Producer workflow |
 | `/api/analytics` | GET | Pull interaction stats from Neo4j |
-| `/api/demo/discover` | POST | Atlas API — discover existing resources |
-| `/api/demo/apply` | POST | Atlas API — provision demo resources |
-| `/api/demo/chain` | GET | Atlas API — full resource chain scan |
-| `/api/demo/chain/scenario` | POST | Atlas API — create mock scenario resources |
-| `/api/demo/chain/projects` | GET | Atlas API — list projects |
+| `/api/demo/discover` | POST | Proxy to n8n Discover workflow — Claude matches use case to Atlas templates, returns scored recommendations |
+| `/api/demo/apply` | POST | Proxy to n8n Apply workflow — applies selected template to target Atlas project |
+| `/api/demo/chain` | GET | Atlas API — full resource chain scan (read-only) |
+| `/api/demo/chain/scenario` | POST | Atlas API — create mock scenario resources in Atlas inventory |
+| `/api/demo/chain/projects` | GET | Atlas API — list all org projects (used to populate project dropdown) |
 | `/api/demo/chain/resource` | GET | Atlas API — single resource detail |
 | `/api/demo/chain/search` | POST | AI-powered resource search (Claude) |
+| `/api/demo/runtime/simulate` | POST | Fires pre-crafted prompts through Atlas Gateway — returns blocked/sent/error per prompt |
 | `/api/resources/[slug]` | GET | Serve competitive resource files |
 | `/api/sessions/share` | POST | Share meeting session |
 | `/api/extract-context` | POST | Extract customer context from URL/doc |
@@ -388,8 +391,29 @@ All agentic pipelines run in **n8n Cloud** (`ttadeo.app.n8n.cloud`). The Next.js
 | Atlas RAG - Knowledge Retrieval | `/webhook/atlas-rag-query` | Powers /learn and proxied Q&A — embed → vector search → Claude |
 | Atlas Architecture Builder | `/webhook/atlas-architecture-builder` | RAG-grounded Mermaid diagram + narrative generation |
 | Atlas Guide Producer | `/webhook/atlas-guide-producer` | RAG-grounded technical guide generation |
-| Atlas Demo Provisioning - Discover | Internal | Discovers existing Atlas resources |
-| Atlas Demo Provisioning - Apply | Internal | Provisions demo resource templates |
+| Atlas Demo Provisioning - Discover | `/webhook/atlas-demo-discover` | Webhook → Claude (Basic LLM Chain) → Code node → returns scored template matches as JSON |
+| Atlas Demo Provisioning - Apply | `/webhook/atlas-demo-apply` | Webhook → Atlas API apply call → Respond to Webhook with result JSON |
+
+### Demo Provisioning — Discover Workflow (n8n)
+
+```
+Webhook (POST /webhook/atlas-demo-discover)
+  → Basic LLM Chain (Anthropic Chat Model: claude-sonnet-4-6)
+      System prompt: match use case to Atlas templates, return JSON with
+      existing_matches[], custom_recommendation, recommendation, recommendation_reason
+  → Code node: parse + validate JSON output
+  → Respond to Webhook: return structured JSON to Next.js
+```
+
+### Demo Provisioning — Auto-Deploy Flow
+
+When the SE enables the **Auto-Deploy** toggle in `/demo`:
+1. Discover runs → top-scored template or custom recommendation identified
+2. Apply fires immediately (no Step 2 review)
+3. SE lands directly on Step 3 "Demo Environment Ready"
+4. If apply fails, falls back to Step 2 for manual review
+
+Without auto-deploy: SE reviews scored results at Step 2 and clicks "Apply This →" manually.
 
 ### n8n → Neo4j Connection
 
@@ -410,14 +434,21 @@ The platform integrates directly with the Varonis Atlas API for demo provisionin
 | API Key | `ATLAS_API_KEY` Vercel env var |
 | Customer ID | `7df8a5a7-1173-4b29-b9a0-100281c010b2` |
 
-### Atlas Gateway (Pending — not yet active)
+### Atlas Gateway (ACTIVE — confirmed working 2026-05-19)
 
 | Property | Value |
 |---|---|
 | Gateway URL | `https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/openai/v1` |
-| Routing header | `x-alltrue-llm-endpoint-identifier: <endpoint_id>` |
-| Registered endpoint | `tadeo-demo-openai` (OpenAI key stored in Atlas) |
-| Proxy key | Pending — new key scoped to Unsanctioned-Tim-The-AI-Guy project needed |
+| Auth pattern | `Authorization: Bearer <OPENAI_API_KEY>` — use the OpenAI sk-proj-... key, NOT the Firewall Proxy key |
+| Routing header | `x-alltrue-llm-endpoint-identifier: tadeo-demo-openai` (required — omitting returns 400 "Unsanctioned endpoint") |
+| Registered endpoint | `tadeo-demo-openai` — display name: OpenAI API Key (Tadeo-Demo), Status: Active/Approved |
+| Endpoint resource ID | `0f051c49-d1ad-401d-b10e-f1e72023a9f7` |
+| Atlas project | Unsanctioned-Tim-The-AI-Guy (`68869c92-9502-432c-8508-713264a919c7`) |
+| Vercel env vars | `ATLAS_GATEWAY_URL`, `ATLAS_GATEWAY_ENDPOINT_ID`, `OPENAI_API_KEY` |
+| Traffic visibility | AI Usage counts + AI Investigation → Events → Prompt Events |
+| Policy pending | PII Detection — enable in AI Inventory → OpenAI API Key (Tadeo-Demo) → Runtime Protection Policies → Alert |
+
+**Note:** The Firewall Proxy key (`vSHNaaNO9W0G0Olau2xouE7fgCwehqer`) is for Atlas SDK/admin operations only — never use it as Gateway Bearer.
 
 ---
 
