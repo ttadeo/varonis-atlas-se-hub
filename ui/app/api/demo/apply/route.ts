@@ -21,14 +21,21 @@ export async function POST(req: NextRequest) {
     body: JSON.stringify(body),
   });
 
-  const data = await upstream.json();
+  const text = await upstream.text();
+  let data: unknown = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    // n8n returned non-JSON
+  }
 
   if (!upstream.ok) {
     return NextResponse.json(
-      { error: "Upstream workflow error", detail: data },
+      { error: "Upstream workflow error", detail: data ?? text },
       { status: 502 }
     );
   }
 
-  return NextResponse.json(data);
+  // n8n Apply workflow may return empty body on success
+  return NextResponse.json(data ?? { success: true, message: "Template applied successfully." });
 }
