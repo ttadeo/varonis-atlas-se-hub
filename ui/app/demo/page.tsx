@@ -374,6 +374,7 @@ export default function DemoPage() {
   const [discoverError, setDiscoverError] = useState<string | null>(null);
   const [result, setResult] = useState<DiscoverResult | null>(null);
 
+  const [autoDeploy, setAutoDeploy] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [applying, setApplying] = useState(false);
   const [applyError, setApplyError] = useState<string | null>(null);
@@ -442,10 +443,49 @@ export default function DemoPage() {
           meeting_type: meetingType,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      const data: DiscoverResult = await res.json();
+      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
       setResult(data);
-      setStep("results");
+
+      if (autoDeploy) {
+        // Auto-apply the top-scored match without showing Step 2
+        setApplying(true);
+        setApplyError(null);
+        try {
+          let body: Record<string, unknown>;
+          if (data.recommendation === "existing" && data.existing_matches.length > 0) {
+            body = {
+              selection_type: "existing",
+              template_name: data.existing_matches[0].template_name,
+              project_id: selectedProjectId,
+            };
+          } else {
+            body = {
+              selection_type: "custom",
+              demo_name: data.custom_recommendation.suggested_name,
+              description: data.custom_recommendation.description,
+              project_id: selectedProjectId,
+              rules: data.custom_recommendation.rules.map((r) => ({ rule_type: r.rule_type })),
+            };
+          }
+          const applyRes = await fetch("/api/demo/apply", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          });
+          const applyData = await applyRes.json();
+          if (!applyRes.ok) throw new Error(applyData.error ?? `HTTP ${applyRes.status}`);
+          setApplied(applyData);
+          setStep("applied");
+        } catch (err) {
+          setApplyError(String(err));
+          setStep("results"); // fall back to manual review on error
+        } finally {
+          setApplying(false);
+        }
+      } else {
+        setStep("results");
+      }
     } catch (err) {
       setDiscoverError(String(err));
     } finally {
@@ -691,6 +731,30 @@ export default function DemoPage() {
                 )}
               </div>
 
+              {/* Auto-deploy toggle */}
+              <div className="flex items-center justify-between bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-200">Auto-deploy best match</p>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Skip review — Claude picks and deploys the top match automatically
+                  </p>
+                </div>
+                <button
+                  onClick={() => setAutoDeploy((v) => !v)}
+                  role="switch"
+                  aria-checked={autoDeploy}
+                  className={`relative w-10 h-6 rounded-full transition-colors shrink-0 ml-4 ${
+                    autoDeploy ? "bg-emerald-600" : "bg-gray-600"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${
+                      autoDeploy ? "translate-x-5" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
+
               {discoverError && (
                 <div className="bg-red-900/40 border border-red-700 rounded-xl px-4 py-3 text-sm text-red-300">
                   {discoverError}
@@ -702,7 +766,13 @@ export default function DemoPage() {
                 disabled={discovering || !useCase.trim()}
                 className="w-full bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl px-6 py-3 text-sm font-medium transition-colors"
               >
-                {discovering ? "Analyzing with Claude…" : "Find Matching Templates →"}
+                {discovering
+                  ? applying
+                    ? "Deploying…"
+                    : "Analyzing with Claude…"
+                  : autoDeploy
+                  ? "Analyze & Auto-Deploy →"
+                  : "Find Matching Templates →"}
               </button>
             </div>
           )}
