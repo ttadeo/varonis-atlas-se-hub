@@ -351,8 +351,15 @@ function ResourcePill({ resource, onClick }: { resource: AtlasResource; onClick:
 
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
-type Step = "input" | "results";
+type Step = "input" | "results" | "applied";
 type Mode = "provision" | "chain";
+
+interface ApplyResult {
+  success: boolean;
+  selection_type: string;
+  demo_name: string;
+  message: string;
+}
 
 export default function DemoPage() {
   const [mode, setMode] = useState<Mode>("provision");
@@ -368,6 +375,9 @@ export default function DemoPage() {
   const [result, setResult] = useState<DiscoverResult | null>(null);
 
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [applying, setApplying] = useState(false);
+  const [applyError, setApplyError] = useState<string | null>(null);
+  const [applied, setApplied] = useState<ApplyResult | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
 
   // ── Project selection (shared between provision + chain) ───────────────────
@@ -448,13 +458,66 @@ export default function DemoPage() {
 
   // ── Reset ───────────────────────────────────────────────────────────────────
 
+  async function handleApplyExisting(templateName: string) {
+    setApplying(true);
+    setApplyError(null);
+    try {
+      const res = await fetch("/api/demo/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          selection_type: "existing",
+          template_name: templateName,
+          project_id: selectedProjectId,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setApplied(data);
+      setStep("applied");
+    } catch (err) {
+      setApplyError(String(err));
+    } finally {
+      setApplying(false);
+    }
+  }
+
+  async function handleApplyCustom() {
+    if (!result) return;
+    setApplying(true);
+    setApplyError(null);
+    try {
+      const res = await fetch("/api/demo/apply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          selection_type: "custom",
+          demo_name: result.custom_recommendation.suggested_name,
+          description: result.custom_recommendation.description,
+          project_id: selectedProjectId,
+          rules: result.custom_recommendation.rules.map((r) => ({ rule_type: r.rule_type })),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setApplied(data);
+      setStep("applied");
+    } catch (err) {
+      setApplyError(String(err));
+    } finally {
+      setApplying(false);
+    }
+  }
+
   function reset() {
     setStep("input");
     setUseCase("");
     setIndustry("Healthcare");
     setMeetingType("Discovery");
     setResult(null);
+    setApplied(null);
     setSelectedTemplate(null);
+    setApplyError(null);
     setDiscoverError(null);
   }
 
@@ -513,6 +576,8 @@ export default function DemoPage() {
               <span className={step === "input" ? "text-white font-medium" : ""}>1. Use Case</span>
               <span>›</span>
               <span className={step === "results" ? "text-white font-medium" : ""}>2. Template Match</span>
+              <span>›</span>
+              <span className={step === "applied" ? "text-white font-medium" : ""}>3. Provisioned</span>
             </div>
           )}
 
@@ -689,12 +754,21 @@ export default function DemoPage() {
                           </p>
                         </div>
                         {m.match_score >= 75 && (
-                          <button
-                            onClick={() => setSelectedTemplate(m.template_name)}
-                            className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
-                          >
-                            How to Apply →
-                          </button>
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => setSelectedTemplate(selectedTemplate === m.template_name ? null : m.template_name)}
+                              className="shrink-0 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                            >
+                              How to Apply
+                            </button>
+                            <button
+                              onClick={() => handleApplyExisting(m.template_name)}
+                              disabled={applying}
+                              className="shrink-0 bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 text-white rounded-lg px-3 py-1.5 text-xs font-medium transition-colors"
+                            >
+                              {applying ? "Applying…" : "Apply This →"}
+                            </button>
+                          </div>
                         )}
                       </div>
                       <ScoreBar score={m.match_score} />
@@ -773,6 +847,12 @@ export default function DemoPage() {
                 </div>
               </div>
 
+              {applyError && (
+                <div className="bg-red-900/40 border border-red-700 rounded-xl px-4 py-3 text-sm text-red-300">
+                  {applyError}
+                </div>
+              )}
+
               <button
                 onClick={reset}
                 className="text-sm text-gray-500 hover:text-gray-300 transition-colors"
@@ -782,6 +862,47 @@ export default function DemoPage() {
             </div>
           )}
 
+          {/* ── Step 3: Applied ───────────────────────────────────────────── */}
+          {step === "applied" && applied && (
+            <div className="text-center py-16 space-y-6">
+              <div className="text-6xl">
+                {applied.success ? "✅" : "❌"}
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-white mb-2">
+                  {applied.success ? "Demo Environment Ready" : "Provisioning Failed"}
+                </h2>
+                <p className="text-gray-400 text-sm max-w-lg mx-auto">
+                  {applied.message}
+                </p>
+              </div>
+
+              {applied.success && (
+                <div className="bg-gray-800 border border-gray-700 rounded-xl px-6 py-4 text-left max-w-md mx-auto">
+                  <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">Template Provisioned</p>
+                  <p className="font-medium text-white">{applied.demo_name}</p>
+                  <p className="text-xs text-gray-400 mt-1">
+                    Type: {applied.selection_type === "existing" ? "Existing template applied" : "Custom template created & applied"}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex gap-3 justify-center pt-4">
+                <button
+                  onClick={reset}
+                  className="bg-gray-700 hover:bg-gray-600 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-colors"
+                >
+                  Provision Another
+                </button>
+                <Link
+                  href="/meeting"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-5 py-2.5 text-sm font-medium transition-colors"
+                >
+                  Go to Meeting Readiness →
+                </Link>
+              </div>
+            </div>
+          )}
 
           </> /* end provision mode */}
         </div>
