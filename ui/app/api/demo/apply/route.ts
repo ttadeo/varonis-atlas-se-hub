@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 const N8N_APPLY_URL =
   process.env.N8N_DEMO_APPLY_URL ??
   "https://ttadeo.app.n8n.cloud/webhook/atlas-demo-apply";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const body = await req.json();
 
   // selection_type: "existing" | "custom"

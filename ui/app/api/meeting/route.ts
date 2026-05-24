@@ -3,6 +3,7 @@ import OpenAI from "openai";
 import neo4j from "neo4j-driver";
 import { NextRequest, NextResponse } from "next/server";
 import { randomUUID } from "crypto";
+import { requireAuth } from "@/lib/auth";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -608,6 +609,9 @@ async function createSession(
 // ─── Main route handler ───────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const body = await req.json();
     const {
@@ -1006,6 +1010,9 @@ export async function POST(req: NextRequest) {
 // ─── Session management endpoints ────────────────────────────────────────────
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const { searchParams } = new URL(req.url);
   const action = searchParams.get("action");
   const userId = searchParams.get("userId") ?? "anonymous";
@@ -1141,6 +1148,9 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const { searchParams } = new URL(req.url);
   const sessionId = searchParams.get("sessionId");
 

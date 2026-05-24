@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
+import { requireAuth } from "@/lib/auth";
 
 // Allowed slugs — whitelist to prevent path traversal
 const ALLOWED_SLUGS = new Set([
@@ -19,9 +20,12 @@ const ALLOWED_SLUGS = new Set([
 ]);
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ slug: string }> }
 ) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const { slug } = await params;
 
   if (!ALLOWED_SLUGS.has(slug)) {

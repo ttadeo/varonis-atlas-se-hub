@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import neo4j from "neo4j-driver";
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 // ─── Clients ──────────────────────────────────────────────────────────────────
 
@@ -175,6 +176,9 @@ interface IncomingAttachment {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   try {
     const { question, history = [], attachments = [] }: {
       question: string;

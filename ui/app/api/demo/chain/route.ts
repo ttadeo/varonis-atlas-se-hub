@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 const ATLAS_API_URL = "https://api.prod.alltrue-be.com";
 
@@ -19,7 +20,10 @@ async function getAtlasJWT(): Promise<string> {
   return data.access_token as string;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   if (!process.env.ATLAS_API_KEY) {
     return NextResponse.json(
       { error: "ATLAS_API_KEY not configured. Add it as a Vercel environment variable." },

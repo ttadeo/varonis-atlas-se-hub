@@ -1,5 +1,6 @@
 import neo4j from "neo4j-driver";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 function getNeo4jDriver() {
   return neo4j.driver(
@@ -9,7 +10,10 @@ function getNeo4jDriver() {
   );
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const driver = getNeo4jDriver();
 
   try {

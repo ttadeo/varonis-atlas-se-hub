@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { requireAuth } from "@/lib/auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -36,6 +37,9 @@ async function fetchPage(url: string): Promise<string | null> {
 // POST /api/scrape-customer
 // body: { url: string, attendees: string }
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const { url, attendees } = await req.json();
   if (!url) return NextResponse.json({ error: "url required" }, { status: 400 });
 

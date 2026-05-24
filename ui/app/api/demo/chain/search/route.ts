@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { requireAuth } from "@/lib/auth";
 
 const client = new Anthropic();
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const { query, resources } = await req.json();
 
   if (!query || !Array.isArray(resources)) {

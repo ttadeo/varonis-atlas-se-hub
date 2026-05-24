@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 const GATEWAY_BASE_URL = process.env.ATLAS_GATEWAY_URL ?? "";
 const GATEWAY_ENDPOINT_ID = process.env.ATLAS_GATEWAY_ENDPOINT_ID ?? "tadeo-demo-openai";
@@ -50,6 +51,9 @@ const SCENARIO_PROMPTS: Record<string, { label: string; prompt: string }[]> = {
 // ─── POST /api/demo/chain/simulate ────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   if (!GATEWAY_BASE_URL) {
     return NextResponse.json(
       { error: "ATLAS_GATEWAY_URL is not configured. Add it as a Vercel environment variable." },

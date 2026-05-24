@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const webhookUrl = process.env.N8N_ARCHITECT_WEBHOOK_URL;
   if (!webhookUrl) {
     return NextResponse.json(

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 const ATLAS_API_URL = "https://api.prod.alltrue-be.com";
 
@@ -223,7 +224,10 @@ const SCENARIO_DEFINITIONS: ScenarioDefinition[] = [
 
 // ─── GET — return scenario catalog ────────────────────────────────────────────
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   return NextResponse.json(
     SCENARIO_DEFINITIONS.map(({ id, name, description, resources }) => ({
       id,
@@ -239,6 +243,9 @@ export async function GET() {
 // Body: { scenario_id: string, project_id: string }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   if (!process.env.ATLAS_API_KEY) {
     return NextResponse.json({ error: "ATLAS_API_KEY not configured" }, { status: 503 });
   }

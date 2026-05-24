@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 
 const ATLAS_API_URL = "https://api.prod.alltrue-be.com";
 
@@ -20,6 +21,9 @@ async function getAtlasJWT(): Promise<string> {
 }
 
 export async function GET(req: NextRequest) {
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+
   const { searchParams } = new URL(req.url);
   const resourceId = searchParams.get("id");
 
