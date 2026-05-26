@@ -13,12 +13,21 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: unknown;
+  let raw: { audience?: string; industry?: string; useCase?: string; techStack?: string; concerns?: string[] };
   try {
-    body = await req.json();
+    raw = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
+
+  // Truncate free-text fields to prevent runaway Claude output / timeouts
+  const body = {
+    audience: raw.audience ?? "customer",
+    industry: raw.industry ?? "",
+    useCase: (raw.useCase ?? "").slice(0, 400),
+    techStack: (raw.techStack ?? "").slice(0, 300),
+    concerns: raw.concerns ?? [],
+  };
 
   try {
     const res = await fetch(webhookUrl, {
