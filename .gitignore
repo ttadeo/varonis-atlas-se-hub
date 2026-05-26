@@ -24,6 +24,12 @@ scraper/output/openapi_reference/debug/
 # Personal files
 SKILLS_RESUME.md
 
+# Security reports — keep local only
+SECURITY_FIX_2026-05-24.md
+SECURITY_FIX_2026-05-24.pdf
+Atlas_Security_Review.md
+Atlas_Security_Review.pdf
+
 # macOS
 .DS_Store
 
