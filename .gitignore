@@ -21,6 +21,9 @@ scraper/output/openapi_reference/debug/
 .env.local
 .env.*.local
 
+# Personal files
+SKILLS_RESUME.md
+
 # macOS
 .DS_Store
 

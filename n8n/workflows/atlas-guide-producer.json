@@ -1,0 +1,180 @@
+{
+  "name": "Atlas - Technical Guide Producer",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atlas-guide-producer",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -528,
+        -16
+      ],
+      "id": "43a68112-7c34-4632-83c4-2fe5bb2ee27d",
+      "name": "Webhook",
+      "webhookId": "20ee4da0-f8a9-481d-9354-b21f89314bfa"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ttadeo.app.n8n.cloud/webhook/atlas-rag-query",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "ngrok-skip-browser-warning",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "question",
+              "value": "=={{ $json.body.topic + ' ' + $json.body.guideType + ' Atlas ' + $json.body.techStack }}"
+            },
+            {
+              "name": "sessionId",
+              "value": "=={{ $json.body.topic }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        -208,
+        -16
+      ],
+      "id": "2ee2fb00-bd07-4164-b79c-73c25da3b6fa",
+      "name": "RAG Search"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Generate a {{ $('Webhook').item.json.body.guideType }} technical guide.\n\nGUIDE DETAILS:\n- Topic: {{ $('Webhook').item.json.body.topic }}\n- Audience: {{ $('Webhook').item.json.body.audience === 'customer' ? 'Customer-Facing (professional tone, business value focus, avoid internal jargon)' : 'Internal SE (technical depth, implementation details, include config notes)' }}\n- Industry: {{ $('Webhook').item.json.body.industry || 'Not specified' }}\n- Tech Stack: {{ $('Webhook').item.json.body.techStack || 'Not specified' }}\n- Additional Context: {{ $('Webhook').item.json.body.customerContext || 'None provided' }}\n\nATLAS DOCUMENTATION:\n{{ $('RAG Search').item.json.answer }}\n\nWrite a complete, polished technical guide in markdown. Be specific — reference the actual tech stack and industry provided. Do not use generic filler content.\n\nReturn the guide field as JSON:\n{ \"guide\": \"<full markdown guide here>\" }\n"
+            }
+          ]
+        },
+        "options": {
+          "system": "You are an expert Varonis Atlas AI Security technical writer. You produce polished, accurate, and well-structured technical guides for Sales Engineers at Varonis.\n\nYour guides are:\n- Grounded in the Atlas documentation provided — never fabricate features or capabilities\n- Specific to the customer's industry, tech stack, and use case when provided\n- Written in clear, professional prose with appropriate markdown formatting\n- Structured with logical sections, tables where useful, and actionable recommendations\n\nAlways use the Atlas documentation provided in the user message as your primary source of truth. If the documentation doesn't cover something, say so rather than guessing.\n",
+          "maxTokens": 8192,
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -16
+      ],
+      "id": "ff446267-1ef0-4bc9-ace7-c30e3ee6060b",
+      "name": " Generate Guide",
+      "credentials": {
+        "anthropicApi": {
+          "id": "WioShNHmyXcJmy8m",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        560,
+        -64
+      ],
+      "id": "f4f1b64b-bcb6-4023-8427-cbf72f38aba1",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.content[0].text;\nconst cleaned = raw.replace(/^```json\\n/, '').replace(/\\n```$/, '').trim();\nconst parsed = JSON.parse(cleaned);\nreturn [{ json: { guide: parsed.guide } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        352,
+        48
+      ],
+      "id": "9cf98b93-b51d-4ebf-97b9-a13e94c8d680",
+      "name": "Format Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "RAG Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RAG Search": {
+      "main": [
+        [
+          {
+            "node": " Generate Guide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Generate Guide": {
+      "main": [
+        [
+          {
+            "node": "Format Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Response": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "bd978a97-f189-4ef7-b68e-2d60677f3060",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
+  },
+  "id": "uv8tpRkMufqTYAyZ",
+  "tags": []
+}

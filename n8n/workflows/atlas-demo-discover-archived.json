@@ -1,0 +1,154 @@
+{
+  "name": "Atlas Demo Provisioning - Discover",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atlas-demo-discover",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -336,
+        0
+      ],
+      "id": "f6ff5ce9-daa3-423e-b923-1237ab12d370",
+      "name": "Webhook",
+      "webhookId": "990ef56d-f974-4354-812c-5323deed2d12"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Customer Use Case: {{ $('Webhook').item.json.body.use_case }}\nIndustry: {{ $('Webhook').item.json.body.industry }}\nMeeting Type: {{ $('Webhook').item.json.body.meeting_type }}\n",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an Atlas AI Security Platform demo specialist. Given a customer use case, you analyze it and recommend Atlas runtime protection templates.  You MUST return ONLY valid JSON — no markdown, no explanation, just the JSON object.  Atlas has these existing templates (use exact names): - \"PII & PHI Protection\" — rules: PII Detection, Sensitive Data Masking, HIPAA Content Filter - \"Financial Data Guard\" — rules: PII Detection, Data Leakage Prevention, Sensitive Data Masking - \"Prompt Injection Defense\" — rules: Code Injection Prevention, Prompt Injection Detection, Banned Substrings - \"Shadow AI Monitor\" — rules: AI Usage Logging, Anomaly Detection, Unauthorized Model Alert - \"Executive AI Governance\" — rules: PII Detection, Data Leakage Prevention, AI Usage Logging, Compliance Tagging  Return this exact JSON structure: {   \"existing_matches\": [     {       \"template_name\": \"<exact template name from list above>\",       \"match_score\": <integer 0-100>,       \"match_reason\": \"<one sentence why this fits>\",       \"rules_included\": [\"<rule1>\", \"<rule2>\"]     }   ],   \"custom_recommendation\": {     \"suggested_name\": \"<custom template name>\",     \"description\": \"<one sentence describing the custom template>\",     \"rules\": [       { \"rule_type\": \"<rule name>\", \"reason\": \"<why this rule applies>\" }     ]   },   \"recommendation\": \"<existing or custom>\",   \"recommendation_reason\": \"<one sentence explaining the overall recommendation>\" }  Include 2-3 existing_matches ranked by score. Always include a custom_recommendation even if existing templates fit well."
+            }
+          ]
+        },
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -128,
+        0
+      ],
+      "id": "45eff587-f514-4be0-9274-85b0a0b0f18b",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        -208,
+        208
+      ],
+      "id": "3978718e-eba5-4a21-a8d4-582a5de73457",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "WioShNHmyXcJmy8m",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text;\nconst cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\nreturn [{ json: JSON.parse(cleaned) }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        224,
+        0
+      ],
+      "id": "d4aeaab4-9069-400b-9099-ab4f4d24cf34",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        432,
+        0
+      ],
+      "id": "6165146f-6b53-499b-835e-6983d2d2ad1b",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b07889ee-dde3-4037-9c87-cdd36e29bc70",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
+  },
+  "id": "GTKEaTlin6tVAWv5",
+  "tags": []
+}
