@@ -1,0 +1,80 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+100,V3.3.0 — Claude Code & Cursor Runtime Enforcement,version_check,A customer's developers are using Claude Code and Cursor as AI coding assistants. What does Atlas V3.3.0 now provide for these tools?,"I don't have documentation on Atlas V3.3.0 or specific features for Claude Code and Cursor in that version. The release notes I have cover V3.0.13 and don't reference those tools or that version number.
+
+What I can tell you from current documentation:
+
+- **Claude** is supported — Atlas provides LLM Endpoint coverage for its flagship models, enabling guardrails, pen testing, inventory inclusion, and AI Usage monitoring
+- **For any AI coding assistant** (like Cursor or Claude Code), if it routes LLM calls through the **Atlas AI Gateway**, Atlas can intercept prompts, apply PII/credential detection guardrails, block or redact sensitive data before it reaches the LLM provider, and create Issues for the security team
+- **Code repository scanning** includes Jupyter notebooks, which are key locations for AI development activity
+
+If a customer is asking about V3.3.0 specifically, I'd recommend checking the latest release notes directly or reaching out to the Atlas product team for current version details.
+
+**Sources:** Atlas FAQ — Sales Engineers (SE-Level Technical Questions), AI Data Leakage — Real-World Examples and Atlas Prevention, What's New in V3.0.13",0.667,1.0,0.556,1.0,0.741
+100,V3.3.0 — AI Usage Policies,version_check,What are AI Usage Policies in Atlas V3.3.0 and how do they relate to SASE integrations like Cloudflare and Netskope?,"## AI Usage Policies in Atlas V3.3.0
+
+### What They Are
+AI Usage Policies are a new capability introduced in V3.3.0 specifically for **tracking user AI activity that passes through SASE integrations** — primarily Cloudflare and Netskope. They provide governance and alerting over browser-based AI tool consumption at the session level.
+
+### What's Included in V3.3.0
+- **New default policy** — out-of-the-box coverage with no configuration required
+- **Catalog policies** — pre-built policies for common AI usage scenarios
+- **Custom AI services** — ability to add non-standard or internal AI services for activity tracking
+
+### How the SASE Integration Works
+Cloudflare and Netskope act as ZTNA/SASE proxies sitting between employees and the internet. When a user accesses ChatGPT, Claude, or other AI services through the corporate network:
+1. The SASE tool generates session-level logs
+2. Those logs are pushed into Atlas (e.g., via Cloudflare LogPush)
+3. Atlas parses them to identify **which users are accessing which AI services**
+
+### Key Technical Caveat to Know for SE Conversations
+This is **strictly session-level visibility** — the SASE logs do not provide prompt-level detail. If a prospect needs full prompt/response monitoring, that requires the AI Gateway path (embedded nginx proxy, SDK, or API gateway integration), not the SASE path.
+
+### Positioning Note
+This is distinct from Atlas's classic GenAI runtime monitoring. AI Usage Policies cover the ""shadow AI"" problem — employees using unsanctioned external AI tools — while the AI Gateway handles governed, internal LLM traffic.
+
+---
+
+**Sources:** What's New in V3.3.0 (release notes), Atlas FAQ — AI Usage, Atlas SIEM and Service Management Integrations",1.0,1.0,0.697,1.0,0.899
+100,V3.3.0 — MCP Enhancements,version_check,What new MCP server registration capabilities were added in Atlas V3.3.0?,"## New MCP Server Registration Capabilities in Atlas V3.3.0
+
+Two new registration capabilities were added in V3.3.0:
+
+### 1. STDIO MCP Server Registration
+Atlas now supports registering MCP Servers that use the **STDIO transport** — enabling discovery and governance of locally-running MCP servers, not just network-accessible ones.
+
+### 2. MCP Server Registration with OAuth Credentials
+Atlas now supports registering MCP Servers that require **OAuth-based authentication**, expanding connectivity to MCP servers that use OAuth for access control.
+
+---
+
+**Operational context for SEs:** These additions expand the scope of what can be brought into Atlas MCP inventory. Once registered (regardless of transport or auth method), the server goes through the same discovery workflow — MCP Inspector connects, retrieves capabilities, and syncs tools, prompts, and resources into the Catalog for governance. Remember: registration provides visibility, but runtime allowlisting still requires Virtual MCPs and MCP Quarantine configuration separately.
+
+**Sources:** What's New in V3.3.0",1.0,0.667,0.25,1.0,0.639
+100,V3.3.0 — AI Investigation Access Events,version_check,What is the new Access Events tab in AI Investigation and what data does it surface?,"## Access Events Tab in AI Investigation
+
+The **Access Events tab** was introduced in **v3.3.0** as a new tab within AI Investigation. It's purpose-built for reviewing **user AI activity collected through SASE integrations** — specifically integrations with **Cloudflare** and **Netskope**.
+
+### What it surfaces:
+It gives security teams visibility into AI access activity that flows through SASE/SSE infrastructure — essentially capturing what users are doing with AI tools at the network layer, rather than only at the application/API layer (which is where the AI Gateway proxy captures data).
+
+### SE Positioning Note:
+This is a key differentiator for customers who need coverage of **unmanaged or shadow AI usage** — traffic that never routes through the Atlas AI Gateway because the org doesn't control those apps. SASE integrations like Cloudflare and Netskope let Atlas see that activity anyway, and the Access Events tab is where investigators go to review it.
+
+I don't have full documentation on the specific fields, filters, or data schema surfaced within the Access Events tab beyond what's noted above.
+
+**Sources:** What's New in V3.3.0 (release notes), AI Investigation (feature documentation)",1.0,1.0,0.571,1.0,0.857
+100,V3.3.0 — What's New Summary,version_check,What are the most significant new features introduced in Atlas V3.3.0?,"The retrieved documentation for V3.3.0 only shows the release date (May 8, 2026) but contains no feature details — the content appears to be empty or unpopulated in the documentation context provided.
+
+I don't have documentation on the specific features introduced in V3.3.0.
+
+For the most recent feature-rich release notes I can speak to, **V3.0.12** (July 18, 2025) introduced:
+
+- **Model Scan** — Expanded support for scanning model packages and artifacts
+- **Model Scan Reports** — Updated reporting
+- **Inventory Technologies** — Redesigned tab for improved AI Inventory navigation and management
+- **Sensitive Data Issues** — Dedicated section with dependency graph visibility for AI Systems with vulnerable dataset resources
+- **Runtime Policies** — New LLM-as-a-Judge and Banned Substring guardrail rules
+
+For V3.3.0 specifics, I'd recommend checking the live Atlas documentation or release notes directly.
+
+**Sources:** What's New in V3.3.0, What's New in V3.0.12",0.333,0.0,0.833,1.0,0.389

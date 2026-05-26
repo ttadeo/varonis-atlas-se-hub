@@ -1,0 +1,191 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+99,V3.2.0 — AI Runtime Protection,version_check,What is AI Runtime Protection in Atlas and how does it differ from the AI Gateway?,"## AI Runtime Protection vs. AI Gateway in Atlas
+
+These two terms are closely related — here's how to think about them for customer conversations:
+
+---
+
+### AI Runtime Protection
+
+AI Runtime Protection is the **broader capability** — it's the system that inspects and enforces policy on LLM inputs (prompts) and outputs (responses) in real time. It encompasses:
+
+- **Policy rule evaluation** — rules that can log, alert, block, or modify prompts/responses
+- **Synchronous enforcement** — block/modify actions happen inline before the prompt reaches the LLM
+- **Asynchronous enforcement** — alert/log actions happen in the background without adding latency
+- **Guardrails** — the inspection engine that checks for PII, credentials, sensitive topics, etc.
+
+All processing happens **entirely on the customer data plane** — no unencrypted LLM data leaves the customer's environment.
+
+---
+
+### AI Gateway
+
+The AI Gateway is the **primary deployment mechanism** for AI Runtime Protection. It's an nginx-based proxy running in a container that:
+
+- Sits between the application and the LLM endpoint
+- Intercepts every prompt before it reaches the LLM
+- Routes traffic through the rule orchestrator and policy engine
+- Returns blocks/modifications inline or passes clean traffic through
+
+**Key point:** The proxy isn't the only path. You can also invoke guardrails **directly** via SDK or by integrating with an existing API gateway — without routing through the proxy at all.
+
+---
+
+### The Simple SE Framing
+
+| | AI Runtime Protection | AI Gateway |
+|---|---|---|
+| **What it is** | The capability / policy engine | The proxy deployment model |
+| **Scope** | Broader — includes all runtime enforcement | Specific — the nginx proxy component |
+| **Deployment** | Proxy, SDK, or API gateway integration | Proxy only |
+
+Think of it this way: **the AI Gateway is how you deploy AI Runtime Protection** in the most common architecture. But Runtime Protection can also be consumed without the proxy.
+
+---
+
+**Sources:** AI Runtime Protection (documentation), AI Data Leakage — Real-World Examples and Atlas Prevention (documentation)",1.0,1.0,0.704,1.0,0.901
+99,V3.2.0 — AI Runtime Protection,version_check,A customer wants to protect AI workloads running on AWS Bedrock. What does Atlas support for Bedrock in V3.2.0?,"## Atlas Support for AWS Bedrock
+
+Atlas supports AWS Bedrock across **two core features**:
+
+---
+
+### 1. 🔀 AI Gateway Runtime
+- Your application routes Bedrock API calls through the **Atlas AI Gateway proxy** instead of calling AWS Bedrock directly
+- The Atlas **data plane** intercepts the request, evaluates runtime policies, and takes configured actions
+- If allowed, Atlas **re-signs the request** and forwards it to AWS Bedrock
+- Supports two authentication methods:
+  - **Access Key credentials** — Atlas signs requests using provided AWS credentials
+  - **Assumed Role** — Atlas data plane assumes the IAM role you provide to invoke Bedrock on your behalf
+- *Note: When using the SDK, Bedrock authentication is not required by Atlas Runtime*
+
+---
+
+### 2. 🔍 Pentests
+- Atlas supports Bedrock invocation from the **control plane** specifically for Pentests
+- When Bedrock invocation is enabled during discovery stack installation, Atlas can **automatically provision the required IAM role path** for control-plane Bedrock invocation
+
+---
+
+### ⚠️ Key Architectural Distinction to Know for SEs
+
+| Feature | Invocation Origin |
+|---|---|
+| Gateway Runtime | Atlas **data plane** |
+| Pentests | Atlas **control plane** |
+
+This distinction matters because **the IAM trust relationship must be configured to match whichever feature(s) the customer plans to use** — a common gotcha during deployment.
+
+---
+
+**Sources:** AWS Bedrock (Atlas Documentation)",1.0,1.0,0.583,1.0,0.861
+99,V3.2.0 — MCP Security,version_check,"What is MCP in the context of AI security, and what controls does Atlas provide for MCP servers?","## MCP Security in Atlas
+
+### What MCP Is (Security Context)
+
+Model Context Protocol (MCP) is a mechanism that allows AI agents to discover and invoke external tools via MCP Servers. The core security challenge: **a single external MCP URL can expose dozens of tools through `list_tools`, and that toolset can change over time — without a traditional deployment process.** This fundamentally expands an agent's attack surface in ways that are hard to track manually.
+
+---
+
+### What Atlas Provides
+
+Atlas treats MCP Servers as **first-class inventory resources** — the same governance workflows used for other AI assets apply here. Controls are organized across six areas:
+
+| Area | What It Does |
+|------|--------------|
+| **Catalog** | Inventory of MCP Servers and their exposed tools, prompts, and resources |
+| **Virtual MCPs** | Curated, approved toolsets for specific workflows |
+| **Activity** | Monitor MCP usage and investigate incidents |
+| **Policies** | Governance rules applied to MCP usage |
+| **Issues** | Surface risks and violations |
+| **Reports** | Visibility across MCP posture |
+
+---
+
+### Discovery Methods
+
+Atlas surfaces MCP usage two ways:
+- **Code Scanning** — finds MCP connections and server references in code
+- **MCP Inspector** — acts as an MCP client, connects to a configured server, runs discovery, and syncs everything into inventory
+
+Once in inventory, MCP Servers benefit from **ownership assignment, review status, risk classification, and AI-BOM inclusion**.
+
+---
+
+### The Core Value Prop for SEs
+
+Atlas makes MCP usage **visible, governable, and optionally enforceable** — addressing ""shadow MCPs"" (unmanaged servers in use) and tool drift (toolsets changing without notice). This is a meaningful differentiator as agentic AI adoption accelerates.
+
+**Sources:** AI MCP — MCP Security, MCP Security Handbook, AI MCP — MCP Server, AI MCP — Discover MCP usage",1.0,1.0,0.667,1.0,0.889
+99,V3.2.0 — MCP Security,version_check,A customer is deploying AI agents that use MCP to call external tools. What are the key security risks and how does Atlas address them?,"## MCP Security Risks and Atlas Coverage
+
+### Why MCP Changes the Threat Model
+
+MCP fundamentally expands what an agent can do — and that expansion happens dynamically. A single external MCP URL can expose **dozens of tools via `list_tools`**, and that tool set can change over time without any traditional deployment process. This means the security perimeter is no longer static.
+
+The core risks for a customer deploying MCP-connected agents:
+
+- **Uncontrolled tool exposure** — agents may access tools the security team never reviewed or approved
+- **Dynamic attack surface** — the tools available to an agent can change silently, making point-in-time reviews insufficient
+- **No traditional governance checkpoint** — MCP bypasses the normal software deployment process, so standard controls don't apply
+
+---
+
+### How Atlas Addresses This
+
+Atlas's MCP protections are built around three principles: **visibility, governance, and optional enforcement**.
+
+| Capability | What It Means |
+|---|---|
+| **Visibility** | Atlas makes MCP tool usage observable — you can see what tools agents are calling via external MCP endpoints |
+| **Governance** | Policy controls let you define what MCP tool access is permissible |
+| **Enforcement** | Optionally block or restrict MCP tool calls that violate policy |
+
+The AI Gateway sits inline between applications and LLM endpoints, intercepting traffic before it reaches the model or external tool. This same architecture applies to MCP-connected agents.
+
+---
+
+### Key SE Talking Point
+
+> ""Your security team approved the agent. Did they approve every tool that MCP server exposes — and every future tool it might add?""
+
+That gap — between what was reviewed and what's actually running — is exactly what Atlas closes.
+
+**Sources:** MCP Security Handbook, AI Data Leakage — Real-World Examples and Atlas Prevention, Atlas Competitive Categories",1.0,1.0,0.5,1.0,0.833
+99,V3.2.0 — What's New,version_check,What are the most significant new features introduced in Atlas V3.2.0?,"The retrieved documentation for V3.2.0 only shows the release date (April 24, 2026) but does not include any feature details — the content appears to be empty or truncated in what was retrieved.
+
+I don't have full documentation on the specific features introduced in V3.2.0.
+
+For accurate release notes, I'd recommend checking the Atlas documentation portal directly under the V3.2.0 release notes page.
+
+**Sources:** What's New in V3.2.0 (Release Notes)",0.0,0.0,0.778,1.0,0.259
+99,3.20 — AI Investigation,version_check,How does the AI Investigation feature in Atlas help security teams respond to incidents?,"## AI Investigation for Incident Response
+
+AI Investigation gives security teams a structured, end-to-end workflow to move from ""something looks wrong"" to ""here is exactly what happened"" — without guesswork.
+
+### Detection to Evidence in One Workflow
+
+The feature connects five layers that support a complete incident response flow:
+
+1. **Dashboard** — Spot anomalies in quality and performance trends. Identify suspicious time intervals and drill in directly from the chart.
+2. **Issues** — Alert-driven issues surface automatically, giving teams a prioritized triage queue so nothing gets missed.
+3. **Events** — Inspect the individual runtime events that triggered an alert — see exactly which requests fired a policy and what the outcome was (blocked, modified, tokenized, etc.).
+4. **Sessions** — Reconstruct the full conversation or agent flow in context — prompts, responses, tool calls, arguments passed, and policy interventions — in chronological order.
+5. **Reports** — Export issue history for post-incident review, compliance evidence, or stakeholder reporting.
+
+### Specific Questions It Can Answer During an IR
+
+- Are jailbreak attempts increasing for a specific AI system?
+- What exact request triggered the alert?
+- What happened in the full session leading up to the event?
+- Which tools were available, which were called, and with what arguments?
+- Was content blocked, modified, or otherwise changed by runtime protections?
+- Did latency or token usage spike around the time of the incident?
+
+### Why It Matters Operationally
+
+- Turns runtime protection from a black box into a **verifiable system of record**
+- Supports **faster detection and investigation** of risky runtime behavior
+- Provides **concrete evidence of control effectiveness** — useful for compliance and governance, not just security response
+
+**Sources:** AI Investigation Handbook, AI Investigation (platform documentation)",1.0,1.0,0.8,1.0,0.933

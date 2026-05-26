@@ -1,0 +1,65 @@
+lesson_id,lesson_title,question_type,question,answer,answer_relevance,context_relevance,groundedness,safety_score,avg_score
+100,V3.3.0 — Claude Code & Cursor Runtime Enforcement,version_check,A customer's developers are using Claude Code and Cursor as AI coding assistants. What does Atlas V3.3.0 now provide for these tools?,"The V3.3.0 release notes page exists in the documentation but contains no feature details — it only shows the release date of May 8, 2026 with no content listed underneath it.
+
+I don't have documentation on what specific features V3.3.0 introduces for Claude Code, Cursor, or AI coding assistants.
+
+For accurate V3.3.0 feature details, I'd recommend checking the Atlas release notes directly in the product docs or with your Varonis product team.
+
+**Sources:** What's New in V3.3.0",0.0,1.0,0.444,1.0,0.481
+100,V3.3.0 — AI Usage Policies,version_check,What are AI Usage Policies in Atlas V3.3.0 and how do they relate to SASE integrations like Cloudflare and Netskope?,"## AI Usage Policies in Atlas V3.3.0
+
+AI Usage Policies, introduced in V3.3.0, are a capability for **tracking and governing user AI activity** that passes through SASE integrations — specifically Cloudflare and Netskope.
+
+### What They Include
+
+- **A new default policy** — out-of-the-box coverage without custom configuration
+- **Catalog policies** — pre-built policy templates to accelerate deployment
+- **Custom AI service tracking** — ability to add organization-specific AI services for activity monitoring
+
+### How SASE Integration Works
+
+Atlas receives **log feeds from ZTNA/SASE tools** (like Cloudflare and Netskope) and parses that data to identify which users are accessing which AI services. This is **session-level visibility** — the SASE logs don't carry prompt-level detail, so you get user + service activity, not full prompt/response content.
+
+### SE Positioning Note
+
+This is distinct from the deeper GenAI observability Atlas provides through the AI Gateway (which captures prompt/response data with guardrails). AI Usage Policies via SASE is the **internet-facing, browser-based AI tool activity** layer — great for Shadow AI discovery and broad coverage without requiring app-level instrumentation.
+
+This makes Atlas compelling for customers who already have Cloudflare or Netskope deployed — Atlas can immediately start surfacing AI usage data from that existing investment.
+
+---
+
+**Sources:** What's New in V3.3.0 (Release Notes), Atlas FAQ — Sales Engineers (AI Usage section)",1.0,1.0,0.714,1.0,0.905
+100,V3.3.0 — MCP Enhancements,version_check,What new MCP server registration capabilities were added in Atlas V3.3.0?,"## MCP Server Registration — New in V3.3.0
+
+V3.3.0 added two new MCP server registration capabilities:
+
+1. **STDIO MCP Server Registration** — Support for registering MCP servers that communicate via standard input/output (STDIO transport), expanding beyond network-based server types.
+
+2. **MCP Server Registration with OAuth Credentials** — Ability to register MCP servers that require OAuth-based authentication, enabling Atlas to connect to and perform discovery on OAuth-protected MCP servers.
+
+Both additions expand the range of MCP server types that Atlas can register, discover, and govern through the Catalog.
+
+> **Quick Reminder:** Registration drives inventory and discovery — it does *not* automatically allowlist tools at runtime. That's controlled separately via Virtual MCPs and MCP Quarantine.
+
+**Sources:** What's New in V3.3.0 (Release Notes)",1.0,0.667,0.238,1.0,0.635
+100,V3.3.0 — AI Investigation Access Events,version_check,What is the new Access Events tab in AI Investigation and what data does it surface?,"## Access Events Tab in AI Investigation
+
+The **Access Events tab** was introduced in v3.3.0 as a new area within AI Investigation specifically designed to surface user AI activity collected through **SASE integrations**.
+
+### What it does:
+- Provides visibility into AI access events captured via SASE-layer integrations
+- Currently supported integrations include **Cloudflare** and **Netskope**
+
+### SE Context for Positioning:
+This is particularly valuable for customers who want visibility into **shadow AI usage** — employees accessing AI tools (like ChatGPT, Claude, etc.) through their browser or network, even when those tools aren't routed through the Atlas AI Gateway. SASE integrations allow Atlas to capture that activity at the network layer and surface it alongside gateway-controlled AI activity, giving security teams a more complete picture of AI usage across the organization.
+
+I don't have full documentation on the specific fields, filters, or event schema exposed in the Access Events tab beyond what's described above.
+
+**Sources:** What's New in V3.3.0 (release notes), AI Investigation (feature documentation)",1.0,1.0,0.5,1.0,0.833
+100,V3.3.0 — What's New Summary,version_check,What are the most significant new features introduced in Atlas V3.3.0?,"The retrieved documentation context for V3.3.0 only contains the release date (May 8, 2026) and section headers — the actual feature content wasn't included in what was retrieved.
+
+I don't have full documentation on the specific features introduced in V3.3.0.
+
+**Recommendation for your SE prep:** Pull the full V3.3.0 release notes directly from the Atlas docs portal to get the complete feature list before a customer conversation.
+
+**Sources:** What's New in V3.3.0 (Release Notes)",0.0,0.0,1.0,1.0,0.333
