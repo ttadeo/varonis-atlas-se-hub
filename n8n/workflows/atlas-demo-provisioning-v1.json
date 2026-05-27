@@ -21,10 +21,10 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/sdk/v1/auth/token",
+        "url": "https://api.prod.alltrue-be.com/v1/auth/issue-jwt-token",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"api_key\": \"y0Fp3Vg7ilEZPvn2Bo0nSW9qBg8SNsdk\"}\n\n",
+        "jsonBody": "={\"api_key\": \"zCnCRkSfcRUaoLBo5rtLiU4qsBOjTRvG\"}\n\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
