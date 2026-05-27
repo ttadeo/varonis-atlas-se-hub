@@ -24,3 +24,18 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+@media print {
+  /* Keep diagram heading and diagram together — prevent orphaned heading */
+  .print-diagram-section {
+    break-inside: avoid;
+  }
+  .print-diagram-section h2 {
+    break-after: avoid;
+  }
+  /* Prevent page break before SVG elements */
+  svg {
+    break-before: avoid;
+    break-inside: avoid;
+  }
+}

@@ -346,21 +346,25 @@ export default function ArchitectPage() {
           <div ref={printRef} className="px-8 py-6 max-w-4xl mx-auto space-y-8 print:px-0 print:py-0">
 
             {/* Print header */}
-            <div className="hidden print:block mb-6">
+            <div className="hidden print:block mb-4">
               <h1 className="text-2xl font-bold text-black">Atlas Reference Architecture</h1>
-              <p className="text-sm text-gray-600 mt-1">{form.industry} · {form.useCase}</p>
+              <p className="text-sm text-gray-600 mt-1">{form.industry}</p>
+              <div className="mt-2 text-xs text-gray-500 space-y-0.5">
+                <p><span className="font-semibold text-gray-700">Use Case:</span> {form.useCase}</p>
+                <p><span className="font-semibold text-gray-700">Tech Stack:</span> {form.techStack}</p>
+                <p><span className="font-semibold text-gray-700">Audience:</span> {form.audience === "customer" ? "Customer-Facing" : "Internal SE"}</p>
+              </div>
+              <hr className="mt-3 border-gray-300" />
             </div>
 
             {/* Diagram */}
-            <section>
-              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 print:text-black">
+            <section className="print:break-inside-avoid print-diagram-section">
+              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 print:text-black print:break-after-avoid">
                 Architecture Diagram
               </h2>
-              <MermaidDiagram code={result.diagram} />
-              {/* Print fallback — raw code if SVG doesn't render in PDF */}
-              <pre className="hidden print:block text-xs font-mono bg-gray-100 p-3 rounded mt-2 whitespace-pre-wrap">
-                {result.diagram}
-              </pre>
+              <div className="print:break-before-avoid">
+                <MermaidDiagram code={result.diagram} />
+              </div>
             </section>
 
             {/* Narrative */}
