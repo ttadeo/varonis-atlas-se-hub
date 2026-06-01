@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 // ─── Types ─────────────────────────────────────────────────────────────────────
 
@@ -85,6 +86,7 @@ export default function RuntimePage() {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState<SimResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   async function runSimulation(scenarioId: string) {
     setRunning(true);
@@ -127,7 +129,13 @@ export default function RuntimePage() {
           <h1 className="font-semibold text-white">AI Runtime Demo</h1>
           <p className="text-xs text-gray-400">Simulate AI traffic through Atlas Gateway — watch policy enforcement in action</p>
         </div>
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="ml-auto w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 hover:text-white text-xs font-bold transition-colors"
+          title="Help"
+        >?</button>
       </header>
+      <HelpPanel page="runtime" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <main className="flex-1 px-6 py-8 max-w-4xl mx-auto w-full">
 

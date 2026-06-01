@@ -4,6 +4,7 @@ import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -71,6 +72,7 @@ export default function GuidesPage() {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -147,9 +149,15 @@ export default function GuidesPage() {
 
       {/* Sidebar */}
       <div className="w-72 shrink-0 border-r border-gray-800 flex flex-col overflow-y-auto print:hidden">
-        <div className="border-b border-gray-800 px-4 py-4">
+        <div className="border-b border-gray-800 px-4 py-4 flex items-center">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">← Back</Link>
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="ml-auto w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 hover:text-white text-xs font-bold transition-colors"
+            title="Help"
+          >?</button>
         </div>
+        <HelpPanel page="guides" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
         <div className="px-4 py-5 space-y-5 flex-1">
           <div>

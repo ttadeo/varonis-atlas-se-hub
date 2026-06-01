@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 const MermaidDiagram = dynamic(() => import("@/components/MermaidDiagram"), { ssr: false });
 
@@ -62,6 +63,7 @@ export default function ArchitectPage() {
   const [generating, setGenerating] = useState(false);
   const [result, setResult] = useState<ArchitectResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -186,6 +188,11 @@ export default function ArchitectPage() {
       <div className="w-72 shrink-0 border-r border-gray-800 flex flex-col overflow-y-auto print:hidden">
         <div className="border-b border-gray-800 px-4 py-4 flex items-center gap-2">
           <Link href="/" className="text-gray-400 hover:text-white text-sm">← Back</Link>
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="ml-auto w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 hover:text-white text-xs font-bold transition-colors"
+            title="Help"
+          >?</button>
         </div>
 
         <div className="px-4 py-5 space-y-5 flex-1">
@@ -283,6 +290,8 @@ export default function ArchitectPage() {
           )}
         </div>
       </div>
+
+      <HelpPanel page="architect" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       {/* Main — results */}
       <div className="flex-1 overflow-y-auto">

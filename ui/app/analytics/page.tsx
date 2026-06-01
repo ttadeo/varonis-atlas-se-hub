@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 interface Summary {
   totalInteractions: number;
@@ -95,6 +96,7 @@ export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   useEffect(() => {
     fetch("/api/analytics")
@@ -117,13 +119,21 @@ export default function AnalyticsPage() {
           <h1 className="font-semibold text-white">Interaction Analytics</h1>
           <p className="text-xs text-gray-400">Knowledge base health · Session trends · Answer quality</p>
         </div>
-        <button
-          onClick={() => { setLoading(true); setError(null); fetch("/api/analytics").then(r => r.json()).then(setData).finally(() => setLoading(false)); }}
-          className="ml-auto text-xs text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1.5 rounded-lg transition-colors"
-        >
-          Refresh
-        </button>
+        <div className="ml-auto flex items-center gap-2">
+          <button
+            onClick={() => { setLoading(true); setError(null); fetch("/api/analytics").then(r => r.json()).then(setData).finally(() => setLoading(false)); }}
+            className="text-xs text-gray-500 hover:text-white bg-gray-800 hover:bg-gray-700 border border-gray-700 px-3 py-1.5 rounded-lg transition-colors"
+          >
+            Refresh
+          </button>
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 hover:text-white text-xs font-bold transition-colors"
+            title="Help"
+          >?</button>
+        </div>
       </header>
+      <HelpPanel page="analytics" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
 
