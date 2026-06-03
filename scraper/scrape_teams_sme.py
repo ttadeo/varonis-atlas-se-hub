@@ -1,18 +1,23 @@
 """
 Teams SME Channel Scraper
 Scrapes the "AI Security - SME" Teams channel via browser automation.
-Uses your existing Chrome profile — no credentials needed.
+Connects to your already-running Chrome session — no login needed, nothing to close.
 
 Output: scraper/output/teams_sme/raw_threads.json
 
 Usage:
-    python scraper/scrape_teams_sme.py
+    Step 1 — Launch Chrome with remote debugging (first time only, add to your shell alias):
+        /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
 
-Before running:
-    1. Close the Teams desktop app (Chrome profile can't be shared)
-    2. Make sure you're logged into teams.microsoft.com in Chrome
-    3. Get the channel deep link: right-click channel → "Get link to channel"
-       and update CHANNEL_URL below
+    Step 2 — In Chrome, navigate to the "AI Security - SME" Teams channel
+
+    Step 3 — Run this script:
+        python scraper/scrape_teams_sme.py
+
+Notes:
+    - Chrome must be launched with --remote-debugging-port=9222 BEFORE running this script
+    - You do NOT need to close Teams desktop app or any browser tabs
+    - If Chrome is already open without the debug flag, quit Chrome fully and relaunch with the flag
 """
 
 import asyncio
@@ -24,12 +29,8 @@ from playwright.async_api import async_playwright
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-# Get this by right-clicking "AI Security - SME" → "Get link to channel"
-# It looks like: https://teams.microsoft.com/l/channel/19%3A.../AI%20Security...
-CHANNEL_URL = "https://teams.microsoft.com"  # update with deep link
-
-# Your Chrome profile path (contains existing Teams login session)
-CHROME_PROFILE = str(Path.home() / "Library/Application Support/Google/Chrome")
+# Chrome remote debugging endpoint — Chrome must be launched with --remote-debugging-port=9222
+CDP_URL = "http://localhost:9222"
 
 # Output
 OUTPUT_DIR = Path(__file__).parent / "output" / "teams_sme"
@@ -295,52 +296,57 @@ async def main():
     print()
 
     async with async_playwright() as p:
-        print("Launching Chrome with your existing profile...")
-        print("NOTE: Close the Teams desktop app if it's running.\n")
+        print(f"Connecting to Chrome at {CDP_URL}...")
+        print("Make sure Chrome was launched with: --remote-debugging-port=9222\n")
 
-        browser = await p.chromium.launch_persistent_context(
-            user_data_dir=CHROME_PROFILE,
-            headless=False,
-            args=["--no-sandbox", "--disable-dev-shm-usage"],
-            viewport={"width": 1400, "height": 900},
-        )
+        try:
+            browser = await p.chromium.connect_over_cdp(CDP_URL)
+        except Exception as e:
+            print(f"✗ Could not connect to Chrome: {e}")
+            print()
+            print("Fix: Quit Chrome fully, then relaunch with:")
+            print("  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222")
+            return
 
-        page = browser.pages[0] if browser.pages else await browser.new_page()
+        print("✓ Connected to Chrome")
 
-        # Navigate to Teams
-        print(f"Navigating to Teams...")
-        await page.goto(CHANNEL_URL, wait_until="domcontentloaded", timeout=60000)
-        await page.wait_for_timeout(3000)
+        # Find the Teams tab — look for an existing page on teams.microsoft.com
+        page = None
+        for context in browser.contexts:
+            for p_page in context.pages:
+                if "teams.microsoft.com" in p_page.url:
+                    page = p_page
+                    print(f"✓ Found Teams tab: {p_page.url[:80]}")
+                    break
+            if page:
+                break
 
-        # Check if we need to handle a login redirect
+        if not page:
+            # No Teams tab found — use the first available page
+            all_pages = [p for ctx in browser.contexts for p in ctx.pages]
+            if all_pages:
+                page = all_pages[0]
+                print(f"  No Teams tab found. Using: {page.url[:80]}")
+            else:
+                page = await browser.contexts[0].new_page()
+
+        # Check we're on the right channel
         current_url = page.url
-        if "login" in current_url or "microsoftonline" in current_url:
-            print("\n" + "=" * 50)
-            print("ACTION REQUIRED: Please log in to Teams in the browser window.")
-            print("The script will continue automatically once you're logged in.")
-            print("=" * 50 + "\n")
-            await page.wait_for_url(
-                lambda url: "teams.microsoft.com" in url,
-                timeout=120000,
-            )
-            await page.wait_for_timeout(5000)
-
-        # If we landed on the Teams home page (not the channel), prompt for navigation
-        if CHANNEL_URL == "https://teams.microsoft.com":
+        if "teams.microsoft.com" not in current_url:
             print("\n" + "=" * 50)
             print("ACTION REQUIRED:")
-            print("1. Navigate to the 'AI Security - SME' channel in Teams")
+            print("1. In Chrome, navigate to the 'AI Security - SME' Teams channel")
             print("2. Wait for messages to load")
             print("3. Press Enter here to start scraping")
             print("=" * 50)
             input()
         else:
-            # Deep link — wait for channel to load automatically
-            loaded = await wait_for_channel_load(page)
-            if not loaded:
-                print("\nACTION REQUIRED:")
-                print("Navigate to the 'AI Security - SME' channel manually, then press Enter.")
-                input()
+            print("\n" + "=" * 50)
+            print("ACTION REQUIRED:")
+            print("Confirm you are on the 'AI Security - SME' channel in Chrome.")
+            print("Press Enter when ready to start scraping.")
+            print("=" * 50)
+            input()
 
         await wait_for_channel_load(page)
 
@@ -352,6 +358,7 @@ async def main():
         # Run the scrape
         threads = await scrape_channel(page)
 
+        # Disconnect from Chrome (does NOT close the browser — your tabs stay open)
         await browser.close()
 
     # ── Post-process ──────────────────────────────────────────────────────────
