@@ -374,9 +374,9 @@ export default function RuntimePage() {
                   <div className="text-2xl mb-3">{s.icon}</div>
                   <div className="font-semibold text-white text-sm mb-0.5">{s.name}</div>
                   <div className="text-xs text-gray-400 mb-3">{s.subtitle}</div>
-                  {"tools" in s && (
+                  {"tools" in s && Array.isArray(s.tools) && (
                     <div className="flex flex-wrap gap-1 mb-3">
-                      {s.tools.map((t) => (
+                      {(s.tools as string[]).map((t) => (
                         <span key={t} className="text-xs font-mono bg-gray-700 text-amber-400 px-1.5 py-0.5 rounded">{t}</span>
                       ))}
                     </div>
