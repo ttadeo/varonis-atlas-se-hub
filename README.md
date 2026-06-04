@@ -1,16 +1,25 @@
 # Atlas Learning Platform
 
-An interactive, AI-powered learning and deployment assistant for the Varonis Atlas AI Security Platform. Built for Varonis Sales Engineers — internal use only.
+An interactive, AI-powered learning and field enablement platform for the Varonis Atlas AI Security Platform. Built for Varonis Sales Engineers — internal use only.
 
 ---
 
 ## What It Does
 
-Three tools in one platform:
+Ten tools in one platform:
 
-1. **Atlas Learning Course** — 18-lesson structured course across Beginner, Intermediate, and Advanced tiers. Each lesson is conversational, ends with a check question, and offers follow-up prompts to go deeper before moving on.
-2. **Deployment & Integration Assistant** — SE inputs customer requirements, gets a custom deployment guide *(coming soon)*
-3. **Meeting Co-Pilot** — Live meeting support, answers customer questions in real time *(coming soon)*
+| Page | What It Does |
+|---|---|
+| **Learn** `/learn` | 22-lesson structured course across Beginner, Intermediate, and Advanced tiers. Conversational lessons, AI grading, voice support, progress persistence. |
+| **Ask** `/ask` | Agentic RAG Q&A — ask anything about Atlas, grounded in official docs. |
+| **Meeting Co-Pilot** `/meeting` | Live customer Q&A support during calls. Attach customer docs, get grounded answers in real time. |
+| **Architecture Builder** `/architect` | Describe a customer environment → get a Mermaid reference architecture + narrative, grounded in Atlas documentation. |
+| **Guide Producer** `/guides` | Describe a deployment scenario → get a full technical guide grounded in Atlas docs + SME field knowledge. |
+| **SME Knowledge Base** `/knowledge` | 62 field-validated Q&A entries from the Varonis AI Security SME Teams channel. Browse by topic (11 categories) or ask the SME chat. |
+| **AI Runtime Demo** `/runtime` | Fire live AI traffic through the Atlas Gateway. Three simulation types: prompt traffic, MCP tool call chains, multi-agent workflows. Shows real-time policy enforcement with per-scenario SE talking points. |
+| **Demo Provisioning** `/demo` | Describe a customer use case → Claude matches Atlas policy templates → auto-deploy to Atlas. Includes Chain of Custody viewer and Mock Scenario Builder. |
+| **Analytics** `/analytics` | Interaction analytics dashboard across all platform usage. |
+| **Resources** `/resources` | Competitive resource library. |
 
 ---
 
@@ -18,58 +27,85 @@ Three tools in one platform:
 
 | Layer | Technology |
 |---|---|
-| UI | Next.js 16 (React 19, TypeScript, Tailwind) |
-| Hosting | Vercel |
-| Orchestration | n8n Cloud (ttadeo.app.n8n.cloud) |
-| Knowledge Base | Neo4j (vector + knowledge graph RAG) |
-| LLM | Anthropic Claude (claude-sonnet-4-6) |
-| Embeddings | OpenAI text-embedding-3-small |
-| Evaluation | TruLens RAG Triad + custom Safety Score |
+| UI | Next.js 16 (React 19, TypeScript, Tailwind CSS) |
+| Hosting | Vercel (auto-deploy on push to `main`) |
+| Orchestration | n8n Cloud (`ttadeo.app.n8n.cloud`) |
+| Knowledge Base | Neo4j — vector + knowledge graph RAG |
+| LLM | Anthropic Claude (claude-sonnet-4-6 / claude-opus-4-6) |
+| Embeddings | OpenAI text-embedding-3-small (1536 dimensions) |
+| Auth | OTP email (Resend + Upstash Redis) + superuser bypass |
+| Evaluation | TrueLens RAG Triad (Answer Relevance, Context Relevance, Groundedness) |
 
 ---
 
 ## Architecture
 
 ```
-User opens chat UI (Vercel)
+Varonis SE (Browser)
         │
         ▼
-n8n webhook (workflow orchestration)
+Vercel — Next.js 16
+  UI Pages + API Routes
+  JWT auth on every protected route
         │
-        ├── OpenAI Embeddings API (vectorize question)
+        ├──────────────────────────────────┐
+        │                                  │
+        ▼                                  ▼
+n8n Cloud Workflows               Direct Neo4j (bolt)
+  learn, guides, architect         ask, meeting, knowledge,
+  sme-query, demo-provisioning     analytics, auth
         │
-        ├── Neo4j vector search (retrieve top-5 context chunks)
-        │
-        └── Anthropic Claude (generate grounded answer)
-                │
-                ▼
-        Response returned to UI with conversation history
+        ├─→ OpenAI (embeddings)
+        ├─→ Claude (generation)
+        └─→ Neo4j HTTP (via ngrok)
+
+                                  Atlas Gateway
+                                  (AI Runtime Demo)
+                                  live policy enforcement
 ```
+
+Full architecture details: [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ---
 
 ## Knowledge Base
 
-**1,146 total chunks** ingested into Neo4j:
-- 251 chunks from 37 Atlas documentation pages (Playwright authenticated scraper)
-- 895 chunks from the Atlas OpenAPI spec
-- Secondary documents hand-built to fix retrieval gaps (see `scraper/output/faq/`)
+**3,100 total nodes** in Neo4j:
+
+| Source | Count | Type |
+|---|---|---|
+| Atlas documentation (37 sections) | ~2,143 | DocChunk |
+| Atlas OpenAPI spec | ~895 | DocChunk |
+| Varonis AI Security SME Teams channel | 62 | SMEKnowledge |
+
+SMEKnowledge nodes are linked to related DocChunks via `RELATED_TO` edges and used by the Guide Producer and SME Knowledge Base chat.
+
+---
+
+## n8n Workflows
+
+| Workflow | Purpose |
+|---|---|
+| atlas-rag-knowledge-retrieval | Powers /learn Q&A |
+| atlas-architect | Architecture Builder |
+| atlas-guide-producer | Guide Producer (DocChunks + SMEKnowledge) |
+| atlas-sme-query | SME Knowledge Base chat |
+| atlas-demo-provisioning | Demo template discovery |
+| atlas-demo-apply | Demo template deployment |
 
 ---
 
 ## Evaluation
 
-The RAG pipeline was evaluated using TruLens across all 18 lessons before deployment.
+RAG pipeline evaluated with TrueLens. Baseline (2026-05-14, 52 golden questions):
 
 | Metric | Score |
 |---|---|
 | Answer Relevance | 1.000 |
-| Context Relevance | 0.974 |
-| Groundedness | 0.686 |
-| Safety Score | 1.000 |
-| **Overall Average** | **0.887** |
+| Context Relevance | 1.000 |
+| Groundedness | 0.696 |
 
-All 18 lessons scored above 0.80. Zero safety flags across 38 questions including adversarial attack technique content. Full results in `evals/results/`.
+Full results in `evals/results/`.
 
 ---
 
@@ -77,66 +113,53 @@ All 18 lessons scored above 0.80. Zero safety flags across 38 questions includin
 
 ```
 AtlasLearningPlatform/
-├── ui/                         # Next.js app (deployed to Vercel)
-│   └── app/
-│       ├── page.tsx            # Landing page
-│       ├── learn/page.tsx      # 18-lesson learning course
-│       └── ask/page.tsx        # Free-form RAG Q&A
-├── scraper/                    # Playwright Atlas docs scraper
-│   ├── scrape_atlas_docs.py
-│   ├── scrape_openapi.py
-│   └── output/                 # Scraped + hand-built knowledge base docs
-│       ├── applications/
-│       ├── overview/
-│       ├── faq/                # Secondary docs built to fix CR=0 failures
-│       └── openapi_reference/
-├── ingestion/                  # Neo4j ingestion pipeline
-│   ├── ingest_to_neo4j.py
-│   └── ingest_openapi.py
-├── evals/                      # TruLens evaluation harness
+├── ui/                              # Next.js app (deployed to Vercel)
+│   ├── app/
+│   │   ├── page.tsx                 # Home / navigation hub
+│   │   ├── learn/                   # 22-lesson course
+│   │   ├── ask/                     # RAG Q&A
+│   │   ├── meeting/                 # Meeting Co-Pilot
+│   │   ├── architect/               # Architecture Builder
+│   │   ├── guides/                  # Guide Producer
+│   │   ├── knowledge/               # SME Knowledge Base
+│   │   ├── runtime/                 # AI Runtime Demo
+│   │   ├── demo/                    # Demo Provisioning
+│   │   ├── analytics/               # Analytics dashboard
+│   │   ├── resources/               # Resource library
+│   │   └── api/                     # All API routes
+│   └── lib/
+│       └── auth.ts                  # Shared requireAuth() JWT helper
+├── scraper/                         # Scraping + ingestion scripts
+│   ├── scrape_atlas_docs.py         # Playwright Atlas docs scraper
+│   ├── scrape_openapi.py            # OpenAPI spec scraper
+│   ├── scrape_teams_sme.py          # Teams SME channel scraper (CDP)
+│   ├── regroup_threads.py           # Temporal proximity thread grouper
+│   ├── process_teams_sme.py         # Haiku classify + Sonnet extract pipeline
+│   ├── ingest_teams_sme.py          # Neo4j SMEKnowledge ingestion
+│   ├── patch_release_notes_chunks.py # Post-scrape RAG quality fix (run after every scrape)
+│   └── output/                      # Scraped docs and SME output
+├── ingestion/                       # Doc chunk ingestion pipeline
+├── evals/                           # TrueLens evaluation harness
 │   ├── run_evals.py
-│   ├── golden_questions.json   # 38 golden questions across 18 lessons
-│   └── results/                # All eval run CSVs
-├── n8n/                        # n8n workflow export
-│   └── Atlas RAG - Knowledge Retrieval.json
-└── guides/                     # SE guides on how this was built
-    ├── part-1-how-to-build-ai-you-can-trust.md
-    └── part-2-how-we-fixed-what-broke.md
+│   ├── golden_questions.json        # 52 golden questions
+│   └── results/
+├── n8n/workflows/                   # n8n workflow exports (6 workflows)
+└── ARCHITECTURE.md                  # Full architecture + security reference
 ```
 
 ---
 
-## Local Development
+## Security
 
-```bash
-cd ui
-npm install
-cp .env.local.example .env.local   # add NEXT_PUBLIC_N8N_WEBHOOK_URL
-npm run dev
-```
-
----
-
-## Environment Variables
-
-| Variable | Description |
-|---|---|
-| `NEXT_PUBLIC_N8N_WEBHOOK_URL` | n8n webhook URL for the RAG pipeline |
-
----
-
-## Learning Tiers
-
-| Tier | Lessons | Focus |
-|---|---|---|
-| Beginner | 1–6 | What Atlas is, architecture, AI Gateway, policy types, AI Inventory, Guardrails |
-| Intermediate | 7–12 | Observability, AI 360, AI SPM, Incidents, Compliance, full deployment scenario |
-| Advanced | 13–18 | Prompt privacy, competitive positioning, deployment deep dive, objection handling, attack techniques, capstone |
+- **Auth:** OTP email flow for @varonis.com addresses (Resend + Upstash Redis). Superuser bypass for `ttadeo@timthecoder.net`.
+- **Route protection:** All API routes use shared `requireAuth()` JWT helper (`ui/lib/auth.ts`). Four public auth endpoints only.
+- **Vercel:** 2FA enabled, team 2FA enforcement on, all env vars marked Sensitive.
+- **Input sanitization:** Lucene injection protection on all Neo4j full-text queries.
 
 ---
 
 ## Deployment
 
-Hosted on Vercel. Auto-deploys on push to `main`.
+Hosted on Vercel. Auto-deploys on push to `main` — no manual steps required.
 
-**Live:** atlas-learning-platform.vercel.app
+All environment variables are managed in the Vercel dashboard (marked Sensitive). Never stored in code or git.
