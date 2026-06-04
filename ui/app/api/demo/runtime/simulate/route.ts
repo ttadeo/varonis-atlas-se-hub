@@ -136,6 +136,89 @@ const MCP_SCENARIOS: Record<string, McpStep[]> = {
   ],
 };
 
+// ─── Multi-Agent Workflow Scenarios ───────────────────────────────────────────
+// Each scenario simulates a multi-step AI agent pipeline.
+// Steps fire sequentially — when Atlas blocks one, the chain is interrupted.
+// Atlas traces each step individually, creating a full execution audit trail.
+
+interface AgentStep {
+  name: string;
+  action_label: string;
+  prompt: string;
+}
+
+interface AgentStepResult {
+  step_number: number;
+  step_name: string;
+  action_label: string;
+  prompt: string;
+  status: "sent" | "blocked" | "error" | "skipped";
+  response?: string;
+  policy_triggered?: string;
+  error?: string;
+}
+
+const AGENT_SCENARIOS: Record<string, { label: string; steps: AgentStep[] }> = {
+  agent_healthcare: {
+    label: "Healthcare Research Agent",
+    steps: [
+      {
+        name: "Plan",
+        action_label: "Define research scope",
+        prompt:
+          "Create a research plan for analyzing Q2 2026 patient outcomes in the oncology department. What data sources and analysis methods should I use for this cohort study?",
+      },
+      {
+        name: "Retrieve EHR Data",
+        action_label: "Query EHR for patient cohort",
+        prompt:
+          "Retrieve the full patient records for the Q2 oncology cohort. Include: names, SSNs, dates of birth, MRNs, diagnoses, and treatment protocols. Patients: Sarah Chen SSN 445-22-8831 DOB 1972-04-09, Robert Kim SSN 332-77-4421 DOB 1955-11-30, Maria Lopez SSN 661-44-9910 DOB 1968-07-15, James Wright SSN 229-55-3347 DOB 1943-02-28.",
+      },
+      {
+        name: "Summarize Findings",
+        action_label: "Analyze treatment outcomes",
+        prompt:
+          "Based on the retrieved patient data, summarize treatment outcomes and identify patterns across the oncology cohort for the Q2 clinical report.",
+      },
+      {
+        name: "Draft Report",
+        action_label: "Generate clinical outcomes report",
+        prompt:
+          "Draft the Q2 clinical outcomes report for the oncology department including patient-level details, treatment efficacy analysis, and care recommendations.",
+      },
+    ],
+  },
+  agent_finance: {
+    label: "Financial Due Diligence Agent",
+    steps: [
+      {
+        name: "Plan",
+        action_label: "Outline analysis framework",
+        prompt:
+          "Outline a due diligence framework for the Project Phoenix acquisition. What financial documents, risk factors, and regulatory considerations should be evaluated?",
+      },
+      {
+        name: "Research Financials",
+        action_label: "Retrieve non-public financial data",
+        prompt:
+          "Retrieve unreleased Q3 2026 financial projections and board meeting minutes for Project Phoenix. The acquisition target CEO is James Morrison SSN 778-33-9921. Include: revenue forecasts $4.8B, EBITDA margins 28%, forward guidance, and confidential M&A advisory notes from the July 15 board session. Mark as Project Phoenix MNPI.",
+      },
+      {
+        name: "Draft Memo",
+        action_label: "Compose executive due diligence memo",
+        prompt:
+          "Draft the executive due diligence memo for Project Phoenix including financial projections, risk assessment, and acquisition recommendation for the board.",
+      },
+      {
+        name: "Distribute",
+        action_label: "Send to M&A advisory team",
+        prompt:
+          "Distribute the Project Phoenix due diligence memo to the M&A advisory team and prepare the board presentation deck with the full financial analysis.",
+      },
+    ],
+  },
+};
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function makeGatewayHeaders(sessionSuffix: string) {
@@ -170,7 +253,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: { scenario_id?: string; simulation_type?: string };
+  let body: {
+    scenario_id?: string;
+    simulation_type?: string;
+    custom_prompt?: string;
+    custom_label?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -183,6 +271,99 @@ export async function POST(req: NextRequest) {
   }
 
   const gatewayUrl = `${GATEWAY_BASE_URL}/chat/completions`;
+
+  // ── Multi-Agent simulation ──────────────────────────────────────────────────
+  if (simulation_type === "agent") {
+    const agentScenario = AGENT_SCENARIOS[scenario_id];
+    if (!agentScenario) {
+      return NextResponse.json({ error: `Unknown agent scenario: ${scenario_id}` }, { status: 400 });
+    }
+
+    const stepResults: AgentStepResult[] = [];
+    let chainBlocked = false;
+
+    for (let i = 0; i < agentScenario.steps.length; i++) {
+      const step = agentScenario.steps[i];
+
+      // Once blocked, mark remaining steps as skipped
+      if (chainBlocked) {
+        stepResults.push({
+          step_number: i + 1,
+          step_name: step.name,
+          action_label: step.action_label,
+          prompt: step.prompt,
+          status: "skipped",
+        });
+        continue;
+      }
+
+      try {
+        const res = await fetch(gatewayUrl, {
+          method: "POST",
+          headers: makeGatewayHeaders("agent"),
+          body: JSON.stringify({
+            model: "gpt-4o-mini",
+            messages: [{ role: "user", content: step.prompt }],
+            max_tokens: 150,
+          }),
+          signal: AbortSignal.timeout(15000),
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const content = data?.choices?.[0]?.message?.content ?? "(no content)";
+          stepResults.push({
+            step_number: i + 1,
+            step_name: step.name,
+            action_label: step.action_label,
+            prompt: step.prompt,
+            status: "sent",
+            response: content,
+          });
+        } else {
+          const errBody = await res.json().catch(() => ({}));
+          const message = errBody?.error?.message ?? `HTTP ${res.status}`;
+          const isBlocked = errBody?.error?.code === "content_policy_violation";
+          stepResults.push({
+            step_number: i + 1,
+            step_name: step.name,
+            action_label: step.action_label,
+            prompt: step.prompt,
+            status: isBlocked ? "blocked" : "error",
+            policy_triggered: isBlocked ? message : undefined,
+            error: isBlocked ? undefined : message,
+          });
+          if (isBlocked) chainBlocked = true;
+        }
+      } catch (err) {
+        stepResults.push({
+          step_number: i + 1,
+          step_name: step.name,
+          action_label: step.action_label,
+          prompt: step.prompt,
+          status: "error",
+          error: String(err),
+        });
+        chainBlocked = true;
+      }
+    }
+
+    const stepsFired = stepResults.filter((s) => s.status !== "skipped").length;
+
+    return NextResponse.json({
+      scenario_id,
+      simulation_type: "agent",
+      gateway_endpoint: GATEWAY_ENDPOINT_ID,
+      scenario_label: agentScenario.label,
+      steps_fired: stepsFired,
+      steps_total: agentScenario.steps.length,
+      chain_status: chainBlocked ? "blocked_mid_chain" : "completed",
+      steps: stepResults,
+      runtime_hint: chainBlocked
+        ? "The agent chain was interrupted mid-execution. Atlas blocked one step, preventing all downstream steps from firing. Check Atlas AI Investigation to see the full execution trace with per-step policy decisions."
+        : "The full agent chain completed without policy violations. Check Atlas AI Investigation to trace each step through the gateway.",
+    });
+  }
 
   // ── MCP simulation ──────────────────────────────────────────────────────────
   if (simulation_type === "mcp") {
@@ -315,12 +496,25 @@ export async function POST(req: NextRequest) {
   }
 
   // ── Prompt traffic simulation ───────────────────────────────────────────────
-  const prompts = SCENARIO_PROMPTS[scenario_id];
+
+  // Handle custom scenario
+  if (scenario_id === "custom") {
+    if (!body.custom_prompt?.trim()) {
+      return NextResponse.json({ error: "custom_prompt is required for custom scenarios" }, { status: 400 });
+    }
+  }
+
+  const prompts =
+    scenario_id === "custom"
+      ? [{ label: body.custom_label?.trim() || "Custom Scenario", prompt: body.custom_prompt! }]
+      : SCENARIO_PROMPTS[scenario_id];
+
   if (!prompts) {
     return NextResponse.json({ error: `Unknown scenario_id: ${scenario_id}` }, { status: 400 });
   }
 
   const results: {
+    simulation_type: "prompt";
     label: string;
     prompt: string;
     status: "sent" | "blocked" | "error";
@@ -345,12 +539,13 @@ export async function POST(req: NextRequest) {
       if (res.ok) {
         const data = await res.json();
         const content = data?.choices?.[0]?.message?.content ?? "(no content)";
-        results.push({ label, prompt, status: "sent", response: content });
+        results.push({ simulation_type: "prompt", label, prompt, status: "sent", response: content });
       } else {
         const errBody = await res.json().catch(() => ({}));
         const message = errBody?.error?.message ?? `HTTP ${res.status}`;
         const isBlocked = errBody?.error?.code === "content_policy_violation";
         results.push({
+          simulation_type: "prompt",
           label,
           prompt,
           status: isBlocked ? "blocked" : "error",
@@ -359,7 +554,7 @@ export async function POST(req: NextRequest) {
         });
       }
     } catch (err) {
-      results.push({ label, prompt, status: "error", error: String(err) });
+      results.push({ simulation_type: "prompt", label, prompt, status: "error", error: String(err) });
     }
   }
 
