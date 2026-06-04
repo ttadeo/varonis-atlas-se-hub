@@ -133,6 +133,26 @@ export default function Home() {
             </Link>
           </div>
 
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <Link
+              href="/knowledge"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-teal-500 rounded-2xl p-6 transition-all group col-span-2"
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-3xl">💡</div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-white mb-1">SME Knowledge Base</h3>
+                  <p className="text-sm text-gray-400">
+                    Field-validated Q&A from the AI Security SME Teams channel — deployment gotchas, competitive intel, roadmap, licensing, and more.
+                  </p>
+                </div>
+                <p className="text-xs text-teal-400 group-hover:text-teal-300 shrink-0">
+                  62 entries · SME-first chat →
+                </p>
+              </div>
+            </Link>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <Link
               href="/resources"

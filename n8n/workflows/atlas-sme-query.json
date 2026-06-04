@@ -1,0 +1,200 @@
+{
+  "name": "Atlas - SME Knowledge Chat",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atlas-sme-query",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [-528, 0],
+      "id": "a1111111-1111-1111-1111-111111111111",
+      "name": "Webhook",
+      "webhookId": "atlas-sme-query-v1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\": \"text-embedding-3-small\", \"input\": {{ JSON.stringify($json.body.question) }}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-288, 0],
+      "id": "b2222222-2222-2222-2222-222222222222",
+      "name": "Embed Question",
+      "credentials": {
+        "openAiApi": {
+          "id": "QKOKask5bV39Hn2N",
+          "name": "OpenAI - Atlas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const embedding = $input.first().json.data[0].embedding;\n\n// Query SMEKnowledge nodes directly by vector similarity\nconst smeQuery = JSON.stringify({\n  statements: [{\n    statement: \"CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 5, $embedding) YIELD node, score WHERE 'SMEKnowledge' IN labels(node) RETURN node.question AS question, node.answer AS answer, node.topic AS topic, node.confidence AS confidence, score ORDER BY score DESC\",\n    parameters: { embedding: embedding }\n  }]\n});\n\nreturn [{ json: { requestBody: smeQuery, embedding: embedding } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-48, 0],
+      "id": "c3333333-3333-3333-3333-333333333333",
+      "name": "Prepare SME Query"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://uncompendious-unpurchased-shanita.ngrok-free.dev/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "ngrok-skip-browser-warning", "value": "true" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
+        "bodyParameters": { "parameters": [{}] },
+        "jsonBody": "={{ $json.requestBody }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [192, 0],
+      "id": "d4444444-4444-4444-4444-444444444444",
+      "name": "Query SMEKnowledge",
+      "credentials": {
+        "httpHeaderAuth": { "id": "lgILDx4ml8xXy6yX", "name": "Header Auth account" },
+        "httpBasicAuth": { "id": "kENlY4V8sLKJinYH", "name": "Neo4j-Auth" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const embedding = $('Embed Question').first().json.data[0].embedding;\n\n// Query DocChunk nodes for supporting documentation context\nconst docQuery = JSON.stringify({\n  statements: [{\n    statement: \"CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 3, $embedding) YIELD node, score WHERE 'DocChunk' IN labels(node) RETURN node.heading AS heading, node.text AS text, node.title AS title, score ORDER BY score DESC\",\n    parameters: { embedding: embedding }\n  }]\n});\n\nreturn [{ json: { requestBody: docQuery } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [432, 0],
+      "id": "e5555555-5555-5555-5555-555555555555",
+      "name": "Prepare Doc Query"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://uncompendious-unpurchased-shanita.ngrok-free.dev/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "ngrok-skip-browser-warning", "value": "true" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
+        "bodyParameters": { "parameters": [{}] },
+        "jsonBody": "={{ $json.requestBody }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [672, 0],
+      "id": "f6666666-6666-6666-6666-666666666666",
+      "name": "Query DocChunks",
+      "credentials": {
+        "httpHeaderAuth": { "id": "lgILDx4ml8xXy6yX", "name": "Header Auth account" },
+        "httpBasicAuth": { "id": "kENlY4V8sLKJinYH", "name": "Neo4j-Auth" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const question = $('Webhook').first().json.body.question;\n\n// Build SME context\nconst smeRows = $('Query SMEKnowledge').first().json.results[0].data;\nconst smeChunks = smeRows.map(row => ({\n  question: row.row[0],\n  answer: row.row[1],\n  topic: row.row[2],\n  confidence: row.row[3],\n  score: row.row[4]\n})).filter(s => s.score > 0.6);\n\nlet smeContext = '';\nif (smeChunks.length > 0) {\n  smeContext = smeChunks\n    .map(s => `**[SME — ${s.topic} · ${s.confidence}]**\\nQ: ${s.question}\\nA: ${s.answer}`)\n    .join('\\n\\n---\\n\\n');\n}\n\n// Build doc context\nconst docRows = $input.first().json.results[0].data;\nconst docChunks = docRows.map(row => ({\n  heading: row.row[0],\n  text: row.row[1],\n  title: row.row[2],\n  score: row.row[3]\n})).filter(d => d.score > 0.5);\n\nlet docContext = '';\nif (docChunks.length > 0) {\n  docContext = docChunks\n    .map(d => `**[Docs — ${d.title} · ${d.heading}]**\\n${d.text}`)\n    .join('\\n\\n---\\n\\n');\n}\n\nconst hasSME = smeChunks.length > 0;\nconst hasDocs = docChunks.length > 0;\n\nreturn [{ json: { question, smeContext, docContext, hasSME, hasDocs } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [912, 0],
+      "id": "a7777777-7777-7777-7777-777777777777",
+      "name": "Merge Contexts"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ \n'Question: ' + $json.question + '\\n\\n' +\n($json.hasSME ? 'FIELD KNOWLEDGE FROM AI SECURITY SME CHANNEL:\\n' + $json.smeContext + '\\n\\n' : '') +\n($json.hasDocs ? 'SUPPORTING ATLAS DOCUMENTATION:\\n' + $json.docContext : '') \n}}"
+            }
+          ]
+        },
+        "options": {
+          "system": "You are an expert Varonis Atlas AI Security advisor. You answer questions for Sales Engineers using two knowledge sources:\n\n1. **SME Field Knowledge** — real Q&A from the internal AI Security SME Teams channel, field-validated by Varonis SEs and product experts. This is your PRIMARY source — prioritize it.\n\n2. **Atlas Documentation** — official product documentation. Use this to add technical depth and context to SME answers.\n\nAnswer guidelines:\n- Lead with SME field knowledge when available — it reflects real-world deployment experience\n- Use documentation to add supporting detail, not to contradict SME knowledge\n- Be direct and specific — your audience is experienced Sales Engineers, not beginners\n- If SME knowledge is marked 'tentative' or 'incomplete', flag that caveat in your answer\n- If neither source covers the question well, say so clearly rather than guessing\n- Keep answers concise but complete — use bullet points for multi-part answers\n- Do NOT say 'based on the context' or 'the documentation states' — just answer directly",
+          "maxTokens": 2048,
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [1152, 0],
+      "id": "b8888888-8888-8888-8888-888888888888",
+      "name": "Generate Answer",
+      "credentials": {
+        "anthropicApi": { "id": "WioShNHmyXcJmy8m", "name": "Anthropic account" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const answer = $input.first().json.content[0].text;\nreturn [{ json: { answer } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1392, 0],
+      "id": "c9999999-9999-9999-9999-999999999999",
+      "name": "Format Response"
+    },
+    {
+      "parameters": { "options": {} },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [1632, 0],
+      "id": "d0000000-0000-0000-0000-000000000000",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook":            { "main": [[{ "node": "Embed Question",     "type": "main", "index": 0 }]] },
+    "Embed Question":     { "main": [[{ "node": "Prepare SME Query",  "type": "main", "index": 0 }]] },
+    "Prepare SME Query":  { "main": [[{ "node": "Query SMEKnowledge", "type": "main", "index": 0 }]] },
+    "Query SMEKnowledge": { "main": [[{ "node": "Prepare Doc Query",  "type": "main", "index": 0 }]] },
+    "Prepare Doc Query":  { "main": [[{ "node": "Query DocChunks",    "type": "main", "index": 0 }]] },
+    "Query DocChunks":    { "main": [[{ "node": "Merge Contexts",     "type": "main", "index": 0 }]] },
+    "Merge Contexts":     { "main": [[{ "node": "Generate Answer",    "type": "main", "index": 0 }]] },
+    "Generate Answer":    { "main": [[{ "node": "Format Response",    "type": "main", "index": 0 }]] },
+    "Format Response":    { "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]] }
+  },
+  "active": true,
+  "settings": { "executionOrder": "v1", "binaryMode": "separate" },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
+  },
+  "id": "atlas-sme-query-workflow",
+  "tags": []
+}
