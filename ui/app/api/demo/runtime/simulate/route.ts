@@ -261,6 +261,7 @@ export async function POST(req: NextRequest) {
           const data = await res.json();
           const content = data?.choices?.[0]?.message?.content ?? "(no content)";
           results.push({
+            simulation_type: "mcp" as const,
             label: step.label,
             tool_name: step.toolName,
             tool_args: step.toolArgs,
@@ -275,6 +276,7 @@ export async function POST(req: NextRequest) {
           const message = errBody?.error?.message ?? `HTTP ${res.status}`;
           const isBlocked = errBody?.error?.code === "content_policy_violation";
           results.push({
+            simulation_type: "mcp" as const,
             label: step.label,
             tool_name: step.toolName,
             tool_args: step.toolArgs,
@@ -288,6 +290,7 @@ export async function POST(req: NextRequest) {
         }
       } catch (err) {
         results.push({
+          simulation_type: "mcp" as const,
           label: step.label,
           tool_name: step.toolName,
           tool_args: step.toolArgs,
