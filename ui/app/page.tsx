@@ -1,6 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+const ADMIN_EMAIL = "ttadeo@varonis.com";
 
 export default function Home() {
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setUserEmail(d.userId ?? null))
+      .catch(() => {});
+  }, []);
+
+  const isAdmin = userEmail === ADMIN_EMAIL;
+
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
       <header className="border-b border-gray-800 px-6 py-4 flex items-center gap-3">
@@ -133,25 +149,27 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Link
-              href="/knowledge"
-              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-teal-500 rounded-2xl p-6 transition-all group col-span-2"
-            >
-              <div className="flex items-center gap-4">
-                <div className="text-3xl">💡</div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-white mb-1">SME Knowledge Base</h3>
-                  <p className="text-sm text-gray-400">
-                    Field-validated Q&A from the AI Security SME Teams channel — deployment gotchas, competitive intel, roadmap, licensing, and more.
+          {isAdmin && (
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <Link
+                href="/knowledge"
+                className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-teal-500 rounded-2xl p-6 transition-all group col-span-2"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="text-3xl">💡</div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white mb-1">SME Knowledge Base</h3>
+                    <p className="text-sm text-gray-400">
+                      Field-validated Q&A from the AI Security SME Teams channel — deployment gotchas, competitive intel, roadmap, licensing, and more.
+                    </p>
+                  </div>
+                  <p className="text-xs text-teal-400 group-hover:text-teal-300 shrink-0">
+                    69 entries · SME-first chat →
                   </p>
                 </div>
-                <p className="text-xs text-teal-400 group-hover:text-teal-300 shrink-0">
-                  62 entries · SME-first chat →
-                </p>
-              </div>
-            </Link>
-          </div>
+              </Link>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <Link
