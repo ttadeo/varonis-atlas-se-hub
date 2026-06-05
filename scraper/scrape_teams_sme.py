@@ -38,7 +38,8 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # How far back to scrape (None = full history)
 # Set to a date string like "2026-01-01" to limit scrape depth
-SCRAPE_SINCE = None
+# Last scrape: 2026-06-05 — only pull messages newer than this
+SCRAPE_SINCE = "2026-06-05"
 
 # Max scroll attempts before giving up (safety limit)
 MAX_SCROLL_ATTEMPTS = 500
@@ -72,62 +73,72 @@ async def extract_messages(page) -> list[dict]:
     """
     Extract all visible messages from the current viewport.
     Called repeatedly during scroll to capture messages before they unload.
+
+    Selectors confirmed from live DOM inspection of teams.cloud.microsoft.mcas.ms
     """
     messages = []
 
     try:
-        # Teams message containers — these selectors target the web client
-        # Adjust if Teams updates their DOM structure
-        msg_elements = await page.query_selector_all("[data-tid='message-body-content']")
+        msg_elements = await page.query_selector_all("[data-tid='chat-pane-message']")
 
         for el in msg_elements:
             try:
-                # Message ID — unique per message
-                msg_id = await el.get_attribute("data-message-id") or ""
+                # Message ID — data-mid attribute on the container
+                msg_id = await el.get_attribute("data-mid") or ""
                 if not msg_id:
-                    # Try parent element for the ID
-                    parent = await el.query_selector("xpath=..")
-                    msg_id = await parent.get_attribute("data-message-id") if parent else ""
+                    continue
 
-                # Author name
-                author_el = await el.query_selector("[data-tid='message-author-name'], .fui-Text__root[class*='author']")
+                # Author — span with data-tid='message-author-name'
+                author_el = await el.query_selector("[data-tid='message-author-name']")
+                if not author_el:
+                    # author is in the parent wrapper, not inside chat-pane-message
+                    parent = await el.evaluate_handle("el => el.parentElement")
+                    author_el = await parent.query_selector("[data-tid='message-author-name']")
                 author = clean_text(await author_el.inner_text()) if author_el else "Unknown"
 
-                # Timestamp
+                # Timestamp — time element aria-label contains human readable date
                 time_el = await el.query_selector("time")
-                timestamp = await time_el.get_attribute("datetime") if time_el else ""
+                if not time_el:
+                    # try parent
+                    parent = await el.evaluate_handle("el => el.parentElement")
+                    time_el = await parent.query_selector("time")
+                timestamp_label = await time_el.get_attribute("aria-label") if time_el else ""
+                # datetime attribute may not exist — use aria-label as fallback
+                timestamp_dt = await time_el.get_attribute("datetime") if time_el else ""
+                timestamp = timestamp_dt or timestamp_label or ""
 
-                # Message text — get inner text, strip UI chrome
-                content_el = await el.query_selector("[data-tid='messageBodyContent'], .fui-Text__root[class*='body']")
-                if not content_el:
-                    content_el = el
-                text = clean_text(await content_el.inner_text())
+                # Message text — div with data-message-content attribute, or id=content-{mid}
+                content_el = await el.query_selector(f"#content-{msg_id}, [data-message-content]")
+                if content_el:
+                    text = clean_text(await content_el.inner_text())
+                else:
+                    # Fallback: use aria-label on the container (Teams puts full text there)
+                    aria_text = await el.get_attribute("aria-label") or ""
+                    text = clean_text(aria_text)
 
-                # Skip empty or very short messages (reactions, "👍", etc.)
+                # Skip empty, very short, or pure reaction messages
                 if len(text) < 10:
                     continue
 
-                # Is this a root message or a reply?
-                # Root messages appear in main stream; replies are nested
-                is_reply = await el.evaluate(
-                    "el => el.closest('[data-tid=\"replyChain\"]') !== null"
-                )
+                # Is this a reply? Replies contain a quoted-reply-card
+                quoted = await el.query_selector("[data-tid='quoted-reply-card']")
+                is_reply = quoted is not None
 
-                # Thread ID — root messages create threads, replies share the root's ID
-                thread_el = await el.query_selector("xpath=ancestor::*[@data-thread-id]")
-                thread_id = await thread_el.get_attribute("data-thread-id") if thread_el else msg_id
+                # Use msg_id as thread_id for root messages
+                # For replies, we'll group by proximity/author context in post-processing
+                # since Teams MCAS proxy may not expose thread IDs directly
+                thread_id = msg_id  # will be refined in post-processing
 
                 messages.append({
                     "message_id": msg_id,
-                    "thread_id": thread_id or msg_id,
+                    "thread_id": thread_id,
                     "author": author,
                     "timestamp": timestamp,
                     "text": text,
                     "is_reply": is_reply,
                 })
 
-            except Exception as e:
-                # Skip individual message errors — don't abort the whole scrape
+            except Exception:
                 continue
 
     except Exception as e:
@@ -138,13 +149,14 @@ async def extract_messages(page) -> list[dict]:
 
 async def expand_thread_replies(page) -> None:
     """
-    Click all visible 'X replies' buttons to expand collapsed thread replies.
+    Click any collapsed thread/reply expanders visible on screen.
     """
     try:
-        reply_buttons = await page.query_selector_all(
-            "[data-tid='reply-count-button'], button[aria-label*='repl']"
+        # Teams MCAS proxy uses chat-fluid-thread-pane-button for thread expansion
+        expand_buttons = await page.query_selector_all(
+            "[data-tid='chat-fluid-thread-pane-button'], button[aria-label*='repl'], button[aria-label*='thread']"
         )
-        for btn in reply_buttons:
+        for btn in expand_buttons:
             try:
                 await btn.click()
                 await page.wait_for_timeout(300)
@@ -233,9 +245,19 @@ async def scrape_channel(page) -> dict[str, dict]:
             print("  No new messages in this pass — checking if we've reached the top...")
             # Try one more aggressive scroll
             await page.evaluate("""
-                const container = document.querySelector('[data-tid="message-list"]') ||
-                                  document.querySelector('[class*="messageList"]') ||
-                                  document.querySelector('[role="list"]');
+                const container =
+                    document.querySelector('[data-tid="message-list"]') ||
+                    document.querySelector('[data-tid="chat-pane-list"]') ||
+                    (function() {
+                        const msg = document.querySelector('[data-tid="chat-pane-message"]');
+                        if (!msg) return null;
+                        let el = msg.parentElement;
+                        while (el) {
+                            if (el.scrollHeight > el.clientHeight) return el;
+                            el = el.parentElement;
+                        }
+                        return null;
+                    })();
                 if (container) container.scrollTop = 0;
                 else window.scrollTo(0, 0);
             """)
@@ -249,10 +271,24 @@ async def scrape_channel(page) -> dict[str, dict]:
                 break
 
         # Scroll up to load older messages
+        # Teams MCAS renders messages in a scrollable div — find by data-tid or class
         await page.evaluate("""
-            const container = document.querySelector('[data-tid="message-list"]') ||
-                              document.querySelector('[class*="messageList"]') ||
-                              document.querySelector('[role="list"]');
+            const container =
+                document.querySelector('[data-tid="message-list"]') ||
+                document.querySelector('[data-tid="chat-pane-list"]') ||
+                document.querySelector('[class*="chatMessageList"]') ||
+                document.querySelector('[class*="MessageList"]') ||
+                // fallback: find the scrollable ancestor of the first message
+                (function() {
+                    const msg = document.querySelector('[data-tid="chat-pane-message"]');
+                    if (!msg) return null;
+                    let el = msg.parentElement;
+                    while (el) {
+                        if (el.scrollHeight > el.clientHeight) return el;
+                        el = el.parentElement;
+                    }
+                    return null;
+                })();
             if (container) {
                 container.scrollTop = 0;
             } else {
@@ -310,11 +346,17 @@ async def main():
 
         print("✓ Connected to Chrome")
 
-        # Find the Teams tab — look for an existing page on teams.microsoft.com
+        # Find the Teams tab — check multiple possible URLs including MCAS proxy
+        TEAMS_URL_PATTERNS = [
+            "teams.microsoft.com",
+            "teams.cloud.microsoft",
+            "teams.live.com",
+            "mcas.ms",
+        ]
         page = None
         for context in browser.contexts:
             for p_page in context.pages:
-                if "teams.microsoft.com" in p_page.url:
+                if any(pattern in p_page.url for pattern in TEAMS_URL_PATTERNS):
                     page = p_page
                     print(f"✓ Found Teams tab: {p_page.url[:80]}")
                     break
@@ -332,7 +374,7 @@ async def main():
 
         # Check we're on the right channel
         current_url = page.url
-        if "teams.microsoft.com" not in current_url:
+        if not any(pattern in current_url for pattern in TEAMS_URL_PATTERNS):
             print("\n" + "=" * 50)
             print("ACTION REQUIRED:")
             print("1. In Chrome, navigate to the 'AI Security - SME' Teams channel")
