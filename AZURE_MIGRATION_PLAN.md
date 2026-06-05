@@ -2,27 +2,37 @@
 
 **Audience:** Engineering / Infrastructure review  
 **Date:** 2026-06-05  
-**Purpose:** Map the current stack to Azure-native equivalents, estimate costs, and identify migration complexity.
+**Purpose:** Map the current stack to Azure-native equivalents, with two architecture options, accurate pricing, and EA/MACC guidance for an Azure subscription customer.
 
 ---
 
-## Current Stack vs Azure Equivalents
+## Two Architecture Options
 
-| Current | Azure Equivalent | Notes |
+### Option A — Azure AI Foundry + Neo4j AuraDB (Recommended)
+Use Azure AI Foundry as the AI control plane (models, evaluation, tracing), keep Neo4j AuraDB for Azure to preserve graph relationships, and keep n8n for workflow orchestration.
+
+### Option B — Full Azure Native (No third-party services)
+Replace everything with Azure-native services. Uses Azure AI Search instead of Neo4j — loses graph relationship capabilities but stays entirely within Azure.
+
+---
+
+## Option A — Azure AI Foundry + Neo4j AuraDB (Recommended)
+
+### Stack Mapping
+
+| Current | Azure Equivalent | Code Change Required |
 |---|---|---|
-| Vercel (Next.js hosting) | Azure Static Web Apps | Best fit for Next.js; built-in CI/CD from GitHub |
-| n8n Cloud | n8n self-hosted on Azure Container Apps | n8n has no Azure-managed offering; run it containerized |
-| Neo4j (local Linux server + ngrok) | Neo4j AuraDB for Azure | Fully managed Neo4j, eliminates ngrok entirely |
-| Anthropic Claude | Azure AI Foundry — Claude models | Claude 3.5/4.x available via Microsoft's AI Marketplace partnership |
-| OpenAI Embeddings | Azure OpenAI Service | text-embedding-3-small available natively |
-| Resend (OTP email) | Azure Communication Services — Email | Drop-in replacement, same SMTP/API pattern |
-| Upstash Redis (OTP + rate limiting) | Azure Cache for Redis | Managed Redis, same API surface |
-| GitHub (source control + CI/CD) | GitHub (keep) or Azure DevOps | GitHub Actions integrates natively with Azure Static Web Apps |
-| ngrok (Neo4j tunnel) | Not needed | Eliminated when Neo4j moves to AuraDB for Azure |
+| Vercel (Next.js) | Azure Static Web Apps | Env vars only |
+| n8n Cloud | n8n self-hosted on Azure Container Apps | Webhook URLs only |
+| Neo4j local + ngrok | **Neo4j AuraDB for Azure** (Marketplace) | Connection string only |
+| Anthropic Claude API | **Azure AI Foundry — Claude Sonnet 4.5** | Endpoint + key only |
+| OpenAI Embeddings | **Azure OpenAI Service** (text-embedding-3-small) | Minor SDK config |
+| Resend (OTP email) | Azure Communication Services Email | ~10 lines |
+| Upstash Redis | Azure Cache for Redis | Redis client swap |
+| ngrok | **Eliminated** | Removed |
+| TrueLens evals | **Azure AI Evaluation** (built into Foundry) | New setup |
 
----
-
-## Azure Architecture
+### Architecture Diagram
 
 ```
 Varonis SE (Browser)
@@ -30,216 +40,183 @@ Varonis SE (Browser)
         ▼
 Azure Static Web Apps
   (Next.js 16 — UI + API Routes)
-  GitHub Actions CI/CD (auto-deploy on push to main)
+  GitHub Actions CI/CD
         │
-        ├──────────────────────────────────────┐
-        │                                      │
-        ▼                                      ▼
-Azure Container Apps                    Azure OpenAI Service
-  (n8n self-hosted)                     - text-embedding-3-small
-  - All 6 n8n workflows                 - GPT-4o (fallback if needed)
-  - Scales to zero when idle            
-        │                               Azure AI Foundry
-        ▼                               - Claude Sonnet 4.6 / Opus 4.6
-Neo4j AuraDB for Azure                  (via Microsoft AI Marketplace)
-  - Fully managed Neo4j
-  - Vector indexes preserved
-  - No ngrok, no local server
-  - 99.95% SLA
-        
-Azure Cache for Redis
-  (OTP storage + rate limiting)
+   ┌────┴──────────────────────────┐
+   │                               │
+   ▼                               ▼
+Azure Container Apps          Azure OpenAI Service
+  (n8n self-hosted)            text-embedding-3-small
+  All 6 workflows               $0.02/1M tokens
+  Scales to zero
+   │
+   ▼
+Neo4j AuraDB for Azure         Azure AI Foundry
+  (Azure Marketplace)           Claude Sonnet 4.5
+  Graph + Vector preserved      $3.00/$15.00 per 1M tokens
+  No ngrok, no server           Built-in eval + tracing
+  99.95% SLA (Business Critical)
 
-Azure Communication Services
-  (OTP email delivery)
+Azure Cache for Redis           Azure Communication Services
+  OTP + rate limiting            OTP email delivery
 
-Atlas API + Atlas Gateway
-  (unchanged — Varonis-hosted, no migration needed)
+Azure Database for PostgreSQL
+  n8n metadata store
 ```
 
----
+### What Azure AI Foundry Gives You
 
-## Component Deep Dives
+- **Single portal** for model deployment, evaluation, tracing, and prompt management
+- **Claude Sonnet 4.5** available natively — same model, Azure endpoint, counts toward MACC
+- **Built-in RAG evaluation** — groundedness, relevance, coherence (replaces TrueLens or runs alongside it)
+- **Automatic tracing** via OpenTelemetry — every LLM call, retrieval, and tool use captured
+- **Model catalog** — swap between Claude, GPT-4o, Llama, Mistral without infrastructure changes
 
-### 1. Vercel → Azure Static Web Apps
+> **Note:** Azure Prompt Flow (formerly part of AI Foundry) was **retired April 20, 2026**. Microsoft recommends migrating to Microsoft Agent Framework. Do not build new workflows on Prompt Flow — use n8n (already your orchestrator) instead.
 
-**Why Azure Static Web Apps:**
-- Native Next.js support with server-side rendering
-- Free tier available; Standard tier at $9/month
-- GitHub Actions integration built-in (same push-to-deploy workflow)
-- Built-in auth providers (can replace or supplement current JWT flow)
-- Global CDN included
+### Why Keep Neo4j AuraDB (Not Azure AI Search)
 
-**Migration effort:** Low  
-- Point GitHub repo at Azure Static Web Apps
-- Migrate environment variables to Azure App Settings
-- Update any Vercel-specific configs (vercel.json → staticwebapp.config.json)
+Azure has no native managed graph database. The options are:
 
-**Alternative:** Azure App Service (more control, higher cost ~$55-138/month for production-grade)
+| Option | Graph | Vector | Cypher | Effort |
+|---|---|---|---|---|
+| **Neo4j AuraDB for Azure** | ✅ | ✅ | ✅ | Zero code changes |
+| Azure AI Search | ❌ | ✅ | ❌ | Full rewrite + lose graph |
+| Azure Cosmos DB (Gremlin) | ✅ | ❌ | ❌ | Full rewrite, no vector |
+| PostgreSQL + AGE extension | ⚠️ | ⚠️ | ⚠️ | Medium, immature |
 
----
-
-### 2. n8n Cloud → n8n on Azure Container Apps
-
-**Why Container Apps:**
-- n8n publishes an official Docker image (`n8nio/n8n`)
-- Container Apps scales to zero when idle — no cost during off-hours
-- Managed ingress, TLS, and custom domains included
-- Persistent storage via Azure Files (required for n8n's SQLite or use PostgreSQL)
-
-**Recommended setup:**
-```
-Azure Container Apps (n8n)
-  - Image: n8nio/n8n:latest
-  - Min replicas: 0 (scale to zero)
-  - Max replicas: 2
-  - CPU: 1 vCPU, Memory: 2Gi
-  - Persistent volume: Azure Files (n8n data)
-  - DB: Azure Database for PostgreSQL (n8n metadata) OR SQLite on Azure Files
-```
-
-**Migration effort:** Medium  
-- Export all 6 workflows from n8n Cloud (already done — in `n8n/workflows/`)
-- Deploy n8n container to Azure Container Apps
-- Import workflows
-- Update all webhook URLs in Vercel env vars
-- Update n8n credentials (Neo4j, OpenAI, Anthropic connections)
+Neo4j AuraDB for Azure is available on the Azure Marketplace, counts toward MACC (Azure benefit-eligible), and requires zero code or query changes. The RELATED_TO edges between SMEKnowledge and DocChunk nodes — which power the Guide Producer and SME chat — are preserved entirely.
 
 ---
 
-### 3. Neo4j Local + ngrok → Neo4j AuraDB for Azure
+## Option B — Full Azure Native (No Third-Party Services)
 
-**Why AuraDB:**
-- Fully managed — no server maintenance, no ngrok, no stale PID issues
-- Native Azure deployment (same region as other services)
-- Vector index support (required for RAG)
-- Automatic backups included
-- Private networking via Azure Private Link (Enterprise tier)
+Replaces Neo4j with Azure AI Search and n8n with Microsoft Agent Framework. Loses graph relationships.
 
-**Migration effort:** Medium  
-- `neo4j-admin dump` from local instance
-- Restore into AuraDB instance using `neo4j-admin push-to-cloud` or AuraDB import
-- Update `NEO4J_URI` env var in Azure Static Web Apps + n8n
-- Remove ngrok entirely
+| Current | Azure Native | Tradeoff |
+|---|---|---|
+| Neo4j (graph + vector) | Azure AI Search | Lose RELATED_TO graph edges |
+| n8n Cloud | Microsoft Agent Framework | AI-specific only, no 400+ connectors |
+| All others | Same as Option A | — |
 
-**Data to migrate:**
-- 3,038 DocChunk nodes + embeddings
-- 69 SMEKnowledge nodes + embeddings
-- All vector indexes
-- User, Session, Interaction, MeetingSession nodes
+**Not recommended** unless there is a hard requirement to eliminate all third-party services. The graph relationship loss degrades Guide Producer and SME chat quality significantly.
 
 ---
 
-### 4. Anthropic Claude → Azure AI Foundry (Claude)
+## Pricing — Option A (Azure AI Foundry + Neo4j AuraDB)
 
-**Why this works:**  
-Anthropic and Microsoft have a partnership — Claude models (Sonnet, Opus, Haiku) are available through Azure AI Foundry via the Azure Marketplace. The API surface is identical to the Anthropic API with an Azure endpoint.
+All prices are **East US region, pay-as-you-go list price** unless noted. EA/MACC discounts applied separately (see below).
 
-**Migration effort:** Low  
-- Provision Claude model in Azure AI Foundry
-- Update `ANTHROPIC_API_KEY` → Azure AI Foundry endpoint + key
-- SDK stays the same (`@anthropic-ai/sdk`) with endpoint override
+### Tier 1 — Dev / POC
 
-**Alternative:** Keep calling Anthropic API directly from Azure (outbound HTTPS call — works fine, just not "fully Azure")
-
----
-
-### 5. OpenAI Embeddings → Azure OpenAI Service
-
-**Why Azure OpenAI:**
-- `text-embedding-3-small` available natively
-- Same API surface as OpenAI — SDK works unchanged with endpoint + key swap
-- Data stays within Azure boundary (compliance benefit)
-
-**Migration effort:** Low  
-- Provision Azure OpenAI resource
-- Deploy `text-embedding-3-small` model
-- Update `OPENAI_API_KEY` + add `AZURE_OPENAI_ENDPOINT` env var
-- Minor SDK config change (add `azureOpenAI: true` flag)
-
----
-
-### 6. Resend → Azure Communication Services Email
-
-**Migration effort:** Low  
-- Provision Azure Communication Services resource
-- Verify sending domain (timthecoder.net) — same DNS records
-- Update `RESEND_API_KEY` → ACS connection string
-- Update email sending code (~10 lines in `/api/auth/send-code`)
-
----
-
-### 7. Upstash Redis → Azure Cache for Redis
-
-**Migration effort:** Low  
-- Provision Azure Cache for Redis (C1 Standard recommended for production)
-- Update `KV_REST_API_URL` + `KV_REST_API_TOKEN` → Azure Redis connection string
-- `@upstash/redis` client → `ioredis` or `redis` npm package (minor code change)
-
----
-
-## Cost Estimate
-
-All prices are USD/month estimates based on Azure public pricing (East US region, 2026).
-
-### Minimum Viable (Dev/Test)
-
-| Service | Tier | Est. Cost/mo |
+| Service | Tier | Monthly Cost |
 |---|---|---|
 | Azure Static Web Apps | Free | $0 |
-| Azure Container Apps (n8n) | Consumption (scale to zero) | ~$10–20 |
-| Neo4j AuraDB for Azure | Free (4GB limit) | $0 |
-| Azure OpenAI Service | Pay-per-use (embeddings) | ~$5–15 |
-| Azure AI Foundry — Claude | Pay-per-use | ~$20–50 |
-| Azure Cache for Redis | C0 Basic (250MB) | ~$16 |
-| Azure Communication Services | Pay-per-use (~500 emails/mo) | ~$1 |
-| **Total** | | **~$52–102/mo** |
+| Azure Container Apps (n8n) | Consumption — scale to zero | ~$5–15 |
+| Neo4j AuraDB for Azure | Free (200K nodes limit) | $0 |
+| Azure OpenAI (embeddings) | Pay-per-use | ~$1–5 |
+| Azure AI Foundry — Claude Sonnet 4.5 | Pay-per-use | ~$10–30 |
+| Azure Cache for Redis | C0 Basic (250MB) | $16.06 |
+| Azure Communication Services | Pay-per-use (~500 emails/mo) | ~$0.13 |
+| Azure Database for PostgreSQL | B1ms (n8n metadata) | $12.41 |
+| **Total** | | **~$44–78/mo** |
 
-### Production Grade
-
-| Service | Tier | Est. Cost/mo |
-|---|---|---|
-| Azure Static Web Apps | Standard | $9 |
-| Azure Container Apps (n8n) | Dedicated (1 vCPU, 2Gi) | ~$50–80 |
-| Neo4j AuraDB for Azure | Professional (8GB+) | ~$65–130 |
-| Azure OpenAI Service | Pay-per-use | ~$15–40 |
-| Azure AI Foundry — Claude | Pay-per-use (Sonnet) | ~$50–150 |
-| Azure Cache for Redis | C1 Standard (1GB) | ~$50 |
-| Azure Communication Services | Pay-per-use | ~$2 |
-| Azure Database for PostgreSQL | B1ms (n8n metadata) | ~$25 |
-| **Total** | | **~$266–486/mo** |
-
-### Enterprise Grade (with Private Networking + SLA)
-
-| Service | Tier | Est. Cost/mo |
-|---|---|---|
-| Azure Static Web Apps | Standard | $9 |
-| Azure Container Apps (n8n) | Dedicated + autoscale | ~$150 |
-| Neo4j AuraDB for Azure | Enterprise (Private Link) | ~$400+ |
-| Azure OpenAI Service | Provisioned throughput | ~$200+ |
-| Azure AI Foundry — Claude | Pay-per-use (Opus) | ~$200+ |
-| Azure Cache for Redis | P1 Premium (6GB) | ~$200 |
-| Azure Communication Services | Standard | ~$10 |
-| Azure Database for PostgreSQL | GP_Gen5_2 | ~$100 |
-| Azure Monitor + Log Analytics | Standard | ~$50 |
-| **Total** | | **~$1,319+/mo** |
+> Neo4j Free tier caps at 200,000 nodes / 400,000 relationships — sufficient for POC but not production (you currently have 3,100+ nodes).
 
 ---
 
-## Migration Complexity Summary
+### Tier 2 — Production (Recommended for Internal SE Tool)
 
-| Component | Effort | Risk | Blocker? |
+| Service | Tier | Monthly Cost |
+|---|---|---|
+| Azure Static Web Apps | Standard | $9.00 |
+| Azure Container Apps (n8n) | Consumption (1 vCPU, 2 GiB, moderate usage) | ~$30–60 |
+| Neo4j AuraDB for Azure | Professional — 1GB | $65.00 |
+| Azure OpenAI (embeddings) | Pay-per-use | ~$5–15 |
+| Azure AI Foundry — Claude Sonnet 4.5 | Pay-per-use (~5M input / 2M output tokens) | ~$45 |
+| Azure Cache for Redis | C1 Standard (1GB, replicated) | $50.37 |
+| Azure Communication Services | Pay-per-use | ~$0.50 |
+| Azure Database for PostgreSQL | B1ms Flexible Server | $12.41 |
+| Azure Monitor + Log Analytics | ~2 GB/mo ingestion | ~$4.60 |
+| **Total (list price)** | | **~$222–261/mo** |
+| **After ~15% EA discount** | | **~$189–222/mo** |
+
+---
+
+### Tier 3 — Enterprise (Private Networking, SLAs, Compliance)
+
+| Service | Tier | Monthly Cost |
+|---|---|---|
+| Azure Static Web Apps | Standard | $9.00 |
+| Azure Container Apps (n8n) | Dedicated D4 profile | ~$150–200 |
+| Neo4j AuraDB for Azure | Business Critical (99.95% SLA, Private Link, 30-day PITR) | $146/GB — min ~$146–292 |
+| Azure OpenAI (embeddings) | Pay-per-use | ~$15–30 |
+| Azure AI Foundry — Claude Sonnet 4.5 | Pay-per-use (higher volume) | ~$100–200 |
+| Azure Cache for Redis | P1 Premium (6GB, geo-replication) | $202.21 |
+| Azure Communication Services | Pay-per-use | ~$1.00 |
+| Azure Database for PostgreSQL | D2ds_v6 General Purpose (2 vCore, 8 GiB) | $163.52 |
+| Azure Monitor + Log Analytics | ~10 GB/mo ingestion | ~$23.00 |
+| Azure Private Link (Neo4j) | ~$0.01/GB + endpoint hours | ~$10–20 |
+| **Total (list price)** | | **~$819–1,039/mo** |
+| **After ~15% EA discount** | | **~$696–883/mo** |
+| **After 1-yr reserved (PostgreSQL)** | | Save ~$65/mo additional |
+
+---
+
+## Pricing — Option B (Full Azure Native, AI Search replaces Neo4j)
+
+| Service | Tier | Monthly Cost |
+|---|---|---|
+| Azure AI Search | Basic (2 GB, sufficient for current index) | $73.73 |
+| All other services | Same as Option A Tier 2 | ~$157–196 |
+| **Total (list price)** | | **~$231–270/mo** |
+| **After ~15% EA discount** | | **~$196–230/mo** |
+
+> Marginally cheaper than Option A Production, but loses graph relationships. Not recommended.
+
+---
+
+## EA and MACC Guidance
+
+### Enterprise Agreement (EA) Discounts
+
+- EA discounts are **custom-negotiated** — no published standard percentage
+- Typical range for mid-market customers: **10–15% off list price** on Azure-native services
+- Large commitments ($10M+/year): up to 20–25% possible
+- **Not all services receive the same discount** — Azure-native services (Static Web Apps, Container Apps, Redis, PostgreSQL, OpenAI) are typically covered; marketplace items like Neo4j AuraDB are often excluded from EA discounts but covered by MACC (see below)
+
+### MACC (Microsoft Azure Consumption Commitment)
+
+- MACC = pre-committed Azure spend contracted over 1–5 years in exchange for discounts
+- **Neo4j AuraDB for Azure counts 100% of pretax spend toward MACC** — it is Azure Marketplace benefit-eligible
+- Azure AI Foundry model inference (Claude, GPT-4o) also counts toward MACC
+- To verify: look for the **"Azure benefit eligible"** badge on the Azure Marketplace listing before purchasing
+
+### Reserved Capacity Discounts (No EA Required)
+
+| Service | 1-Year Reserved | 3-Year Reserved |
+|---|---|---|
+| PostgreSQL GP D2ds_v6 | ~40% off (~$98/mo) | ~60% off (~$65/mo) |
+| Azure Cache for Redis C1 | ~30% off (~$35/mo) | ~45% off (~$28/mo) |
+| Container Apps Dedicated | Available, varies | Available, varies |
+
+Reserved capacity is the fastest way to reduce cost without negotiating — commit for 1 year and save immediately.
+
+---
+
+## Migration Effort Summary
+
+| Component | Effort | Risk | Notes |
 |---|---|---|---|
-| Vercel → Azure Static Web Apps | Low | Low | No |
-| n8n Cloud → Azure Container Apps | Medium | Medium | Webhook URLs change |
-| Neo4j local → AuraDB | Medium | Medium | Data migration + index rebuild |
-| Anthropic → Azure AI Foundry | Low | Low | No |
-| OpenAI → Azure OpenAI | Low | Low | Minor SDK config |
-| Resend → Azure Comm Services | Low | Low | No |
-| Upstash → Azure Cache for Redis | Low | Low | Minor client code change |
-| ngrok | None | None | Eliminated |
-
-**Total estimated migration effort:** 2–3 weeks for a single engineer.
+| Vercel → Azure Static Web Apps | Low | Low | Env vars + staticwebapp.config.json |
+| n8n Cloud → Azure Container Apps | Medium | Medium | Webhook URLs change, re-configure credentials |
+| Neo4j local → AuraDB for Azure | Medium | Medium | dump → push-to-cloud, rebuild vector indexes |
+| Anthropic → Azure AI Foundry Claude | Low | Low | Endpoint + key change only |
+| OpenAI → Azure OpenAI | Low | Low | Minor SDK azureOpenAI flag |
+| Resend → Azure Comm Services | Low | Low | ~10 lines in send-code route |
+| Upstash → Azure Cache for Redis | Low | Low | Redis client npm package swap |
+| ngrok | None | None | Eliminated entirely |
+| **Total** | **2–3 weeks** | **Low–Medium** | Single engineer |
 
 ---
 
@@ -248,14 +225,20 @@ All prices are USD/month estimates based on Azure public pricing (East US region
 - Atlas API (`api.prod.alltrue-be.com`) — Varonis-hosted, no migration
 - Atlas Gateway — Varonis-hosted, no migration
 - GitHub source control — stays as-is
-- All application code — no changes required (env vars only)
-- n8n workflow logic — exported JSON imports cleanly into self-hosted n8n
-- Auth flow (JWT + OTP) — identical, just different email provider
+- All application and n8n workflow code — zero changes
+- Auth flow (JWT + OTP) — identical logic, different email provider
+- All Cypher queries — identical (Neo4j AuraDB is fully Cypher-compatible)
 
 ---
 
-## Key Recommendation
+## Recommended Path for a Varonis Azure Subscription Customer
 
-For an internal SE tool at current scale, **Production Grade (~$300-500/month)** is the right target. The main cost driver is Neo4j AuraDB Professional — if budget is a constraint, running Neo4j on an Azure VM (B2s ~$35/month) instead of AuraDB cuts that line significantly at the cost of managing the instance yourself (same situation as today, just in Azure instead of local).
+1. **Start with Option A — Production tier** (~$189–222/mo after EA discount)
+2. Purchase **Neo4j AuraDB Professional via Azure Marketplace** — counts toward MACC
+3. Purchase **Claude Sonnet 4.5 via Azure AI Foundry** — counts toward MACC, same model you use today
+4. Use **Azure OpenAI** for embeddings — EA-covered, same API surface
+5. Add **1-year reserved capacity** for PostgreSQL and Redis immediately — saves ~$30–40/mo with no other changes
+6. Upgrade to **AuraDB Business Critical** only if private networking or 99.95% SLA is a compliance requirement
 
-If Varonis has an existing Azure Enterprise Agreement, most of these services would be covered under committed spend — actual incremental cost may be significantly lower.
+**Total estimated monthly cost for Varonis (Azure EA customer, Option A Production):**
+**~$189–222/month** — likely lower if MACC committed spend applies credits to Neo4j and Foundry inference costs.
