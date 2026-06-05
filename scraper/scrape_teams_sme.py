@@ -23,7 +23,7 @@ Notes:
 import asyncio
 import json
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from playwright.async_api import async_playwright
 
@@ -36,13 +36,32 @@ CDP_URL = "http://localhost:9222"
 OUTPUT_DIR = Path(__file__).parent / "output" / "teams_sme"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# How far back to scrape (None = full history)
-# Set to a date string like "2026-01-01" to limit scrape depth
-# Last scrape: 2026-06-05 — only pull messages newer than this
-SCRAPE_SINCE = "2026-06-05"
-
 # Max scroll attempts before giving up (safety limit)
 MAX_SCROLL_ATTEMPTS = 500
+
+# ─── Auto-detect cutoff from last scrape ─────────────────────────────────────
+
+def get_last_scrape_date() -> str | None:
+    """
+    Read the scraped_at timestamp from the previous raw_threads_latest.json.
+    Returns a date string (YYYY-MM-DD) to use as SCRAPE_SINCE, or None for full history.
+    """
+    latest_path = OUTPUT_DIR / "raw_threads_latest.json"
+    if not latest_path.exists():
+        return None
+    try:
+        with open(latest_path, encoding="utf-8") as f:
+            data = json.load(f)
+        scraped_at = data.get("scraped_at", "")
+        if not scraped_at:
+            return None
+        # Parse ISO timestamp and return just the date portion
+        dt = datetime.fromisoformat(scraped_at.replace("Z", "+00:00"))
+        return dt.strftime("%Y-%m-%d")
+    except Exception:
+        return None
+
+SCRAPE_SINCE = get_last_scrape_date()
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -223,7 +242,7 @@ async def scrape_channel(page) -> dict[str, dict]:
                         "thread_id": tid,
                         "root": msg,
                         "replies": [],
-                        "scraped_at": datetime.utcnow().isoformat() + "Z",
+                        "scraped_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                     }
                 else:
                     # Update root if we find it (may have been added as placeholder)
@@ -235,7 +254,7 @@ async def scrape_channel(page) -> dict[str, dict]:
                         "thread_id": tid,
                         "root": None,  # will be filled when root is found
                         "replies": [],
-                        "scraped_at": datetime.utcnow().isoformat() + "Z",
+                        "scraped_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
                     }
                 threads[tid]["replies"].append(msg)
 
@@ -423,12 +442,12 @@ async def main():
 
     # ── Save raw output ───────────────────────────────────────────────────────
 
-    timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
     output_path = OUTPUT_DIR / f"raw_threads_{timestamp}.json"
     latest_path = OUTPUT_DIR / "raw_threads_latest.json"
 
     output = {
-        "scraped_at": datetime.utcnow().isoformat() + "Z",
+        "scraped_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "total_threads": len(sorted_threads),
         "total_messages": sum(1 + len(t["replies"]) for t in sorted_threads),
         "channel": "AI Security - SME",
