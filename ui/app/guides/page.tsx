@@ -131,8 +131,8 @@ export default function GuidesPage() {
       const { jobId } = fireData;
       if (!jobId) throw new Error("No job ID returned");
 
-      // Step 2 — poll until done (max 10 min)
-      const deadline = Date.now() + 10 * 60 * 1000;
+      // Step 2 — poll until done (max 5 min)
+      const deadline = Date.now() + 5 * 60 * 1000;
       while (Date.now() < deadline) {
         await new Promise((r) => setTimeout(r, 3000));
         const pollRes = await fetch(`/api/guides/status?jobId=${jobId}`);
@@ -146,7 +146,7 @@ export default function GuidesPage() {
         }
         // status === "pending" — keep polling
       }
-      throw new Error("Timed out waiting for guide (10 min limit)");
+      throw new Error("Timed out after 5 minutes — check n8n executions for errors");
     } catch (err) {
       setError(String(err));
     } finally {
@@ -353,7 +353,9 @@ export default function GuidesPage() {
                   ? "Retrieving Atlas knowledge…"
                   : elapsed < 90
                   ? "Claude is writing your guide…"
-                  : `Still working… (${elapsed}s)`}
+                  : elapsed < 180
+                  ? `Still writing… (${elapsed}s)`
+                  : `Taking longer than usual — if this persists, check n8n executions (${elapsed}s)`}
               </p>
             </div>
           </div>
