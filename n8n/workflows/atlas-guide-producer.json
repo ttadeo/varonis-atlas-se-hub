@@ -239,7 +239,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "={{ 'Bearer ' + $env.UPSTASH_KV_TOKEN }}"
+              "value": "={{ 'Bearer ' + $vars.UPSTASH_KV_TOKEN }}"
             },
             {
               "name": "Content-Type",
