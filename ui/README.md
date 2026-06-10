@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Atlas Learning Platform — UI
 
-## Getting Started
+Next.js frontend for the Atlas Learning Platform. Deployed to Vercel at [atlas-learning-platform.vercel.app](https://atlas-learning-platform.vercel.app).
 
-First, run the development server:
+See the [root README](../README.md) for full platform documentation.
+
+---
+
+## Local Development
 
 ```bash
+npm install
+cp .env.local.example .env.local  # fill in required vars (see below)
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Required Environment Variables
 
-## Learn More
+```bash
+# n8n webhooks
+NEXT_PUBLIC_N8N_WEBHOOK_URL=        # atlas-rag-query
+N8N_ARCHITECT_WEBHOOK_URL=          # atlas-architect
+N8N_GUIDES_WEBHOOK_URL=             # atlas-guide-producer
 
-To learn more about Next.js, take a look at the following resources:
+# Upstash Redis (async guide job results)
+KV_REST_API_URL=
+KV_REST_API_TOKEN=
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Auth
+SESSION_SECRET=                     # JWT signing key (32+ char random string)
+RESEND_API_KEY=                     # OTP email
+USERS=                              # user:password pairs for non-OTP access
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# LLMs (server-side only)
+ANTHROPIC_API_KEY=
+OPENAI_API_KEY=
 
-## Deploy on Vercel
+# Neo4j (direct bolt connection for some routes)
+NEO4J_URI=
+NEO4J_USER=
+NEO4J_PASSWORD=
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## API Routes
+
+All routes under `app/api/` require a valid `atlas_session` JWT cookie via `requireAuth()` in `lib/auth.ts`, except the auth endpoints themselves.
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/api/guides` | POST | Fire n8n guide generation, returns `jobId` |
+| `/api/guides/status` | GET | Poll guide completion from Upstash KV |
+| `/api/guides/callback` | POST | Legacy callback (no longer used — n8n writes direct to KV) |
+| `/api/architect` | POST | Architecture Builder via n8n |
+| `/api/chat` | POST | General Q&A via n8n |
+| `/api/sme/chat` | POST | SME-first chat via n8n |
+| `/api/sme/topics` | GET | Topic list from Neo4j |
+| `/api/auth/send-otp` | POST | Send OTP email (public) |
+| `/api/auth/verify-otp` | POST | Verify OTP, issue session cookie (public) |
+
+---
+
+## Key Files
+
+- `lib/auth.ts` — shared `requireAuth()` JWT helper. Use for every new API route.
+- `app/guides/page.tsx` — Guide Producer UI with fire-and-poll logic
+- `app/architect/page.tsx` — Architecture Builder
+- `app/knowledge/page.tsx` — SME Knowledge Base
+- `app/runtime/page.tsx` — AI Runtime Demo
+- `vercel.json` — function `maxDuration` overrides for long-running routes
