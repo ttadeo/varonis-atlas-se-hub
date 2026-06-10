@@ -75,4 +75,4 @@ Below you'll find our embedded GraphiQL explorer powered by Strawberry. This int
 - Access autocomplete suggestions based on the schema
 - Explore available types, queries, and mutations
 
-- V1 API (Default)- V2 API (Preview)[PreviousAI Investigation Handbook](/_docs/docs/handbooks/ai_investigation_handbook)[NextWhat's New in V3.3.0](/_docs/docs/release_notes/330)- [About Our GraphQL API](#about-our-graphql-api)[API Versions](#api-versions)- [Making Requests](#making-requests)- [Interactive GraphQL Explorer](#interactive-graphql-explorer)
+- V1 API (Default)- V2 API (Preview)[PreviousAI Investigation Handbook](/_docs/docs/handbooks/ai_investigation_handbook)[NextWhat's New in V3.4.0](/_docs/docs/release_notes/340)- [About Our GraphQL API](#about-our-graphql-api)[API Versions](#api-versions)- [Making Requests](#making-requests)- [Interactive GraphQL Explorer](#interactive-graphql-explorer)

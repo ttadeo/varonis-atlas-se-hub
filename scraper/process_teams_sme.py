@@ -7,15 +7,18 @@ Pipeline:
   2. Claude Sonnet → reconstruct thread, extract structured Q&A
   3. Claude Sonnet → cross-thread deduplication (mark superseded)
 
-Input:  scraper/output/teams_sme/raw_threads_latest.json
+Input:  scraper/output/teams_sme/regrouped_threads_latest.json
+        (or raw_threads_latest.json — pass --input <filename> to override)
 Output: scraper/output/teams_sme/processed_qa.json
 
 Usage:
     source scraper/scraper-env/bin/activate  (or your venv)
     pip install anthropic
     python scraper/process_teams_sme.py
+    python scraper/process_teams_sme.py --input raw_threads_latest.json
 """
 
+import argparse
 import json
 import os
 import re
@@ -29,8 +32,20 @@ import anthropic
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
 
-INPUT_PATH  = Path(__file__).parent / "output" / "teams_sme" / "raw_threads_latest.json"
-OUTPUT_DIR  = Path(__file__).parent / "output" / "teams_sme"
+OUTPUT_DIR = Path(__file__).parent / "output" / "teams_sme"
+
+def resolve_input_path(filename: str | None) -> Path:
+    """Resolve the input file, preferring regrouped over raw."""
+    base = Path(__file__).parent / "output" / "teams_sme"
+    if filename:
+        p = base / filename
+        if not p.exists():
+            p = Path(filename)  # treat as absolute/relative path
+        return p
+    # Default: prefer regrouped, fall back to raw
+    regrouped = base / "regrouped_threads_latest.json"
+    raw = base / "raw_threads_latest.json"
+    return regrouped if regrouped.exists() else raw
 
 # Model assignments by task
 MODEL_CLASSIFY  = "claude-haiku-4-5-20251001"   # Fast, cheap — binary keep/discard
@@ -43,13 +58,21 @@ RETRY_DELAY = 2  # seconds between retries
 
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
+def msg_timestamp(msg: dict) -> str:
+    """Get best available timestamp for a message — prefer derived over raw."""
+    ts = msg.get("derived_timestamp") or msg.get("timestamp") or ""
+    return ts[:16]  # YYYY-MM-DDTHH:MM
+
+
 def thread_to_text(thread: dict) -> str:
     """Convert a thread dict to readable text for LLM processing."""
     lines = []
     root = thread.get("root", {})
-    lines.append(f"[{root.get('timestamp', '')[:10]}] {root.get('author', 'Unknown')}: {root.get('text', '')}")
+    ts = msg_timestamp(root)
+    lines.append(f"[{ts}] {root.get('author', 'Unknown')}: {root.get('text', '')}")
     for reply in thread.get("replies", []):
-        lines.append(f"  [{reply.get('timestamp', '')[:10]}] {reply.get('author', 'Unknown')}: {reply.get('text', '')}")
+        ts = msg_timestamp(reply)
+        lines.append(f"  [{ts}] {reply.get('author', 'Unknown')}: {reply.get('text', '')}")
     return "\n".join(lines)
 
 
@@ -277,6 +300,17 @@ def deduplicate_qa(client: anthropic.Anthropic, qa_pairs: list[dict]) -> list[di
 # ─── Main Pipeline ────────────────────────────────────────────────────────────
 
 def main():
+    parser = argparse.ArgumentParser(description="Teams SME LLM Processing Pipeline")
+    parser.add_argument(
+        "--input", "-i",
+        default=None,
+        help="Input filename (in output/teams_sme/) or full path. "
+             "Defaults to regrouped_threads_latest.json if it exists, else raw_threads_latest.json."
+    )
+    args = parser.parse_args()
+
+    input_path = resolve_input_path(args.input)
+
     print("=" * 60)
     print("Teams SME Channel — LLM Processing Pipeline")
     print("=" * 60)
@@ -286,19 +320,19 @@ def main():
         print("Run: export ANTHROPIC_API_KEY=your_key_here")
         return
 
-    if not INPUT_PATH.exists():
-        print(f"ERROR: Input file not found: {INPUT_PATH}")
-        print("Run scrape_teams_sme.py first to generate raw thread data.")
+    if not input_path.exists():
+        print(f"ERROR: Input file not found: {input_path}")
+        print("Run scrape_teams_sme.py + regroup_threads.py first.")
         return
 
     client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY)
 
-    # Load raw threads
-    with open(INPUT_PATH, encoding="utf-8") as f:
+    # Load threads
+    with open(input_path, encoding="utf-8") as f:
         data = json.load(f)
 
     threads = data.get("threads", [])
-    print(f"\nLoaded {len(threads)} threads from {INPUT_PATH.name}")
+    print(f"\nLoaded {len(threads)} threads from {input_path.name}")
     print(f"Scraped at: {data.get('scraped_at', 'unknown')}\n")
 
     # ── Stage 1: Classify ─────────────────────────────────────────────────────
@@ -385,7 +419,7 @@ def main():
 
     output = {
         "processed_at": datetime.utcnow().isoformat() + "Z",
-        "source_file": str(INPUT_PATH.name),
+        "source_file": str(input_path.name),
         "stats": {
             "threads_input": len(threads),
             "threads_kept": len(kept),

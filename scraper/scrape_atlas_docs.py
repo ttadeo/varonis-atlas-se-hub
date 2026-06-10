@@ -108,13 +108,18 @@ async def login(page):
         print("Waiting for you to complete login...")
         print("(The script will continue automatically once you're logged in)\n")
 
-        # Wait until we land back on the Atlas docs domain
+        # Wait until we land back on the Atlas docs domain (not an auth0 intermediate redirect)
         await page.wait_for_url(
-            lambda url: "prod.alltrue-be.com" in url,
+            lambda url: "prod.alltrue-be.com" in url and "auth0" not in url,
             timeout=120000  # 2 minute timeout to log in
         )
         await page.wait_for_load_state("load", timeout=30000)
-        await page.wait_for_timeout(3000)  # Extra buffer for session cookie to settle
+        await page.wait_for_timeout(5000)  # Extra buffer for session cookie to settle
+
+        # Explicitly navigate to docs to confirm session is active
+        await page.goto(DOCS_BASE + "/overview/platform_and_applications")
+        await page.wait_for_load_state("domcontentloaded", timeout=30000)
+        await page.wait_for_timeout(3000)
 
     print("✓ Login successful — continuing with scrape")
 
@@ -285,7 +290,7 @@ async def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)  # headless=False so you can watch/debug
+        browser = await p.chromium.launch(headless=False, executable_path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
         context = await browser.new_context()
         page = await context.new_page()
 

@@ -176,6 +176,14 @@
     "file": "platform_services/getting_started_with_api_calls.md"
   },
   {
+    "title": "MCP Server for Coding Agents",
+    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/mcp_server",
+    "section": "platform_services",
+    "path": "platform_services/mcp_server",
+    "status": "success",
+    "file": "platform_services/mcp_server_for_coding_agents.md"
+  },
+  {
     "title": "AWS Bedrock",
     "url": "https://prod.alltrue-be.com/_docs/docs/providers/aws_bedrock",
     "section": "providers",
@@ -246,6 +254,14 @@
     "path": "",
     "status": "success",
     "file": "/graphql_api_reference.md"
+  },
+  {
+    "title": "What's New in V3.4.0",
+    "url": "https://prod.alltrue-be.com/_docs/docs/release_notes/340",
+    "section": "release_notes",
+    "path": "release_notes/340",
+    "status": "success",
+    "file": "release_notes/whats_new_in_v340.md"
   },
   {
     "title": "What's New in V3.3.0",

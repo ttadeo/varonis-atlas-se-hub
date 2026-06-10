@@ -90,6 +90,114 @@ You can register an MCP Server from the Catalog. The registration flow is design
 ## **Connection type**[​](#connection-type)
 During registration, you define whether the server is Marketplace or Internal, specify its transport type, configure authentication, and test the connection. The registration flow stores the server's configuration so the platform can perform discovery and keep inventory data up to date.
 
+### **Transport types**[​](#transport-types)
+Atlas supports three MCP transports. The transport is fixed at registration and determines which authentication options are available.
+
+TransportDescriptionTypical use**HTTP** (Streamable)The current MCP transport. MCP Inspector POSTs JSON-RPC requests to a single URL and consumes the streaming response.Managed and self-hosted servers exposed over HTTPS. The default choice for production.**SSE** (Server-Sent Events)The earlier streaming transport. MCP Inspector opens a `GET` for the event stream and `POST` requests on a paired URL.Legacy MCP servers that haven't migrated to Streamable HTTP yet.**STDIO**The subprocess transport. Atlas spawns the MCP server as a child process and communicates over its stdin/stdout.Local MCP servers packaged as binaries or `npx` / `uvx` invocations — mirrors the Claude Desktop and Cursor format.
+### **Authentication types**[​](#authentication-types)
+The authentication options available during registration depend on the transport you selected.
+
+AuthenticationHTTPSSESTDIOWhen to use**None**✓✓✓The server doesn't require client authentication.**API Key** (Bearer)✓✓—The server expects a static `Authorization: Bearer &lt;token&gt;` header on every request.**Environment Variable**——✓STDIO servers that read secrets from process environment variables (for example, `OPENAI_API_KEY`).**OAuth**✓✓—Vendors that implement RFC 7591 Dynamic Client Registration (Notion, Linear, …) or vendors where you have a pre-registered OAuth app (Atlassian, GitHub, Plaid, …).**AWS IAM (SigV4)**✓——MCP servers fronted by AWS IAM — most commonly Amazon Bedrock AgentCore runtimes, but also any server behind API Gateway with IAM authorization.
+#### **API Key**[​](#api-key)
+For HTTP and SSE servers that accept a static bearer token, paste the token under **API Key**. Atlas adds `Authorization: Bearer &lt;token&gt;` to every request. The token is stored encrypted and is not displayed back after submission.
+
+#### **Environment Variable**[​](#environment-variable)
+STDIO servers receive secrets through process environment variables. Paste the standard MCP launch configuration — the same JSON shape that Claude Desktop and Cursor use:
+
+```
+{
+ "command": "uvx",
+ "args": ["mcp-server-time", "--local-timezone", "UTC"],
+ "env": { "OPENAI_API_KEY": "sk-..." }
+}
+
+```
+Each `env` entry is stored as an encrypted secret and injected into the subprocess at runtime. Values inside `env` are not displayed back after submission. Arguments in `args` are sent verbatim; if you embed a recognizable secret prefix there, Atlas warns you and recommends moving the value into `env`.
+
+#### **OAuth**[​](#oauth)
+For HTTP and SSE servers protected by OAuth 2.1, Atlas handles the authorization-code flow on the customer's behalf. The setup varies by whether the vendor supports auto-registration:
+
+- **Auto-registered (Notion, Linear, …)** — Leave **Client ID** and **Client secret** blank. Atlas calls the vendor's RFC 7591 Dynamic Client Registration endpoint and registers a new OAuth client per MCP server.
+- **Pre-registered (Atlassian, GitHub, Plaid, …)** — Create an OAuth application at the vendor's developer console, register the Atlas callback URL shown in the form, then paste the resulting client ID and client secret.
+
+For vendors that don't expose RFC 9728 / RFC 8414 discovery (or that implement non-standard variants), an **Advanced OAuth configuration** disclosure lets you override the authorization URL, token URL, registration URL, and scope per server. Discovery still runs and Atlas merges your overrides on top, per field.
+
+#### **AWS IAM (SigV4)**[​](#aws-iam-sigv4)
+For MCP servers fronted by AWS IAM — most commonly Amazon Bedrock AgentCore — Atlas signs each request with AWS Signature V4. Choose how Atlas obtains the AWS credentials used for signing:
+
+- **Access Key** — Paste long-lived AWS access keys (with an optional session token for temporary credentials).
+- **Assume Role** — Provide an IAM role ARN in your AWS account. Atlas calls `sts:AssumeRole` on each refresh window. The role must trust the Atlas platform account, carry the required tag, and grant the relevant invoke permissions — see [Setting up an IAM role for AWS IAM (SigV4)](#setting-up-an-iam-role-for-aws-iam-sigv4) below for the full template.
+
+For Amazon Bedrock AgentCore servers, you can paste the **agent runtime ARN** instead of constructing the invocation URL manually. Atlas builds the invocation URL with the ARN correctly percent-encoded and pre-fills the AWS region from the ARN's region segment. The URL and region fields remain editable afterward, so you can still target a specific runtime endpoint qualifier or override either value if needed.
+
+### **Setting up an IAM role for AWS IAM (SigV4)**[​](#setting-up-an-iam-role-for-aws-iam-sigv4)
+The **Assume Role** credential mode for [AWS IAM (SigV4)](#aws-iam-sigv4) requires you to create an IAM role in your AWS account that Atlas can assume. The role must include:
+
+- A **trust relationship** allowing the Atlas platform AWS account to assume it.
+- **Permissions** to invoke the target MCP runtime (for example, `bedrock-agentcore:InvokeAgentRuntime` for Bedrock AgentCore servers).
+- The **required tag** `varonis:atlas-mcp-sigv4-assume=true` — see [Required role tag](#required-role-tag) below for the full rationale.
+
+The role name does not matter.
+
+#### **Required role tag**[​](#required-role-tag)
+Add the following tag to the role:
+
+`varonis:atlas-mcp-sigv4-assume=true`
+
+The Atlas platform's `sts:AssumeRole` IAM policy is scoped by `iam:ResourceTag` rather than by wildcard `Resource`, so AWS STS rejects any AssumeRole call where the target role is missing this tag. The check happens at the STS layer in AWS — no Atlas application code is involved. The result is that a compromised Atlas worker can only assume customer roles you've explicitly opted in to this flow, never arbitrary roles that happen to trust the platform account for other reasons.
+
+This parallels the `varonis:atlas-bedrock-assume=true` convention used for [AWS Bedrock LLM endpoints](/_docs/docs/providers/aws_bedrock); the tags are separate so each feature's scope stays independent.
+
+#### **Example trust relationship**[​](#example-trust-relationship)
+```
+{
+ "Version": "2012-10-17",
+ "Statement": [
+ {
+ "Effect": "Allow",
+ "Principal": {
+ "AWS": "arn:aws:iam::&lt;ATLAS_PLATFORM_ACCOUNT_ID&gt;:root"
+ },
+ "Action": "sts:AssumeRole"
+ }
+ ]
+}
+
+```
+Replace `&lt;ATLAS_PLATFORM_ACCOUNT_ID&gt;` with the Atlas control-plane AWS account ID provided for your deployment.
+
+#### **Example permission policy (Bedrock AgentCore)**[​](#example-permission-policy-bedrock-agentcore)
+For Bedrock AgentCore servers, attach a policy that allows `InvokeAgentRuntime` on the runtime ARNs you want Atlas to reach. The example below is the minimal policy verified end-to-end against an AgentCore runtime:
+
+```
+{
+ "Version": "2012-10-17",
+ "Statement": [
+ {
+ "Effect": "Allow",
+ "Action": [
+ "bedrock-agentcore:InvokeAgentRuntime"
+ ],
+ "Resource": [
+ "arn:aws:bedrock-agentcore:&lt;REGION&gt;:&lt;ACCOUNT_ID&gt;:runtime/*"
+ ]
+ }
+ ]
+}
+
+```
+Replace `&lt;REGION&gt;` with the AWS region of your AgentCore runtimes (for example, `us-west-2`) and `&lt;ACCOUNT_ID&gt;` with your AWS account ID. Narrow the `Resource` list to specific runtime IDs (for example, `runtime/server-abc123`) if you want to limit which runtimes Atlas can invoke through this role.
+
+Two cases require extending the example:
+
+- If your agents are invoked with end-user identity context, add `bedrock-agentcore:InvokeAgentRuntimeForUser` to the `Action` list.
+- If you target a named runtime endpoint qualifier (anything other than the default), add `arn:aws:bedrock-agentcore:&lt;REGION&gt;:&lt;ACCOUNT_ID&gt;:runtime/*/runtime-endpoint/*` to the `Resource` list.
+
+For MCP servers behind API Gateway with IAM authorization, replace the action and resource with the appropriate API Gateway invoke permission (`execute-api:Invoke` on `arn:aws:execute-api:&lt;REGION&gt;:&lt;ACCOUNT_ID&gt;:&lt;API_ID&gt;/&lt;STAGE&gt;/&lt;METHOD&gt;/&lt;RESOURCE&gt;`).
+
+#### **Configuring the role in Atlas**[​](#configuring-the-role-in-atlas)
+Once the role exists with the trust relationship, the required tag, and the invoke permissions in place, paste the role ARN into the **IAM Role ARN** field on the MCP server registration form. The first **Test Connection** attempt exercises the `sts:AssumeRole` round-trip and the runtime invocation in sequence; if the trust doesn't allow the Atlas account, the role is missing the tag, or the role lacks the invoke permission, AWS surfaces the corresponding error and the form shows it inline so you can correct the role and retry without leaving the page.
+
 ## **Scope**[​](#scope)
 When registering an MCP Server, you assign it to the relevant projects. Scope determines which projects and organizations the MCP Server belongs to in Atlas. Assign the server to the locations where it is used so it appears in the correct inventory, catalog, and governance views.
 
@@ -245,4 +353,4 @@ A typical governance workflow for MCP Security looks like this:
 - Publish the VMCP and validate the effective tools.
 - Enable MCP Quarantine to enforce the allowlist at runtime.
 - Use Activity, Policies, Issues, and Reports to monitor usage and maintain posture over time.
-[PreviousAI Runtime Protection](/_docs/docs/applications/ai_gateway)[NextAI Investigation](/_docs/docs/applications/ai_monitor)- [MCP Security](#mcp-security)- [**Why use MCP Security**](#why-use-mcp-security)- [**MCP Server**](#mcp-server)- [**Tool**](#tool)- [**Shadow MCP**](#shadow-mcp)- [**Virtual MCP**](#virtual-mcp)- [**MCP Quarantine**](#mcp-quarantine)- [**Discover MCP usage**](#discover-mcp-usage)- [**Review MCP Servers and tools**](#review-mcp-servers-and-tools)- [**Build allowlists with Virtual MCPs**](#build-allowlists-with-virtual-mcps)- [**Enforce the allowlist at runtime**](#enforce-the-allowlist-at-runtime)- [**Monitor posture and activity over time**](#monitor-posture-and-activity-over-time)- [**Marketplace and Internal MCP Servers**](#marketplace-and-internal-mcp-servers)- [**When a connection appears as Shadow MCP**](#when-a-connection-appears-as-shadow-mcp)- [**Resolve a Shadow MCP**](#resolve-a-shadow-mcp)- [**Connection type**](#connection-type)- [**Scope**](#scope)- [**What happens after registration**](#what-happens-after-registration)- [**Create a Virtual MCP**](#create-a-virtual-mcp)- [**VMCP scope**](#vmcp-scope)- [**Draft and published versions**](#draft-and-published-versions)- [**Add MCP Servers and tools to a VMCP**](#add-mcp-servers-and-tools-to-a-vmcp)- [**Effective tools**](#effective-tools)- [**Tool Update Handling**](#tool-update-handling)- [**What MCP Quarantine checks**](#what-mcp-quarantine-checks)- [**Policy inheritance**](#policy-inheritance)- [**Supported MCP Policies**](#supported-mcp-policies)
+[PreviousAI Runtime Protection](/_docs/docs/applications/ai_gateway)[NextAI Investigation](/_docs/docs/applications/ai_monitor)- [MCP Security](#mcp-security)- [**Why use MCP Security**](#why-use-mcp-security)- [**MCP Server**](#mcp-server)- [**Tool**](#tool)- [**Shadow MCP**](#shadow-mcp)- [**Virtual MCP**](#virtual-mcp)- [**MCP Quarantine**](#mcp-quarantine)- [**Discover MCP usage**](#discover-mcp-usage)- [**Review MCP Servers and tools**](#review-mcp-servers-and-tools)- [**Build allowlists with Virtual MCPs**](#build-allowlists-with-virtual-mcps)- [**Enforce the allowlist at runtime**](#enforce-the-allowlist-at-runtime)- [**Monitor posture and activity over time**](#monitor-posture-and-activity-over-time)- [**Marketplace and Internal MCP Servers**](#marketplace-and-internal-mcp-servers)- [**When a connection appears as Shadow MCP**](#when-a-connection-appears-as-shadow-mcp)- [**Resolve a Shadow MCP**](#resolve-a-shadow-mcp)- [**Connection type**](#connection-type)[**Transport types**](#transport-types)- [**Authentication types**](#authentication-types)- [**Setting up an IAM role for AWS IAM (SigV4)**](#setting-up-an-iam-role-for-aws-iam-sigv4)- [**Scope**](#scope)- [**What happens after registration**](#what-happens-after-registration)- [**Create a Virtual MCP**](#create-a-virtual-mcp)- [**VMCP scope**](#vmcp-scope)- [**Draft and published versions**](#draft-and-published-versions)- [**Add MCP Servers and tools to a VMCP**](#add-mcp-servers-and-tools-to-a-vmcp)- [**Effective tools**](#effective-tools)- [**Tool Update Handling**](#tool-update-handling)- [**What MCP Quarantine checks**](#what-mcp-quarantine-checks)- [**Policy inheritance**](#policy-inheritance)- [**Supported MCP Policies**](#supported-mcp-policies)

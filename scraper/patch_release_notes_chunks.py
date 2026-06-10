@@ -84,7 +84,8 @@ def main():
             # IMPORTANT: Embed using the heading only (not the full text).
             # The heading "What's New in V3.3.0" matches version queries perfectly.
             # The enriched text is for Claude to read during generation.
-            embed_input = f"What's New in {version_title.replace(\"What's New in \", '')} — release notes new features changelog"
+            version_short = version_title.replace("What's New in ", "")
+            embed_input = f"What's New in {version_short} — release notes new features changelog"
             emb = client.embeddings.create(
                 input=embed_input,
                 model=EMBED_MODEL

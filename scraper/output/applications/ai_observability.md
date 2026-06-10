@@ -54,7 +54,7 @@ You can also configure whether AI Runtime Protection prompts and responses are s
 ## Permissions in the Observability Layer[​](#permissions-in-the-observability-layer)
 There are two dimensions with which you control how users can see data stored in OpenSearch.
 
-The first is role-based. As in other parts of the system, you manage access using roles as defined [here](/_docs/platform_services/account_mgmt). The system has built-in roles pertaining to each of the data categories in the OpenSearch indexes (e.g., ai-ocsf-firewall vs. ai-ocsf-spm), allowing you to provide access appropriately.
+The first is role-based. As in other parts of the system, you manage access using roles as defined [here](/_docs/docs/platform_services/admin_console#user-roles). The system has built-in roles pertaining to each of the data categories in the OpenSearch indexes (e.g., ai-ocsf-firewall vs. ai-ocsf-spm), allowing you to provide access appropriately.
 
 Available roles for controlling OpenSearch authorization:
 

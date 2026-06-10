@@ -82,17 +82,76 @@ Conditions: None
 - Select a project, choose the Manage tab, select Access Control, under Collaborators choose Add Collaborators, and select Add Service IDs
 - Search for the newly added Service ID by name, select it, give it the Viewer role, and add it to the project
 - Repeat for each project for which you want to add discovery permissions
-Follow Databricks instructions for more details [here](https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html#language-Python) and [here](https://docs.databricks.com/en/admin/users-groups/service-principals.html):
+The TRiSM Hub authenticates to Databricks using OAuth machine-to-machine (M2M) with a service principal you create in your Databricks account. Discovery runs in two authentication hops, both of which must succeed:
 
-- Create a service principal in the account and assign it to relevant workspaces.
-- Assign the Account Admin role to the Databricks service principal.
-- Grant access to the principal for the “Service principal: User or Manager” role in Permission.
-- Create an M2M OAuth secret for the service principal.
-- Enter the client secret and client ID in the Varonis screen.
-To support observability follow the instructions [here](https://docs.databricks.com/en/security/auth-authz/access-control/service-principal-acl.html):
+- **Account-level auth** — the TRiSM Hub calls the account OIDC token endpoint to get an account-scoped access token, then lists the workspaces under your account.
+- **Workspace-level auth** — for each workspace, the TRiSM Hub calls the workspace OIDC token endpoint to mint a workspace-scoped token, then enumerates resources in that workspace.
+The same service principal must be granted (a) an account-level role with permission to list workspaces, and (b) workspace membership with appropriate entitlements in every workspace you want the TRiSM Hub to scan. Granting only one of these is the most common cause of discovery failures.
+**Who needs to do this:** someone with the **Account Admin** role on the Databricks account console, and **Workspace Admin** on each workspace you want scanned.
+**What you will collect.** By the end of this setup you will have four values to enter into the TRiSM Hub:
+FieldExampleWhere it comes from`host``https://accounts.cloud.databricks.com` (AWS), `https://accounts.azuredatabricks.net` (Azure), or `https://accounts.gcp.databricks.com` (GCP)The Databricks **account console** URL for your cloud.`account_id``b495f5af-2d52-4ebb-b1ec-ee069c0eb663`Account console → top-right user menu → copy the **Account ID**.`client_id``9d1e3a7c-8b2f-...`The **Application ID** of the OAuth secret you generate below.`client_secret`Shown once on generationThe **Secret** value you generate below. Databricks shows this only once; copy it immediately.Only the account-level `host` is entered into the TRiSM Hub — per-workspace hosts are discovered automatically once the account-level connection is established, so do not enter a workspace URL here. If you lose the `client_secret` you must generate a new one — there is no way to retrieve an existing secret.
+**Account-level setup.** Sign in to the Databricks account console (not a workspace) as an Account Admin.
 
-- Add metastore-level managed storage.
-- Grant READ FILES and BROWSER permissions to your Unity Catalog external locations.
+- 
+Create the service principal.
+
+Open **User Management** → **Service Principals**.
+- Click **Add service principal**.
+- Choose **Databricks managed** (do not select a federated identity unless you have a specific reason to).
+- Give it a clear name, e.g. `Varonis-discovery-sp`.
+- Click **Add**.
+
+- 
+Assign the **Account Admin** role.
+
+Click into the service principal you just created.
+- Open the **Roles** tab.
+- Enable **Account admin**.
+
+The Account Admin role lets the TRiSM Hub list every workspace under your account and (for Unity Catalog discovery) read metastore-level objects. If your security posture requires a narrower role, contact your account team — a custom role is possible but currently has to be validated case by case.
+
+- 
+(Unity Catalog only) Grant metastore admin. If you use Unity Catalog and want the TRiSM Hub to discover catalogs, schemas, tables, external locations, and model registry entries, open **Catalog** in the account console, select your metastore, and either set the service principal (or a group containing it) as the **Metastore admin**, or grant the following specific privileges:
+
+`USE_CATALOG` on each catalog the TRiSM Hub should see
+- `USE_SCHEMA` on the schemas inside those catalogs
+- `BROWSE` on catalogs and schemas (to enumerate metadata without reading row data)
+- `READ_VOLUME` if you want volume metadata discovered
+
+- 
+Generate the OAuth secret.
+
+Still on the service principal detail page, open the **Credentials &amp; secrets** tab.
+- Click **Generate secret** under the **OAuth secrets** section.
+- Pick a lifetime (90 days minimum recommended; the TRiSM Hub will alert before expiry).
+- Copy both values: the **Client ID** (also the service principal's Application ID) and the **Secret**. The secret is shown only once.
+
+**Workspace-level setup.** Repeat the following for each workspace the TRiSM Hub should discover. Account-level admin does not automatically grant workspace access — a service principal that exists at the account level but is not added to a workspace will fail to mint workspace-scoped tokens, and the TRiSM Hub will report an authentication error for every resource type in that workspace.
+
+- Add the service principal to the workspace from the account console.
+
+In the account console, open **Workspaces**.
+- Click the workspace the TRiSM Hub should scan.
+- Open the **Permissions** tab.
+- Click **Add permissions**, search for your service principal (by name or Application ID), and add it with the **Admin** permission level.
+
+- Grant entitlements inside the workspace.
+
+Open the workspace itself.
+- Go to **Settings** (gear icon, bottom-left) → **Identity and access** → **Service principals**.
+- If the service principal is not already listed, click **Add service principal** and search by the Application ID (the `client_id` from the previous section).
+- Click into the service principal.
+- Under **Entitlements**, enable **Workspace admin** (recommended).
+
+**Verify before sending credentials.** You can confirm the setup is correct before entering anything in the TRiSM Hub. Use any HTTP client (the Databricks CLI, Postman, or a small script). Both checks below should succeed.
+The Databricks CLI offers the same check via `databricks auth token` after configuring an OAuth M2M profile. See the Databricks docs section [OAuth machine-to-machine authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html#language-Python) for the exact CLI invocation for your platform.
+*Account-level token check:*
+Endpoint`{host}/oidc/accounts/{account_id}/v1/token`AuthHTTP Basic with `client_id` / `client_secret`Body (form-encoded)`grant_type=client_credentials` and `scope=all-apis`Expected responseHTTP 200 with a JSON body containing an `access_token`If you get `invalid_client`, the `client_id` or `client_secret` is wrong, or the OAuth secret was revoked or expired. If you get `invalid_request`, the `account_id` in the URL does not match the account that owns the service principal — verify the SP belongs to this account. HTTP 404 usually means the wrong cloud (AWS / Azure / GCP) host or wrong `account_id`.
+*Workspace-level token check:*
+Endpoint`https://{workspace-host}/oidc/v1/token`AuthHTTP Basic with the same `client_id` / `client_secret`Body (form-encoded)`grant_type=client_credentials` and `scope=all-apis`Expected responseHTTP 200 with an `access_token`Run this for at least one workspace you want the TRiSM Hub to scan. HTTP 401 means the service principal is not a member of this workspace — re-check the workspace-level setup steps. HTTP 403 means the SP is a member of the workspace but lacks the entitlement needed for the operation — verify the Workspace admin entitlement.
+**Enter the credentials in the TRiSM Hub.** Once both verification calls succeed, enter the four values (`host`, `account_id`, `client_id`, `client_secret`) on the Cloud Accounts screen. Once the credentials are confirmed, a Databricks discovery scan will run automatically.
+**Troubleshooting:**
+SymptomMost likely causeWhere to fix`Failed to authenticate with Databricks` on every scan, no workspaces discoveredAccount-level OAuth failing: wrong `client_id` or `client_secret`, secret expired, or SP not provisioned at account level.Account-level setup steps 1 and 4 — and re-run the account-level token check.Workspaces are listed but every resource fails with 401Service principal is at account level but not a member of the workspace.Workspace-level setup — re-run the workspace-level token check.Some workspaces work, others failService principal added to some workspaces but not others, or different entitlements per workspace.Repeat the workspace-level setup for each failing workspace.Workspace auth succeeds but certain resource types are missingSP has workspace access but is missing entitlements for those resource types (e.g. Unity Catalog privileges, model registry access).Account-level setup step 3 (Unity Catalog) and the workspace-level entitlements step.`invalid_request` from the account token endpoint`account_id` in the credentials does not match the account that owns the SP — e.g. you have multiple Databricks accounts and used the wrong one.Re-copy the Account ID from the user menu of the same console where the SP was created.For background on the underlying Databricks concepts, see the Databricks docs for [service principals](https://docs.databricks.com/en/admin/users-groups/service-principals.html), [OAuth M2M authentication](https://docs.databricks.com/en/dev-tools/auth/oauth-m2m.html#language-Python), and [service principal ACLs](https://docs.databricks.com/en/security/auth-authz/access-control/service-principal-acl.html).
 
 ### Adding a Code Repository[​](#adding-a-code-repository)
 Code scanning automatically discovers and tracks AI resources in your code repositories by identifying libraries, models, and notebooks relevant to your AI projects. To add a code repository for AI resource scanning, navigate to the Technologies tab and click the Add New button. Then select Add New Repository and choose from the available version control systems (GitHub, BitBucket, GitLab, Azure DevOps, or Hugging Face). You will need to provide an API key with the necessary permissions, which may require assistance from your repository admin.
