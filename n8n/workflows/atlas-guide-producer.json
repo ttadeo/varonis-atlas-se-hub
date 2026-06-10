@@ -219,7 +219,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const raw = $input.first().json.content[0].text;\nconst cleaned = raw.replace(/^```json\\n/, '').replace(/\\n```$/, '').trim();\n\nlet guide;\ntry {\n  const parsed = JSON.parse(cleaned);\n  guide = parsed.guide;\n} catch (e) {\n  // If Claude returned raw markdown without JSON wrapping, use as-is\n  guide = raw;\n}\n\n// jobId was sent by Vercel in the original webhook payload\nconst jobId = $('Webhook').item.json.body.jobId || null;\n\nreturn [{ json: { guide, jobId } }];\n"
+        "jsCode": "const raw = $input.first().json.content[0].text;\nconst cleaned = raw.replace(/^```json\\n/, '').replace(/\\n```$/, '').trim();\n\nlet guide;\ntry {\n  const parsed = JSON.parse(cleaned);\n  guide = parsed.guide;\n} catch (e) {\n  // If Claude returned raw markdown without JSON wrapping, use as-is\n  guide = raw;\n}\n\n// jobId was sent by Vercel in the original webhook payload\nconst jobId = $('Webhook').item.json.body.jobId || null;\n\n// Pre-build the Upstash pipeline payload as a serialized string\n// so the HTTP Request node can send it as a raw body without re-parsing\nconst kvValue = JSON.stringify({ status: 'done', guide });\nconst kvBody = JSON.stringify([['SET', 'guide:' + jobId, kvValue, 'EX', '3600']]);\n\nreturn [{ json: { guide, jobId, kvBody } }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -248,8 +248,9 @@
           ]
         },
         "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "=[[ \"SET\", \"guide:\" + $json.jobId, JSON.stringify({status: \"done\", guide: $json.guide}), \"EX\", \"3600\" ]]",
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.kvBody }}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
