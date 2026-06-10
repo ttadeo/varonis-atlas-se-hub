@@ -32,6 +32,9 @@ const CONCERN_OPTIONS = [
   { id: "model_risk", label: "Model Risk & Hallucination" },
   { id: "ip_exfiltration", label: "IP / Source Code Exfiltration" },
   { id: "vendor_risk", label: "Third-Party AI Vendor Risk" },
+  { id: "ide_coding_agents", label: "IDE & Coding Agent Coverage (VS Code, Copilot, Cursor)" },
+  { id: "proxy_gaps", label: "AI Proxy Coverage Gaps (personal accounts, Claude Desktop, browser-based AI)" },
+  { id: "mcp_security", label: "MCP Server Security & Agent Tool Governance" },
 ];
 
 // ─── Types ────────────────────────────────────────────────────────────────────

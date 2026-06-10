@@ -28,6 +28,12 @@ const GUIDE_TYPES = [
     defaultTopic: "Atlas compliance controls and audit trail capabilities",
   },
   {
+    id: "proxy_coverage",
+    label: "AI Runtime Proxy Coverage Analysis",
+    description: "Per-surface coverage map — which AI tools are natively proxied, which need workarounds, which are visibility-only",
+    defaultTopic: "Atlas AI Gateway proxy coverage analysis for this customer's AI tool stack",
+  },
+  {
     id: "problem_solution",
     label: "Problem → Solution Write-Up",
     description: "Document a successful customer engagement — the problem, how Atlas solved it",
