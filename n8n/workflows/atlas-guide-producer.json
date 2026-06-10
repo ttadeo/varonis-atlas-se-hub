@@ -233,10 +233,23 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $json.callbackUrl }}",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $env.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"jobId\": {{ JSON.stringify($json.jobId) }},\n  \"guide\": {{ JSON.stringify($json.guide) }}\n}",
+        "jsonBody": "=[[ \"SET\", \"guide:\" + $json.jobId, JSON.stringify({status: \"done\", guide: $json.guide}), \"EX\", \"3600\" ]]",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -246,7 +259,7 @@
         48
       ],
       "id": "63c98738-3d9a-4dbc-b2b4-84bc475856e6",
-      "name": "POST to Callback"
+      "name": "Write Guide to KV"
     }
   ],
   "pinData": {},
@@ -343,7 +356,7 @@
       "main": [
         [
           {
-            "node": "POST to Callback",
+            "node": "Write Guide to KV",
             "type": "main",
             "index": 0
           }
