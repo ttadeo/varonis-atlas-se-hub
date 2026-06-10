@@ -5,12 +5,18 @@ const KV_URL   = process.env.KV_REST_API_URL ?? "";
 const KV_TOKEN = process.env.KV_REST_API_TOKEN ?? "";
 
 async function kvGet(key: string): Promise<string | null> {
-  const res = await fetch(`${KV_URL}/get/${encodeURIComponent(key)}`, {
-    headers: { Authorization: `Bearer ${KV_TOKEN}` },
+  // Use /pipeline endpoint — consistent with how we write (avoids URL-encoding quirks)
+  const res = await fetch(`${KV_URL}/pipeline`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${KV_TOKEN}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify([["GET", key]]),
   });
   if (!res.ok) return null;
   const data = await res.json();
-  return data?.result ?? null;
+  return data?.[0]?.result ?? null;
 }
 
 // GET /api/guides/status?jobId=xxx

@@ -5,13 +5,14 @@ const KV_TOKEN = process.env.KV_REST_API_TOKEN ?? "";
 const TTL_SECS = 3600; // keep results for 1 hour
 
 async function kvSet(key: string, value: string): Promise<void> {
-  await fetch(`${KV_URL}/set/${encodeURIComponent(key)}`, {
+  // Use /pipeline endpoint so large JSON values don't get mangled in the URL path
+  await fetch(`${KV_URL}/pipeline`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${KV_TOKEN}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ value, ex: TTL_SECS }),
+    body: JSON.stringify([["SET", key, value, "EX", String(TTL_SECS)]]),
   });
 }
 
