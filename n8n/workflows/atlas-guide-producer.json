@@ -5,26 +5,71 @@
       "parameters": {
         "httpMethod": "POST",
         "path": "atlas-guide-producer",
-        "responseMode": "responseNode",
+        "responseMode": "immediately",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -528,
-        -16
+        16,
+        48
       ],
-      "id": "43a68112-7c34-4632-83c4-2fe5bb2ee27d",
+      "id": "96d1097d-0b3d-4ce1-b3bc-c43643319ff5",
       "name": "Webhook",
       "webhookId": "20ee4da0-f8a9-481d-9354-b21f89314bfa"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "https://ttadeo.app.n8n.cloud/webhook/atlas-rag-query",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\": \"text-embedding-3-small\", \"input\": {{ JSON.stringify($json.body.topic + ' ' + $json.body.guideType + ' Atlas AI Security ' + ($json.body.techStack || '') + ' ' + ($json.body.industry || '')) }}}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        240,
+        48
+      ],
+      "id": "07182d53-b765-43ed-a738-7a12d0fc2991",
+      "name": "Embed Topic",
+      "credentials": {
+        "openAiApi": {
+          "id": "QKOKask5bV39Hn2N",
+          "name": "OpenAI - Atlas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const embedding = $input.first().json.data[0].embedding;\n\n// Query DocChunk nodes â top 10 for comprehensive guide coverage\nconst body = JSON.stringify({\n  statements: [{\n    statement: \"CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 10, $embedding) YIELD node, score WHERE 'DocChunk' IN labels(node) RETURN node.heading AS heading, node.text AS text, node.title AS title, node.section AS section, score ORDER BY score DESC\",\n    parameters: { embedding: embedding }\n  }]\n});\n\nreturn [{ json: { requestBody: body, embedding: embedding } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        464,
+        48
+      ],
+      "id": "20bfc279-bdd0-4cc3-8c33-bf5eea3845dd",
+      "name": "Prepare Doc Query"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://uncompendious-unpurchased-shanita.ngrok-free.dev/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
             {
               "name": "ngrok-skip-browser-warning",
               "value": "true"
@@ -32,28 +77,109 @@
           ]
         },
         "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
         "bodyParameters": {
           "parameters": [
-            {
-              "name": "question",
-              "value": "=={{ $json.body.topic + ' ' + $json.body.guideType + ' Atlas ' + $json.body.techStack }}"
-            },
-            {
-              "name": "sessionId",
-              "value": "=={{ $json.body.topic }}"
-            }
+            {}
           ]
         },
+        "jsonBody": "={{ $json.requestBody }}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -208,
-        -16
+        688,
+        48
       ],
-      "id": "2ee2fb00-bd07-4164-b79c-73c25da3b6fa",
-      "name": "RAG Search"
+      "id": "bca5af9b-2d28-463e-b7de-15779e38236a",
+      "name": "Query DocChunks",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lgILDx4ml8xXy6yX",
+          "name": "Header Auth account"
+        },
+        "httpBasicAuth": {
+          "id": "kENlY4V8sLKJinYH",
+          "name": "Neo4j-Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get embedding from the Embed Topic node\nconst embedding = $('Embed Topic').first().json.data[0].embedding;\n\n// Query SMEKnowledge nodes via RELATED_TO traversal from matching DocChunks\nconst body = JSON.stringify({\n  statements: [{\n    statement: \"CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 10, $embedding) YIELD node AS chunk, score MATCH (sme:SMEKnowledge)-[:RELATED_TO]->(chunk) RETURN sme.question AS question, sme.answer AS answer, sme.topic AS topic, sme.confidence AS confidence, score ORDER BY score DESC LIMIT 6\",\n    parameters: { embedding: embedding }\n  }]\n});\n\nreturn [{ json: { requestBody: body } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        48
+      ],
+      "id": "3992628b-8ca0-4462-8c37-28c0bf3db295",
+      "name": "Prepare SME Query"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://uncompendious-unpurchased-shanita.ngrok-free.dev/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "ngrok-skip-browser-warning",
+              "value": "true"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "jsonBody": "={{ $json.requestBody }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1136,
+        48
+      ],
+      "id": "52f25cb8-4233-4ea9-8a75-2fbad569e35e",
+      "name": "Query SMEKnowledge",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lgILDx4ml8xXy6yX",
+          "name": "Header Auth account"
+        },
+        "httpBasicAuth": {
+          "id": "kENlY4V8sLKJinYH",
+          "name": "Neo4j-Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build doc context from DocChunk results\nconst docResults = $('Query DocChunks').first().json.results[0].data;\nconst docChunks = docResults.map(row => {\n  const cols = row.row;\n  return { heading: cols[0], text: cols[1], title: cols[2], section: cols[3], score: cols[4] };\n});\n\nconst docContext = docChunks\n  .map(c => `## ${c.title} â ${c.heading}\\n${c.text}`)\n  .join('\\n\\n---\\n\\n');\n\n// Build SME context from SMEKnowledge results\nconst smeResults = $input.first().json.results[0].data;\nconst smeChunks = smeResults.map(row => {\n  const cols = row.row;\n  return { question: cols[0], answer: cols[1], topic: cols[2], confidence: cols[3], score: cols[4] };\n});\n\n// Deduplicate SME Q&A by question text\nconst seen = new Set();\nconst uniqueSme = smeChunks.filter(s => {\n  if (seen.has(s.question)) return false;\n  seen.add(s.question);\n  return true;\n});\n\nlet smeContext = '';\nif (uniqueSme.length > 0) {\n  smeContext = uniqueSme\n    .map(s => `**Field Q&A â ${s.topic}**\\nQ: ${s.question}\\nA: ${s.answer}\\n_(Confidence: ${s.confidence})_`)\n    .join('\\n\\n---\\n\\n');\n}\n\nreturn [{ json: { docContext, smeContext, hasSME: uniqueSme.length > 0, smeCount: uniqueSme.length } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1360,
+        48
+      ],
+      "id": "1eacdc71-799c-4540-a42c-bf2de54f4c3f",
+      "name": "Merge Contexts"
     },
     {
       "parameters": {
@@ -66,12 +192,12 @@
         "messages": {
           "values": [
             {
-              "content": "=Generate a {{ $('Webhook').item.json.body.guideType }} technical guide.\n\nGUIDE DETAILS:\n- Topic: {{ $('Webhook').item.json.body.topic }}\n- Audience: {{ $('Webhook').item.json.body.audience === 'customer' ? 'Customer-Facing (professional tone, business value focus, avoid internal jargon)' : 'Internal SE (technical depth, implementation details, include config notes)' }}\n- Industry: {{ $('Webhook').item.json.body.industry || 'Not specified' }}\n- Tech Stack: {{ $('Webhook').item.json.body.techStack || 'Not specified' }}\n- Additional Context: {{ $('Webhook').item.json.body.customerContext || 'None provided' }}\n\nATLAS DOCUMENTATION:\n{{ $('RAG Search').item.json.answer }}\n\nWrite a complete, polished technical guide in markdown. Be specific — reference the actual tech stack and industry provided. Do not use generic filler content.\n\nReturn the guide field as JSON:\n{ \"guide\": \"<full markdown guide here>\" }\n"
+              "content": "=Generate a {{ $('Webhook').item.json.body.guideType }} technical guide.\n\nGUIDE DETAILS:\n- Topic: {{ $('Webhook').item.json.body.topic }}\n- Audience: {{ $('Webhook').item.json.body.audience === 'customer' ? 'Customer-Facing (professional tone, business value focus, avoid internal jargon)' : 'Internal SE (technical depth, implementation details, include config notes)' }}\n- Industry: {{ $('Webhook').item.json.body.industry || 'Not specified' }}\n- Tech Stack: {{ $('Webhook').item.json.body.techStack || 'Not specified' }}\n- Additional Context: {{ $('Webhook').item.json.body.customerContext || 'None provided' }}\n\n---\n\nATLAS DOCUMENTATION:\n{{ $('Merge Contexts').item.json.docContext }}\n\n---\n{{ $('Merge Contexts').item.json.hasSME ? '\\nFIELD KNOWLEDGE FROM SE TEAMS CHANNEL (real-world Q&A from Atlas SMEs â use to add field-validated nuance, deployment gotchas, and customer objection handling):\\n' + $('Merge Contexts').item.json.smeContext + '\\n\\n---\\n' : '' }}\nWrite a complete, polished technical guide in markdown. Be specific â reference the actual tech stack and industry provided. Incorporate field knowledge where relevant to add real-world depth beyond what the documentation covers.\n\nReturn the guide as JSON:\n{ \"guide\": \"<full markdown guide here>\" }\n"
             }
           ]
         },
         "options": {
-          "system": "You are an expert Varonis Atlas AI Security technical writer. You produce polished, accurate, and well-structured technical guides for Sales Engineers at Varonis.\n\nYour guides are:\n- Grounded in the Atlas documentation provided — never fabricate features or capabilities\n- Specific to the customer's industry, tech stack, and use case when provided\n- Written in clear, professional prose with appropriate markdown formatting\n- Structured with logical sections, tables where useful, and actionable recommendations\n\nAlways use the Atlas documentation provided in the user message as your primary source of truth. If the documentation doesn't cover something, say so rather than guessing.\n",
+          "system": "You are an expert Varonis Atlas AI Security technical writer. You produce polished, accurate, and well-structured technical guides for Sales Engineers at Varonis.\n\nYour guides draw from two knowledge sources:\n1. **Atlas Documentation** â authoritative product documentation. Use this as the primary source of truth.\n2. **Field Knowledge** â real Q&A from the AI Security SME Teams channel. Use this to add deployment nuance, customer objection handling, and field-validated insights that documentation alone doesn't capture.\n\nYour guides are:\n- Grounded in provided documentation â never fabricate features or capabilities\n- Enriched with field knowledge where it adds genuine value (gotchas, real customer objections, deployment tips)\n- Specific to the customer's industry, tech stack, and use case when provided\n- Written in clear, professional prose with appropriate markdown structure\n- Comprehensive â use all relevant context provided, not just a subset\n- Structured with logical sections: overview, architecture, configuration steps, use-case specifics, common questions, next steps\n\nIf documentation doesn't cover something, say so. If field knowledge contradicts documentation, flag the discrepancy.\n",
           "maxTokens": 8192,
           "temperature": 0
         }
@@ -79,11 +205,11 @@
       "type": "@n8n/n8n-nodes-langchain.anthropic",
       "typeVersion": 1,
       "position": [
-        48,
-        -16
+        1584,
+        48
       ],
-      "id": "ff446267-1ef0-4bc9-ace7-c30e3ee6060b",
-      "name": " Generate Guide",
+      "id": "4aea11ab-d3b2-4d24-ab73-5b2593d4bd0a",
+      "name": "Generate Guide",
       "credentials": {
         "anthropicApi": {
           "id": "WioShNHmyXcJmy8m",
@@ -93,29 +219,34 @@
     },
     {
       "parameters": {
-        "options": {}
-      },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.5,
-      "position": [
-        560,
-        -64
-      ],
-      "id": "f4f1b64b-bcb6-4023-8427-cbf72f38aba1",
-      "name": "Respond to Webhook"
-    },
-    {
-      "parameters": {
-        "jsCode": "const raw = $input.first().json.content[0].text;\nconst cleaned = raw.replace(/^```json\\n/, '').replace(/\\n```$/, '').trim();\nconst parsed = JSON.parse(cleaned);\nreturn [{ json: { guide: parsed.guide } }];\n"
+        "jsCode": "const raw = $input.first().json.content[0].text;\nconst cleaned = raw.replace(/^```json\\n/, '').replace(/\\n```$/, '').trim();\n\nlet guide;\ntry {\n  const parsed = JSON.parse(cleaned);\n  guide = parsed.guide;\n} catch (e) {\n  // If Claude returned raw markdown without JSON wrapping, use as-is\n  guide = raw;\n}\n\n// Pass through jobId and callbackUrl from the original webhook payload\nconst jobId = $('Webhook').item.json.body.jobId || null;\nconst callbackUrl = $('Webhook').item.json.body.callbackUrl || null;\n\nreturn [{ json: { guide, jobId, callbackUrl } }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        352,
+        1936,
         48
       ],
-      "id": "9cf98b93-b51d-4ebf-97b9-a13e94c8d680",
+      "id": "6a0bc961-ee28-4a60-a862-4fa591d9727b",
       "name": "Format Response"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $json.callbackUrl }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"jobId\": {{ JSON.stringify($json.jobId) }},\n  \"guide\": {{ JSON.stringify($json.guide) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        2160,
+        48
+      ],
+      "id": "63c98738-3d9a-4dbc-b2b4-84bc475856e6",
+      "name": "POST to Callback"
     }
   ],
   "pinData": {},
@@ -124,25 +255,80 @@
       "main": [
         [
           {
-            "node": "RAG Search",
+            "node": "Embed Topic",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "RAG Search": {
+    "Embed Topic": {
       "main": [
         [
           {
-            "node": " Generate Guide",
+            "node": "Prepare Doc Query",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    " Generate Guide": {
+    "Prepare Doc Query": {
+      "main": [
+        [
+          {
+            "node": "Query DocChunks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query DocChunks": {
+      "main": [
+        [
+          {
+            "node": "Prepare SME Query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare SME Query": {
+      "main": [
+        [
+          {
+            "node": "Query SMEKnowledge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query SMEKnowledge": {
+      "main": [
+        [
+          {
+            "node": "Merge Contexts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Contexts": {
+      "main": [
+        [
+          {
+            "node": "Generate Guide",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Guide": {
       "main": [
         [
           {
@@ -157,7 +343,7 @@
       "main": [
         [
           {
-            "node": "Respond to Webhook",
+            "node": "POST to Callback",
             "type": "main",
             "index": 0
           }
@@ -170,11 +356,10 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "bd978a97-f189-4ef7-b68e-2d60677f3060",
+  "versionId": "fc90fc30-d6b6-475c-acc9-d6c63a1c6954",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
   },
-  "id": "uv8tpRkMufqTYAyZ",
+  "id": "nua4uNfeyD2rYbz3",
   "tags": []
 }
