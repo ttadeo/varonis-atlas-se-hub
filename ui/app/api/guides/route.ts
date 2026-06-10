@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
+import { randomUUID } from "crypto";
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
@@ -13,19 +14,24 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let body: unknown;
+  let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  // Generate a job ID — passed to n8n so it can POST back to our callback
+  const jobId = randomUUID();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? `https://${req.headers.get("host")}`;
+  const callbackUrl = `${appUrl}/api/guides/callback`;
+
   try {
     const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-      signal: AbortSignal.timeout(780_000),
+      body: JSON.stringify({ ...body, jobId, callbackUrl }),
+      signal: AbortSignal.timeout(15_000), // just needs to ACK, not wait for completion
     });
 
     if (!res.ok) {
@@ -36,31 +42,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const raw = await res.json();
-
-    // n8n can return the guide in several shapes — normalize all of them:
-    //   - { guide: "..." }
-    //   - [{ guide: "..." }]
-    //   - { guide: "```json\n{\"guide\": \"...\"}\n```" }  (double-wrapped)
-    const unwrap = (val: unknown): string => {
-      if (typeof val === "string") {
-        // Strip markdown code fences if present
-        const stripped = val.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-        try {
-          const parsed = JSON.parse(stripped);
-          if (parsed && typeof parsed.guide === "string") return unwrap(parsed.guide);
-        } catch { /* not JSON — use as-is */ }
-        return val;
-      }
-      if (Array.isArray(val) && val.length > 0) return unwrap(val[0]);
-      if (val && typeof val === "object" && "guide" in (val as object)) {
-        return unwrap((val as Record<string, unknown>).guide);
-      }
-      return String(val ?? "");
-    };
-
-    const guide = unwrap(raw);
-    return NextResponse.json({ guide });
+    // n8n acknowledged the job — return jobId for polling
+    return NextResponse.json({ jobId, status: "pending" });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

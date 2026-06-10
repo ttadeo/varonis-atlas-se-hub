@@ -76,6 +76,7 @@ export default function GuidesPage() {
   });
 
   const [generating, setGenerating] = useState(false);
+  const [elapsed, setElapsed] = useState(0);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
@@ -98,13 +99,21 @@ export default function GuidesPage() {
   async function generate() {
     if (!formReady || generating) return;
     setGenerating(true);
+    setElapsed(0);
     setError(null);
     setResult(null);
 
     const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
 
+    // Elapsed time ticker
+    const startTime = Date.now();
+    const ticker = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+
     try {
-      const res = await fetch("/api/guides", {
+      // Step 1 — fire n8n, get job ID back immediately
+      const fireRes = await fetch("/api/guides", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -117,14 +126,31 @@ export default function GuidesPage() {
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Generation failed");
-      if (!data.guide) throw new Error("Incomplete response from workflow");
+      const fireData = await fireRes.json();
+      if (!fireRes.ok) throw new Error(fireData.error ?? "Failed to start generation");
+      const { jobId } = fireData;
+      if (!jobId) throw new Error("No job ID returned");
 
-      setResult(data.guide);
+      // Step 2 — poll until done (max 10 min)
+      const deadline = Date.now() + 10 * 60 * 1000;
+      while (Date.now() < deadline) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const pollRes = await fetch(`/api/guides/status?jobId=${jobId}`);
+        const pollData = await pollRes.json();
+        if (pollData.status === "done" && pollData.guide) {
+          setResult(pollData.guide);
+          return;
+        }
+        if (pollData.status === "error") {
+          throw new Error(pollData.error ?? "Guide generation failed");
+        }
+        // status === "pending" — keep polling
+      }
+      throw new Error("Timed out waiting for guide (10 min limit)");
     } catch (err) {
       setError(String(err));
     } finally {
+      clearInterval(ticker);
       setGenerating(false);
     }
   }
@@ -320,7 +346,15 @@ export default function GuidesPage() {
             <div className="text-center">
               <div className="w-10 h-10 border-2 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               <p className="text-sm text-gray-400">Writing your guide…</p>
-              <p className="text-xs text-gray-600 mt-1">This takes 20–40 seconds</p>
+              <p className="text-xs text-gray-600 mt-1">
+                {elapsed < 5
+                  ? "Starting generation…"
+                  : elapsed < 30
+                  ? "Retrieving Atlas knowledge…"
+                  : elapsed < 90
+                  ? "Claude is writing your guide…"
+                  : `Still working… (${elapsed}s)`}
+              </p>
             </div>
           </div>
         )}
