@@ -24,7 +24,11 @@ export async function POST(req: NextRequest) {
   // Generate a job ID — passed to n8n so it can POST back to our callback
   const jobId = randomUUID();
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? `https://${req.headers.get("host")}`;
-  const callbackUrl = `${appUrl}/api/guides/callback`;
+  // Include Vercel protection bypass token if set — required when Deployment Protection is enabled
+  const bypassSecret = process.env.CALLBACK_BYPASS_SECRET;
+  const callbackUrl = bypassSecret
+    ? `${appUrl}/api/guides/callback?x-vercel-protection-bypass=${bypassSecret}`
+    : `${appUrl}/api/guides/callback`;
 
   try {
     const res = await fetch(webhookUrl, {
