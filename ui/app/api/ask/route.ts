@@ -329,11 +329,19 @@ export async function POST(req: NextRequest) {
         .join("");
     }
 
-    // Return answer + updated history for next turn
-    // History stores plain text only (not binary blocks) so it serialises cleanly
-    const historyQuestion = question?.trim()
-      ? question
-      : attachments.map((a: IncomingAttachment) => `[${a.name}]`).join(" ");
+    // Return answer + updated history for next turn.
+    // Include extracted attachment text in history so it persists across turns.
+    const attachmentTexts = attachments
+      .filter((a: IncomingAttachment) => a.isExtracted)
+      .map((a: IncomingAttachment) => `[Attached file: ${a.name}]\n\n${a.data}`)
+      .join("\n\n");
+    const binaryNotes = attachments
+      .filter((a: IncomingAttachment) => !a.isExtracted)
+      .map((a: IncomingAttachment) => `[Attached: ${a.name} (${a.mediaType})]`)
+      .join(" ");
+    const historyQuestion = [attachmentTexts, binaryNotes, question?.trim()]
+      .filter(Boolean)
+      .join("\n\n") || attachments.map((a: IncomingAttachment) => `[${a.name}]`).join(" ");
     const updatedHistory = [
       ...history,
       { role: "user" as const, content: historyQuestion },
