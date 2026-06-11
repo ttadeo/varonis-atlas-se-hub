@@ -34,8 +34,8 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
   const driver = getNeo4jDriver();
   const sectionFilter = section ? "AND node.section = $section" : "";
 
-  // Run vector search, full-text search, and UI navigation search in parallel
-  const [vectorResult, fulltextResult, uiResult] = await Promise.all([
+  // Run vector search, full-text search, UI navigation search, and SME lookup in parallel
+  const [vectorResult, fulltextResult, uiResult, smeResult] = await Promise.all([
     (async () => {
       const s = driver.session();
       try {
@@ -79,6 +79,22 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
         );
       } finally { await s.close(); }
     })(),
+    // SME Knowledge — traverse RELATED_TO from matching DocChunks
+    (async () => {
+      const s = driver.session();
+      try {
+        return await s.run(
+          `CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 10, $embedding)
+           YIELD node AS chunk, score
+           MATCH (sme:SMEKnowledge)-[:RELATED_TO]->(chunk)
+           RETURN sme.question AS question, sme.answer AS answer,
+                  sme.topic AS topic, sme.confidence AS confidence, score
+           ORDER BY score DESC
+           LIMIT 5`,
+          { embedding }
+        );
+      } finally { await s.close(); }
+    })(),
   ]);
 
   await driver.close();
@@ -117,8 +133,23 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
     ? `\n\n--- ATLAS UI NAVIGATION ---\n\n${uiChunks.join("\n\n---\n\n")}`
     : "";
 
-  if (!docsPart && !uiPart) return "No relevant Atlas documentation found for this query.";
-  return (docsPart + uiPart).trim();
+  // Deduplicate SME Q&A by question text and format
+  const seenSme = new Set<string>();
+  const smePairs = smeResult.records
+    .filter((r) => {
+      const q = r.get("question") as string;
+      if (seenSme.has(q)) return false;
+      seenSme.add(q);
+      return true;
+    })
+    .map((r) => `Q: ${r.get("question")}\nA: ${r.get("answer")}\n_(Topic: ${r.get("topic")} · Confidence: ${r.get("confidence")})_`);
+
+  const smePart = smePairs.length > 0
+    ? `\n\n--- FIELD KNOWLEDGE (AI Security SME Channel) ---\n\n${smePairs.join("\n\n---\n\n")}`
+    : "";
+
+  if (!docsPart && !uiPart && !smePart) return "No relevant Atlas documentation found for this query.";
+  return (docsPart + uiPart + smePart).trim();
 }
 
 // ─── Tool definitions ─────────────────────────────────────────────────────────
