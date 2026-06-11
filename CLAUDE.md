@@ -1,173 +1,233 @@
 # Atlas Learning Platform — Claude Context
 
 ## Project Purpose
-An interactive, chat-capable learning and deployment assistant platform for Varonis Atlas AI Security Platform. Built for Varonis SEs and technical staff — internal use only, not customer-facing.
-
-## Three Components (Build in this order)
-1. **Atlas Learning Course** — Three-tier interactive learning (Beginner, Intermediate, Advanced)
-2. **Deployment & Integration Assistant** — SE inputs customer requirements, gets custom deployment guide
-3. **Meeting Co-Pilot** — Live meeting support, answers customer questions in real time
+An interactive learning and field enablement platform for the Varonis Atlas AI Security Platform. Built for Varonis SEs and technical staff — internal use only, not customer-facing.
 
 ---
 
 ## Tech Stack
-- **Vercel** — UI hosting (Next.js, fresh project), AI Gateway for LLM routing
+- **Vercel** — UI hosting (Next.js, auto-deploy on push to main)
 - **n8n Cloud** — Agent workflow orchestration (ttadeo.app.n8n.cloud)
-- **Neo4j** — RAG knowledge graph (vector + semantic search)
-- **Anthropic Claude** — Primary LLM for all learning/assistant interactions
-- **GitHub** — Private repo, same approach as AtlasAdversarialTesting
+- **Neo4j** — RAG knowledge graph (vector + semantic search, local Linux server)
+- **Upstash Redis** — Async job results store (guide generation fire-and-poll)
+- **Anthropic Claude** — Primary LLM (claude-sonnet-4-6 default; claude-opus-4-8 available)
+- **OpenAI** — Embeddings only (text-embedding-3-small)
+- **Resend** — OTP email auth
+- **GitHub** — Private repo (ttadeo/AtlasLearningPlatform)
+
+---
 
 ## Architecture
+
 ```
-User opens chat UI
+Varonis SE (Browser)
         │
         ▼
-Vercel (Next.js UI + AI Gateway)
+Vercel — Next.js
+  UI Pages + API Routes
+  JWT auth (requireAuth) on every protected route
         │
-        ▼
-n8n webhook (workflow orchestration)
+        ├──────────────────────────────────────────┐
+        │                                          │
+        ▼                                          ▼
+n8n Cloud Workflows                      Upstash Redis (KV)
+  /guides, /architect, /ask               async guide job results
+  /learn, /knowledge, /meeting            polled by UI every 3s
         │
-        ▼
-Neo4j RAG (Atlas knowledge retrieval)
-        │
-        ▼
-Claude (response generation)
-        │
-        ▼
-Response streamed back to user
+        ├─→ OpenAI (text-embedding-3-small)
+        ├─→ Claude Sonnet 4.6 (generation)
+        └─→ Neo4j via ngrok HTTP
+               ├── DocChunk nodes (Atlas v3.4.0 docs — 2,070 chunks)
+               └── SMEKnowledge nodes (Teams Q&A — 75 nodes)
+                         └── RELATED_TO → DocChunk
+
+                                    Atlas Gateway
+                                    (AI Runtime Demo)
+                                    live policy enforcement
+```
+
+### Async Guide Generation Pattern
+The Guide Producer bypasses Cloudflare's 100s timeout via fire-and-poll:
+```
+UI → POST /api/guides → n8n ACK (<1s, responseMode: onReceived)
+                              │  runs 2-5 min asynchronously
+                              └─→ Upstash Redis: SET guide:{jobId} via /pipeline
+
+UI polls GET /api/guides/status?jobId=xxx every 3s → renders when done
 ```
 
 ---
 
-## Atlas Documentation
-- **Docs URL**: https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications
-- **Auth**: Auth0 login at https://ai-security-production.us.auth0.com — Varonis company credentials
-- **Scraping approach**: Playwright authenticated scraper (runs locally, credentials never leave machine)
-- **Status**: Scraped — 37 pages (251 chunks) + 895 OpenAPI endpoint chunks = 1,146 total chunks in Neo4j
-- **OpenAPI spec URL**: https://api.prod.alltrue-be.com/openapi/external
+## Platform Pages
 
-## Documentation Ingestion Pipeline
-1. Playwright scraper → authenticated crawl of all docs sections
-2. Clean and chunk content by section (not arbitrary character counts)
-3. Vectorize chunks
-4. Store in Neo4j as knowledge graph
-5. Expose via n8n RAG retrieval workflow
-
----
-
-## Three Learning Tiers
-| Tier | Focus | Hands-on? |
+| Page | Route | Status |
 |---|---|---|
-| Beginner | What is Atlas, key concepts, policy types, AI Gateway basics | Conversational Q&A only |
-| Intermediate | Policy configuration, guardrail setup, scenario-based questions | Guided scenarios |
-| Advanced | Adversarial testing framework, live attacks, forensic analysis | Full AtlasAdversarialTesting framework |
-
-The Advanced tier connects directly to the existing AtlasAdversarialTesting project.
-
----
-
-## Vercel Setup
-- Existing Vercel account: ttadeo's projects
-- Existing project on Vercel: Preflight Checker (preserve — do not touch)
-- This project: fresh Vercel project, do not affect existing projects
-- AI Gateway: use Vercel AI Gateway for LLM routing (replaces OpenRouter)
+| Home | `/` | ✅ Live |
+| Learning Course | `/learn` | ✅ Live — 3 tiers |
+| Atlas Q&A | `/ask` | ✅ Live |
+| SME Knowledge Base | `/knowledge` | ✅ Live — hidden from home except ttadeo@varonis.com |
+| Architecture Builder | `/architect` | ✅ Live |
+| Technical Guide Producer | `/guides` | ✅ Live — async fire-and-poll |
+| AI Runtime Demo | `/runtime` | ✅ Live — 4 simulation types |
+| Demo Provisioning | `/demo` | ✅ Live |
+| Meeting Co-Pilot | `/meeting` | ✅ Live |
+| Analytics | `/analytics` | ✅ Live |
 
 ---
 
-## Why This Stack
-- **Vercel over OpenRouter**: Built-in observability, cost tracking, firewall, analytics, storage — OpenRouter is routing only
-- **n8n for orchestration**: Visual workflow builder, multi-agent pipelines, external integrations — better than pure code for SE-maintained systems
-- **Neo4j for RAG**: Knowledge graph enables relationship-aware retrieval — better than flat vector search for interconnected Atlas concepts (policies → attacks → guardrails)
-- **Claude as primary LLM**: Trusted, resistant to manipulation, strong reasoning — appropriate for a security-focused learning platform
+## Knowledge Base (Neo4j — 192.168.1.165:7687)
 
----
+| Source | Count | Node Type |
+|---|---|---|
+| Atlas docs v3.4.0 (54 pages, scraped 2026-06-10) | 2,070 | DocChunk |
+| Teams AI Security SME channel (scraped 2026-06-11) | 75 | SMEKnowledge |
 
-## Related Projects
-- **AtlasAdversarialTesting**: `/Users/timtadeo/Desktop/AtlasAdversarialTesting/` — provides the Advanced tier content and live attack demos
-- **VaronisPreflightChecker**: Separate Vercel project — do not touch
+- Vector index: `atlas_chunk_embeddings` (text-embedding-3-small, 1536 dims)
+- ngrok bolt tunnel: `bolt://7.tcp.ngrok.io:23280` — static, systemd auto-start
+- ngrok HTTP tunnel: `https://uncompendious-unpurchased-shanita.ngrok-free.dev` — used by n8n
+- Neo4j password: ttadeo123
 
----
+### Ingestion Pipeline (run in order after every scrape)
+```bash
+# Atlas docs
+python scraper/scrape_atlas_docs.py        # real Chrome, has saved Varonis session
+python ingestion/chunk_and_ingest.py
+python scraper/patch_release_notes_chunks.py  # ← always run after doc scrape
 
-## Career Context
-This project is being built to develop production-level agentic AI skills. Skills being developed and demonstrated:
-- RAG architecture (Neo4j vector + knowledge graph)
-- Semantic routing and intent detection
-- Multi-tier agent orchestration
-- Authenticated web scraping and document ingestion
-- Streaming responses
-- Observability and evaluation
-- Multi-tenant, authenticated UI
-
-Target role profile: Principal AI Platform Architect / AI Security Engineer
-
----
-
-## Build Sequence
-### Phase 1 — Foundation
-- [x] Create Playwright Atlas docs scraper
-- [x] Set up Neo4j instance (local, 192.168.1.165:7687, ngrok tunnel for cloud access)
-- [x] Scrape Atlas docs — 37 pages, 251 chunks
-- [x] Scrape OpenAPI spec — 895 endpoint chunks
-- [x] Build ingestion pipeline (scrape → chunk → vectorize → Neo4j) — 1,146 total chunks
-- [x] Build Atlas RAG - Knowledge Retrieval n8n workflow (end-to-end working)
-- [x] Add conversation history support to workflow
-- [x] Create GitHub repo (private)
-- [ ] Set up Vercel project (fresh)
-
-### Phase 2 — Learning Course (Tier 1: Beginner)
-- [ ] n8n workflow for beginner Q&A
-- [ ] Vercel chat UI
-- [ ] RAG retrieval from Neo4j
-- [ ] Tier progression logic
-
-### Phase 3 — Learning Course (Tiers 2 & 3)
-- [ ] Intermediate scenario-based workflows
-- [ ] Advanced tier connecting to AtlasAdversarialTesting
-
-### Phase 4 — Deployment Assistant
-- [ ] Customer requirements intake
-- [ ] Custom deployment guide generator
-
-### Phase 5 — Meeting Co-Pilot
-- [ ] Fast-response Q&A optimized for live meetings
-- [ ] Edge case handling
-
----
-
-## SE Interaction Memory System (Phase 5 Design)
-The Meeting Co-Pilot must store every SE-customer interaction in Neo4j to create a flywheel effect where the tool improves over time.
-
-### Neo4j Node Types for Interaction Memory
-- `Session` — one per SE meeting (SE name, customer, date, use case/industry)
-- `Interaction` — one per question/answer turn within a session
-- `Feedback` — SE rating/edit of the answer (good/bad/edited text)
-
-### Graph Relationships
-```
-(Session)-[:HAD]->(Interaction)-[:RETRIEVED]->(Chunk)
-(Interaction)-[:RECEIVED]->(Feedback)
-(Interaction)-[:ANSWERED_WITH]->(GeneratedResponse)
+# Teams SME (incremental — SCRAPE_SINCE auto-detected)
+source scraper/atlas-docs-scraper/bin/activate
+python scraper/scrape_teams_sme.py         # requires Chromium with --remote-debugging-port=9222
+python scraper/regroup_threads.py
+python scraper/process_teams_sme.py
+python scraper/ingest_teams_sme.py         # choose option 1 (MERGE) for incremental
 ```
 
-### RAG Retrieval Enhancement
-Once interactions are stored, the vector search query retrieves BOTH:
-1. Atlas documentation chunks (current)
-2. Past SE-validated interactions on similar questions (new)
+---
 
-This creates a compounding knowledge base — early users get doc-based answers,
-later users benefit from real SE-validated responses to similar customer questions.
+## n8n Workflows (ttadeo.app.n8n.cloud)
 
-### Why This Matters
-- Tool gets measurably smarter with each SE interaction
-- Captures tribal knowledge that lives only in experienced SEs' heads
-- Enables analytics: which questions come up most, which answers need improvement
-- Significant differentiator vs static RAG tools
+All exported to `n8n/workflows/` — commit after every change, import back to n8n.
+
+| Workflow | Webhook path | Purpose |
+|---|---|---|
+| atlas-rag-query | `/webhook/atlas-rag-query` | Q&A with conversation history |
+| atlas-sme-query | `/webhook/atlas-sme-query` | SME-first chat (/knowledge) |
+| atlas-architect | `/webhook/atlas-architect` | Architecture Builder |
+| Atlas - Technical Guide Producer | `/webhook/atlas-guide-producer` | Async guide → Upstash write |
+
+**n8n Variables** (Settings → Variables):
+- `UPSTASH_KV_TOKEN` — used by Write Guide to KV node (`$vars.UPSTASH_KV_TOKEN`)
+
+**Important:** n8n Cloud blocks `$env` access — always use `$vars` for secrets.
+
+---
+
+## Auth & Security
+
+- OTP email flow for @varonis.com addresses (Resend)
+- JWT session cookie (`atlas_session`) signed with `SESSION_SECRET`
+- All API routes use shared `requireAuth()` helper — `ui/lib/auth.ts`
+- Vercel Deployment Protection: **DISABLED** (was blocking n8n webhook callbacks)
+- 4 public endpoints only: send-otp, verify-otp, logout, guides/callback
+
+---
+
+## Vercel Environment Variables
+
+```
+# n8n webhooks
+NEXT_PUBLIC_N8N_WEBHOOK_URL        atlas-rag-query
+N8N_ARCHITECT_WEBHOOK_URL          atlas-architect
+N8N_GUIDES_WEBHOOK_URL             atlas-guide-producer
+
+# Upstash Redis
+KV_REST_API_URL
+KV_REST_API_TOKEN
+
+# Auth
+SESSION_SECRET
+RESEND_API_KEY
+USERS                              user:password pairs
+
+# LLMs (server-side only)
+ANTHROPIC_API_KEY
+OPENAI_API_KEY
+
+# Neo4j (direct bolt for some routes)
+NEO4J_URI                          bolt://7.tcp.ngrok.io:23280
+NEO4J_USER
+NEO4J_PASSWORD
+```
+
+---
+
+## Evaluations
+
+TrueLens RAG Triad — 52 golden questions.
+
+**Latest baseline (v3.4.0, 2026-06-10):**
+| Metric | Score |
+|---|---|
+| Answer Relevance | 1.000 |
+| Context Relevance | 0.994 |
+| Groundedness | 0.689 |
+
+```bash
+source evals/venv/bin/activate
+set -a && source evals/.env && set +a
+python3 evals/run_evals.py
+```
+
+Groundedness (0.689) is the primary optimization target.
+
+---
+
+## LLM Model Reference (as of 2026-06-11)
+
+| Model | API ID | Input | Output | Best for |
+|---|---|---|---|---|
+| Claude Opus 4.8 | `claude-opus-4-8` | $5/M | $25/M | Long-horizon agentic tasks, overnight eval agent |
+| Claude Sonnet 4.6 | `claude-sonnet-4-6` | $3/M | $15/M | Default — guides, architect, Q&A |
+| Claude Haiku 4.5 | `claude-haiku-4-5-20251001` | $1/M | $5/M | TrueLens scoring, high-volume cheap calls |
+
+---
+
+## Key Files
+
+```
+ui/lib/auth.ts                      — shared requireAuth() JWT helper (use for ALL new API routes)
+ui/app/guides/page.tsx              — Guide Producer UI (fire-and-poll, 5-min timeout)
+ui/app/api/guides/route.ts          — fires n8n, returns jobId immediately
+ui/app/api/guides/status/route.ts   — polls Upstash KV via /pipeline endpoint
+ui/app/architect/page.tsx           — Architecture Builder
+ui/app/knowledge/page.tsx           — SME Knowledge Base
+ui/vercel.json                      — maxDuration overrides for long-running routes
+n8n/workflows/                      — all workflow exports (import cycle: export → commit → re-import)
+scraper/patch_release_notes_chunks.py — run after EVERY doc scrape
+scraper/scrape_atlas_docs.py        — use real Chrome (has saved Varonis session)
+evals/golden_questions.json         — 52 golden questions for RAG eval
+```
+
+---
+
+## What's Next
+
+1. Neo4j backup — dump and scp to Mac
+2. Update /runtime demo and /learn for v3.4.0 features
+3. Create demo templates in Atlas UI (PII & PHI, Executive AI Governance, Shadow AI Monitor)
+4. TrueLens baselines for /knowledge and /guides
+5. Switch TrueLens scoring model from OpenAI to Claude Haiku
+6. Build overnight RAG eval agent (autoresearch pattern — Mode 1: observe/report only)
+7. OpenAPI spec auto-refresh in n8n
+8. Resource Library scraper in n8n
+9. Neo4j persistence for generated guides (Guide node in knowledge graph)
+10. Explore Claude Opus 4.8 for Guide Producer quality improvement
 
 ---
 
 ## User Preferences
 - Concise communication
-- Non-developer friendly where possible (SE audience)
-- Python 3.11+ for scraping and ingestion scripts
 - n8n for all agent workflows
+- Python 3.11+ for scraping and ingestion scripts
 - Security-first mindset
+- Push to Vercel by default (auto-deploys on push to main)
