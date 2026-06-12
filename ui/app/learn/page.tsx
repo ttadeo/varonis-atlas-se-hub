@@ -522,10 +522,34 @@ This is an advanced lesson — the SE must be able to explain attack vectors wit
 IMPORTANT: Do not reference, describe, or suggest what comes in any future lesson. The SE will navigate using the sidebar.
 If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
   },
+  {
+    id: 23,
+    title: "Atlas v3.4.0 — New Features",
+    checkQuestion: "A developer using VS Code with GitHub Copilot asks: 'We already have Atlas enforcing policies on our ChatGPT usage — does that cover Copilot in the IDE too?' How do you answer, and which specific v3.4.0 features are involved?",
+    tier: "advanced",
+    followUpPrompts: [
+      "What's the difference between VS Code Runtime Hooks and the existing NGINX proxy integration — when would you use each?",
+      "A customer wants automatic account suspension after a DLP violation in Copilot — walk me through how Quarantine Action works end to end",
+      "How does the Anthropic Compliance API Log Ingestion differ from the existing Atlas Gateway telemetry?",
+    ],
+    intro: `[LEARNING MODE - Lesson 23: Atlas v3.4.0 — New Features]
+You are teaching an experienced Varonis Sales Engineer. This is an advanced lesson covering the major new capabilities introduced in Atlas v3.4.0 — the features customers and prospects will ask about in 2026. Please:
+1. Open by framing why this release matters: v3.4.0 extends Atlas coverage to three of the fastest-growing AI surfaces that were previously invisible to enterprise security teams — IDE coding agents, MCP tool ecosystems, and Anthropic's direct API pipeline. This isn't incremental; it's coverage gap closure.
+2. Explain VS Code Runtime Hooks and Copilot CLI Runtime Hooks in depth: Previously, Atlas enforced policies on AI traffic flowing through a proxy (NGINX, API gateway, etc.). IDE-native AI tools like GitHub Copilot operate inside the developer's editor and bypass corporate proxies entirely. v3.4.0 Runtime Hooks intercept AI requests at the IDE layer — VS Code Runtime Hooks capture Copilot completions and suggestions inside the editor; Copilot CLI Runtime Hooks extend the same enforcement to terminal-based Copilot commands (gh copilot suggest, gh copilot explain). Key SE talking point: "Every developer using Copilot in VS Code is an unprotected AI surface — until now." Deployment does NOT require proxy reconfiguration; the hook integrates via VS Code extension.
+3. Explain Quarantine Action: When a blocking policy violation occurs (e.g., developer sends a prompt containing production secrets via Copilot), Atlas can now automatically quarantine the user's access for a configurable duration — no SOC intervention required. Quarantine Action is configurable per-policy. This is enforcement with teeth: violation → automatic lockout → reduces the blast radius of insider threats and compromised credentials. Distinguish from existing BLOCK action: BLOCK stops the request in real time; Quarantine Action additionally locks the account downstream so the user cannot retry via any channel.
+4. Explain the 12 MCP Policies: Model Context Protocol is the emerging standard that lets AI agents call external tools and data sources. v3.4.0 ships 12 dedicated MCP policies covering the most common MCP risk scenarios. Walk through the key categories: (a) MCP Tool Call Policies — evaluate whether specific MCP tool invocations are authorized, appropriate, and safe before execution; (b) MCP Prompt Injection Detection — catches malicious instructions embedded in tool responses trying to hijack the agent mid-workflow; (c) MCP Data Exfiltration Policies — detect when tool call chains are being used to move sensitive data to unauthorized destinations; (d) MCP Quarantine — blocks unapproved MCP tools from being offered to the model at all, reducing attack surface before evaluation. SE talking point: "Every customer deploying Claude, Cursor, or any MCP-enabled agent has new exposure — 12 policies, out of the box, zero custom rule writing."
+5. Explain Anthropic Compliance API Log Ingestion: Anthropic's enterprise API now provides a Compliance Log stream — a structured audit trail of every API call, including model, prompt hash, token counts, and policy metadata. Atlas v3.4.0 ingests these logs natively, correlating them with Atlas's own policy enforcement telemetry. This gives security teams a single pane of glass for Anthropic API usage across the org — including usage that doesn't flow through the Atlas gateway. SE angle: customers paying for Claude enterprise agreements now have a compliance story that satisfies auditors asking "show me every prompt sent to your AI vendor."
+6. Mention Claude Code artifact discovery: Atlas AI Inventory now discovers Claude Code sessions and their associated artifacts — code diffs, shell commands executed, file system access patterns. This extends the shadow AI visibility use case into the developer workflow.
+7. Mention Multi-Turn Pentest support: The automated pentest capability now supports multi-turn attack sequences, not just single-prompt attacks — important for testing agentic workflows where vulnerabilities emerge across a conversation.
+8. End with this exact check question: "A developer using VS Code with GitHub Copilot asks: 'We already have Atlas enforcing policies on our ChatGPT usage — does that cover Copilot in the IDE too?' How do you answer, and which specific v3.4.0 features are involved?"
+This is an advanced lesson — the SE must be able to position v3.4.0 features in a customer conversation and explain why each one closes a specific coverage gap.
+IMPORTANT: Do not reference, describe, or suggest what comes in any future lesson. The SE will navigate using the sidebar.
+If the SE answers with a topic list instead of a full sentence, say exactly: "It looks like you sent me a list of topics rather than an answer — but I can work with that!" then give feedback.`,
+  },
 ];
 
 // Intended display order — Beginner → Intermediate → Advanced, new lessons in natural position
-const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 19, 7, 8, 9, 10, 11, 12, 20, 21, 13, 14, 15, 16, 17, 22, 18];
+const DISPLAY_ORDER = [1, 2, 3, 4, 5, 6, 19, 7, 8, 9, 10, 11, 12, 20, 21, 13, 14, 15, 16, 17, 22, 23, 18];
 const LESSON_NUM = Object.fromEntries(DISPLAY_ORDER.map((id, i) => [id, i + 1]));
 
 export default function LearnPage() {
@@ -1007,7 +1031,7 @@ export default function LearnPage() {
             <div className="text-center text-gray-500 mt-20">
               <div className="text-4xl mb-4">📚</div>
               <p className="text-lg font-medium text-gray-300">Select a lesson to begin</p>
-              <p className="text-sm mt-2">Work through all 22 lessons across Beginner, Intermediate, and Advanced tiers.</p>
+              <p className="text-sm mt-2">Work through all 23 lessons across Beginner, Intermediate, and Advanced tiers.</p>
             </div>
           )}
 
