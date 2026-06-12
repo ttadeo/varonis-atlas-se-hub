@@ -842,7 +842,7 @@ export default function LearnPage() {
         <div className="px-4 py-4 flex-1 overflow-y-auto">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Beginner Tier</p>
           <div className="space-y-1 mb-5">
-            {LESSONS.filter((l) => l.tier === "beginner").map((lesson) => (
+            {DISPLAY_ORDER.map((id) => LESSONS.find((l) => l.id === id)!).filter((l) => l.tier === "beginner").map((lesson) => (
               <button
                 key={lesson.id}
                 onClick={() => startLesson(lesson.id)}
@@ -865,7 +865,7 @@ export default function LearnPage() {
           </div>
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Intermediate Tier</p>
           <div className="space-y-1 mb-5">
-            {LESSONS.filter((l) => l.tier === "intermediate").map((lesson) => (
+            {DISPLAY_ORDER.map((id) => LESSONS.find((l) => l.id === id)!).filter((l) => l.tier === "intermediate").map((lesson) => (
               <button
                 key={lesson.id}
                 onClick={() => startLesson(lesson.id)}
@@ -888,7 +888,7 @@ export default function LearnPage() {
           </div>
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Advanced Tier</p>
           <div className="space-y-1">
-            {LESSONS.filter((l) => l.tier === "advanced").map((lesson) => (
+            {DISPLAY_ORDER.map((id) => LESSONS.find((l) => l.id === id)!).filter((l) => l.tier === "advanced").map((lesson) => (
               <button
                 key={lesson.id}
                 onClick={() => startLesson(lesson.id)}
