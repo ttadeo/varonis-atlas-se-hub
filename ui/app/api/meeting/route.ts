@@ -299,7 +299,8 @@ RESPONSE STYLE:
 - Never say "based on the retrieved documentation" or similar framing — just answer
 - Be SE-focused: skip developer-level detail unless asked
 - If attachments are present, analyze them first before answering
-- Match the depth of the answer to the question — short questions get short answers`,
+- Match the depth of the answer to the question — short questions get short answers
+- CRITICAL: Never speculate about Atlas version numbers, feature names, or release dates that are not explicitly present in the retrieved knowledge base content. If something is not in the retrieved docs, say it is not yet in the knowledge base — do not invent version numbers or guess at release timelines from memory. The knowledge base reflects Atlas v3.4.0 (scraped 2026-06-10).`,
   cache_control: { type: "ephemeral" },
 };
 
