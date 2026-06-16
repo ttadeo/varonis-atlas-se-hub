@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import OpenAI from "openai";
 import neo4j from "neo4j-driver";
 import { NextRequest, NextResponse } from "next/server";
+import { randomUUID } from "crypto";
 import { requireAuth } from "@/lib/auth";
 
 // ─── Clients ──────────────────────────────────────────────────────────────────
@@ -34,8 +35,8 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
   const driver = getNeo4jDriver();
   const sectionFilter = section ? "AND node.section = $section" : "";
 
-  // Run vector search, full-text search, UI navigation search, and SME lookup in parallel
-  const [vectorResult, fulltextResult, uiResult, smeResult] = await Promise.all([
+  // Run vector search, full-text search, UI navigation, SME lookup, and LearnedQA in parallel
+  const [vectorResult, fulltextResult, uiResult, smeResult, learnedResult] = await Promise.all([
     (async () => {
       const s = driver.session();
       try {
@@ -95,6 +96,23 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
         );
       } finally { await s.close(); }
     })(),
+    // LearnedQA — previous high-quality interactions from all users
+    (async () => {
+      const s = driver.session();
+      try {
+        return await s.run(
+          `CALL db.index.vector.queryNodes('learned_qa_embeddings', 5, $embedding)
+           YIELD node, score
+           WHERE score > 0.6
+           RETURN node.question AS question, node.answer AS answer, score
+           ORDER BY score DESC
+           LIMIT 3`,
+          { embedding }
+        );
+      } catch {
+        return { records: [] }; // index doesn't exist yet — silent fallback
+      } finally { await s.close(); }
+    })(),
   ]);
 
   await driver.close();
@@ -148,8 +166,89 @@ async function searchAtlasDocs(query: string, section?: string): Promise<string>
     ? `\n\n--- FIELD KNOWLEDGE (AI Security SME Channel) ---\n\n${smePairs.join("\n\n---\n\n")}`
     : "";
 
-  if (!docsPart && !uiPart && !smePart) return "No relevant Atlas documentation found for this query.";
-  return (docsPart + uiPart + smePart).trim();
+  // LearnedQA — deduplicate by question
+  const seenLearned = new Set<string>();
+  const learnedPairs = learnedResult.records
+    .filter((r) => {
+      const q = r.get("question") as string;
+      if (seenLearned.has(q)) return false;
+      seenLearned.add(q);
+      return true;
+    })
+    .map((r) => `Q: ${r.get("question")}\nA: ${r.get("answer")}`);
+
+  const learnedPart = learnedPairs.length > 0
+    ? `\n\n--- PREVIOUSLY ANSWERED (Community Knowledge) ---\n\n${learnedPairs.join("\n\n---\n\n")}`
+    : "";
+
+  if (!docsPart && !uiPart && !smePart && !learnedPart) return "No relevant Atlas documentation found for this query.";
+  return (docsPart + uiPart + smePart + learnedPart).trim();
+}
+
+// ─── RAG Learning: store high-quality Q&A as LearnedQA nodes ─────────────────
+
+async function storeLearnedQA(question: string, answer: string, userId: string): Promise<void> {
+  try {
+    // Quality gate: Haiku scores the answer 0-1; skip if < 0.7
+    const scoreRes = await anthropic.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 10,
+      messages: [{
+        role: "user",
+        content: `Rate this Atlas AI Security Q&A pair quality 0.0–1.0. Reply with ONLY the number.
+
+Q: ${question.slice(0, 300)}
+A: ${answer.slice(0, 500)}
+
+Score (0.0–1.0):`,
+      }],
+    });
+    const scoreText = (scoreRes.content[0] as Anthropic.Messages.TextBlock).text.trim();
+    const score = parseFloat(scoreText);
+    if (isNaN(score) || score < 0.7) return;
+
+    // Embed the question (query-anchored, same technique as SMEKnowledge)
+    const embRes = await openai.embeddings.create({
+      model: "text-embedding-3-small",
+      input: question,
+    });
+    const embedding = embRes.data[0].embedding;
+
+    const driver = getNeo4jDriver();
+    const s = driver.session();
+    try {
+      // Ensure index exists (idempotent)
+      await s.run(
+        `CREATE VECTOR INDEX learned_qa_embeddings IF NOT EXISTS
+         FOR (n:LearnedQA) ON (n.embedding)
+         OPTIONS {indexConfig: {\`vector.dimensions\`: 1536, \`vector.similarity_function\`: 'cosine'}}`
+      );
+      // Upsert node
+      await s.run(
+        `MERGE (n:LearnedQA {id: $id})
+         SET n.question   = $question,
+             n.answer     = $answer,
+             n.userId     = $userId,
+             n.score      = $score,
+             n.storedAt   = $storedAt,
+             n.embedding  = $embedding`,
+        {
+          id: randomUUID(),
+          question,
+          answer,
+          userId,
+          score,
+          storedAt: new Date().toISOString(),
+          embedding,
+        }
+      );
+    } finally {
+      await s.close();
+      await driver.close();
+    }
+  } catch {
+    // Non-critical — never let this break the main response
+  }
 }
 
 // ─── Tool definitions ─────────────────────────────────────────────────────────
@@ -347,6 +446,11 @@ export async function POST(req: NextRequest) {
       { role: "user" as const, content: historyQuestion },
       { role: "assistant" as const, content: finalAnswer },
     ];
+
+    // Fire-and-forget: store high-quality Q&A in LearnedQA for future RAG enrichment
+    if (question?.trim() && finalAnswer.trim()) {
+      storeLearnedQA(question.trim(), finalAnswer, auth.email).catch(() => {});
+    }
 
     return NextResponse.json({ answer: finalAnswer, history: updatedHistory });
   } catch (err) {
