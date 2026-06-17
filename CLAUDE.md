@@ -9,7 +9,7 @@ An interactive learning and field enablement platform for the Varonis Atlas AI S
 - **Vercel** — UI hosting (Next.js, auto-deploy on push to main)
 - **n8n Cloud** — Agent workflow orchestration (ttadeo.app.n8n.cloud)
 - **Neo4j** — RAG knowledge graph (vector + semantic search, local Linux server)
-- **Upstash Redis** — Async job results store (guide generation fire-and-poll)
+- **Upstash Redis** — Async job results store (guide generation fire-and-poll + Ask Atlas session history)
 - **Anthropic Claude** — Primary LLM (claude-sonnet-4-6 default; claude-opus-4-8 available)
 - **OpenAI** — Embeddings only (text-embedding-3-small)
 - **Resend** — OTP email auth
@@ -31,15 +31,19 @@ Vercel — Next.js
         │                                          │
         ▼                                          ▼
 n8n Cloud Workflows                      Upstash Redis (KV)
-  /guides, /architect, /ask               async guide job results
-  /learn, /knowledge, /meeting            polled by UI every 3s
-        │
+  /guides, /architect                     async guide job results (guide:{jobId})
+  /knowledge (atlas-sme-query)            Ask Atlas session history (ask_session:{id})
+        │                                 polled by UI every 3s
         ├─→ OpenAI (text-embedding-3-small)
         ├─→ Claude Sonnet 4.6 (generation)
         └─→ Neo4j via ngrok HTTP
                ├── DocChunk nodes (Atlas v3.4.0 docs — 2,070 chunks)
-               └── SMEKnowledge nodes (Teams Q&A — 75 nodes)
-                         └── RELATED_TO → DocChunk
+               ├── SMEKnowledge nodes (Teams Q&A — 85 nodes)
+               │         └── RELATED_TO → DocChunk
+               └── LearnedQA nodes (community knowledge — grows with usage)
+                         └── learned_qa_embeddings vector index
+
+Direct Neo4j routes (bypass n8n): /ask, /meeting, /api/sme/topics
 
                                     Atlas Gateway
                                     (AI Runtime Demo)
@@ -63,8 +67,8 @@ UI polls GET /api/guides/status?jobId=xxx every 3s → renders when done
 | Page | Route | Status |
 |---|---|---|
 | Home | `/` | ✅ Live |
-| Learning Course | `/learn` | ✅ Live — 3 tiers |
-| Atlas Q&A | `/ask` | ✅ Live |
+| Learning Course | `/learn` | ✅ Live — 23 lessons, 3 tiers |
+| Atlas Q&A | `/ask` | ✅ Live — chat history, copy, RAG learning |
 | SME Knowledge Base | `/knowledge` | ✅ Live — hidden from home except ttadeo@varonis.com |
 | Architecture Builder | `/architect` | ✅ Live |
 | Technical Guide Producer | `/guides` | ✅ Live — async fire-and-poll |
@@ -80,9 +84,10 @@ UI polls GET /api/guides/status?jobId=xxx every 3s → renders when done
 | Source | Count | Node Type |
 |---|---|---|
 | Atlas docs v3.4.0 (54 pages, scraped 2026-06-10) | 2,070 | DocChunk |
-| Teams AI Security SME channel (scraped 2026-06-11) | 75 | SMEKnowledge |
+| Teams AI Security SME channel (scraped 2026-06-16) | 85 | SMEKnowledge |
+| Community Q&A from /ask interactions (quality-gated) | grows | LearnedQA |
 
-- Vector index: `atlas_chunk_embeddings` (text-embedding-3-small, 1536 dims)
+- Vector indexes: `atlas_chunk_embeddings`, `learned_qa_embeddings` (both text-embedding-3-small, 1536 dims)
 - ngrok bolt tunnel: `bolt://7.tcp.ngrok.io:23280` — static, systemd auto-start
 - ngrok HTTP tunnel: `https://uncompendious-unpurchased-shanita.ngrok-free.dev` — used by n8n
 - Neo4j password: ttadeo123
@@ -196,6 +201,10 @@ Groundedness (0.689) is the primary optimization target.
 
 ```
 ui/lib/auth.ts                      — shared requireAuth() JWT helper (use for ALL new API routes)
+ui/app/ask/page.tsx                 — Ask Atlas UI (history panel, copy button, session management)
+ui/app/api/ask/route.ts             — RAG handler + LearnedQA storage (5 parallel Neo4j queries)
+ui/app/api/ask/sessions/route.ts    — session CRUD (GET/POST/DELETE) → Upstash KV
+ui/app/api/meeting/route.ts         — Meeting Co-Pilot (5 parallel RAG queries + SME)
 ui/app/guides/page.tsx              — Guide Producer UI (fire-and-poll, 5-min timeout)
 ui/app/api/guides/route.ts          — fires n8n, returns jobId immediately
 ui/app/api/guides/status/route.ts   — polls Upstash KV via /pipeline endpoint
@@ -213,15 +222,14 @@ evals/golden_questions.json         — 52 golden questions for RAG eval
 ## What's Next
 
 1. Neo4j backup — dump and scp to Mac
-2. Update /runtime demo and /learn for v3.4.0 features
-3. Create demo templates in Atlas UI (PII & PHI, Executive AI Governance, Shadow AI Monitor)
-4. TrueLens baselines for /knowledge and /guides
-5. Switch TrueLens scoring model from OpenAI to Claude Haiku
-6. Build overnight RAG eval agent (autoresearch pattern — Mode 1: observe/report only)
-7. OpenAPI spec auto-refresh in n8n
-8. Resource Library scraper in n8n
-9. Neo4j persistence for generated guides (Guide node in knowledge graph)
-10. Explore Claude Opus 4.8 for Guide Producer quality improvement
+2. Create demo templates in Atlas UI (PII & PHI, Executive AI Governance, Shadow AI Monitor)
+3. TrueLens baselines for /knowledge and /guides
+4. Switch TrueLens scoring model from OpenAI to Claude Haiku
+5. Build overnight RAG eval agent (autoresearch pattern — Mode 1: observe/report only)
+6. OpenAPI spec auto-refresh in n8n
+7. Resource Library scraper in n8n
+8. Neo4j persistence for generated guides (Guide node in knowledge graph)
+9. Explore Claude Opus 4.8 for Guide Producer quality improvement
 
 ---
 
