@@ -158,7 +158,69 @@ export default function GuidesPage() {
   // ── Export ───────────────────────────────────────────────────────────────────
 
   function handlePrint() {
-    window.print();
+    if (!result) return;
+    const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
+    const title = selectedType?.label ?? "Atlas Technical Guide";
+
+    // Convert markdown to basic HTML for the print window
+    // We render into a new window so the full guide is captured, not just the visible viewport
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
+
+    // Simple markdown → HTML conversion for print (headings, bold, lists, code, hr)
+    const mdToHtml = (md: string): string =>
+      md
+        .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+        .replace(/^## (.+)$/gm, "<h2>$1</h2>")
+        .replace(/^# (.+)$/gm, "<h1>$1</h1>")
+        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+        .replace(/`([^`]+)`/g, "<code>$1</code>")
+        .replace(/^---$/gm, "<hr>")
+        .replace(/^\* (.+)$/gm, "<li>$1</li>")
+        .replace(/^- (.+)$/gm, "<li>$1</li>")
+        .replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>")
+        .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
+        .replace(/\n\n/g, "</p><p>")
+        .replace(/^(?!<[hul]|<hr|<p|<\/p)(.+)$/gm, "<p>$1</p>");
+
+    const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${title}</title>
+  <style>
+    body { font-family: Georgia, serif; font-size: 11pt; line-height: 1.6; color: #111; max-width: 750px; margin: 40px auto; padding: 0 20px; }
+    h1 { font-size: 20pt; border-bottom: 2px solid #1e40af; padding-bottom: 8px; margin-bottom: 16px; color: #1e3a8a; }
+    h2 { font-size: 14pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 28px; color: #1e3a8a; }
+    h3 { font-size: 11pt; margin-top: 20px; color: #1e3a8a; }
+    p { margin: 8px 0; }
+    ul, ol { margin: 8px 0 8px 24px; }
+    li { margin: 4px 0; }
+    code { background: #f1f5f9; padding: 1px 4px; border-radius: 3px; font-family: monospace; font-size: 9pt; }
+    pre { background: #f1f5f9; padding: 12px; border-radius: 4px; overflow-wrap: break-word; white-space: pre-wrap; font-size: 9pt; }
+    hr { border: none; border-top: 1px solid #cbd5e1; margin: 20px 0; }
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; }
+    th { border: 1px solid #cbd5e1; padding: 6px 10px; background: #f1f5f9; text-align: left; font-weight: 600; }
+    td { border: 1px solid #cbd5e1; padding: 6px 10px; }
+    .meta { color: #64748b; font-size: 9pt; margin-bottom: 24px; }
+    @media print { body { margin: 20px; } }
+  </style>
+</head>
+<body>
+  <h1>${title}</h1>
+  <div class="meta">
+    <strong>Topic:</strong> ${form.topic || "—"} &nbsp;|&nbsp;
+    ${form.industry ? `<strong>Industry:</strong> ${form.industry} &nbsp;|&nbsp;` : ""}
+    <strong>Audience:</strong> ${form.audience === "customer" ? "Customer-Facing" : "Internal SE"}
+  </div>
+  ${mdToHtml(result)}
+</body>
+</html>`;
+
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    setTimeout(() => { printWindow.print(); }, 500);
   }
 
   function handleDownloadMd() {
