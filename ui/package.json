@@ -11,7 +11,9 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.90.0",
     "@upstash/redis": "^1.37.0",
+    "html2canvas": "^1.4.1",
     "jose": "^6.2.2",
+    "jspdf": "^4.2.1",
     "mammoth": "^1.12.0",
     "mermaid": "^11.15.0",
     "neo4j-driver": "^6.0.1",

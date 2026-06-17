@@ -15,6 +15,21 @@ scraper/output/openapi_reference/chunks_index.json
 # Debug snapshots from scraper
 scraper/output/debug/
 scraper/output/openapi_reference/debug/
+scraper/output/teams_sme/debug_before_scrape.png
+scraper/output/teams_sme/teams_dom_dump.html
+
+# Teams SME raw/regrouped/processed exports — large, regenerable from scraper
+scraper/output/teams_sme/raw_threads_2*.json
+scraper/output/teams_sme/regrouped_threads_2*.json
+scraper/output/teams_sme/processed_qa_2*.json
+scraper/output/teams_sme/processed_qa_aon_patch_*.json
+
+# PDF docs stored in scraper dir
+scraper/*.pdf
+
+# Scraper utility scripts
+scraper/inspect_teams_dom.py
+scraper/list_tabs.py
 
 # Environment variables
 .env

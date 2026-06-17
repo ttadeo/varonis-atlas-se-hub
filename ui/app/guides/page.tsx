@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
@@ -80,6 +80,8 @@ export default function GuidesPage() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
+  const guideContentRef = useRef<HTMLDivElement>(null);
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -157,70 +159,52 @@ export default function GuidesPage() {
 
   // ── Export ───────────────────────────────────────────────────────────────────
 
-  function handlePrint() {
-    if (!result) return;
-    const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
-    const title = selectedType?.label ?? "Atlas Technical Guide";
+  async function handlePrint() {
+    if (!result || !guideContentRef.current) return;
+    setExportingPdf(true);
+    try {
+      const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+        import("jspdf"),
+        import("html2canvas"),
+      ]);
 
-    // Convert markdown to basic HTML for the print window
-    // We render into a new window so the full guide is captured, not just the visible viewport
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) return;
+      const el = guideContentRef.current;
+      const canvas = await html2canvas(el, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#111827",
+        scrollY: -window.scrollY,
+        windowWidth: el.scrollWidth,
+        windowHeight: el.scrollHeight,
+      });
 
-    // Simple markdown → HTML conversion for print (headings, bold, lists, code, hr)
-    const mdToHtml = (md: string): string =>
-      md
-        .replace(/^### (.+)$/gm, "<h3>$1</h3>")
-        .replace(/^## (.+)$/gm, "<h2>$1</h2>")
-        .replace(/^# (.+)$/gm, "<h1>$1</h1>")
-        .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
-        .replace(/`([^`]+)`/g, "<code>$1</code>")
-        .replace(/^---$/gm, "<hr>")
-        .replace(/^\* (.+)$/gm, "<li>$1</li>")
-        .replace(/^- (.+)$/gm, "<li>$1</li>")
-        .replace(/^(\d+)\. (.+)$/gm, "<li>$2</li>")
-        .replace(/(<li>.*<\/li>\n?)+/g, (m) => `<ul>${m}</ul>`)
-        .replace(/\n\n/g, "</p><p>")
-        .replace(/^(?!<[hul]|<hr|<p|<\/p)(.+)$/gm, "<p>$1</p>");
+      const imgWidth = 210; // A4 mm
+      const pageHeight = 297;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF("p", "mm", "a4");
 
-    const html = `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>${title}</title>
-  <style>
-    body { font-family: Georgia, serif; font-size: 11pt; line-height: 1.6; color: #111; max-width: 750px; margin: 40px auto; padding: 0 20px; }
-    h1 { font-size: 20pt; border-bottom: 2px solid #1e40af; padding-bottom: 8px; margin-bottom: 16px; color: #1e3a8a; }
-    h2 { font-size: 14pt; border-bottom: 1px solid #cbd5e1; padding-bottom: 4px; margin-top: 28px; color: #1e3a8a; }
-    h3 { font-size: 11pt; margin-top: 20px; color: #1e3a8a; }
-    p { margin: 8px 0; }
-    ul, ol { margin: 8px 0 8px 24px; }
-    li { margin: 4px 0; }
-    code { background: #f1f5f9; padding: 1px 4px; border-radius: 3px; font-family: monospace; font-size: 9pt; }
-    pre { background: #f1f5f9; padding: 12px; border-radius: 4px; overflow-wrap: break-word; white-space: pre-wrap; font-size: 9pt; }
-    hr { border: none; border-top: 1px solid #cbd5e1; margin: 20px 0; }
-    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 10pt; }
-    th { border: 1px solid #cbd5e1; padding: 6px 10px; background: #f1f5f9; text-align: left; font-weight: 600; }
-    td { border: 1px solid #cbd5e1; padding: 6px 10px; }
-    .meta { color: #64748b; font-size: 9pt; margin-bottom: 24px; }
-    @media print { body { margin: 20px; } }
-  </style>
-</head>
-<body>
-  <h1>${title}</h1>
-  <div class="meta">
-    <strong>Topic:</strong> ${form.topic || "—"} &nbsp;|&nbsp;
-    ${form.industry ? `<strong>Industry:</strong> ${form.industry} &nbsp;|&nbsp;` : ""}
-    <strong>Audience:</strong> ${form.audience === "customer" ? "Customer-Facing" : "Internal SE"}
-  </div>
-  ${mdToHtml(result)}
-</body>
-</html>`;
+      let yPos = 0;
+      let pageCount = 0;
+      while (yPos < imgHeight) {
+        if (pageCount > 0) pdf.addPage();
+        const srcY = (yPos * canvas.width) / imgWidth;
+        const srcH = Math.min((pageHeight * canvas.width) / imgWidth, canvas.height - srcY);
+        const sliceCanvas = document.createElement("canvas");
+        sliceCanvas.width = canvas.width;
+        sliceCanvas.height = srcH;
+        const ctx = sliceCanvas.getContext("2d")!;
+        ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+        pdf.addImage(sliceCanvas.toDataURL("image/png"), "PNG", 0, 0, imgWidth, (srcH * imgWidth) / canvas.width);
+        yPos += pageHeight;
+        pageCount++;
+      }
 
-    printWindow.document.write(html);
-    printWindow.document.close();
-    printWindow.focus();
-    setTimeout(() => { printWindow.print(); }, 500);
+      const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
+      const filename = `atlas-guide-${form.guideType}-${Date.now()}.pdf`;
+      pdf.save(filename);
+    } finally {
+      setExportingPdf(false);
+    }
   }
 
   function handleDownloadMd() {
@@ -382,8 +366,8 @@ export default function GuidesPage() {
               <button onClick={handleDownloadMd} className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors">
                 Download .md
               </button>
-              <button onClick={handlePrint} className="text-xs px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 text-white transition-colors">
-                Export PDF
+              <button onClick={handlePrint} disabled={exportingPdf} className="text-xs px-3 py-1.5 rounded-lg bg-blue-700 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-colors">
+                {exportingPdf ? "Generating PDF…" : "Export PDF"}
               </button>
             </div>
           </div>
@@ -434,7 +418,7 @@ export default function GuidesPage() {
               <p className="text-sm text-gray-600 mt-1">{form.topic}{form.industry ? ` · ${form.industry}` : ""}</p>
             </div>
 
-            <div className="prose prose-invert prose-sm max-w-none print:prose-slate">
+            <div ref={guideContentRef} className="prose prose-invert prose-sm max-w-none print:prose-slate" style={{ backgroundColor: "#111827" }}>
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
