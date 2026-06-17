@@ -160,7 +160,7 @@ export default function GuidesPage() {
   // ── Export ───────────────────────────────────────────────────────────────────
 
   async function handlePrint() {
-    if (!result || !guideContentRef.current) return;
+    if (!result) return;
     setExportingPdf(true);
     try {
       const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
@@ -168,40 +168,94 @@ export default function GuidesPage() {
         import("html2canvas"),
       ]);
 
-      const el = guideContentRef.current;
-      const canvas = await html2canvas(el, {
+      const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
+      const title = selectedType?.label ?? "Atlas Technical Guide";
+
+      // Build a temporary full-height off-screen div with clean HTML — avoids
+      // the scroll-container clipping problem that html2canvas has with overflow-y:auto
+      const container = document.createElement("div");
+      container.style.cssText = [
+        "position:absolute",
+        "left:-9999px",
+        "top:0",
+        "width:900px",
+        "background:#ffffff",
+        "color:#111111",
+        "font-family:Georgia,serif",
+        "font-size:13px",
+        "line-height:1.7",
+        "padding:60px",
+        "box-sizing:border-box",
+      ].join(";");
+
+      // Simple markdown → HTML (headings, bold, inline code, code blocks, lists, hr, tables)
+      const mdToHtml = (md: string): string =>
+        md
+          .replace(/```[\w]*\n([\s\S]*?)```/g, (_, code) => `<pre style="background:#f5f5f5;padding:12px;border-radius:4px;font-family:monospace;font-size:11px;white-space:pre-wrap;overflow-wrap:break-word;margin:12px 0;">${code.replace(/</g,"&lt;").replace(/>/g,"&gt;")}</pre>`)
+          .replace(/^### (.+)$/gm, '<h3 style="font-size:14px;font-weight:700;margin:20px 0 8px;color:#1e40af;">$1</h3>')
+          .replace(/^## (.+)$/gm, '<h2 style="font-size:17px;font-weight:700;margin:28px 0 10px;color:#1e3a8a;border-bottom:1px solid #cbd5e1;padding-bottom:6px;">$1</h2>')
+          .replace(/^# (.+)$/gm, '<h1 style="font-size:22px;font-weight:700;margin:0 0 16px;color:#1e3a8a;border-bottom:2px solid #1e40af;padding-bottom:10px;">$1</h1>')
+          .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+          .replace(/`([^`]+)`/g, '<code style="background:#f1f5f9;padding:1px 5px;border-radius:3px;font-family:monospace;font-size:11px;">$1</code>')
+          .replace(/^---$/gm, '<hr style="border:none;border-top:1px solid #cbd5e1;margin:20px 0;">')
+          .replace(/^\| (.+) \|$/gm, (row) => {
+            const cells = row.split("|").map(c => c.trim()).filter(Boolean);
+            return `<tr>${cells.map(c => `<td style="border:1px solid #cbd5e1;padding:6px 10px;font-size:12px;">${c}</td>`).join("")}</tr>`;
+          })
+          .replace(/(<tr>[\s\S]*?<\/tr>\n?)+/g, (t) => `<table style="border-collapse:collapse;width:100%;margin:12px 0;">${t}</table>`)
+          .replace(/^[*-] (.+)$/gm, '<li style="margin:4px 0;">$1</li>')
+          .replace(/^(\d+)\. (.+)$/gm, '<li style="margin:4px 0;">$2</li>')
+          .replace(/(<li[\s\S]*?<\/li>\n?)+/g, (m) => `<ul style="margin:8px 0 8px 24px;">${m}</ul>`)
+          .replace(/\n\n+/g, '</p><p style="margin:8px 0;">')
+          .replace(/^(?!<[huptl]|<\/|<pre|<hr)(.+)$/gm, '<p style="margin:8px 0;">$1</p>');
+
+      container.innerHTML = `
+        <h1 style="font-size:22px;font-weight:700;margin:0 0 8px;color:#1e3a8a;border-bottom:2px solid #1e40af;padding-bottom:10px;">${title}</h1>
+        <p style="color:#64748b;font-size:11px;margin:0 0 24px;">
+          <strong>Topic:</strong> ${form.topic || "—"}&nbsp;&nbsp;
+          ${form.industry ? `<strong>Industry:</strong> ${form.industry}&nbsp;&nbsp;` : ""}
+          <strong>Audience:</strong> ${form.audience === "customer" ? "Customer-Facing" : "Internal SE"}
+        </p>
+        ${mdToHtml(result)}
+      `;
+
+      document.body.appendChild(container);
+
+      const canvas = await html2canvas(container, {
         scale: 2,
         useCORS: true,
-        backgroundColor: "#111827",
-        scrollY: -window.scrollY,
-        windowWidth: el.scrollWidth,
-        windowHeight: el.scrollHeight,
+        backgroundColor: "#ffffff",
+        width: container.offsetWidth,
+        height: container.scrollHeight,
+        windowWidth: container.offsetWidth,
+        windowHeight: container.scrollHeight,
       });
 
-      const imgWidth = 210; // A4 mm
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      document.body.removeChild(container);
+
+      const pdfW = 210; // A4 width in mm
+      const pdfH = 297; // A4 height in mm
+      const imgW = pdfW;
+      const imgH = (canvas.height * pdfW) / canvas.width;
       const pdf = new jsPDF("p", "mm", "a4");
 
-      let yPos = 0;
-      let pageCount = 0;
-      while (yPos < imgHeight) {
-        if (pageCount > 0) pdf.addPage();
-        const srcY = (yPos * canvas.width) / imgWidth;
-        const srcH = Math.min((pageHeight * canvas.width) / imgWidth, canvas.height - srcY);
-        const sliceCanvas = document.createElement("canvas");
-        sliceCanvas.width = canvas.width;
-        sliceCanvas.height = srcH;
-        const ctx = sliceCanvas.getContext("2d")!;
-        ctx.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
-        pdf.addImage(sliceCanvas.toDataURL("image/png"), "PNG", 0, 0, imgWidth, (srcH * imgWidth) / canvas.width);
-        yPos += pageHeight;
-        pageCount++;
+      let yOffset = 0;
+      let page = 0;
+      while (yOffset < imgH) {
+        if (page > 0) pdf.addPage();
+        const srcY = (yOffset * canvas.width) / pdfW;
+        const srcH = Math.min((pdfH * canvas.width) / pdfW, canvas.height - srcY);
+        const slice = document.createElement("canvas");
+        slice.width = canvas.width;
+        slice.height = srcH;
+        slice.getContext("2d")!.drawImage(canvas, 0, srcY, canvas.width, srcH, 0, 0, canvas.width, srcH);
+        const sliceH = (srcH * pdfW) / canvas.width;
+        pdf.addImage(slice.toDataURL("image/png"), "PNG", 0, 0, imgW, sliceH);
+        yOffset += pdfH;
+        page++;
       }
 
-      const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
-      const filename = `atlas-guide-${form.guideType}-${Date.now()}.pdf`;
-      pdf.save(filename);
+      pdf.save(`atlas-guide-${form.guideType}-${Date.now()}.pdf`);
     } finally {
       setExportingPdf(false);
     }
@@ -418,7 +472,7 @@ export default function GuidesPage() {
               <p className="text-sm text-gray-600 mt-1">{form.topic}{form.industry ? ` · ${form.industry}` : ""}</p>
             </div>
 
-            <div ref={guideContentRef} className="prose prose-invert prose-sm max-w-none print:prose-slate" style={{ backgroundColor: "#111827" }}>
+            <div className="prose prose-invert prose-sm max-w-none print:prose-slate">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
