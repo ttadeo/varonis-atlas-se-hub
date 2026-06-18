@@ -88,6 +88,50 @@ interface DiscoverResult {
 }
 
 
+// ─── Scenario Templates ────────────────────────────────────────────────────────
+
+const SCENARIO_TEMPLATES = [
+  {
+    id: "pii_phi",
+    label: "PII & PHI Protection",
+    icon: "🏥",
+    color: "border-rose-600 hover:border-rose-400 bg-rose-900/10",
+    activeColor: "border-rose-400 bg-rose-900/30",
+    tagColor: "text-rose-400",
+    description: "Healthcare staff pasting patient data into ChatGPT — HIPAA risk via PII/PHI leakage",
+    industry: "Healthcare",
+    meetingType: "Technical Deep Dive",
+    useCase:
+      "A healthcare organization where clinical staff — nurses and physicians — are regularly pasting patient notes, lab results, and medication records into ChatGPT to generate summaries and draft documentation. This creates significant HIPAA risk: PHI including names, DOBs, diagnoses, and treatment plans is being sent to an external LLM with no visibility, no policy enforcement, and no audit trail. The security team has no way to know which staff are doing this, how frequently, or what data is leaving the environment. We need Atlas to detect and block PII/PHI in prompts in real time, provide a full audit log of AI interactions involving sensitive data, and give the compliance team dashboards they can present to auditors.",
+  },
+  {
+    id: "exec_ai_gov",
+    label: "Executive AI Governance",
+    icon: "🏛️",
+    color: "border-blue-600 hover:border-blue-400 bg-blue-900/10",
+    activeColor: "border-blue-400 bg-blue-900/30",
+    tagColor: "text-blue-400",
+    description: "Board-level AI governance — full visibility, policy enforcement, and audit trail across all AI usage",
+    industry: "Financial Services",
+    meetingType: "Executive Briefing",
+    useCase:
+      "A financial services firm whose board and CISO need enterprise-wide visibility into all AI tool usage — which models employees are using, what data is being sent, and whether usage complies with internal AI policies and regulatory requirements (SOC 2, SEC AI guidance). Currently there is no centralized view: different business units have adopted Copilot, ChatGPT, and various coding assistants independently, with no governance layer. Leadership wants a single pane of glass showing AI usage by department, real-time policy enforcement to block prohibited use cases (e.g. sending client financial data to consumer AI), and an immutable audit trail they can produce during regulatory examinations.",
+  },
+  {
+    id: "shadow_ai",
+    label: "Shadow AI Monitor",
+    icon: "👁️",
+    color: "border-amber-600 hover:border-amber-400 bg-amber-900/10",
+    activeColor: "border-amber-400 bg-amber-900/30",
+    tagColor: "text-amber-400",
+    description: "Discover unauthorized AI tools employees are using without IT or security knowledge",
+    industry: "Technology",
+    meetingType: "Discovery",
+    useCase:
+      "A technology company where the security team suspects employees are using AI tools that were never reviewed or approved — browser-based AI assistants, coding copilots, AI-powered SaaS apps, and local models running on company laptops. IT has no inventory of what AI tools are actually in use across the org. The risk: sensitive source code, internal documents, and customer data could be flowing into unsanctioned models with no controls. We need Atlas to automatically discover every AI tool in use across the environment, classify them as sanctioned or unsanctioned, surface risk by department and data type, and give the security team the ability to set policies that block or monitor specific tools going forward.",
+  },
+];
+
 // ─── Constants ─────────────────────────────────────────────────────────────────
 
 const INDUSTRIES = [
@@ -374,6 +418,7 @@ export default function DemoPage() {
   const [discoverError, setDiscoverError] = useState<string | null>(null);
   const [result, setResult] = useState<DiscoverResult | null>(null);
 
+  const [activeScenario, setActiveScenario] = useState<string | null>(null);
   const [autoDeploy, setAutoDeploy] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [applying, setApplying] = useState(false);
@@ -549,6 +594,39 @@ export default function DemoPage() {
     }
   }
 
+  async function handleScenario(scenarioId: string) {
+    const s = SCENARIO_TEMPLATES.find((t) => t.id === scenarioId);
+    if (!s) return;
+    setActiveScenario(scenarioId);
+    setUseCase(s.useCase);
+    setIndustry(s.industry);
+    setMeetingType(s.meetingType);
+    setStep("input");
+    setResult(null);
+    setApplied(null);
+    setSelectedTemplate(null);
+    setApplyError(null);
+    setDiscoverError(null);
+    // Auto-trigger discover with the scenario values
+    setDiscovering(true);
+    setDiscoverError(null);
+    try {
+      const res = await fetch("/api/demo/discover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ use_case: s.useCase, industry: s.industry, meeting_type: s.meetingType }),
+      });
+      const data: DiscoverResult = await res.json();
+      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
+      setResult(data);
+      setStep("results");
+    } catch (err) {
+      setDiscoverError(String(err));
+    } finally {
+      setDiscovering(false);
+    }
+  }
+
   function reset() {
     setStep("input");
     setUseCase("");
@@ -559,6 +637,7 @@ export default function DemoPage() {
     setSelectedTemplate(null);
     setApplyError(null);
     setDiscoverError(null);
+    setActiveScenario(null);
   }
 
   // ── Render ──────────────────────────────────────────────────────────────────
@@ -644,9 +723,43 @@ export default function DemoPage() {
           {/* ── Step 1: Input ─────────────────────────────────────────────── */}
           {step === "input" && (
             <div className="space-y-6">
+
+              {/* Quick Start Scenarios */}
               <div>
+                <h2 className="text-lg font-semibold text-white mb-1">Quick Start Scenarios</h2>
+                <p className="text-sm text-gray-400 mb-4">
+                  Pick a pre-built scenario to instantly match and provision the right Atlas template — or describe a custom use case below.
+                </p>
+                <div className="grid grid-cols-3 gap-3">
+                  {SCENARIO_TEMPLATES.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => handleScenario(s.id)}
+                      disabled={discovering}
+                      className={`text-left rounded-xl border-2 p-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+                        activeScenario === s.id ? s.activeColor : s.color
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">{s.icon}</div>
+                      <p className="text-sm font-semibold text-white mb-1">{s.label}</p>
+                      <p className="text-xs text-gray-400 leading-snug">{s.description}</p>
+                      <p className={`text-xs mt-3 font-medium ${s.tagColor}`}>
+                        {s.industry} · {s.meetingType}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+                {discovering && activeScenario && (
+                  <div className="mt-3 flex items-center gap-2 text-sm text-gray-400">
+                    <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+                    Matching Atlas templates for {SCENARIO_TEMPLATES.find(s => s.id === activeScenario)?.label}…
+                  </div>
+                )}
+              </div>
+
+              <div className="border-t border-gray-800 pt-6">
                 <h2 className="text-lg font-semibold text-white mb-1">
-                  Describe the Customer Use Case
+                  Or Describe a Custom Use Case
                 </h2>
                 <p className="text-sm text-gray-400">
                   Be specific — the more detail you provide, the better Claude can
