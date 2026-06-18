@@ -102,7 +102,7 @@ const SCENARIO_TEMPLATES = [
     industry: "Healthcare",
     meetingType: "Technical Deep Dive",
     useCase:
-      "A healthcare organization where clinical staff — nurses and physicians — are regularly pasting patient notes, lab results, and medication records into ChatGPT to generate summaries and draft documentation. This creates significant HIPAA risk: PHI including names, DOBs, diagnoses, and treatment plans is being sent to an external LLM with no visibility, no policy enforcement, and no audit trail. The security team has no way to know which staff are doing this, how frequently, or what data is leaving the environment. We need Atlas to detect and block PII/PHI in prompts in real time, provide a full audit log of AI interactions involving sensitive data, and give the compliance team dashboards they can present to auditors.",
+      "A healthcare organization where clinical staff (nurses and physicians) are regularly pasting patient notes, lab results, and medication records into ChatGPT to generate summaries and draft documentation. This creates significant HIPAA risk: PHI including names, DOBs, diagnoses, and treatment plans is being sent to an external LLM with no visibility, no policy enforcement, and no audit trail. The security team has no way to know which staff are doing this, how frequently, or what data is leaving the environment. We need Atlas to detect and block PII/PHI in prompts in real time, provide a full audit log of AI interactions involving sensitive data, and give the compliance team dashboards they can present to auditors.",
   },
   {
     id: "exec_ai_gov",
@@ -115,7 +115,7 @@ const SCENARIO_TEMPLATES = [
     industry: "Financial Services",
     meetingType: "Executive Briefing",
     useCase:
-      "A financial services firm whose board and CISO need enterprise-wide visibility into all AI tool usage — which models employees are using, what data is being sent, and whether usage complies with internal AI policies and regulatory requirements (SOC 2, SEC AI guidance). Currently there is no centralized view: different business units have adopted Copilot, ChatGPT, and various coding assistants independently, with no governance layer. Leadership wants a single pane of glass showing AI usage by department, real-time policy enforcement to block prohibited use cases (e.g. sending client financial data to consumer AI), and an immutable audit trail they can produce during regulatory examinations.",
+      "A financial services firm whose board and CISO need enterprise-wide visibility into all AI tool usage: which models employees are using, what data is being sent, and whether usage complies with internal AI policies and regulatory requirements (SOC 2, SEC AI guidance). Currently there is no centralized view - different business units have adopted Copilot, ChatGPT, and various coding assistants independently with no governance layer. Leadership wants a single pane of glass showing AI usage by department, real-time policy enforcement to block prohibited use cases (e.g. sending client financial data to consumer AI), and an immutable audit trail they can produce during regulatory examinations.",
   },
   {
     id: "shadow_ai",
@@ -128,7 +128,7 @@ const SCENARIO_TEMPLATES = [
     industry: "Technology",
     meetingType: "Discovery",
     useCase:
-      "A technology company where the security team suspects employees are using AI tools that were never reviewed or approved — browser-based AI assistants, coding copilots, AI-powered SaaS apps, and local models running on company laptops. IT has no inventory of what AI tools are actually in use across the org. The risk: sensitive source code, internal documents, and customer data could be flowing into unsanctioned models with no controls. We need Atlas to automatically discover every AI tool in use across the environment, classify them as sanctioned or unsanctioned, surface risk by department and data type, and give the security team the ability to set policies that block or monitor specific tools going forward.",
+      "A technology company where the security team suspects employees are using AI tools that were never reviewed or approved: browser-based AI assistants, coding copilots, AI-powered SaaS apps, and local models running on company laptops. IT has no inventory of what AI tools are actually in use across the org. The risk is that sensitive source code, internal documents, and customer data could be flowing into unsanctioned models with no controls. We need Atlas to automatically discover every AI tool in use across the environment, classify them as sanctioned or unsanctioned, surface risk by department and data type, and give the security team the ability to set policies that block or monitor specific tools going forward.",
   },
 ];
 
