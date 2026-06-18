@@ -596,34 +596,34 @@ export default function DemoPage() {
 
   async function handleScenario(scenarioId: string) {
     const s = SCENARIO_TEMPLATES.find((t) => t.id === scenarioId);
-    if (!s) return;
+    if (!s || !selectedProjectId) return;
     setActiveScenario(scenarioId);
-    setUseCase(s.useCase);
-    setIndustry(s.industry);
-    setMeetingType(s.meetingType);
-    setStep("input");
     setResult(null);
     setApplied(null);
-    setSelectedTemplate(null);
     setApplyError(null);
     setDiscoverError(null);
-    // Auto-trigger discover with the scenario values
-    setDiscovering(true);
-    setDiscoverError(null);
+    // Bypass n8n discover/apply — call the direct Atlas API route
+    setApplying(true);
     try {
-      const res = await fetch("/api/demo/discover", {
+      const res = await fetch("/api/demo/chain/scenario", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ use_case: s.useCase, industry: s.industry, meeting_type: s.meetingType }),
+        body: JSON.stringify({ scenario_id: scenarioId, project_id: selectedProjectId }),
       });
-      const data: DiscoverResult = await res.json();
-      if (!res.ok) throw new Error((data as { error?: string }).error ?? `HTTP ${res.status}`);
-      setResult(data);
-      setStep("results");
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setApplied({
+        success: true,
+        selection_type: "scenario",
+        demo_name: s.label,
+        message: `Provisioned ${data.created?.length ?? 0} resources for "${s.label}" in Atlas.`,
+      });
+      setStep("applied");
     } catch (err) {
-      setDiscoverError(String(err));
+      setApplyError(String(err));
     } finally {
-      setDiscovering(false);
+      setApplying(false);
+      setActiveScenario(null);
     }
   }
 
@@ -735,7 +735,7 @@ export default function DemoPage() {
                     <button
                       key={s.id}
                       onClick={() => handleScenario(s.id)}
-                      disabled={discovering}
+                      disabled={applying}
                       className={`text-left rounded-xl border-2 p-4 transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
                         activeScenario === s.id ? s.activeColor : s.color
                       }`}
@@ -749,10 +749,10 @@ export default function DemoPage() {
                     </button>
                   ))}
                 </div>
-                {discovering && activeScenario && (
+                {applying && activeScenario && (
                   <div className="mt-3 flex items-center gap-2 text-sm text-gray-400">
                     <div className="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-                    Matching Atlas templates for {SCENARIO_TEMPLATES.find(s => s.id === activeScenario)?.label}…
+                    Provisioning {SCENARIO_TEMPLATES.find(s => s.id === activeScenario)?.label} in Atlas…
                   </div>
                 )}
               </div>

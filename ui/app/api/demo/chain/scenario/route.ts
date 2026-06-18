@@ -85,6 +85,156 @@ interface ScenarioDefinition {
 
 const SCENARIO_DEFINITIONS: ScenarioDefinition[] = [
   {
+    id: "pii_phi",
+    name: "PII & PHI Protection",
+    description:
+      "Clinical staff pasting patient notes into ChatGPT — PHI leakage risk. Atlas detects and blocks PII/PHI in prompts in real time with full audit trail.",
+    resources: [
+      {
+        display_name: "LangChain",
+        resource_type: "langchain",
+        technology_types: ["langchain"],
+        resource_data: softwarePkgData("langchain", "0.1.20", "LangChain framework for LLM-powered applications."),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "OpenAI",
+        resource_type: "openai",
+        technology_types: ["openai"],
+        resource_data: softwarePkgData("openai", "1.30.1", "The official Python library for the OpenAI API"),
+        reviewed: "unapproved",
+      },
+      {
+        display_name: "Anthropic",
+        resource_type: "anthropic",
+        technology_types: ["anthropic"],
+        resource_data: softwarePkgData("anthropic", "0.26.0", "Anthropic Claude SDK"),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "OpenAI GPT-4o (Clinical Summarizer)",
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["openai-api-key"],
+        resource_data: customLlmEndpointData("openai-gpt4o-phi-summarizer", "OpenAI"),
+        reviewed: "unapproved",
+      },
+      {
+        display_name: "facebook/bart-large-cnn",
+        resource_type: "ModelPackage",
+        technology_types: ["transformers", "summarization"],
+        resource_data: modelPackageData("facebook", "bart-large-cnn", "facebook/bart-large-cnn"),
+        reviewed: "unreviewed",
+      },
+    ],
+  },
+  {
+    id: "exec_ai_gov",
+    name: "Executive AI Governance",
+    description:
+      "Board-level AI governance across the enterprise — full visibility, policy enforcement, and immutable audit trail for regulatory examinations.",
+    resources: [
+      {
+        display_name: "LangChain",
+        resource_type: "langchain",
+        technology_types: ["langchain"],
+        resource_data: softwarePkgData("langchain", "0.1.20", "LangChain framework for LLM-powered applications."),
+        reviewed: "approved",
+      },
+      {
+        display_name: "Anthropic",
+        resource_type: "anthropic",
+        technology_types: ["anthropic"],
+        resource_data: softwarePkgData("anthropic", "0.26.0", "Anthropic Claude SDK"),
+        reviewed: "approved",
+      },
+      {
+        display_name: "OpenAI",
+        resource_type: "openai",
+        technology_types: ["openai"],
+        resource_data: softwarePkgData("openai", "1.30.1", "The official Python library for the OpenAI API"),
+        reviewed: "unapproved",
+      },
+      {
+        display_name: "Transformers",
+        resource_type: "transformers",
+        technology_types: ["transformers"],
+        resource_data: softwarePkgData("transformers", "4.40.2", null),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "Anthropic Claude Sonnet (Governance Analyst)",
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["anthropic-api-key"],
+        resource_data: customLlmEndpointData("anthropic-claude-sonnet-governance", "Anthropic"),
+        reviewed: "approved",
+      },
+      {
+        display_name: "Azure OpenAI GPT-4 (Executive Reports)",
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["azure-openai-api-key"],
+        resource_data: customLlmEndpointData("azure-openai-gpt4-exec-reports", "Azure OpenAI"),
+        reviewed: "unapproved",
+      },
+    ],
+  },
+  {
+    id: "shadow_ai",
+    name: "Shadow AI Monitor",
+    description:
+      "Discover unauthorized AI tools employees are using without IT or security knowledge — browser extensions, coding copilots, unsanctioned SaaS AI.",
+    resources: [
+      {
+        display_name: "LangChain",
+        resource_type: "langchain",
+        technology_types: ["langchain"],
+        resource_data: softwarePkgData("langchain", "0.1.20", "LangChain framework for LLM-powered applications."),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "OpenAI",
+        resource_type: "openai",
+        technology_types: ["openai"],
+        resource_data: softwarePkgData("openai", "1.30.1", "The official Python library for the OpenAI API"),
+        reviewed: "unapproved",
+      },
+      {
+        display_name: "Anthropic",
+        resource_type: "anthropic",
+        technology_types: ["anthropic"],
+        resource_data: softwarePkgData("anthropic", "0.26.0", "Anthropic Claude SDK"),
+        reviewed: "unapproved",
+      },
+      {
+        display_name: "ChromaDB",
+        resource_type: "chromadb",
+        technology_types: ["chromadb"],
+        resource_data: softwarePkgData("chromadb", "0.5.0", "Vector database for AI applications", "python"),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "Sentence Transformers",
+        resource_type: "sentence-transformers",
+        technology_types: ["sentence-transformers"],
+        resource_data: softwarePkgData("sentence-transformers", "2.7.0", null),
+        reviewed: "unreviewed",
+      },
+      {
+        display_name: "OpenAI GPT-4o (Shadow Coding Assistant)",
+        resource_type: "CustomLlmEndpoint",
+        technology_types: ["openai-api-key"],
+        resource_data: customLlmEndpointData("openai-gpt4o-shadow-coding", "OpenAI"),
+        reviewed: "unapproved",
+      },
+      {
+        display_name: "sentence-transformers/all-MiniLM-L6-v2",
+        resource_type: "ModelPackage",
+        technology_types: ["sentence-transformers", "embeddings"],
+        resource_data: modelPackageData("sentence-transformers", "all-MiniLM-L6-v2", "sentence-transformers/all-MiniLM-L6-v2"),
+        reviewed: "unreviewed",
+      },
+    ],
+  },
+  {
     id: "healthcare",
     name: "Healthcare — Clinical Note Summarizer",
     description:
