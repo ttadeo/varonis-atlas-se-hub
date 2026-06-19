@@ -140,14 +140,21 @@ export async function DELETE(req: NextRequest) {
       const id = getResourceId(r);
       if (!id) continue;
       try {
+        // Atlas has no DELETE endpoint — use PATCH with active: "deleted"
         const delRes = await fetch(
-          `${ATLAS_API_URL}/v1/inventory/resources/${id}`,
-          { method: "DELETE", headers, signal: AbortSignal.timeout(10000) }
+          `${ATLAS_API_URL}/v1/inventory/resource/${id}`,
+          {
+            method: "PATCH",
+            headers,
+            body: JSON.stringify({ active: "deleted" }),
+            signal: AbortSignal.timeout(10000),
+          }
         );
-        if (delRes.ok || delRes.status === 404) {
+        if (delRes.ok) {
           results.deleted.push(getResourceName(r));
         } else {
-          results.failed.push(`${getResourceName(r)} (${delRes.status})`);
+          const errBody = await delRes.text();
+          results.failed.push(`${getResourceName(r)} (${delRes.status}: ${errBody.slice(0, 100)})`);
         }
       } catch (e) {
         results.failed.push(`${getResourceName(r)} (${String(e)})`);
