@@ -789,6 +789,11 @@ export default function DemoPage() {
                     Provisioning {SCENARIO_TEMPLATES.find(s => s.id === activeScenario)?.label} in Atlas…
                   </div>
                 )}
+                {applyError && step === "input" && (
+                  <div className="mt-3 bg-red-900/40 border border-red-700 rounded-xl px-4 py-3 text-sm text-red-300">
+                    {applyError}
+                  </div>
+                )}
               </div>
 
               <div className="border-t border-gray-800 pt-6">
