@@ -445,7 +445,9 @@ export default function DemoPage() {
         const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
         list.sort((a, b) => a.name.localeCompare(b.name));
         setChainProjects(list);
-        if (list.length > 0) setSelectedProjectId(list[0].id);
+        // Default to "Unsanctioned-Tim-The AI Guy" demo project, fallback to first
+        const preferred = list.find((p) => p.name.toLowerCase().includes("unsanctioned"));
+        setSelectedProjectId((preferred ?? list[0])?.id ?? "");
       })
       .catch(() => {});
   }, [projectsLoaded]);
@@ -607,6 +609,11 @@ export default function DemoPage() {
 
   async function handleCleanup() {
     if (!selectedProjectId || cleaningUp) return;
+    const projectName = chainProjects.find((p) => p.id === selectedProjectId)?.name ?? selectedProjectId;
+    const confirmed = window.confirm(
+      `Delete all scenario resources from "${projectName}"?\n\nThis cannot be undone.`
+    );
+    if (!confirmed) return;
     setCleaningUp(true);
     setCleanupResult(null);
     try {
