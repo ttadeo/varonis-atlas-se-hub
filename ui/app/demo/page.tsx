@@ -419,6 +419,9 @@ export default function DemoPage() {
   const [result, setResult] = useState<DiscoverResult | null>(null);
 
   const [activeScenario, setActiveScenario] = useState<string | null>(null);
+  const [cleanupCount, setCleanupCount] = useState<number | null>(null);
+  const [cleaningUp, setCleaningUp] = useState(false);
+  const [cleanupResult, setCleanupResult] = useState<string | null>(null);
   const [autoDeploy, setAutoDeploy] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [applying, setApplying] = useState(false);
@@ -591,6 +594,30 @@ export default function DemoPage() {
       setApplyError(String(err));
     } finally {
       setApplying(false);
+    }
+  }
+
+  async function checkCleanup() {
+    if (!selectedProjectId) return;
+    const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`);
+    const data = await res.json();
+    setCleanupCount(data.count ?? 0);
+    setCleanupResult(null);
+  }
+
+  async function handleCleanup() {
+    if (!selectedProjectId || cleaningUp) return;
+    setCleaningUp(true);
+    setCleanupResult(null);
+    try {
+      const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`, { method: "DELETE" });
+      const data = await res.json();
+      setCleanupResult(`Deleted ${data.deleted_count} resources${data.failed_count > 0 ? `, ${data.failed_count} failed` : ""}.`);
+      setCleanupCount(0);
+    } catch (err) {
+      setCleanupResult(`Error: ${String(err)}`);
+    } finally {
+      setCleaningUp(false);
     }
   }
 
@@ -843,6 +870,43 @@ export default function DemoPage() {
                   />
                 )}
               </div>
+
+              {/* Cleanup button */}
+              {selectedProjectId && (
+                <div className="bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-200">Clean Up Demo Resources</p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        Remove scenario resources from this project before a fresh demo run
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={checkCleanup}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+                      >
+                        Check
+                      </button>
+                      <button
+                        onClick={handleCleanup}
+                        disabled={cleaningUp || cleanupCount === 0}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-red-800 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
+                      >
+                        {cleaningUp ? "Cleaning…" : "Delete All"}
+                      </button>
+                    </div>
+                  </div>
+                  {cleanupCount !== null && (
+                    <p className={`text-xs ${cleanupCount > 0 ? "text-amber-400" : "text-green-400"}`}>
+                      {cleanupCount > 0 ? `${cleanupCount} scenario resource(s) found in this project` : "No scenario resources found — project is clean"}
+                    </p>
+                  )}
+                  {cleanupResult && (
+                    <p className="text-xs text-emerald-400">{cleanupResult}</p>
+                  )}
+                </div>
+              )}
 
               {/* Auto-deploy toggle */}
               <div className="flex items-center justify-between bg-gray-800/50 border border-gray-700 rounded-xl px-4 py-3">
