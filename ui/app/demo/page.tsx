@@ -445,8 +445,8 @@ export default function DemoPage() {
         const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
         list.sort((a, b) => a.name.localeCompare(b.name));
         setChainProjects(list);
-        // Default to "Unsanctioned-Tim-The AI Guy" demo project, fallback to first
-        const preferred = list.find((p) => p.name.toLowerCase().includes("unsanctioned"));
+        // Default to Tadeo-Demo-Environment project, fallback to first
+        const preferred = list.find((p) => p.id === "606cbc7b-9329-4288-bf55-06210ca43e97");
         setSelectedProjectId((preferred ?? list[0])?.id ?? "");
       })
       .catch(() => {});
