@@ -136,35 +136,59 @@ export async function DELETE(req: NextRequest) {
 
     const results = { deleted: [] as string[], failed: [] as string[] };
 
-    // Unlink all matching resources from the project in one batch call
-    // This is safe — resources shared with other projects stay intact there
-    const resourceProjects = toDelete
-      .map((r) => getResourceId(r))
-      .filter(Boolean)
-      .map((id) => ({
-        resource_instance_id: id,
-        projects_to_unassign: [projectId],
-      }));
+    // For each matching resource, remove the demo project from its project_ids list.
+    // The batch projects_to_unassign endpoint returns 200 but does not actually unlink
+    // shared resources. Directly PATCHing project_ids on the individual resource works.
+    for (const r of toDelete) {
+      const id = getResourceId(r);
+      const name = getResourceName(r);
+      if (!id) {
+        results.failed.push(`${name}: no resource_instance_id`);
+        continue;
+      }
 
-    if (resourceProjects.length > 0) {
+      // Compute updated project list (remove this demo project)
+      const currentProjects: string[] = getProjectIds(r);
+      const updatedProjects = currentProjects.filter((pid) => pid !== projectId);
+
       try {
-        const unlinkRes = await fetch(
-          `${ATLAS_API_URL}/v1/inventory/resources/projects`,
+        const patchRes = await fetch(
+          `${ATLAS_API_URL}/v1/inventory/resource/${id}`,
           {
-            method: "PUT",
+            method: "PATCH",
             headers,
-            body: JSON.stringify({ resource_projects: resourceProjects }),
-            signal: AbortSignal.timeout(20000),
+            body: JSON.stringify({ project_ids: updatedProjects }),
+            signal: AbortSignal.timeout(10000),
           }
         );
-        if (unlinkRes.ok) {
-          results.deleted.push(...toDelete.map((r) => getResourceName(r)));
+        if (patchRes.ok) {
+          results.deleted.push(name);
         } else {
-          const errBody = await unlinkRes.text();
-          results.failed.push(`Batch unlink failed (${unlinkRes.status}): ${errBody.slice(0, 200)}`);
+          const errBody = await patchRes.text();
+          // Fall back to projects_to_unassign for this resource
+          try {
+            const fallbackRes = await fetch(
+              `${ATLAS_API_URL}/v1/inventory/resources/projects`,
+              {
+                method: "PUT",
+                headers,
+                body: JSON.stringify({
+                  resource_projects: [{ resource_instance_id: id, projects_to_unassign: [projectId] }],
+                }),
+                signal: AbortSignal.timeout(10000),
+              }
+            );
+            if (fallbackRes.ok) {
+              results.deleted.push(name);
+            } else {
+              results.failed.push(`${name}: PATCH ${patchRes.status} (${errBody.slice(0, 100)}), fallback also failed (${fallbackRes.status})`);
+            }
+          } catch (fe) {
+            results.failed.push(`${name}: PATCH ${patchRes.status}, fallback error: ${String(fe)}`);
+          }
         }
       } catch (e) {
-        results.failed.push(`Batch unlink error: ${String(e)}`);
+        results.failed.push(`${name}: ${String(e)}`);
       }
     }
 
