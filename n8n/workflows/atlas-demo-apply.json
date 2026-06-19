@@ -11,8 +11,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -1184,
-        64
+        -1296,
+        -32
       ],
       "id": "691dbe1a-6b74-4e44-8872-9ece162a4d21",
       "name": "Webhook",
@@ -24,14 +24,14 @@
         "url": "https://api.prod.alltrue-be.com/v1/auth/issue-jwt-token",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"api_key\": \"zCnCRkSfcRUaoLBo5rtLiU4qsBOjTRvG\"}\n",
+        "jsonBody": "={\"api_key\": \"zCnCRkSfcRUaoLBo5rtLiU4qsBOjTRvG\"}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -752,
-        64
+        -944,
+        -16
       ],
       "id": "045a7359-3521-494c-8658-dfae409b3a42",
       "name": "Get Atlas Token"
@@ -64,7 +64,7 @@
       "typeVersion": 2.1,
       "position": [
         -560,
-        192
+        16
       ],
       "id": "248764c2-1c3b-4eb6-8000-990f2460ddfc",
       "name": "Existing or Custom?"
@@ -130,7 +130,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $('Webhook').item.json.body;\nconst selectionType = body.selection_type;\nconst templateName = selectionType === 'existing' ? body.template_name : body.demo_name;\n\nlet result;\nlet success = false;\n\nif (selectionType === 'existing') {\n  const raw = $('Apply Existing Template').item.json;\n  const arr = Array.isArray(raw) ? raw : [raw];\n  const match = arr.find(t => t.template_name === templateName);\n  success = match ? !match.error_type : false;\n  result = match || arr;\n} else {\n  result = $('Create Custom Template').item.json;\n  success = !result.error_type;\n}\n\nreturn {\n  json: {\n    success,\n    selection_type: selectionType,\n    demo_name: templateName,\n    message: success\n      ? `Demo environment ready — \"${templateName}\" has been staged in Atlas.`\n      : `Provisioning failed: ${result?.detail || 'Unknown error'}`,\n    result\n  }\n};\n"
+        "jsCode": "const body = $('Webhook').item.json.body;\nconst selectionType = body.selection_type;\nconst templateName = selectionType === 'existing' ? body.template_name : body.demo_name;\n\nlet result;\nlet success = false;\n\nif (selectionType === 'existing') {\n  const raw = $('Apply Existing Template').item.json;\n  const arr = Array.isArray(raw) ? raw : [raw];\n  const match = arr.find(t => t.template_name === templateName);\n  success = match ? !match.error_type : false;\n  result = match || arr;\n} else {\n  result = $('Create Custom Template').item.json;\n  success = !result.error_type;\n}\n\nreturn {\n  json: {\n    success,\n    selection_type: selectionType,\n    demo_name: templateName,\n    message: success\n      ? `Demo environment ready â \"${templateName}\" has been staged in Atlas.`\n      : `Provisioning failed: ${result?.detail || 'Unknown error'}`,\n    result\n  }\n};\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -168,6 +168,42 @@
       ],
       "id": "cbe8e049-4ce8-4e13-b542-d090e8ff96f3",
       "name": "Respond"
+    },
+    {
+      "parameters": {
+        "url": "https://api.prod.alltrue-be.com/v1/llm-firewall/templates",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('Get Atlas Token').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f3f714f9-b3be-40ff-bc92-cf33ee1c6e03",
+      "name": "Fetch Valid Templates",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -912,
+        368
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const incoming = $('Webhook').first().json.body.template_name;\nconst items = $('Fetch Valid Templates').all();\nconst validNames = items.map(i => i.json.template_name);\nconst isValid = validNames.includes(incoming);\n\nreturn [{\n  json: {\n    template_name: incoming,\n    is_valid: isValid,\n    valid_names: validNames\n  }\n}];"
+      },
+      "id": "6303b8a5-46fd-4d91-939b-f6da9dd57d1a",
+      "name": "Validate Template Name",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -688,
+        368
+      ]
     }
   ],
   "pinData": {},
@@ -187,7 +223,7 @@
       "main": [
         [
           {
-            "node": "Existing or Custom?",
+            "node": "Fetch Valid Templates",
             "type": "main",
             "index": 0
           }
@@ -244,6 +280,28 @@
           }
         ]
       ]
+    },
+    "Fetch Valid Templates": {
+      "main": [
+        [
+          {
+            "node": "Validate Template Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Template Name": {
+      "main": [
+        [
+          {
+            "node": "Existing or Custom?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -251,10 +309,11 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "5eb64086-3263-45bf-8935-11da5e8f76cd",
+  "versionId": "01f50f08-3f9e-4b28-b869-9015373f2b06",
   "meta": {
     "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
   },
+  "nodeGroups": [],
   "id": "eJ0FuKoKO9IFe7La",
   "tags": []
 }
