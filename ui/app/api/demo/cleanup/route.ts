@@ -136,28 +136,35 @@ export async function DELETE(req: NextRequest) {
 
     const results = { deleted: [] as string[], failed: [] as string[] };
 
-    for (const r of toDelete) {
-      const id = getResourceId(r);
-      if (!id) continue;
+    // Unlink all matching resources from the project in one batch call
+    // This is safe — resources shared with other projects stay intact there
+    const resourceProjects = toDelete
+      .map((r) => getResourceId(r))
+      .filter(Boolean)
+      .map((id) => ({
+        resource_instance_id: id,
+        projects_to_unassign: [projectId],
+      }));
+
+    if (resourceProjects.length > 0) {
       try {
-        // Atlas has no DELETE endpoint — use PATCH with active: "deleted"
-        const delRes = await fetch(
-          `${ATLAS_API_URL}/v1/inventory/resource/${id}`,
+        const unlinkRes = await fetch(
+          `${ATLAS_API_URL}/v1/inventory/resources/projects`,
           {
-            method: "PATCH",
+            method: "PUT",
             headers,
-            body: JSON.stringify({ active: "deleted" }),
-            signal: AbortSignal.timeout(10000),
+            body: JSON.stringify({ resource_projects: resourceProjects }),
+            signal: AbortSignal.timeout(20000),
           }
         );
-        if (delRes.ok) {
-          results.deleted.push(getResourceName(r));
+        if (unlinkRes.ok) {
+          results.deleted.push(...toDelete.map((r) => getResourceName(r)));
         } else {
-          const errBody = await delRes.text();
-          results.failed.push(`${getResourceName(r)} (${delRes.status}: ${errBody.slice(0, 100)})`);
+          const errBody = await unlinkRes.text();
+          results.failed.push(`Batch unlink failed (${unlinkRes.status}): ${errBody.slice(0, 200)}`);
         }
       } catch (e) {
-        results.failed.push(`${getResourceName(r)} (${String(e)})`);
+        results.failed.push(`Batch unlink error: ${String(e)}`);
       }
     }
 
