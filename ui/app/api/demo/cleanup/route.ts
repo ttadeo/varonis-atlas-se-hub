@@ -16,33 +16,6 @@ async function getAtlasJWT(): Promise<string> {
   return data.access_token as string;
 }
 
-// Display names created by our scenario provisioning — used to identify resources to clean up
-const SCENARIO_RESOURCE_NAMES = new Set([
-  // PII & PHI
-  "OpenAI GPT-4o (Clinical Summarizer)",
-  "facebook/bart-large-cnn",
-  // Executive AI Governance
-  "Anthropic Claude Sonnet (Governance Analyst)",
-  "Azure OpenAI GPT-4 (Executive Reports)",
-  // Shadow AI Monitor
-  "OpenAI GPT-4o (Shadow Coding Assistant)",
-  "sentence-transformers/all-MiniLM-L6-v2",
-  // Shared across scenarios (only delete if in project scope)
-  "LangChain",
-  "OpenAI",
-  "Anthropic",
-  "Transformers",
-  "ChromaDB",
-  "Sentence Transformers",
-  "HuggingFace Hub",
-  // Legacy scenario names
-  "OpenAI GPT-4o (Clinical Summarizer)",
-  "Anthropic Claude 3 Opus (Risk Analyzer)",
-  "Azure OpenAI GPT-4 Turbo (Recommendations)",
-  "ProsusAI/finbert",
-  "sentence-transformers/all-MiniLM-L6-v2",
-]);
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getResourceId(r: any): string {
   return r.resource_instance_id ?? r.id ?? "";
@@ -60,6 +33,19 @@ function getProjectIds(r: any): string[] {
   return [];
 }
 
+// Fetch all resources associated with a given project
+async function fetchProjectResources(projectId: string, customerId: string, token: string) {
+  const res = await fetch(
+    `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
+    { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(20000) }
+  );
+  if (!res.ok) throw new Error(`Atlas resources fetch failed (${res.status})`);
+  const data = await res.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const all: any[] = Array.isArray(data) ? data : (data.resources ?? data.items ?? []);
+  return all.filter((r) => getProjectIds(r).includes(projectId));
+}
+
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -72,23 +58,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const token = await getAtlasJWT();
-    const headers = { Authorization: `Bearer ${token}` };
-
-    const res = await fetch(
-      `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
-      { headers, signal: AbortSignal.timeout(20000) }
-    );
-    if (!res.ok) throw new Error(`Atlas resources fetch failed (${res.status})`);
-    const data = await res.json();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const all: any[] = Array.isArray(data) ? data : (data.resources ?? data.items ?? []);
-
-    const matching = all.filter((r) => {
-      const name = getResourceName(r);
-      const projects = getProjectIds(r);
-      return projects.includes(projectId) && SCENARIO_RESOURCE_NAMES.has(name);
-    });
+    const matching = await fetchProjectResources(projectId, customerId, token);
 
     return NextResponse.json({
       count: matching.length,
@@ -117,28 +87,13 @@ export async function DELETE(req: NextRequest) {
     const token = await getAtlasJWT();
     const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
-    // Fetch all resources
-    const res = await fetch(
-      `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
-      { headers, signal: AbortSignal.timeout(20000) }
-    );
-    if (!res.ok) throw new Error(`Atlas resources fetch failed (${res.status})`);
-    const data = await res.json();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const all: any[] = Array.isArray(data) ? data : (data.resources ?? data.items ?? []);
-
-    const toDelete = all.filter((r) => {
-      const name = getResourceName(r);
-      const projects = getProjectIds(r);
-      return projects.includes(projectId) && SCENARIO_RESOURCE_NAMES.has(name);
-    });
+    const toDelete = await fetchProjectResources(projectId, customerId, token);
 
     const results = { deleted: [] as string[], failed: [] as string[] };
 
-    // For each matching resource, remove the demo project from its project_ids list.
-    // The batch projects_to_unassign endpoint returns 200 but does not actually unlink
-    // shared resources. Directly PATCHing project_ids on the individual resource works.
+    // For each resource, remove this project from its project_ids list via PATCH.
+    // The batch projects_to_unassign endpoint returns 200 but silently fails for shared
+    // resources — PATCHing project_ids directly is the reliable approach.
     for (const r of toDelete) {
       const id = getResourceId(r);
       const name = getResourceName(r);
@@ -147,7 +102,6 @@ export async function DELETE(req: NextRequest) {
         continue;
       }
 
-      // Compute updated project list (remove this demo project)
       const currentProjects: string[] = getProjectIds(r);
       const updatedProjects = currentProjects.filter((pid) => pid !== projectId);
 
@@ -165,7 +119,7 @@ export async function DELETE(req: NextRequest) {
           results.deleted.push(name);
         } else {
           const errBody = await patchRes.text();
-          // Fall back to projects_to_unassign for this resource
+          // Fallback: batch projects_to_unassign
           try {
             const fallbackRes = await fetch(
               `${ATLAS_API_URL}/v1/inventory/resources/projects`,
@@ -181,7 +135,9 @@ export async function DELETE(req: NextRequest) {
             if (fallbackRes.ok) {
               results.deleted.push(name);
             } else {
-              results.failed.push(`${name}: PATCH ${patchRes.status} (${errBody.slice(0, 100)}), fallback also failed (${fallbackRes.status})`);
+              results.failed.push(
+                `${name}: PATCH ${patchRes.status} (${errBody.slice(0, 80)}), fallback also failed (${fallbackRes.status})`
+              );
             }
           } catch (fe) {
             results.failed.push(`${name}: PATCH ${patchRes.status}, fallback error: ${String(fe)}`);
