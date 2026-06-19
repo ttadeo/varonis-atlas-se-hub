@@ -215,6 +215,29 @@ const MCP_SCENARIOS: McpScenarioDef[] = [
       "Does Atlas integrate with Salesforce or HubSpot natively?",
     ],
   },
+  {
+    id: "mcp_idecopilot",
+    name: "IDE Coding Agent",
+    subtitle: "VS Code + Copilot CLI Runtime Hooks (v3.4.0)",
+    icon: "🧑‍💻",
+    description:
+      "Developer uses GitHub Copilot in VS Code and the Copilot CLI to generate infrastructure code. Atlas Runtime Hooks intercept a request containing production secrets — and Quarantine Action locks the user out for 15 minutes after the violation.",
+    risk: "Secrets exfiltration via IDE AI + Quarantine enforcement",
+    color: "orange",
+    tools: ["copilot_completion", "copilot_cli_suggest"],
+    talkingPoints: [
+      "VS Code Runtime Hooks (v3.4.0) intercept Copilot requests at the IDE layer — no proxy reconfiguration needed",
+      "Copilot CLI hooks extend the same coverage to terminal-based AI coding workflows",
+      "Quarantine Action (v3.4.0) locks the developer's account after a blocking violation — automatic enforcement, no SOC intervention required",
+      "This is the developer AI surface most customers haven't secured yet — IDE tools run outside the corporate proxy",
+    ],
+    atlasFeatures: ["VS Code Runtime Hooks", "Copilot CLI Runtime Hooks", "Quarantine Action", "Credential / Secret Detection"],
+    suggestedQuestions: [
+      "How is the VS Code hook deployed — does it require the developer to install anything?",
+      "Can we configure the quarantine duration per policy or per team?",
+      "Does the Copilot CLI hook cover both gh copilot suggest and gh copilot explain?",
+    ],
+  },
 ];
 
 interface AgentScenarioDef extends ScenarioDef {
