@@ -978,9 +978,12 @@ export default function DemoPage() {
 
               {/* Project selector */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Atlas Project <span className="text-gray-500 font-normal">(template will be scoped here)</span>
+                <label className="block text-sm font-medium text-gray-300 mb-1">
+                  Atlas Project
                 </label>
+                <p className="text-xs text-red-400 font-medium mb-2">
+                  ⚠ Select YOUR project — do not provision into someone else&apos;s environment
+                </p>
                 {chainProjects.length > 0 ? (
                   <select
                     className="w-full bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600"
