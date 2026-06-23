@@ -3,10 +3,15 @@ import { requireAuth } from "@/lib/auth";
 
 const ATLAS_API_URL = "https://api.prod.alltrue-be.com";
 
-async function getAtlasJWT(): Promise<string> {
-  const apiKey = process.env.ATLAS_API_KEY;
-  if (!apiKey) throw new Error("ATLAS_API_KEY not configured");
+function resolveApiKey(req: NextRequest): string {
+  const headerKey = req.headers.get("x-atlas-api-key");
+  if (headerKey) return headerKey;
+  const envKey = process.env.ATLAS_API_KEY;
+  if (envKey) return envKey;
+  throw new Error("No Atlas API key available");
+}
 
+async function getAtlasJWT(apiKey: string): Promise<string> {
   const res = await fetch(`${ATLAS_API_URL}/v1/auth/issue-jwt-token`, {
     method: "POST",
     headers: { "X-API-Key": apiKey },
@@ -20,18 +25,28 @@ async function getAtlasJWT(): Promise<string> {
   return data.access_token as string;
 }
 
+// Decode JWT payload (no verification needed — we just got it from Atlas)
+function extractCustomerId(token: string): string {
+  try {
+    const payload = JSON.parse(Buffer.from(token.split(".")[1], "base64url").toString());
+    return payload.customer_id ?? payload.customerId ?? payload.customer ?? "";
+  } catch {
+    return "";
+  }
+}
+
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
 
-  if (!process.env.ATLAS_API_KEY) {
-    return NextResponse.json({ error: "ATLAS_API_KEY not configured" }, { status: 503 });
-  }
-
-  const customerId = process.env.ATLAS_CUSTOMER_ID ?? "";
-
   try {
-    const token = await getAtlasJWT();
+    const apiKey = resolveApiKey(req);
+    const token = await getAtlasJWT(apiKey);
+
+    // Prefer env var customer ID; fall back to JWT claim (for SE-provided keys)
+    const customerId = process.env.ATLAS_CUSTOMER_ID || extractCustomerId(token);
+    if (!customerId) throw new Error("Could not determine customer ID from API key");
+
     const res = await fetch(
       `${ATLAS_API_URL}/v1/admin/customers/${customerId}/organizations/projects`,
       {

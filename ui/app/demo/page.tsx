@@ -429,14 +429,68 @@ export default function DemoPage() {
   const [applied, setApplied] = useState<ApplyResult | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
 
+  // ── Session-only Atlas API key (never persisted) ───────────────────────────
+  const [atlasApiKey, setAtlasApiKey] = useState("");
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [apiKeyConnecting, setApiKeyConnecting] = useState(false);
+  const [apiKeyError, setApiKeyError] = useState<string | null>(null);
+  const [apiKeyOpen, setApiKeyOpen] = useState(false);
+
+  // Returns headers for all demo API calls — injects SE key when present
+  function demoHeaders(extra: Record<string, string> = {}): Record<string, string> {
+    const h: Record<string, string> = { ...extra };
+    if (atlasApiKey) h["x-atlas-api-key"] = atlasApiKey;
+    return h;
+  }
+
+  async function connectApiKey() {
+    if (!apiKeyInput.trim()) return;
+    setApiKeyConnecting(true);
+    setApiKeyError(null);
+    try {
+      const res = await fetch("/api/demo/chain/projects", {
+        headers: { "x-atlas-api-key": apiKeyInput.trim() },
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      // Key works — load projects from SE's account
+      const map = buildProjectMap(data);
+      const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
+      list.sort((a, b) => a.name.localeCompare(b.name));
+      setAtlasApiKey(apiKeyInput.trim());
+      setApiKeyInput("");
+      setChainProjects(list);
+      setSelectedProjectId(list[0]?.id ?? "");
+      setApiKeyOpen(false);
+      setCleanupCount(null);
+      setCleanupResult(null);
+    } catch (err) {
+      setApiKeyError(`Invalid key: ${String(err)}`);
+    } finally {
+      setApiKeyConnecting(false);
+    }
+  }
+
+  function disconnectApiKey() {
+    setAtlasApiKey("");
+    setApiKeyInput("");
+    setApiKeyError(null);
+    setChainProjects([]);
+    setSelectedProjectId("");
+    setProjectsLoaded(false); // triggers reload with env key
+    setCleanupCount(null);
+    setCleanupResult(null);
+  }
+
   // ── Project selection (shared between provision + chain) ───────────────────
   const [selectedProjectId, setSelectedProjectId] = useState("");
   const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string }[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
 
   // Load projects on mount — needed for both provision and chain modes
+  // Skip if SE has connected their own key (projects already loaded by connectApiKey)
   useEffect(() => {
-    if (projectsLoaded) return;
+    if (projectsLoaded || atlasApiKey) return;
     setProjectsLoaded(true);
     fetch("/api/demo/chain/projects")
       .then((r) => r.json())
@@ -450,7 +504,7 @@ export default function DemoPage() {
         setSelectedProjectId((preferred ?? list[0])?.id ?? "");
       })
       .catch(() => {});
-  }, [projectsLoaded]);
+  }, [projectsLoaded, atlasApiKey]);
 
   // ── Chain of Custody state ──────────────────────────────────────────────────
   const [scanning, setScanning] = useState(false);
@@ -601,7 +655,9 @@ export default function DemoPage() {
 
   async function checkCleanup() {
     if (!selectedProjectId) return;
-    const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`);
+    const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`, {
+      headers: demoHeaders(),
+    });
     const data = await res.json();
     setCleanupCount(data.count ?? 0);
     setCleanupResult(null);
@@ -617,7 +673,10 @@ export default function DemoPage() {
     setCleaningUp(true);
     setCleanupResult(null);
     try {
-      const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`, { method: "DELETE" });
+      const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`, {
+        method: "DELETE",
+        headers: demoHeaders(),
+      });
       const data = await res.json();
       setCleanupResult(`Deleted ${data.deleted_count} resources${data.failed_count > 0 ? `, ${data.failed_count} failed` : ""}.`);
       setCleanupCount(0);
@@ -641,7 +700,7 @@ export default function DemoPage() {
     try {
       const res = await fetch("/api/demo/chain/scenario", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: demoHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify({ scenario_id: scenarioId, project_id: selectedProjectId }),
       });
       const data = await res.json();
@@ -757,6 +816,63 @@ export default function DemoPage() {
           {/* ── Step 1: Input ─────────────────────────────────────────────── */}
           {step === "input" && (
             <div className="space-y-6">
+
+              {/* Atlas Account — session-only API key */}
+              <div className="rounded-xl border border-gray-700 bg-gray-900/50 overflow-hidden">
+                <button
+                  onClick={() => setApiKeyOpen((o) => !o)}
+                  className="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-800/50 transition-colors"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400">🔑</span>
+                    <span className="font-medium text-gray-300">Atlas Account</span>
+                    {atlasApiKey ? (
+                      <span className="text-xs text-emerald-400 bg-emerald-900/30 border border-emerald-700 rounded-full px-2 py-0.5">SE key connected</span>
+                    ) : (
+                      <span className="text-xs text-gray-500">using admin key</span>
+                    )}
+                  </div>
+                  <span className="text-gray-500 text-xs">{apiKeyOpen ? "▲" : "▼"}</span>
+                </button>
+
+                {apiKeyOpen && (
+                  <div className="border-t border-gray-700 px-4 py-4 space-y-3">
+                    {atlasApiKey ? (
+                      <div className="flex items-center justify-between">
+                        <p className="text-sm text-gray-400">Your Atlas API key is active for this session. Projects and resources will use your Atlas environment.</p>
+                        <button
+                          onClick={disconnectApiKey}
+                          className="ml-4 shrink-0 text-xs text-red-400 hover:text-red-300 border border-red-800 hover:border-red-600 rounded-lg px-3 py-1.5 transition-colors"
+                        >
+                          Disconnect
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm text-gray-400">Enter your Atlas API key to provision demos into your own Atlas environment. Key is never stored — session only.</p>
+                        <div className="flex gap-2">
+                          <input
+                            type="password"
+                            value={apiKeyInput}
+                            onChange={(e) => setApiKeyInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && connectApiKey()}
+                            placeholder="Atlas API key"
+                            className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500"
+                          />
+                          <button
+                            onClick={connectApiKey}
+                            disabled={!apiKeyInput.trim() || apiKeyConnecting}
+                            className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+                          >
+                            {apiKeyConnecting ? "Connecting…" : "Connect"}
+                          </button>
+                        </div>
+                        {apiKeyError && <p className="text-xs text-red-400">{apiKeyError}</p>}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
 
               {/* Quick Start Scenarios */}
               <div>

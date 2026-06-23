@@ -3,10 +3,15 @@ import { requireAuth } from "@/lib/auth";
 
 const ATLAS_API_URL = "https://api.prod.alltrue-be.com";
 
-async function getAtlasJWT(): Promise<string> {
-  const apiKey = process.env.ATLAS_API_KEY;
-  if (!apiKey) throw new Error("ATLAS_API_KEY not configured");
+function resolveApiKey(req: NextRequest): string {
+  const headerKey = req.headers.get("x-atlas-api-key");
+  if (headerKey) return headerKey;
+  const envKey = process.env.ATLAS_API_KEY;
+  if (envKey) return envKey;
+  throw new Error("No Atlas API key available");
+}
 
+async function getAtlasJWT(apiKey: string): Promise<string> {
   const res = await fetch(`${ATLAS_API_URL}/v1/auth/issue-jwt-token`, {
     method: "POST",
     headers: { "X-API-Key": apiKey },
@@ -396,12 +401,6 @@ export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
 
-  if (!process.env.ATLAS_API_KEY) {
-    return NextResponse.json({ error: "ATLAS_API_KEY not configured" }, { status: 503 });
-  }
-
-  const customerId = process.env.ATLAS_CUSTOMER_ID ?? "";
-
   let body: { scenario_id?: string; project_id?: string };
   try {
     body = await req.json();
@@ -416,12 +415,14 @@ export async function POST(req: NextRequest) {
   const scenario = SCENARIO_DEFINITIONS.find((s) => s.id === scenario_id);
   if (!scenario) return NextResponse.json({ error: `Unknown scenario_id: ${scenario_id}` }, { status: 400 });
 
+  const customerId = process.env.ATLAS_CUSTOMER_ID ?? "";
   const errors: string[] = [];
   // Unique suffix so re-running a scenario doesn't conflict with prior runs
   const suffix = Date.now().toString(36);
 
   try {
-    const token = await getAtlasJWT();
+    const apiKey = resolveApiKey(req);
+    const token = await getAtlasJWT(apiKey);
     const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
 
     // ── Create resources in one batch call ─────────────────────────────────────
