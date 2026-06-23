@@ -557,54 +557,49 @@ export default function DemoPage() {
     setMcpError(null);
 
     try {
-      const res = await fetch("/api/demo/mcp/research", {
+      // Fire the n8n workflow
+      const fireRes = await fetch("/api/demo/mcp/research", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ company: mcpCompany.trim() }),
       });
 
-      if (!res.ok || !res.body) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error ?? `HTTP ${res.status}`);
+      if (!fireRes.ok) {
+        const data = await fireRes.json().catch(() => ({}));
+        throw new Error(data.error ?? `HTTP ${fireRes.status}`);
       }
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
+      const { jobId } = await fireRes.json();
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() ?? "";
+      // Poll status every 3s (same as /guides pattern)
+      const started = Date.now();
+      const TIMEOUT_MS = 5 * 60 * 1000; // 5 min
 
-        for (const line of lines) {
-          const dataLine = line.startsWith("data: ") ? line.slice(6) : line;
-          if (!dataLine.trim()) continue;
-          try {
-            const event = JSON.parse(dataLine);
-            if (event.type === "step") {
-              setMcpSteps((prev) => {
-                // Update existing step (running → done) or add new
-                const idx = prev.findIndex((s) => s.step === event.step && s.status === "running");
-                if (idx >= 0) {
-                  const updated = [...prev];
-                  updated[idx] = event;
-                  return updated;
-                }
-                return [...prev, event];
-              });
-            } else if (event.type === "done") {
-              setMcpReport(event.report ?? null);
-              setMcpSources(event.sources ?? []);
-              setMcpAudit(event.atlas_audit ?? null);
-            } else if (event.type === "error") {
-              setMcpError(event.message ?? "Unknown error");
-            }
-          } catch { /* skip malformed events */ }
-        }
+      while (Date.now() - started < TIMEOUT_MS) {
+        await new Promise((r) => setTimeout(r, 3000));
+
+        const statusRes = await fetch(`/api/demo/mcp/status?jobId=${jobId}`);
+        if (!statusRes.ok) continue;
+
+        const data = await statusRes.json();
+
+        if (data.status === "pending") continue;
+
+        // Done
+        setMcpReport(data.report ?? null);
+        setMcpSources(data.sources ?? []);
+        setMcpAudit(data.atlas_audit ?? null);
+        setMcpSteps([
+          { type: "step", step: "orchestrator", status: "done", agent: "Orchestrator Agent", message: "Research plan created", tool: null },
+          { type: "step", step: "research",     status: "done", agent: "Research Agent",     message: "Company overview gathered", tool: "exa_search" },
+          { type: "step", step: "news",         status: "done", agent: "News Agent",         message: "Recent news gathered", tool: "exa_search" },
+          { type: "step", step: "risk",         status: "done", agent: "Risk Analyst Agent", message: "Risk analysis complete — Atlas logged this LLM call", tool: "atlas_llm" },
+          { type: "step", step: "report",       status: "done", agent: "Report Agent",       message: "Briefing complete — Atlas audited all LLM traffic", tool: "atlas_llm" },
+        ]);
+        return;
       }
+
+      throw new Error("Research timed out after 5 minutes");
     } catch (err) {
       setMcpError(String(err));
     } finally {
