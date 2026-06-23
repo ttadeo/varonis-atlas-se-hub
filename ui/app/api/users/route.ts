@@ -1,20 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 import neo4j from "neo4j-driver";
-import { jwtVerify } from "jose";
-
-const COOKIE_NAME = "atlas_session";
-
-async function getCallerId(req: NextRequest): Promise<string | null> {
-  const cookie = req.cookies.get(COOKIE_NAME)?.value;
-  if (!cookie) return null;
-  try {
-    const secret = new TextEncoder().encode(process.env.SESSION_SECRET);
-    const { payload } = await jwtVerify(cookie, secret);
-    return (payload.email as string) ?? null;
-  } catch {
-    return null;
-  }
-}
 
 function getDriver() {
   return neo4j.driver(
@@ -26,8 +12,9 @@ function getDriver() {
 
 // GET /api/users — returns all users except the caller
 export async function GET(req: NextRequest) {
-  const callerId = await getCallerId(req);
-  if (!callerId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const auth = await requireAuth(req);
+  if (auth instanceof NextResponse) return auth;
+  const callerId = auth.email;
 
   const driver = getDriver();
   const session = driver.session();
