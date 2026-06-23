@@ -88,6 +88,31 @@ interface DiscoverResult {
 }
 
 
+// ─── MCP Demo Types ────────────────────────────────────────────────────────────
+
+interface McpStep {
+  type: "step";
+  step: string;
+  status: "running" | "done";
+  agent: string;
+  message: string;
+  tool: string | null;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tool_input?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  tool_output?: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  output?: any;
+}
+
+interface McpAudit {
+  llm_calls: number;
+  tool_calls: number;
+  gateway: string;
+  endpoint_id: string;
+  policy_enforced: boolean;
+}
+
 // ─── Scenario Templates ────────────────────────────────────────────────────────
 
 const SCENARIO_TEMPLATES = [
@@ -396,7 +421,7 @@ function ResourcePill({ resource, onClick }: { resource: AtlasResource; onClick:
 // ─── Page ──────────────────────────────────────────────────────────────────────
 
 type Step = "input" | "results" | "applied";
-type Mode = "provision" | "chain";
+type Mode = "provision" | "chain" | "mcp";
 
 interface ApplyResult {
   success: boolean;
@@ -506,10 +531,86 @@ export default function DemoPage() {
       .catch(() => {});
   }, [projectsLoaded, atlasApiKey]);
 
+  // ── MCP Multi-Agent Demo state ─────────────────────────────────────────────
+  const [mcpCompany, setMcpCompany] = useState("");
+  const [mcpRunning, setMcpRunning] = useState(false);
+  const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
+  const [mcpReport, setMcpReport] = useState<string | null>(null);
+  const [mcpSources, setMcpSources] = useState<{ title: string; url: string; category: string }[]>([]);
+  const [mcpAudit, setMcpAudit] = useState<McpAudit | null>(null);
+  const [mcpError, setMcpError] = useState<string | null>(null);
+
   // ── Chain of Custody state ──────────────────────────────────────────────────
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
   const [chainResult, setChainResult] = useState<ChainScanResult | null>(null);
+
+  // ── MCP Multi-Agent Research ───────────────────────────────────────────────
+
+  async function handleMcpResearch() {
+    if (!mcpCompany.trim() || mcpRunning) return;
+    setMcpRunning(true);
+    setMcpSteps([]);
+    setMcpReport(null);
+    setMcpSources([]);
+    setMcpAudit(null);
+    setMcpError(null);
+
+    try {
+      const res = await fetch("/api/demo/mcp/research", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company: mcpCompany.trim() }),
+      });
+
+      if (!res.ok || !res.body) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? `HTTP ${res.status}`);
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          const dataLine = line.startsWith("data: ") ? line.slice(6) : line;
+          if (!dataLine.trim()) continue;
+          try {
+            const event = JSON.parse(dataLine);
+            if (event.type === "step") {
+              setMcpSteps((prev) => {
+                // Update existing step (running → done) or add new
+                const idx = prev.findIndex((s) => s.step === event.step && s.status === "running");
+                if (idx >= 0) {
+                  const updated = [...prev];
+                  updated[idx] = event;
+                  return updated;
+                }
+                return [...prev, event];
+              });
+            } else if (event.type === "done") {
+              setMcpReport(event.report ?? null);
+              setMcpSources(event.sources ?? []);
+              setMcpAudit(event.atlas_audit ?? null);
+            } else if (event.type === "error") {
+              setMcpError(event.message ?? "Unknown error");
+            }
+          } catch { /* skip malformed events */ }
+        }
+      }
+    } catch (err) {
+      setMcpError(String(err));
+    } finally {
+      setMcpRunning(false);
+    }
+  }
 
   // ── Chain of Custody: Scan ─────────────────────────────────────────────────
 
@@ -747,12 +848,14 @@ export default function DemoPage() {
         </div>
         <div>
           <h1 className="font-semibold text-white">
-            {mode === "provision" ? "Demo Provisioning" : "AI Chain of Custody"}
+            {mode === "provision" ? "Demo Provisioning" : mode === "chain" ? "AI Chain of Custody" : "Agentic AI Demo"}
           </h1>
           <p className="text-xs text-gray-400">
             {mode === "provision"
               ? "Describe the customer use case → get ranked Atlas templates → provision"
-              : "Scan Atlas Inventory to visualize how AI artifacts are connected"}
+              : mode === "chain"
+              ? "Scan Atlas Inventory to visualize how AI artifacts are connected"
+              : "Live multi-agent research workflow monitored by Atlas AI Gateway"}
           </p>
         </div>
 
@@ -779,6 +882,16 @@ export default function DemoPage() {
               }`}
             >
               Chain of Custody
+            </button>
+            <button
+              onClick={() => setMode("mcp")}
+              className={`px-3 py-1.5 transition-colors ${
+                mode === "mcp"
+                  ? "bg-violet-700 text-white font-medium"
+                  : "bg-gray-800 text-gray-400 hover:text-white"
+              }`}
+            >
+              Agentic Demo
             </button>
           </div>
 
@@ -809,6 +922,155 @@ export default function DemoPage() {
 
           {/* ── Chain of Custody mode ─────────────────────────────────────── */}
           {mode === "chain" && <ChainView scanning={scanning} scanError={scanError} chainResult={chainResult} onScan={handleChainScan} projects={chainProjects} />}
+
+          {/* ── Agentic Demo mode ──────────────────────────────────────────── */}
+          {mode === "mcp" && (
+            <div className="space-y-6">
+
+              {/* Company input */}
+              <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-4">
+                <div>
+                  <h2 className="text-base font-semibold text-white mb-1">AI Deal Research Agent</h2>
+                  <p className="text-sm text-gray-400">Enter a prospect company name. A multi-agent workflow will research them in real-time using Exa Search — all LLM traffic routed through Atlas Gateway.</p>
+                </div>
+
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={mcpCompany}
+                    onChange={(e) => setMcpCompany(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleMcpResearch()}
+                    placeholder="e.g. JPMorgan Chase, Microsoft, UnitedHealth Group"
+                    className="flex-1 bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-violet-500"
+                    disabled={mcpRunning}
+                  />
+                  <button
+                    onClick={handleMcpResearch}
+                    disabled={!mcpCompany.trim() || mcpRunning}
+                    className="bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
+                  >
+                    {mcpRunning ? "Running…" : "Run Research"}
+                  </button>
+                </div>
+
+                {/* Suggested companies */}
+                <div className="flex flex-wrap gap-2">
+                  {["Microsoft", "JPMorgan Chase", "UnitedHealth Group", "Salesforce", "Pfizer"].map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setMcpCompany(c)}
+                      disabled={mcpRunning}
+                      className="text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-full px-3 py-1 transition-colors disabled:opacity-40"
+                    >
+                      {c}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Agent activity feed */}
+              {(mcpSteps.length > 0 || mcpRunning) && (
+                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-3">
+                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Agent Activity</h3>
+                  {mcpSteps.map((s, i) => (
+                    <div key={i} className={`flex items-start gap-3 rounded-lg px-3 py-2.5 ${s.status === "running" ? "bg-violet-900/20 border border-violet-800/40" : "bg-gray-800/40"}`}>
+                      <div className="mt-0.5">
+                        {s.status === "running"
+                          ? <div className="w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+                          : <div className="w-4 h-4 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs">✓</div>
+                        }
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <span className="text-xs font-medium text-white">{s.agent}</span>
+                          {s.tool && (
+                            <span className={`text-xs px-1.5 py-0.5 rounded font-mono ${s.tool === "atlas_llm" ? "bg-violet-900/50 text-violet-300 border border-violet-700" : "bg-emerald-900/50 text-emerald-300 border border-emerald-700"}`}>
+                              {s.tool === "atlas_llm" ? "🛡 Atlas Gateway" : "🔍 exa_search"}
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-gray-400">{s.message}</p>
+                        {s.tool_output && Array.isArray(s.tool_output) && s.tool_output.length > 0 && (
+                          <div className="mt-1.5 space-y-0.5">
+                            {s.tool_output.slice(0, 3).map((r: {title: string; url?: string}, idx: number) => (
+                              <p key={idx} className="text-xs text-gray-500 truncate">↳ {r.title}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {mcpRunning && mcpSteps.length === 0 && (
+                    <div className="flex items-center gap-2 text-sm text-gray-400">
+                      <div className="w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+                      Initializing agents…
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Atlas Audit Trail */}
+              {mcpAudit && (
+                <div className="rounded-xl border border-violet-800/50 bg-violet-900/10 p-4">
+                  <h3 className="text-sm font-semibold text-violet-300 mb-3">🛡 Atlas AI Gateway — Audit Trail</h3>
+                  <div className="grid grid-cols-3 gap-4 text-center">
+                    <div>
+                      <div className="text-2xl font-bold text-white">{mcpAudit.llm_calls}</div>
+                      <div className="text-xs text-gray-400">LLM Calls Intercepted</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-white">{mcpAudit.tool_calls}</div>
+                      <div className="text-xs text-gray-400">MCP Tool Calls Logged</div>
+                    </div>
+                    <div>
+                      <div className="text-2xl font-bold text-emerald-400">Active</div>
+                      <div className="text-xs text-gray-400">Policy Enforcement</div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3">Every LLM call in this workflow was routed through <span className="text-violet-300">Atlas AI Gateway</span> — full prompt/response audit trail available in Atlas AI Investigation.</p>
+                </div>
+              )}
+
+              {/* Sources */}
+              {mcpSources.length > 0 && (
+                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-4">
+                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Sources (via Exa Search)</h3>
+                  <div className="space-y-1.5">
+                    {mcpSources.map((s, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        <span className="text-xs text-gray-600 w-16 shrink-0">{s.category}</span>
+                        <a href={s.url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400 hover:text-blue-300 truncate">{s.title}</a>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Final Report */}
+              {mcpReport && (
+                <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-white">Pre-Meeting Briefing — {mcpCompany}</h3>
+                    <button
+                      onClick={() => { setMcpSteps([]); setMcpReport(null); setMcpSources([]); setMcpAudit(null); setMcpError(null); setMcpCompany(""); }}
+                      className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                    >
+                      ← New Research
+                    </button>
+                  </div>
+                  <div className="prose prose-invert prose-sm max-w-none text-gray-300 text-sm leading-relaxed whitespace-pre-wrap">
+                    {mcpReport}
+                  </div>
+                </div>
+              )}
+
+              {mcpError && (
+                <div className="rounded-xl border border-red-800 bg-red-900/20 px-4 py-3 text-sm text-red-300">
+                  {mcpError}
+                </div>
+              )}
+            </div>
+          )}
 
           {/* ── Demo Provisioning mode ────────────────────────────────────── */}
           {mode === "provision" && <>
