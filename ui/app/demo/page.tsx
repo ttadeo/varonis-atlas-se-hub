@@ -849,7 +849,12 @@ export default function DemoPage() {
                       </div>
                     ) : (
                       <>
-                        <p className="text-sm text-gray-400">Enter your Atlas API key to provision demos into your own Atlas environment. Key is never stored — session only.</p>
+                        <p className="text-sm text-gray-400">
+                          Enter your Atlas API key to provision demos into your own Atlas environment. Key is never stored — session only.
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Find your key in Atlas: <span className="text-gray-300">Admin Console → Permissions → API Keys → Add API Key</span> (type: Custom Integrations)
+                        </p>
                         <div className="flex gap-2">
                           <input
                             type="password"
