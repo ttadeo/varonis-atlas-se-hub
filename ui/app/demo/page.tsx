@@ -853,7 +853,7 @@ export default function DemoPage() {
                           Enter your Atlas API key to provision demos into your own Atlas environment. Key is never stored — session only.
                         </p>
                         <p className="text-xs text-gray-500">
-                          Find your key in Atlas: <span className="text-gray-300">Admin Console → Permissions → API Keys → Add API Key</span> (type: Custom Integrations)
+                          To create a key: <span className="text-gray-300">Admin Console → Permissions → API Keys → Add API Key</span> (type: Custom Integrations). Copy and save it locally — Atlas only shows it once.
                         </p>
                         <div className="flex gap-2">
                           <input
