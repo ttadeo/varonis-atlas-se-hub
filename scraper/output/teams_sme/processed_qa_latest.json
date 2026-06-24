@@ -1,87 +1,359 @@
 {
-  "processed_at": "2026-06-11T16:21:26.107832Z",
+  "processed_at": "2026-06-24T15:30:17.883863Z",
   "source_file": "regrouped_threads_latest.json",
   "stats": {
-    "threads_input": 526,
-    "threads_kept": 260,
-    "threads_discarded": 266,
-    "qa_pairs_extracted": 77,
-    "qa_pairs_active": 68,
-    "qa_pairs_superseded": 9
+    "threads_input": 479,
+    "threads_kept": 240,
+    "threads_discarded": 239,
+    "qa_pairs_extracted": 64,
+    "qa_pairs_active": 61,
+    "qa_pairs_superseded": 3
   },
   "qa_pairs": [
     {
-      "thread_id": "1771346300076",
-      "question": "What ZTNA providers are supported for Atlas AI Security gateway integration, and is there a roadmap for additional providers?",
-      "answer": "For Gateway integration with full prompt visibility, Atlas supports Anthropic endpoints (API keys from the Claude Developer Platform) directly. For broader AI usage visibility (e.g., users accessing Claude via web), a ZTNA provider integration is required — currently only Netskope and Cloudflare are supported out of the box. zScaler has been mentioned as a potential future integration but its roadmap status is unconfirmed. Additionally, a browser extension is on the roadmap to provide greater prompt visibility into employee interactions with mainstream AI services accessed via common web URLs, which would reduce dependency on ZTNA providers for that use case.",
-      "topic": "gateway_architecture",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Anthony Vanoni"
-      ],
-      "date_sensitive": true,
-      "notes": "ZTNA roadmap status (especially zScaler) should be verified with Jonathan Koffman and Ryan Cattanach. Browser extension is roadmap-stage as of 2026-02-17 and not yet released.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:00.211015Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1771840922529",
-      "question": "Which browsers will be supported by the planned browser feature?",
-      "answer": "Browser support is still being planned, but the expected browsers are Edge, Chrome, and Safari — similar to the Interceptor product.",
-      "topic": "gateway_architecture",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "This was stated as still in planning as of 2026-02-23. Final browser support may change. The comparison to 'Interceptor' suggests feature parity is the goal.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:42.037458Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1773440271803",
-      "question": "Do Replit and Lovable support integration with Varonis Atlas AI Security for continuous scanning and proxy-based protection?",
-      "answer": "Replit and Lovable both support two-way synchronization with GitHub, which allows Varonis to continuously scan their repositories. Additionally, the Varonis proxy can integrate with Replit by redirecting Replit's default LLM traffic through the proxy, enabling protections to be applied when users are generating code in Replit.",
-      "topic": "gateway_architecture",
+      "thread_id": "1775681858004",
+      "question": "How is Varonis positioning the browser extension in relation to email security and the broader AI platform?",
+      "answer": "The sales/messaging guidance is to leverage the existing browser extension (already used for the AI-powered email security platform) as a bridge to position an integrated, single-platform story. The talking point is that the browser extension for email exists today, and broader capabilities are 'coming soon' — unifying everything into one platform. Note: internally it's acknowledged that the email extension and the upcoming features are technically unrelated, but the single-platform narrative is being used as positioning.",
+      "topic": "other",
       "answer_complete": true,
       "confidence": "tentative",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Single message thread; the author states they 'got their answer' but the source of the answer is not visible in the thread. Confidence is tentative due to lack of SME attribution or corroboration.",
+      "notes": "This thread appears to be an internal sales/messaging discussion rather than a technical Q&A. The advice to use the browser extension as a positioning bridge is explicitly noted as somewhat misleading ('ignore that they're unrelated'), which may be worth flagging for compliance or messaging accuracy review.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T15:58:07.342406Z",
+      "processed_at": "2026-06-24T15:06:49.441903Z",
       "superseded_by": null
     },
     {
-      "thread_id": "1775145397932",
-      "question": "How should Varonis position itself relative to LiteLLM and similar open-source AI gateway frameworks, especially in light of supply chain attacks?",
-      "answer": "The competitive positioning around LiteLLM should not focus on whether Varonis could have detected the supply chain attack — that's outside our scope. The real question is whether enterprises are equipped to take on complex open-source frameworks like LiteLLM and build their AI infrastructure on them. If they do, they accept the risks: supply chain vulnerabilities, lack of support, no indemnification. By contrast, Varonis offers a production-grade gateway backed by a trusted partner, providing support, security, and indemnification. Specifically, the Atlas platform now offers two complementary gateway options: (1) AI MCP — a new section in the most recent release — and (2) the AI Runtime, which together form a transparent gateway and a control plane. This gives customers a supported, enterprise-ready alternative to self-managing open-source solutions like LiteLLM.",
-      "topic": "gateway_architecture",
+      "thread_id": "1775748230773",
+      "question": "Why does a new window default back to 'Default Organization' instead of maintaining the current organization state (e.g., R&D)?",
+      "answer": "When a new window opens in Atlas AI Security, it resets to 'Default Organization' rather than inheriting the currently selected organization (e.g., R&D). The temporary workaround is to manually change the organization to the correct one (e.g., R&D) after the new window opens. The expected behavior is that the new window should maintain the organization state from the originating session — this appears to be a known bug. As a best practice, users should always double-check which organization they are in before starting any investigation or demo.",
+      "topic": "other",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "All contributors are listed as 'Unknown' so individual attribution is not possible. The fix is confirmed as a temporary workaround; the correct behavior (state persistence across windows) has been acknowledged but not yet implemented.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:06:55.674963Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778158139431",
+      "question": "What configuration issue causes the agent chatbot to break during demos against Prod endpoints?",
+      "answer": "When using the agent chatbot for demos configured against Production endpoints, the 'corrected threads' toggle must be turned off. If this toggle is left on, the chatbot will break.",
+      "topic": "other",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Author identity is 'Unknown' — cannot attribute to a named SME. This appears to be an operational heads-up rather than a documented feature, so treat as tentative until confirmed by a named contributor. Relevant only while the demo/Prod configuration issue persists.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:17:25.716132Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779832560091",
+      "question": "Is the GitHub App integration still functional despite still showing AllTrue branding?",
+      "answer": "Yes, the GitHub App integration is working — and reportedly working better than ever — despite still displaying AllTrue branding. It is a valid integration path to recommend to clients.",
+      "topic": "other",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "AllTrue appears to be a prior brand name for what is now Varonis Atlas AI Security. The branding inconsistency in the GitHub App is a known cosmetic issue but does not affect functionality. Date sensitivity is relevant as branding updates may be in progress.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:22:09.435330Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779999868578",
+      "question": "What was the outcome of the Atlas demo run for Universal Properties?",
+      "answer": "A demo of Atlas was run for Universal Properties, an existing FL customer, on the preceding Friday. After a few follow-up questions during the week, the partner confirmed a purchase order is in for approximately $70K ARR — with no sandbox or formal evaluation required.",
+      "topic": "other",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Thread contains social noise (pronunciation joke, wordplay suggestion) unrelated to the core deal update. The $70K ARR close without a sandbox/formal evaluation may be noteworthy as a sales motion signal.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:22:55.074244Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1776092663531",
+      "question": "Are there FedRAMP or TX-RAMP compliance plans for Atlas AI Security, and can it be covered under the existing SaaS/DAC boundary?",
+      "answer": "There are no current FedRAMP or TX-RAMP certifications for Atlas. Atlas does not currently exist within the Varonis SaaS FedRAMP boundary, meaning a completely separate FedRAMP package submission would be required — a significant effort. TX-RAMP is not considered worth pursuing given that FedRAMP authorization provides reciprocity. FedRAMP 20x would make the process easier but still represents substantial work. The team is actively discussing whether to pursue a FedRAMP package now or wait until the product is more consolidated — this was flagged for a FedRAMP sync with Ilan. A competing solution, Darwin AI, is targeting the SLED space and actively baking FedRAMP requirements into RFPs they have influenced. As an interim option for government opportunities (e.g., a DHS deal), a privately-hosted Atlas instance has been proposed and may be a viable path depending on deal size — Ron and Mike have details on that approach.",
+      "topic": "compliance",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Discussion was ongoing as of 2026-04-13 with a FedRAMP sync scheduled for the following day. No firm decision or timeline was committed to. Darwin AI named as a SLED-focused competitor leveraging FedRAMP requirements in RFPs. Privately-hosted Atlas instance floated as a near-term workaround for government deals.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:07:20.123046Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778098687178",
+      "question": "When is the Claude Enterprise Compliance API integration releasing, and how does it compare to ChatGPT Enterprise monitoring on the SaaS side?",
+      "answer": "The planned release for Claude Enterprise Compliance API integration is targeted for early June 2026, though this is subject to change. The Compliance API will serve as the visibility path for Claude Enterprise by enabling custom log ingestion — pulling in prompts, responses, and audit logs from Claude Enterprise. This is functionally analogous to how ChatGPT Enterprise is monitored on the SaaS side, in that it provides audit visibility without requiring inline blocking or other runtime controls. The mechanism is custom log ingestion that can bring in log sources from Claude Enterprise (and potentially other services).",
+      "topic": "compliance",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "All contributors are listed as 'Unknown' so individual attribution is not possible. The early-June 2026 timeline was explicitly flagged as subject to change. The respondent noted they could not speak directly to SaaS specifics but confirmed the mechanism is analogous.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:17:10.643226Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1781629617929",
+      "question": "Does connecting to Claude via OAuth affect Varonis's ability to track usage through the Compliance API?",
+      "answer": "No, connecting to Claude via OAuth does not impact the ability to track usage via the Compliance API. The two are completely independent. The Compliance API pulls activity data passively — it is not inline — similar to how prompt details are retrieved from ChatGPT. OAuth authentication method has no bearing on what the Compliance API can observe or collect.",
+      "topic": "compliance",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Thread also contains a secondary question about output guardrail demos (redact vs. block), with the suggested workaround being to demonstrate guardrails live or use past examples from personal projects. No formal updated demo script was confirmed as available.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:28:47.401658Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1776276541344",
+      "question": "Can Atlas ingest Zscaler traffic logs (including prompts/conversations) to provide visibility and guardrails for Copilot desktop app usage?",
+      "answer": "Atlas can ingest Zscaler logs containing prompts/conversations if they are written to an S3 bucket or Azure Blob Storage container. This would provide visibility-only coverage — no enforcement or guardrails. This ingestion capability is nearly complete for Island browser, and extending it to Zscaler would be straightforward. However, the prospect's requirement includes guardrails/enforcement in addition to visibility, which is not supported by this integration path. Enforcement via Zscaler log ingestion is not currently possible.",
+      "topic": "guardrails",
       "answer_complete": true,
       "confidence": "sme_validated",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "Message references 'the most recent version' as of 2026-04-02. The AI MCP section is described as newly added. Daniela Lulli is mentioned as a recipient/collaborator but did not post in this excerpt. Speaker identity is 'Unknown' but tone and detail suggest an internal SME or product leader.",
+      "notes": "Visibility-only ingestion via S3/Azure Blob is near-complete as of April 2026 (built for Island browser, extensible to Zscaler). The prospect's guardrails/enforcement requirement is NOT met by this approach — that gap was flagged but not resolved in the thread.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T15:59:58.122219Z",
+      "processed_at": "2026-06-24T15:07:45.016508Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1776375936149",
+      "question": "What agentic threats and Claude product support does Varonis Atlas currently cover?",
+      "answer": "Varonis Atlas currently supports Claude/Anthropic in two ways: (1) connecting to Anthropic LLM endpoints via API key for AI Red Team (pentesting), and (2) prompt+response monitoring and runtime guardrail enforcement. Near-term roadmap includes support for Claude Code via Hooks integration to expand runtime protection to developers using Claude Code.\n\nOn the agentic threat side, the AI SPM module currently covers exactly two Agentic Risk policies: model poisoning and excessive agency. These are the only two formally in scope at this time.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "The Claude product support answer was flagged as a best-effort response from a non-AllTrue employee — a former AllTrue employee may be able to refine it. Roadmap items (Claude Code via Hooks) should be treated as near-term, not yet GA. Thread dated 2026-04-16.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:08:43.928116Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777760847729",
+      "question": "What new capabilities were released with Microsoft Agent 365 reaching GA?",
+      "answer": "Microsoft Agent 365 reached General Availability on May 1, 2026. The GA release includes policy-based controls and runtime blocking and alerting on endpoint agents such as OpenClaw, delivered through integrations with Microsoft Intune and Defender. The endpoint agent capabilities are currently in public preview, with full availability expected in June 2026.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Single anonymous source sharing a product announcement; no SME validation or community discussion occurred. The linked Microsoft Security Blog post (dated 2026-05-01) is the primary source. 'OpenClaw' is referenced as an endpoint agent type — verify spelling/product name. Timeline for public preview endpoint GA is stated as June 2026, which may shift.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:14:52.174744Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778001553065",
+      "question": "Does Atlas support runtime enforcement for Copilot Studio agents, and what are the coverage limitations?",
+      "answer": "Atlas does support runtime enforcement for Copilot Studio agents via the Threat Detection capability in Power Platform. However, there are several important limitations: (1) Coverage likely does NOT extend to agents built in Copilot Studio Lite, as those fall into the 'classic agents' category — Microsoft's external threat detection preview only applies to generative agents using generative orchestration, not classic agents. (2) Power Platform Threat Detection works by intercepting a pending tool invocation, sending the tool definition, arguments, and conversation context to Atlas, then waiting for an Allow/Block decision. This means runtime controls ONLY apply when an agent invokes a tool — they do not apply to basic input prompts or model responses that do not invoke tools. (3) The external threat detection feature is a Microsoft preview and is subject to change. Documentation for enabling Copilot Studio agent runtime controls is available at the TRiSM Hub: Microsoft Copilot Studio Integration | TRiSM Hub Documentation.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "The Microsoft external threat detection feature is in preview as of 2026-05-05 and subject to change. The Copilot Studio Lite limitation is inferred from documentation review, not explicitly confirmed by Microsoft.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:16:09.970915Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778588640097",
+      "question": "Does Atlas AI Security support CLAUDE.md, and how should this be explained to a customer asking about it?",
+      "answer": "Atlas does not support CLAUDE.md as a file format — and this should be framed as an architectural difference, not a limitation or workaround gap. CLAUDE.md is an Anthropic-specific convention where a markdown file is dropped into a repo and Claude reads it as persistent instructions injected into the system prompt. It is model-dependent, prompt-dependent, and unenforced — the model can ignore it, be manipulated past it, or have it overridden via prompt injection.\n\nAtlas takes a fundamentally different approach: it governs AI behavior at the infrastructure level, outside the model entirely. Key distinctions:\n- CLAUDE.md lives inside the prompt; Atlas policies live outside the model at the infrastructure layer\n- CLAUDE.md enforcement is model-dependent and can be bypassed; Atlas hard-blocks or modifies requests before the model ever sees them\n- CLAUDE.md only works with Claude; Atlas policies apply to any LLM — Claude, Gemini, GPT, WatsonX, custom models\n- CLAUDE.md has no auditability; Atlas provides full policy change history with staging and review workflows\n\nThe closest Atlas equivalents to CLAUDE.md functionality are:\n1. **Custom Judge** — Natural language criteria evaluated by a separate LLM judge at runtime. Can be written exactly like a CLAUDE.md instruction set, but the target model never sees it — it runs independently.\n2. **Policy Message Rule** — Prepends or appends a fixed instruction/context block to every prompt or response automatically. This is the most direct structural equivalent to CLAUDE.md, but enforced at the proxy level rather than the model level.\n3. **Banned Substrings + Prompt Protection Rules** — For specific behavioral boundaries CLAUDE.md would normally define (e.g., 'don't discuss X, never output Y').\n\nFor security-conscious customers, the key message is: 'the infrastructure blocks it regardless of what the model does' is a stronger guarantee than 'the model follows instructions in a text file.'",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "This response was drafted by a self-described Atlas learner seeking vetting from SMEs — it has not been confirmed as validated by a subject matter expert. The customer referenced is 'Camelot,' described as a cybersecurity company. Confidence should be upgraded to sme_validated if a product expert confirms the accuracy of the Custom Judge, Policy Message Rule, and Banned Substrings feature descriptions.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:18:40.881287Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778705611266",
+      "question": "When should you use multiple projects instead of one in Atlas AI Security? Is there a technical limit, or is it organizational?",
+      "answer": "Using multiple projects is primarily about control and policy targeting rather than hard technical limits. A single project is not limited by the number of LLMs or models it contains, so the driver for splitting into separate projects is governance: different projects allow you to apply different guardrails, policies, and red-teaming configurations. For example, an HR chatbot may legitimately need to allow access to PII, while a developer agent should have guardrails that block PII — these distinct policy requirements make separate projects the right choice. In short, if two AI applications require different control surfaces, they should be separate projects.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Thread also includes an offhand mention of an Atlas review request for agent categorization based on ISO 42001, flagged as a 'share with the class' item — may be worth tracking as a compliance/roadmap signal.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:19:31.912790Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778866136400",
+      "question": "Is there a guardrail that covers prompt smuggling and obfuscation attacks, including invisible text steganography?",
+      "answer": "Yes, there are two guardrails that address these attack vectors: (1) 'Prevent Obfuscated Attacks' — identifies prompt smuggling attempts where attackers try to evade filters by replacing trigger words with synonyms or introducing deliberate typos; (2) 'Remove Invisible Text' — identifies and removes invisible Unicode characters used in steganographic attacks, which can appear in Amazon reviews, emails, websites, and security logs.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Both contributors were listed as 'Unknown'. The thread appears to be confirming that existing guardrails already cover these attack surfaces rather than requesting a new feature.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:20:06.513861Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779311128109",
+      "question": "What encodings and obfuscation techniques can the Llama4 model understand during pentest evaluations?",
+      "answer": "The Llama4 model used for pentest evaluations can understand the following encodings and obfuscation techniques in practice, though these are not officially supported — they are emergent capabilities:\n\n**Standard Encodings:**\n- Base64\n- Base64URL (URL-safe variant)\n- Hex / Base16\n- URL / Percent encoding (%XX)\n- HTML entities (&lt;, &#x41;, etc.)\n- Unicode escape sequences (\\uXXXX, U+XXXX)\n- Binary (ASCII → 0/1 strings)\n- Base32\n- Plain text → hex with separators (e.g., 48 65 6c 6c 6f)\n- Mixed encodings (e.g., partial Base64 + text)\n\n**Heuristic/Pattern-Based Obfuscation:**\n- ROT13\n- Caesar cipher (small shifts)\n- Reversed strings\n- Leetspeak / character substitutions\n- Basic obfuscation (spacing, punctuation tricks)\n\nImportant caveat: these capabilities are not formally guaranteed — they emerge from the model's training and should be treated as best-effort rather than reliable detection guarantees.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Explicitly flagged as emergent/unofficial capabilities of Llama4, not formally supported features. Relevant to pentest evaluation robustness and prompt injection/obfuscation detection scenarios.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:21:26.624655Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779999155019",
+      "question": "What LLM/model does Atlas use internally as the evaluator for custom judge guardrails, and is it a proprietary model or a public one?",
+      "answer": "Atlas uses an evaluator LLM to interpret custom judge input prompts and implement guardrails (e.g., blocking proprietary info/IP from entering a customer's agent model). Currently, Varonis runs Gemini Vertex 2.5 Flash-Lite in its own environments as the evaluator LLM — this is a public model, not a proprietary one built by Varonis. However, customers have the option to bring their own LLM endpoint for evaluation purposes, giving them control over model continuity and behavior consistency.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "The specific model (Gemini Vertex 2.5 Flash-Lite) reflects the current Varonis-hosted default as of May 2026 and may change. Customers substituting their own LLM endpoint should be aware that judge behavior continuity becomes their responsibility in that case.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:22:50.675675Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1780072572997",
+      "question": "Is the LLM used to review an uploaded policy revision configurable within Atlas AI, so a customer can re-review a document diff against a different model (e.g., to avoid a known Gemini 2.5 fabrication issue)?",
+      "answer": "In production, customers would be able to configure which LLM is used as the evaluator when uploading a revised document. However, this is not currently an option in the shared eval/demo tenant, because changing the Evaluator LLM in that environment would impact multiple organizations simultaneously. The recommendation is to level-set with the customer on this limitation in the shared eval context, while confirming the capability will be available in their production deployment.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "The thread mixes an unrelated demo access issue (verify identity screen) with the substantive policy review question. The answer distinguishes between shared eval tenant limitations and production capabilities. 'Gemini 2.5F fabrication' likely refers to a known hallucination/fabrication issue with Gemini 2.5 Flash model.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:23:50.910548Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1780673262917",
+      "question": "What is the best practice for setting Guardrail policies in the shared demo environment?",
+      "answer": "Avoid setting Guardrail policies at the 'All Organizations' level in the shared demo environment. Doing so affects all other users who may be running their own demo configurations simultaneously, which can cause unexpected behavior during customer demos. If you must set a Guardrail policy at the All Organizations level for a specific demo use case, toggle it off immediately after you are finished.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Ury Segal"
+      ],
+      "date_sensitive": false,
+      "notes": "This is an internal operational best practice for the shared demo environment, not a product feature description. The message references a Paint-skills diagram that is not captured in the transcript.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:25:47.345469Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1781025761419",
+      "question": "Can Atlas track token consumption?",
+      "answer": "Yes, Atlas can track token consumption through multiple mechanisms: (1) AI gateway guardrails can log or block based on token usage; (2) IDE solutions like Claude Code have token visibility; (3) the AI Investigations > Performance dashboard provides token consumption reporting; and (4) at the individual session level, clicking 'metadata' within a session reveals token usage for that specific session.",
+      "topic": "guardrails",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "All contributors are listed as 'Unknown' so individual attribution is not possible. Token tracking spans both gateway-level and session-level granularity, as well as IDE integrations like Claude Code.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:26:41.922003Z",
       "superseded_by": null
     },
     {
       "thread_id": "1776342626362",
-      "question": "Will S3 be supported as a log source, and what is the path to full vendor integration?",
-      "answer": "S3 will be available as a generic log source where users can configure a custom schema mapping. However, if a sample log is provided, it can be turned into a fully supported vendor integration rather than requiring manual schema configuration.",
+      "question": "Will S3 be available as a log source, and can it support custom vendor integrations?",
+      "answer": "S3 will be available as a generic log source where users can configure a custom schema mapping. Additionally, if a sample log is provided, it can be turned into a fully supported vendor integration.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "tentative",
@@ -89,16 +361,16 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Single contributor with no username identified. Answer describes both the self-serve generic path (custom schema mapping) and the escalation path to a fully supported integration via sample log submission.",
+      "notes": "Author is listed as 'Unknown' — identity unverified. The statement implies a pathway from generic S3 log ingestion to a formal vendor integration given sample data, but no timeline or process details are provided.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:01:39.323876Z",
+      "processed_at": "2026-06-24T15:08:05.627332Z",
       "superseded_by": null
     },
     {
       "thread_id": "1776811676148",
-      "question": "How can customers ensure all users route through the Atlas AI Gateway for real-time protection, and what prevents users from bypassing it?",
-      "answer": "Enforcing gateway usage ultimately comes down to the customer's existing network infrastructure and API gateway capabilities. There are three main integration patterns customers have used:\n\n1. **Direct Firewall API Callouts**: The customer's own API Gateway (e.g., Kong) is configured to call the Atlas firewall APIs directly. This requires the gateway to support request API callout functions and essentially replicates what the Atlas proxy does natively.\n\n2. **Proxy Chaining**: Customer traffic routes through their own API Gateway, which then forwards requests to the Atlas proxy, and finally to the LLM endpoint. The key tradeoff is latency/overhead from traversing two proxies.\n\n3. **SDK Integration with API Gateway Checks**: The Atlas SDK is deployed directly within customer applications. The customer's API Gateway then checks the quarantine or approval status of an endpoint via the SDK. Proper SDK deployment across all applications is the critical dependency here.\n\nNone of these are one-size-fits-all — the right choice depends on the customer's existing infrastructure. On more advanced implementations, Varonis engineers work directly with the customer's technical team to design a solution. The general posture is: we can support this, just say yes.",
+      "question": "How can customers ensure all users route through the AI Gateway for real-time protection, and what stops users from bypassing it?",
+      "answer": "Enforcing gateway usage ultimately relies on a combination of the customer's existing network infrastructure and integration architecture. There is no single built-in enforcement mechanism — customers must leverage their own API Gateway or network controls to route traffic through the Atlas AI Gateway. Several integration patterns have been used in practice:\n\n1. **Direct Firewall API Callouts**: The customer's own API Gateway (e.g., Kong) is configured to call the Atlas firewall APIs directly on each request. This effectively replicates what the Atlas proxy does natively.\n\n2. **Proxy Chaining**: Traffic flows through the customer's API Gateway first, which then forwards requests to the Atlas proxy, and finally to the LLM endpoint. The trade-off is latency/overhead from traversing two proxies.\n\n3. **SDK Integration with API Gateway Checks**: The Atlas SDK is deployed directly within customer applications. The customer's API Gateway can then check the quarantine or approval status of an endpoint via the SDK. Proper SDK deployment is the key consideration here.\n\nThe right approach depends on the customer's existing infrastructure. For advanced implementations, Varonis engages in a collaborative engineering effort with the customer. These are not one-size-fits-all solutions, but the guidance is to affirm that multiple integration paths exist and work with the customer to find the best fit.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "community_consensus",
@@ -107,16 +379,16 @@
         "Matt Proctor"
       ],
       "date_sensitive": false,
-      "notes": "Abdiel or senior team members may have additional integration patterns beyond what is documented here. Answer is practitioner-level, not formally SME-validated.",
+      "notes": "The response acknowledges that more senior team members (e.g., Abdiel) may have additional insights. The answer is practitioner-level but not formally SME-validated.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:03:31.839118Z",
+      "processed_at": "2026-06-24T15:10:05.757085Z",
       "superseded_by": null
     },
     {
-      "thread_id": "1778028448671",
-      "question": "What API gateway and proxy integrations does Atlas AI Gateway (TRiSM Hub) support?",
-      "answer": "Atlas AI Gateway (TRiSM Hub) supports the following integrations: (1) LiteLLM Proxy — full guardrails integration via LiteLLM's Generic Guardrail API, applying PII detection, prompt injection protection, topic blocking, and more on every LLM call without requiring application code changes; (2) Kong Konnect (Enterprise Edition) — quarantining/sanctioning integration via a Kong plugin that routes all LLM access through Kong, calling TRiSM Hub to allow or deny based on whether the LLM endpoint is sanctioned; (3) Microsoft Copilot Studio — External Threat Detection webhook integration that evaluates every tool invocation against guardrail rules before execution, applicable only to generative agents with generative orchestration (classic agents are not evaluated); (4) Apigee — referenced in FAQ as a supported existing API gateway integration alongside Kong, but depth of support should be confirmed with an SME as no dedicated integration documentation was found; (5) Native NGINX Proxy — Atlas's own reverse proxy, deployable via Docker on the customer data plane as a standalone option when no existing gateway is in place.",
+      "thread_id": "1778030328161",
+      "question": "What gateway architectures or products are compatible with Atlas AI Security?",
+      "answer": "Because Atlas AI Security operates fundamentally as a series of API calls, any gateway that supports callouts will work. By definition, any API gateway is compatible.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "tentative",
@@ -124,16 +396,16 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Content was generated by an AI bot with a 'trust but verify' caveat. Apigee support depth is explicitly flagged as unconfirmed and should be validated with an SME. The Microsoft Copilot Studio integration limitation (generative orchestration only, not classic agents) is an important constraint to preserve.",
+      "notes": "Author is unidentified ('Unknown'). The answer is a general architectural principle rather than a specific validated compatibility list. No specific gateway products were named.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:10:01.669618Z",
+      "processed_at": "2026-06-24T15:16:39.423561Z",
       "superseded_by": null
     },
     {
       "thread_id": "1778113745104",
-      "question": "Why is Panther included as an integration option in Atlas AI Security?",
-      "answer": "Panther is listed as a generic web REST API integration tile. Any system that can receive data pushed to it as JSON over HTTPS with a bearer token can use the Panther tile. Panther happened to be the first system for which this method was implemented, but since most modern systems support this pattern, the Panther tile is effectively a universal REST webhook integration and could become the most frequently used tile.",
+      "question": "Why is Panther included as a connector/tile in Atlas AI Security?",
+      "answer": "Panther is included as a generic web REST API tile. Any system that can receive data pushed to it as JSON over HTTPS with a bearer token can use the Panther tile. Panther was simply the first system requested using this method, but since almost any modern system supports this approach, the Panther tile could become the most frequently used connector.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "sme_validated",
@@ -141,16 +413,16 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "The contributor appears to be an internal SME explaining design rationale. 'Panther tile' likely refers to a named connector/integration card in the Atlas UI. The name 'Panther' is the SIEM product but the tile functions as a generic REST integration.",
+      "notes": "The speaker appears to be a Varonis SME explaining the design rationale. 'Panther tile' refers to a generic REST API integration tile, not Panther-specific functionality.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:10:44.916817Z",
+      "processed_at": "2026-06-24T15:17:15.327124Z",
       "superseded_by": null
     },
     {
       "thread_id": "1778873344435",
-      "question": "How should Atlas AI Security connect to a customer's AI application that uses Okta for authentication, when direct UI-based testing isn't feasible?",
-      "answer": "Direct UI-based authentication (e.g., simulating end-user login through Okta) is not the right approach — MFA and other Okta controls would block it. The preferred path is: (1) Ask if the app exposes an API layer — if it's built on Bedrock, it almost certainly does, and Atlas should hit that API directly. (2) If no API exists (unlikely), request access to a dev or staging environment that runs without end-user authentication, as developers typically maintain such environments for automation purposes. Never test on production. (3) As a fallback, check whether Okta itself can issue an API key or machine-to-machine (M2M) token for service-to-service connectivity — similar to how Auth0 supports M2M tokens.",
+      "question": "How should Atlas AI Security connect to a customer's AI application that uses Okta for authentication, specifically when end-user MFA is a barrier?",
+      "answer": "Do not attempt to authenticate through the end-user login flow (e.g., simulating a user through Okta with MFA). The correct approach is: (1) First, ask if the application exposes an API layer — if it's built on Bedrock, it almost certainly does, and Atlas should hit that API directly. (2) If no API is available, request access to a dev or staging environment where end-user authentication is not enforced, since development teams typically maintain such environments for their own automation needs. (3) Never test against production. (4) Additionally, Okta itself (and similar IdPs like Auth0) typically supports generating machine-to-machine (M2M) tokens or API keys that can be used for service-level authentication without requiring interactive MFA.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "tentative",
@@ -158,16 +430,16 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Single contributor marked 'Unknown'; author self-disclaims they are not an Okta expert. Advice is directionally sound but should be validated by someone with Okta/IdP expertise before being used as official guidance.",
+      "notes": "Speaker self-identifies as not an Okta expert but draws on Auth0 analogy for M2M token generation. Single contributor; no validation from other SMEs in thread.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:13:45.851423Z",
+      "processed_at": "2026-06-24T15:20:19.284489Z",
       "superseded_by": null
     },
     {
       "thread_id": "1779387873579",
-      "question": "What does the new Claude API integration enable Atlas to do that it couldn't do before, given that Atlas was already marketed as AI-agnostic and compatible with Claude?",
-      "answer": "The new Claude API integration enables deeper visibility into Claude Enterprise sessions that wasn't previously possible. While Atlas was already AI-agnostic and could work with Claude at a surface level, the new API unlocks full session-level data — similar to how Varonis works with Microsoft Copilot. Specifically, this includes: complete chat histories, uploaded files, projects created, user logins, admin actions, and configuration changes. It also enables comprehensive abuse alerting via guardrails on a post-session basis. The field messaging should clarify that the AI-agnostic positioning still holds, but this new API provides a deeper, more comprehensive layer of visibility and protection specifically for Claude Enterprise.",
+      "question": "What does the new Claude API integration enable for Atlas AI Security that wasn't possible before, given Atlas is already AI-agnostic and supports Claude?",
+      "answer": "The new Claude API integration enables deeper, Copilot-style session-level visibility into Claude Enterprise that wasn't previously available. Specifically, Atlas can now access full session data including complete chat histories, uploaded files, projects created, user logins, admin actions, and configuration changes. This is comparable to what Varonis does for Microsoft Copilot. Additionally, the integration enables comprehensive post-session alerting on abuse via guardrails. The field messaging distinction to make is: Atlas was always AI-agnostic and could work with Claude in a general sense, but this new API unlocks granular audit and monitoring capabilities specific to Claude Enterprise.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "community_consensus",
@@ -175,16 +447,16 @@
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "All contributors are listed as 'Unknown' — attribution cannot be confirmed. The reference to 'Varonis for Copilot' suggests this Claude integration mirrors an existing deep-integration model. Field enablement/messaging alignment appears to be a pending action item.",
+      "notes": "All contributors are listed as 'Unknown' — attribution cannot be differentiated. The thread references a new Claude API as of 2026-05-21; field enablement messaging may need to be updated to reflect the distinction between general AI-agnostic support and the new deep-inspection capabilities for Claude Enterprise specifically.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:15:11.256672Z",
+      "processed_at": "2026-06-24T15:21:38.384550Z",
       "superseded_by": null
     },
     {
       "thread_id": "1779397521368",
-      "question": "Is the Microsoft Copilot/Teams integration part of SaaS, and what makes Varonis's integration unique compared to other security vendors?",
-      "answer": "The integration will be in Atlas, not in the SaaS chat/Copilot product — that's where the analogy with those products breaks down. The underlying integration is an API-level integration that Microsoft is offering to a couple dozen security vendors, so it is not unique to Varonis. Cyera, for example, is already touting it from their own perspective (calling it Omni DLP), and other security vendors will likely do the same. What will differentiate Varonis is what it does on top of that shared API integration.",
+      "question": "Is the Microsoft Purview/Copilot integration available in SaaS chat, or is it part of Atlas? And how differentiated is this integration from competitors?",
+      "answer": "The integration will be in Atlas, not in SaaS chat — that's where the analogy to Copilot in SaaS breaks down. The underlying integration is an API-level connection that Microsoft has opened to roughly two dozen security vendors, so it is not unique to Varonis; competitors like Cyera are already touting it under their own branding (e.g., Cyera's 'Omni DLP'). What will differentiate Varonis is what Atlas does on top of that shared integration, not the integration itself.",
       "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "community_consensus",
@@ -192,834 +464,152 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "All contributors are listed as 'Unknown' so individual attribution is not possible. The specific name of the Varonis differentiating capability was not disclosed in the thread.",
+      "notes": "All contributors are listed as 'Unknown' in the source thread. The competitive context around Cyera's Omni DLP and the ~24-vendor API ecosystem is worth tracking as market messaging evolves.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:15:17.435998Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1771353171660",
-      "question": "Can Atlas AI Security scan Jupyter Notebooks and datasets for sensitive data including PII, secrets, credentials, and CVEs in dependency files?",
-      "answer": "Yes, Atlas AI Security can scan Jupyter Notebooks and Datasets for sensitive data. This works across both code repositories and cloud accounts. The scanner detects PII, secrets, credentials, tokens, API keys, and passwords within Jupyter Notebook cells and dataset fields or records. The code scanning module also scans dependency files for CVEs, performs agentic and model discovery, and scans HuggingFace models. For external AI service detection, the tool examines codebases for external URLs associated with AI services or APIs — covering inference endpoints, model hosting, and external data sources. However, there is a current limitation: hardcoded secrets inside arbitrary Python files (e.g., someModule.py) are not detected at present. This gap may be addressable via a feature request, as the roadmap is aggressive and the team has moved quickly to satisfy client-aligned requirements.",
-      "topic": "pii_detection",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The respondent explicitly caveated their answer with 'as of my last knowledge update,' suggesting some details may be outdated. Ryan or Jonathan were flagged as additional SMEs who could provide more detail on hardcoded secret detection and potential Varonis technology leverage. The hardcoded secrets limitation in arbitrary source files is a notable gap.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:16.472556Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1771514622191",
-      "question": "Does Varonis Atlas AI Security support Snowflake Cortex AI for monitoring or deploying agents?",
-      "answer": "Varonis does not currently support Snowflake Cortex AI. When asked whether Varonis can deploy agents to a Snowflake AI instance or monitor Snowflake AI agents, the answer is not at this time. Snowflake is available as a cloud provider in the general configuration, but Cortex AI specifically is not supported. There is no known roadmap item for Cortex AI support. For the prospect's planned Cortex AI rollout, the recommended next step is to identify what they want to test and build a custom lab environment for them.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Thread is from Feb 2026. Roadmap status for Cortex AI was being investigated at time of conversation ('i'll find out') — the statement of no roadmap item is tentative. Demo was scheduled for the following day at 1:00 PM CST. All participants are listed as 'Unknown' so individual contributors cannot be identified.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:26.976904Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1772136169394",
-      "question": "Do customers need to be on a specific OpenAI tier to use Varonis Atlas AI Security features for OpenAI resources?",
-      "answer": "Customers do not need to be on any specific OpenAI tier. Varonis currently supports discovery of AI resources created inside OpenAI — including assistants, fine-tuned models, and vector databases — as well as creation of the lineage graph. However, identification of agentic or other threats for resources discovered in OpenAI is not yet supported.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The contributor qualified their answer with 'as of my most recent understanding', indicating this may not be fully authoritative. Threat detection for OpenAI-discovered resources is a known gap as of 2026-02-26.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:58.834131Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776810327791",
-      "question": "What is Varonis's current support for Amazon Q in terms of AI Inventory Discovery and runtime controls?",
-      "answer": "Varonis currently supports Amazon Q as part of AI Inventory Discovery. The following Amazon Q asset types can be discovered and have their relationship graphs mapped: App Library Items, Applications, Apps, Data Accessors, Data Sources, Documents, Indices, Plugin Actions, Plugins, Retrievers, and Web Experiences. For runtime controls or SPM (Security Posture Management) policies via a direct API integration, this is not yet confirmed — it requires validation with the product team and no awareness of such capability exists at this time. It is safe to communicate to customers that the above discovery capabilities are available.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Michael Gruver"
-      ],
-      "date_sensitive": false,
-      "notes": "Runtime/API integration for Amazon Q guardrails or SPM policies is unconfirmed and requires follow-up with the product team. Discovery capabilities are confirmed safe to communicate to customers.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:03:21.908493Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1777991150761",
-      "question": "How would a user connect blob storage for LLM consumption, and what detection coverage exists?",
-      "answer": "To connect blob storage for LLM consumption, a user would need to either: (1) mount it or download the file set — activity that should be visible in DAC (Data Access Control/Cloud), or (2) use an API route, which would require running a function or Python code — activity that should be visible in Atlas. If someone can access blob storage for LLM consumption outside of these two scenarios, it likely indicates broader security issues beyond the scope of normal LLM data pipeline detection.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Single contributor with unknown identity. The answer is framed as a detection coverage assessment rather than a definitive architectural statement. 'DAC' likely refers to Varonis Data Access Cloud; both DAC and Atlas are cited as complementary detection surfaces for blob storage access paths.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:09:08.443516Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778002712472",
-      "question": "Do we have visibility into chatbots made in Copilot Chat, and can we see who created the assets identified in the inventory?",
-      "answer": "For Copilot Studio Agents, there is visibility into chatbots. For custom AI (in Copilot Chat more broadly), that capability is estimated for Q3, though it may come sooner. Regarding creator/owner metadata for discovered assets: that information is not currently pulled in. The team will follow up with product to determine if creator metadata is exposed via the scan APIs.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The Q3 timeline was given in May 2026. Creator metadata availability is unconfirmed pending product follow-up. A prior answer about Copilot Studio Agents by 'Anthony Vanoni' was referenced but not fully quoted in this thread excerpt.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:09:36.219761Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778082130599",
-      "question": "Can Varonis/Noma discover and handle OpenClaw framework-based tools and actions at the endpoint?",
-      "answer": "Yes. Noma can discover OpenClaw framework-based tools and actions at the endpoint today. Additionally, with the Varonis browser extension and endpoint agent, the solution should have parity with — or superior capabilities to — competing approaches in this area.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Single contributor with no corroboration. 'OpenClaw' may be a misspelling or informal reference to another framework (e.g., OpenClaw is not a widely documented AI framework — could be AutoClaw, LangChain, or similar). Confidence is tentative until SME validates. No customer name attached beyond 'a CISO'.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:10:25.242520Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778098687178",
-      "question": "When is the Claude Enterprise Compliance API integration releasing, and how does it compare to ChatGPT Enterprise monitoring on the SaaS side?",
-      "answer": "The planned release for the Claude Enterprise Compliance API integration was tentatively early June 2026, though this is subject to change. The Compliance API serves as the visibility path for Claude Enterprise — it enables ingestion of prompts, responses, and audit logs from Claude Enterprise into the platform via custom log ingestion. This is functionally similar in concept to how ChatGPT Enterprise is monitored on the SaaS side, in that it provides audit log visibility without requiring inline blocking or other runtime controls. The mechanism is custom log ingestion that can bring in log sources from Claude Enterprise (and potentially others).",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "All participants are listed as 'Unknown' so individual contributors cannot be distinguished. The early-June 2026 timeline was explicitly flagged as subject to change. The respondent noted they could not speak specifically to SaaS-side implementation details.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:10:39.462401Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778509953295",
-      "question": "Can Atlas AI Security discover and cover Harvey AI (harvey.ai), including its MCP integration?",
-      "answer": "Harvey AI is not currently discoverable or coverable through Atlas. Harvey is a browser-contained application whose public APIs are not LLM endpoints in the traditional sense. Its MCP integration (harvey_mcp) acts as a connector to external clients like Claude Desktop or Claude, rather than exposing discoverable AI traffic that Atlas can intercept. Harvey has been previously evaluated for at least one UK account and was confirmed to be a largely closed-off system, making discovery via Atlas not feasible at this time.",
-      "topic": "discovery",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Alan"
-      ],
-      "date_sensitive": false,
-      "notes": "Harvey AI is a legal-focused AI assistant. The MCP reference is to the Harvey MCP connector at https://developers.harvey.ai/guides/harvey_mcp. Coverage may change if Harvey exposes standard LLM-style endpoints in the future.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:12:01.197238Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1771517303472",
-      "question": "Does Atlas AI Security (AllTrue) support Snowflake Cortex, and if so what are the gaps and timeline for full native support?",
-      "answer": "Atlas currently supports Snowflake at two levels: (1) Cloud account onboarding — Snowflake cloud accounts can be onboarded to scan assets for misconfigurations and discover ML model artifacts for penetration testing. (2) Snowflake Cortex AI endpoints — Cortex exposes a REST API with HTTP endpoints, which means it can be added today as a custom endpoint. Once added as a custom endpoint, it receives the same guardrails and penetration testing protections as natively supported providers (OpenAI, Gemini, Claude, etc.) — nothing is functionally missing via this path. Native (out-of-the-box, no custom configuration) support for Snowflake and Databricks completion endpoints is targeted for early April 2026.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "All contributors are listed as 'Unknown' in the thread. The early April 2026 native support target was stated by what appears to be an internal SME (Hui). There was initial confusion about whether any Snowflake integration existed at all, which was resolved in the thread.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:34.226053Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776276541344",
-      "question": "Can Atlas ingest Zscaler traffic logs (including prompts/conversations) to provide visibility and guardrails for desktop Copilot usage?",
-      "answer": "Atlas can ingest Zscaler logs containing prompts/conversations if they are written to an S3 bucket or Azure Blob Storage container. This would provide visibility-only coverage for desktop Copilot usage (i.e., non-browser traffic). The underlying ingestion capability is nearly complete, as it is being built out for Island browser integration first — extending it to Zscaler would be straightforward. However, enforcement/guardrails via this log ingestion path are not supported; it would be read-only/visibility only. The prospect's requirement for active guardrails in addition to visibility cannot currently be met through this approach.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Island browser integration was described as 'just about finished' as of 2026-04-15. Zscaler guardrails enforcement is not supported — only visibility via log ingestion. If enforcement is a hard requirement, this solution will not satisfy the prospect's needs.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:01:19.719354Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776375936149",
-      "question": "How does Varonis Atlas support the different Claude products, and what agentic threats are currently in scope?",
-      "answer": "Varonis Atlas supports Anthropic/Claude products in two ways today: (1) Atlas can connect to Anthropic LLM endpoints via API key for AI Red Team (pentesting), and (2) Atlas supports prompt+response monitoring and runtime guardrail enforcement. On the near-term roadmap is support for Claude Code via a Hooks integration, which will extend runtime protection to developers using Claude Code. Regarding agentic threats, the AI SPM module currently covers exactly two Agentic Risk policies: model poisoning and excessive agency. No other agentic threats are formally in scope at this time.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The Claude support answer was self-described as a 'best crack' by the author, who invited refinement from former AllTrue employees — treat as tentative until validated. Roadmap items (Claude Code/Hooks integration) are subject to change. Thread dated 2026-04-16.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:02:17.152802Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776698881941",
-      "question": "Can we demo guardrails live by activating a policy, running a prompt, and showing the result in real time in the platform?",
-      "answer": "Yes, live guardrail demos are already possible in the current platform. The capability to activate a policy, run a prompt, and see the result in real time exists now. Access to the demo tool can be arranged via direct message. However, there are reported issues in the same session: one user noted that guardrails did not appear to be working as expected (same results with and without the guardrail enabled in the playground), suggesting there may be a functional bug or configuration issue affecting some environments.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Mike Thompson"
-      ],
-      "date_sensitive": false,
-      "notes": "Thread also contains two unresolved side issues: (1) In AI Compliance, the NIST AI RMF Audit report only shows GOVERN controls — MAP, MEASURE, and MANAGE controls are missing with no explanation given. (2) An exported pentest report was missing Varonis branding, cause unclear. Neither of these secondary issues received a substantive answer in the thread.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:02:41.631891Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778001553065",
-      "question": "Does Atlas support runtime enforcement for Copilot Studio agents, and what are the limitations?",
-      "answer": "Atlas does support runtime enforcement for Copilot Studio agents via configuration of the Threat Detection capability in Power Platform. However, there are important limitations: (1) Coverage likely does not extend to agents built in Copilot Studio Lite, as those fall into the 'classic agents' category — Microsoft's external threat detection preview only applies to generative agents using generative orchestration, not classic agents. (2) Power Platform Threat Detection works by intercepting a pending tool invocation, sending the tool definition, arguments, and conversation context to Atlas, then waiting for an Allow/Block decision. This means runtime controls ONLY apply when the agent invokes a tool — they do not apply to basic input prompts or model responses that do not invoke tools. Note that Microsoft's external threat detection feature is a preview and subject to change. Full setup documentation is available at the Atlas Microsoft Copilot Studio Integration page on the TRiSM Hub.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Microsoft's external threat detection for Power Platform is a preview feature as of the thread date (2026-05-05) and may change. The Copilot Studio Lite limitation is inferred from documentation review, not explicitly confirmed by Microsoft.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:09:30.244206Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778081718924",
-      "question": "What endpoint detection capabilities does Noma have, and does it enforce runtime guardrails?",
-      "answer": "Noma integrates with CrowdStrike and SentinelOne to detect actions and remote MCP calls from the endpoint. However, Noma does not enforce runtime guardrails at the endpoint or through a reverse proxy enforcement mechanism.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Only one message in the thread; references a prior contribution from someone named 'Elio' that is not included in this excerpt. Full context may be incomplete. Author is listed as 'Unknown'.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:10:19.779676Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778588640097",
-      "question": "Does Atlas support CLAUDE.md, and how should this be positioned to customers asking about it?",
-      "answer": "Atlas does not support CLAUDE.md as a file format. CLAUDE.md is an Anthropic-specific convention where a markdown file is dropped into a repo and Claude reads it as persistent instructions injected into the system prompt. This is model-dependent, prompt-dependent, and unenforced — the model can ignore it, be bypassed via prompt injection, or have it overridden. Atlas takes a fundamentally different architectural approach: it governs around the model at the infrastructure layer, not inside the prompt. Key differences: CLAUDE.md lives inside the prompt and is Claude-only with no auditability and model-bypassable enforcement; Atlas policies live outside the model at the infrastructure layer, apply to any LLM (Claude, Gemini, GPT, WatsonX, custom models), have full policy change history with staging/review workflows, and cannot be bypassed regardless of model behavior. The closest Atlas equivalents to CLAUDE.md's 'persistent instructions' pattern are: (1) Custom Judge — natural language criteria evaluated by a separate LLM judge at runtime, written like a CLAUDE.md instruction set but invisible to the target model; (2) Policy Message Rule — prepends or appends a fixed instruction/context block to every prompt or response, enforced at the proxy level; (3) Banned Substrings + Prompt Protection Rules — for specific behavioral boundaries. The recommended positioning is not to frame this as a workaround gap, but as an architectural advantage: Atlas enforces behavior at a layer the model cannot override, which is a stronger guarantee than a text file the model is instructed to follow.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "This answer was drafted by an SE who self-identified as still learning Atlas nuances and was seeking peer validation — it has not been confirmed as SME-validated. The customer referenced as 'Camelot' is described as a cybersecurity company. Confidence should be upgraded if a product SME reviews and confirms the Custom Judge, Policy Message Rule, and Banned Substrings feature descriptions are accurate.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:12:11.833694Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778705611266",
-      "question": "When should you use multiple projects in Atlas AI Security instead of one? Is there a technical limit, or is it organizational?",
-      "answer": "Using multiple projects is primarily about control and policy targeting rather than hard technical limits. A single project is not limited by the number of LLMs or models it contains — as long as they fall under one project, they can coexist. However, separate use cases like an HR chatbot and a customer support chatbot should be in separate projects because they require different guardrails and policies. For example, an HR project may permit access to PII, while a developer agent project would have guardrails that block PII. Separate projects also allow for independently scoped red teaming and control configurations per use case.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "The thread also briefly mentions an Atlas review request related to ISO 42001 agent categorization, but this was flagged as informational ('share with the class') and not elaborated on in the thread.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:13:02.166753Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778866136400",
-      "question": "Is there a guardrail that covers prompt smuggling and obfuscation-based attacks, including the use of synonyms, typos, and invisible text to evade filters?",
-      "answer": "Yes, there are two relevant guardrails that address these attack vectors. First, 'Prevent Obfuscated Attacks' identifies prompt smuggling attempts where attackers try to evade filters by replacing trigger words with synonyms or introducing deliberate typos to bypass detection. Second, 'Remove Invisible Text' identifies and removes invisible Unicode characters used in steganographic attacks — a technique seen across Amazon reviews, emails, websites, and security logs, where valid but non-rendered Unicode characters are embedded to smuggle hidden instructions or data.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Both guardrail descriptions appear to be from official product documentation or internal spec language. Contributor identity is unknown for both messages.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:13:32.057153Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779311128109",
-      "question": "What encodings and obfuscation techniques can the Llama4 model used for pentest evaluations understand?",
-      "answer": "The Llama4 model used for pentest evaluations can understand a wide range of encodings and obfuscation techniques as emergent capabilities (not officially supported features). These include standard encodings: Base64, Base64URL (URL-safe variant), Hex/Base16, URL/Percent encoding (%XX), HTML entities (&lt;, &#x41;, etc.), Unicode escape sequences (\\uXXXX, U+XXXX), Binary (ASCII → 0/1 strings), Base32, plain text to hex with separators (e.g., 48 65 6c 6c 6f), and mixed encodings (e.g., partial Base64 + text). It also handles heuristic/pattern-based obfuscation: ROT13, Caesar cipher (small shifts), reversed strings, leetspeak/character substitutions, and basic obfuscation techniques like spacing and punctuation tricks. These capabilities exist in practice but are not listed as officially supported.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "These are emergent capabilities of Llama4, not officially documented/supported features. Context originated from a customer or partner call. 'Unknown' author suggests display name was not captured in the export.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:15:03.735531Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779999155019",
-      "question": "What LLM/model does Atlas use internally as the evaluator for custom judge guardrails, and is it a proprietary Varonis model or a public one?",
-      "answer": "Atlas uses an evaluator LLM to interpret custom judge input prompts and implement guardrails (e.g., blocking proprietary info/IP from reaching the customer's agent model). Currently, Varonis-hosted environments use Gemini Vertex 2.5 Flash-Lite as the evaluator LLM — this is a public model, not a proprietary Varonis-built one. However, customers have the option to bring their own LLM endpoint for evaluation purposes, giving them control over which model performs the judge evaluation and ensuring continuity of judge behavior aligned with their own model governance requirements.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The specific model (Gemini Vertex 2.5 Flash-Lite) may change as Varonis updates its default evaluator. Customers concerned about model continuity or data residency should be directed to the BYOE (Bring Your Own Endpoint) option. Thread date: 2026-05-28.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:16:24.641004Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1780072572997",
-      "question": "Is the LLM used to review an uploaded document revision configurable within Atlas, so a customer can upload a diff without re-running the review against the same model (e.g., Gemini 2.5F which caused a fabrication)?",
-      "answer": "In production, customers would be able to configure which LLM is used as the evaluator for document reviews. However, this is not currently an option in shared eval tenants, because changing the Evaluator LLM in that environment would impact multiple organizations. The guidance that 'customers can use whichever LLM they prefer' applies to production deployments. For now, the customer should be leveled-set on this limitation in the shared eval context.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "The thread conflates two separate issues — a demo access/login problem (resolved quickly as a user error) and the substantive question about configurable Evaluator LLMs. The answer distinguishes between shared eval tenant limitations and production capabilities. Model referenced: Gemini 2.5F. Answer comes from a single unidentified contributor and lacks SME validation.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:17:25.983235Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1780673262917",
-      "question": "What are the best practices for setting Guardrail policies in the shared demo environment?",
-      "answer": "Avoid setting Guardrail policies at the 'All Organizations' level in the shared demo environment. Doing so affects all other users who may be running their own demo configurations simultaneously, which can cause unexpected behavior during customer-facing demos. If setting a Guardrail policy at the All Organizations level is absolutely necessary for a specific demo use case, toggle it off immediately after the demo is complete.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "This is an operational/etiquette guideline for the shared demo environment, not a product capability description. The reference to 'Ury Segal' suggests this person is a known internal expert on guardrail configurations.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:19:28.670769Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1781025761419",
-      "question": "Can Atlas track token consumption?",
-      "answer": "Yes, Atlas can track token consumption through multiple mechanisms: (1) via an AI gateway guardrail that can log or block based on token usage; (2) through the AI Investigations > Performance dashboard which provides token visibility at an aggregate level; (3) at the individual session level — when viewing a session, clicking 'metadata' reveals token usage for that specific session. Token visibility is also supported for IDE solutions such as Claude Code.",
-      "topic": "guardrails",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "All contributors are listed as 'Unknown' — attribution cannot be individualized. The final message ('We find all the tokens') appears confirmatory/colloquial rather than substantive and was not included in the synthesis.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:20:22.310817Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1771857815959",
-      "question": "Does Atlas AI Security plan to support the Island browser?",
-      "answer": "Island has not been formally evaluated yet, but given existing customer usage, support is likely. Since Island is Chromium-based, adding support should be relatively straightforward, as Chromium-based browser support is generally easier to implement.",
-      "topic": "ide_support",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Jonathan",
-        "Brian"
-      ],
-      "date_sensitive": false,
-      "notes": "Brian is referenced as having previously mentioned Chromium-based browser support, but his message is not included in this thread snippet. 'ide_support' used as closest proxy for browser/client support topic.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:56:46.957697Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1774005412469",
-      "question": "Does Atlas AI Security have IDE plugins for developer tools like Cursor and Claude Code?",
-      "answer": "No IDE plugins currently exist, which is acknowledged as a significant gap in the developer ecosystem story. However, plugins for Cursor and Claude Code are planned and scheduled as part of the next sprint.",
-      "topic": "ide_support",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Both messages are from 'Unknown' authors — may be one or two contributors. 'Next sprint' is relative to the thread date of 2026-03-20, so delivery would likely fall in late March or early April 2026. Verify current status if this is being referenced after that window.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:58:46.274923Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779832560091",
-      "question": "Is the GitHub App integration still working, and is it still branded as 'AllTrue'?",
-      "answer": "The GitHub App integration is confirmed to be working — in fact, it is reported to be working better than ever. The branding concern (still showing 'AllTrue' branding) was noted but the integration itself is functional and can be recommended to clients.",
-      "topic": "ide_support",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The 'AllTrue' branding observation suggests this integration may predate a rebrand to Varonis/Atlas AI Security and the UI may not have been fully updated. Worth confirming whether the branding issue has since been resolved before client-facing recommendations.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:15:42.489073Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1773930899232",
-      "question": "During the POC, can customer resources be attached, or is it limited to a sandbox with pre-populated data?",
-      "answer": "Both options are available during the POC. Customer resources can be attached directly — it is not limited to a sandbox with pre-populated data.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Anthony Vanoni",
-        "Jerome Soyer"
-      ],
-      "date_sensitive": false,
-      "notes": "Brief clarification thread following a demo; the original communication about POC scope was noted as unclear by the asker.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:58:35.201235Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1775058046535",
-      "question": "What is the status of the Sessions page migration and why is it missing historical data in the Lab tenant?",
-      "answer": "The Sessions page migration script was intentionally run only on Customer tenants, not on the Lab tenant. A follow-up run on the Lab tenant is planned, which will repopulate the historical session data there.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Author is listed as 'Unknown' — identity could not be resolved from the transcript. The fix (running the script on Lab tenant) was pending as of 2026-04-01; verify whether it has since been completed.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T15:59:40.331934Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776855848638",
-      "question": "Where are evaluation tenants hosted, and will there be dedicated eval tenants in the EU?",
-      "answer": "Currently, all evaluations run in a US-based shared environment. The plan is to move to dedicated tenants for evals, at which point tenants will be spun up in the EU (for non-US/Canada customers). There is no ETA on when dedicated eval tenants will be available.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "No ETA provided for dedicated eval tenants. Author is listed as 'Unknown' — identity should be verified if possible. Statement made 2026-04-22.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:03:40.233597Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1777052170165",
-      "question": "Where can Atlas AI Security prerequisite documentation be found, and when will formal documentation be available?",
-      "answer": "For the time being, Atlas prerequisites can be grabbed directly from the UI. Formal documentation is being created and will include two tiers: (1) high-level documentation for integrations to Azure, AWS, GitHub, etc. aimed at customers who are early in their AI journey, and (2) detailed prerequisites covering the same integrations plus MCP configurations, custom LLMs, and more. This documentation was expected to be ready by the following week (approximately early May 2026).",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Cale"
-      ],
-      "date_sensitive": true,
-      "notes": "Documentation was promised 'by next week' from 2026-04-24, so approximately 2026-05-01. Should be verified whether this documentation has since been published. Justin Wilkins was the person asking the original question (inferred from context).",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:05:10.106432Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1777497763238",
-      "question": "How long do Atlas POCs actually take in practice, and is the original two-week target realistic?",
-      "answer": "The original target for Atlas POCs was two weeks, but in practice they are taking longer. Most customers prefer a once-per-week cadence across 3–5 workshops, which naturally extends the timeline beyond two weeks. Scheduling constraints on the customer side compound this further. This pattern appears to be common rather than exceptional — POCs were never cookie-cutter in the AllTrue days either, and it's unclear whether Varonis has a defined approach to hit the two-week goal given the multi-workshop structure.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "All contributors are listed as 'Unknown' so individual attribution is not possible. The two-week target appears to be an aspirational or marketing-driven figure rather than a field-validated norm. The reference to 'AllTrue days' suggests institutional history predating the Varonis acquisition of that capability.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:07:19.926184Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1777657521596",
-      "question": "Are there pre-built example MCP server integrations (Bitbucket, Snowflake, etc.) available in the VA tenant for customer demos?",
-      "answer": "No pre-built example MCP server integrations (Bitbucket, Snowflake, etc.) currently exist in the VA tenant — they would need to be created from scratch. One team member has manually set up a working example in AWS Bedrock using the architecture: Bedrock Agent → Action Group → Lambda → MCP Server hosted on EC2. The suggestion was to walk through this setup on a Monday call, and to eventually reproduce these kinds of integrations in the DAC demo platforms so the same environments can be viewed from multiple angles.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "All authors are listed as 'Unknown' so individual attribution is not possible. The Bedrock-based MCP example (Bedrock Agent → Action Group → Lambda → EC2-hosted MCP Server) is a manually created workaround, not an official demo asset. The request to standardize these in DAC demo platforms was acknowledged but not yet actioned as of this thread.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:07:42.453822Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778235304726",
-      "question": "What are the deployment options for Atlas AI Security — is bare metal or on-premises hardware supported?",
-      "answer": "When deployed in a customer's own AWS or Azure environment, it is effectively treated as an on-premises deployment. There are no plans to support bare metal or other on-premises hardware deployments.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Single contributor with no username recorded. Answer is brief and lacks additional context or corroboration. 'Unknown' author reduces confidence in source authority.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:11:13.566392Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779299832153",
-      "question": "What is the correct enterprise app ID / version for AllTrue AISec in the Atlas Lab tenant?",
-      "answer": "The correct version is 4d09 (not the older 4d05 which appeared in scripts grabbed a couple of weeks prior from the UI). The enterprise app ID for AllTrue AISec in the ATLAS LAB tenant in Azure is e523652b-f29b-42a1-b401-dd8407c78533. Both pharma6 and the demo lab now reflect the correct 4d09 value.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "The older 4d05 app ID/version may still appear in scripts pulled from the UI prior to ~early May 2026. Users should verify they are using the 4d09 version. Both contributors were listed as 'Unknown' so individual attribution is not possible.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:14:51.842316Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779796129634",
-      "question": "What is the current stability status of the Azure vs AWS data plane, and how should field teams handle data plane testing during evaluations?",
-      "answer": "The Azure data plane is effectively still in beta and has known vulnerabilities that were uncovered during a customer evaluation (Miami deal). AWS is considered more hardened by comparison. However, field teams should avoid allowing customers to test either data plane during evaluations, as dedicated/private deployments are typically only provisioned post-purchase order. If a deal is at risk due to issues surfaced during such testing, Deal Desk can be engaged to honor the original quote.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Azure data plane described as 'effectively in beta' as of 2026-05-26 — status may change. This is a single-contributor thread with no corroboration. The Miami deal anecdote is context, not a general policy confirmation. Deal Desk accommodation was situational.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:15:27.534442Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779923639019",
-      "question": "What is the process for Varonis hosting the data plane during evaluations in a new eval tenant?",
-      "answer": "For new eval tenants, skip the data plane deployment prompt — it is a default setting that still populates automatically. The tenant will already be pre-populated with projects and data once you proceed past that step. No need to route through sales ops for this.",
-      "topic": "deployment",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Both messages are from 'Unknown' authors; the second message is the authoritative answer. The pre-populated eval tenant behavior may change as the product matures.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:16:03.224924Z",
+      "processed_at": "2026-06-24T15:21:44.830373Z",
       "superseded_by": null
     },
     {
       "thread_id": "1780930444438",
       "question": "Is it expected to get an error on the AI Runtime Configuration for Copilot Studio Agent?",
-      "answer": "Yes, errors on the AI Runtime Configuration for Copilot Studio Agent are expected in dedicated eval tenants. By default, eval tenants do not have a data plane, which causes the configuration error. This is a known limitation specific to eval environments, not a product defect.",
-      "topic": "deployment",
+      "answer": "Yes, this is expected behavior in certain tenant configurations. If you are using a dedicated eval tenant, you will not have a data plane by default, which causes the AI Runtime Configuration error for Copilot Studio Agent. Copilot Studio is noted to be somewhat non-standard ('a snowflake') in its behavior, so this error in an eval tenant without a data plane is a known and expected condition rather than a bug.",
+      "topic": "gateway_architecture",
       "answer_complete": true,
-      "confidence": "sme_validated",
+      "confidence": "community_consensus",
       "key_contributors": [
         "Patrick"
       ],
       "date_sensitive": false,
-      "notes": "Copilot Studio is noted as being somewhat atypical ('a bit of a snowflake'). The issue is scoped to eval tenants without a data plane; production tenants with a data plane should not encounter this error.",
+      "notes": "The error is specific to eval tenants lacking a data plane. Production tenants with a data plane should not encounter this issue.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:19:50.029362Z",
+      "processed_at": "2026-06-24T15:26:12.208200Z",
       "superseded_by": null
     },
     {
-      "thread_id": "1775681639281",
-      "question": "What is the expected timeline for the Atlas AI Security browser extension?",
-      "answer": "The browser extension is expected to be available at the end of Q2 or beginning of Q3 2026. In the meantime, the existing browser extension used for the AI-powered email security platform can be referenced as a related capability, with the full browser extension coming soon. The browser extension is noted as a high-priority feature — it is the most commonly asked-about item at the employee level and is highly visible to executives.",
-      "topic": "roadmap",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Hui"
-      ],
-      "date_sensitive": true,
-      "notes": "Timeline (end of Q2 / beginning of Q3 2026) was attributed to 'Hui' but all contributors are listed as 'Unknown', so attribution confidence is low. The comment about the email browser extension being 'unrelated' suggests it should not be positioned as a direct predecessor or the same product.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:00:14.048169Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1777047893231",
-      "question": "What is the timeline and scope for ChatGPT Enterprise log ingestion and inline blocking support in Atlas AI Security?",
-      "answer": "Log Ingestion (the audit and alerting capability) for ChatGPT Enterprise is expected to arrive in early June. This will cover all ChatGPT Enterprise traffic available through the logs provided by their platform. Inline blocking will require a browser extension that is further out on the roadmap; when it ships, it will initially support Chrome, Edge, and Firefox (subject to change).",
-      "topic": "roadmap",
+      "thread_id": "1781615277428",
+      "question": "What is the current state and roadmap for Agent-to-Agent (A2A) relationship support in Atlas AI Security?",
+      "answer": "A2A relationship mapping is already available in discovery, and these relationships can be incorporated into posture checks. At runtime, Atlas can capture A2A activity and block calls that delegate to a subagent if they violate a policy. However, the formal Agent Registry and dedicated A2A gateway are not yet available — those are planned for Q4.",
+      "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "tentative",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "Timeline given was 'a few weeks' with a suggested framing of early June 2026. Browser extension scope (Chrome/Edge/Firefox) is subject to change per the development team. Inline blocking is a separate, later deliverable from log ingestion.",
+      "notes": "Q4 target year is not specified but context suggests 2026 given the thread date. Contributor identity is 'Unknown' — SME validation is not confirmable. The distinction between current capabilities (discovery, posture, runtime blocking) and upcoming formal constructs (Agent Registry, A2A gateway) is important.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:04:53.860963Z",
+      "processed_at": "2026-06-24T15:28:38.095134Z",
       "superseded_by": null
     },
     {
-      "thread_id": "1777318801503",
-      "question": "What are the new features and updates included in Atlas AI Security V3.2.0?",
-      "answer": "Atlas V3.2.0 was released on April 24, 2026 and includes the following new features:\n\n1. **Browser-based Pentests**: Extends pentesting support to AI applications accessed via browser, going beyond direct API and endpoint testing.\n\n2. **Multi-modal Guardrails**: Expands runtime protection beyond text-only interactions, allowing guardrails to enforce policy across multiple content types.\n\n3. **AWS Assumed Role Authentication in the Gateway**: Enables customers to route requests through the Gateway using AWS role assumption for secure downstream access, improving Bedrock and AWS integration support.\n\n4. **Pentest Strategies**: Introduces a structured framework for organizing and executing attack approaches during AI red team assessments, making it easier to expand and compare attack methods.\n\n5. **AI Investigation Anomaly Detectors**: Adds anomaly detection within AI Investigation to identify unusual behavior patterns and outliers in runtime activity.\n\n6. **Bedrock AgentCore Discovery**: Adds discovery and inventory support for AWS Bedrock AgentCore resources within existing AI asset discovery workflows.\n\n7. **Runtime Policy Automations**: Enables automated responses tied to runtime policy outcomes, reducing manual follow-up for common detections.\n\n8. **Gateway Selective Logging**: Allows independent configuration of Prompt Logging and Operational Metrics Logging per prompt source, with options to log all content, log only on actions/issues, or store no prompt content.",
-      "topic": "roadmap",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "This is an official release notes post for V3.2.0 dated April 24, 2026. Key themes: expanded AWS/Bedrock support, multimodal capabilities, structured pentesting, and granular logging controls.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:05:52.740783Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779231162419",
-      "question": "Does Atlas AI Security monitor token usage and associate it with cloud provider costs, and is there a shareable product roadmap?",
-      "answer": "Atlas AI Security does monitor tokens used, but does not directly associate token usage with costs from the cloud provider. Regarding misuse monitoring (e.g., inappropriate or off-topic queries), that capability is addressed. On the roadmap question, rather than providing a written roadmap document, the recommended approach is to set up a dedicated roadmap session with the customer.",
-      "topic": "roadmap",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "Two distinct questions were raised in the thread: (1) token usage and cost attribution, and (2) roadmap shareability. Both were answered, though contributor names are not available. The cost-association gap may be a product limitation worth tracking.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:14:31.282761Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779286683089",
-      "question": "Which sovereign hyperscalers should be prioritized for feature requests (FRs) and business value requests (BVRs) related to hyper cloud support?",
-      "answer": "FRs and BVRs should be opened for the use cases discussed, with a focus on hyper cloud support. The three biggest sovereign hyperscalers to prioritize are Scaleway, OVH, and OutScale.",
-      "topic": "roadmap",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Author names are not distinguishable as both are listed as 'Unknown'. The mention of 'Khuram Yasin' in both messages suggests they are being addressed/tagged, not the authors. This appears to be a regional or sovereign cloud expansion discussion, likely tied to a specific customer or market opportunity. The sovereign hyperscalers listed (Scaleway, OVH, OutScale) are French/European providers, suggesting a European sovereign cloud compliance context.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:14:46.368556Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1775748230773",
-      "question": "Why does opening a new window reset the organization selection, and is there a workaround?",
-      "answer": "When a new window is opened in the Atlas AI Security interface, it defaults back to 'Default Organization' instead of maintaining the previously selected organization (e.g., R&D). The temporary fix is to manually change the organization to the correct one (e.g., R&D) after the new window opens. The expected behavior is that the new window should maintain the organization state from the previous session — this appears to be a known bug. Users are advised to always double-check which org they are in before starting any investigation or demo.",
-      "topic": "other",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "All contributors are listed as 'Unknown' — no named attribution possible. This appears to be a UI state/session bug rather than a feature discussion. Terry Ray is mentioned by name as someone affected, but the thread does not confirm if this is a filed bug or tracked issue.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:00:26.566728Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776097561178",
-      "question": "What is the process for reporting bugs/issues with the demo, and what caused the CVE click-through error?",
-      "answer": "For reporting demo bugs, drop issues in the team channel or share directly with a team member who can pass them along — include a screen grab or click path to reproduce. The specific CVE click-through error (R&D Org > AI SPM > Issues > CVE Findings > click any CVE) was caused by a role/permissions issue introduced in last week's release, where an extra permission check was added that affected the custom roles assigned to demo users. The fix was identified quickly and pushed the same afternoon.",
-      "topic": "other",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Ryan Cattanach"
-      ],
-      "date_sensitive": true,
-      "notes": "This was a transient demo environment bug tied to a specific release around 2026-04-13. The fix was same-day. No formal bug reporting process was confirmed — the described process is informal.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:01:01.137101Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778158139431",
-      "question": "What configuration issue can break the agent chatbot during demos against production endpoints?",
-      "answer": "When using the agent chatbot for demos, the 'corrected threads' toggle must be turned OFF. If this toggle is left enabled, the chatbot will break when configured against endpoints on production (Prod).",
-      "topic": "other",
+      "thread_id": "1781747888699",
+      "question": "Can Atlas AI Security support custom or non-standard LLM endpoints?",
+      "answer": "Potentially yes — Atlas supports an 'any proxy' option that allows you to specify the structure of the API call with a custom LLM endpoint, enabling coverage beyond standard integrations.",
+      "topic": "gateway_architecture",
       "answer_complete": true,
       "confidence": "tentative",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Author is listed as 'Unknown' — identity unverified. This appears to be an operational heads-up rather than a formal Q&A. The specific location/context of the 'corrected threads' toggle is not described in the thread.",
+      "notes": "Single message with no follow-up or validation. 'Unknown' author reduces confidence. The 'any proxy' feature name and custom LLM endpoint capability should be verified with an SME.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:10:54.145529Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1779999868578",
-      "question": "What was the outcome of the Atlas demo for Universal Properties?",
-      "answer": "A demo of Atlas was run for Universal Properties, an existing FL customer, last Friday. Following a few post-demo follow-up questions, the partner confirmed a purchase order came in for approximately $70K ARR — with no sandbox or formal evaluation required.",
-      "topic": "other",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Thread also contains off-topic banter about wording and pronunciation that was excluded from the synthesis. 'FL customer' likely refers to an existing Varonis customer in Florida or a specific customer tier/segment.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:16:28.951985Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1776092663531",
-      "question": "Are there FedRAMP or TX-RAMP certification plans for Atlas AI Security, and can it be covered under the existing SaaS/DAC boundary?",
-      "answer": "There are no current FedRAMP or TX-RAMP certifications for Atlas. Atlas does not currently exist within the Varonis SaaS FedRAMP boundary, meaning a completely separate package submission would be required — a significant effort. TX-RAMP is not considered worth pursuing given FedRAMP's reciprocity. FedRAMP 20x may simplify the process but still requires substantial work. The team is discussing whether to submit a package now or wait until the product is more consolidated; this was flagged for a FedRAMP sync with Ilan. A competing solution, Darwin AI, is actively targeting the SLED space and baking FedRAMP requirements into RFPs, having already influenced at least one prospect. As an interim option for government opportunities (e.g., DHS), a privately-hosted Atlas instance has been proposed — this may be a viable path depending on deal size.",
-      "topic": "compliance",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Thread is from April 2026. FedRAMP pursuit and timeline remain undecided pending internal sync. Darwin AI named as a SLED-focused competitor leveraging FedRAMP positioning. Privately-hosted Atlas instance for DHS being explored by Ron and Mike.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:00:49.352752Z",
+      "processed_at": "2026-06-24T15:29:37.519735Z",
       "superseded_by": null
     },
     {
       "thread_id": "1776354422394",
-      "question": "Are AI conversations (prompts and responses) from M365 Copilot agents automatically audited in Varonis SaaS as part of the Securing Copilot offering?",
-      "answer": "Yes — AI conversations (prompts and responses) from M365 Copilot agents are automatically audited in Varonis SaaS as part of the Securing Copilot offering. This applies to standard Copilot agent interactions, with the requirement that the users interacting with these agents have an M365 Copilot license.",
-      "topic": "compliance",
+      "question": "Are AI Conversations (prompts and responses) from M365 Copilot agents automatically audited in Varonis SaaS as part of the Securing Copilot offering?",
+      "answer": "Yes, AI Conversations — including prompts and responses — from M365 Copilot agents are automatically audited in Varonis SaaS as part of the Securing Copilot offering. This applies to agent interactions in the same way it does for standard Copilot prompts, provided that the users interacting with the agents hold an M365 Copilot license.",
+      "topic": "shadow_ai",
       "answer_complete": true,
       "confidence": "tentative",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Single-message thread with no corroboration or follow-up. The author appears to be asserting this as a fact, but the 'Unknown' contributor identity and lack of validation reduce confidence. The M365 Copilot license requirement is a notable dependency.",
+      "notes": "Single message from an unidentified author; no corroboration or SME validation present in the thread. The M365 Copilot license requirement is a stated prerequisite for audit coverage.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:01:56.035333Z",
+      "processed_at": "2026-06-24T15:08:21.649771Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777475618010",
+      "question": "What are the release ETAs for External GenAI coverage in Atlas, including Gemini support?",
+      "answer": "The planned release ETAs for External GenAI coverage in Atlas (including Gemini) are: Shadow AI Usage & Blocking — Q3; Auditing & Runtime Protections for AI Conversations (Prompts & Responses) — Q4. Note: If the customer is using Island (enterprise browser), visibility and prompt auditing can be delivered sooner via the Atlas <> Island integration.",
+      "topic": "shadow_ai",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Thread dated 2026-04-29. Q3/Q4 timelines are relative to 2026. The Island browser integration offers an accelerated path for prompt auditing for eligible customers.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:13:28.063819Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777991150761",
+      "question": "How would a user connect blob storage for LLM consumption, and what visibility does Varonis have into those access methods?",
+      "answer": "To connect blob storage for LLM consumption, a user would need to either: (1) mount the storage or download the file set, which would be visible in DAC (Data Access Control/Cloud), or (2) use an API route or run a Python function to access the data, which would be visible in Atlas. If someone is able to access blob storage for LLM consumption outside of these two scenarios, it likely indicates broader security issues beyond just AI risk.",
+      "topic": "shadow_ai",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Single contributor, identity unknown. The answer references DAC and Atlas as the two primary visibility planes for blob storage access. The framing suggests this was in response to a question about detection gaps or coverage.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:15:49.003159Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1780008028364",
+      "question": "Which AI services should be prioritized for Shadow AI controls in Atlas (auditing, blocking, interaction classification)?",
+      "answer": "Varonis is planning Shadow AI controls in Atlas via a browser extension, rolling out in two phases. Phase 1 (early Q3 2026): auditing access to AI websites (e.g., user X accessed site Y) and blocking access to unsanctioned AI websites. Phase 2 (in parallel development): auditing AI interactions (prompts and responses), classifying AI interactions, and blocking illegitimate or suspicious interactions — relying on site-specific implementations such as DOM inspection and traffic analysis.\n\nTo prioritize which AI services to support first, a ranked list of 20 AI websites was drafted based on a composite of enterprise popularity and sensitive data upload likelihood. The top 10 prioritized services are:\n1. Google Gemini (gemini.google.com) — Chat/LLM\n2. ChatGPT (chatgpt.com) — Chat/LLM\n3. Microsoft Copilot (copilot.microsoft.com) — Chat/Productivity\n4. Claude (claude.ai) — Chat/LLM\n5. GitHub Copilot (github.com/features/copilot) — Coding\n6. Notion AI (notion.so/product/ai) — Writing/Productivity\n7. DeepSeek Chat (chat.deepseek.com) — Chat/LLM\n8. Atlassian Intelligence (atlassian.com/artificial-intelligence) — Productivity/Collaboration\n9. Canva (canva.com) — Design/Productivity\n10. Perplexity (perplexity.ai) — Chat/AI Search\n\nRanks 11–20 include Cursor, Replit, Hugging Face Chat, Grok (xAI), Character AI, Phind, You.com, Poe, Midjourney, and Mistral Chat. The ranking methodology combines a popularity rank with a sensitive data upload likelihood rank. Feedback was solicited on missing services, less relevant services, and prioritization adjustments.",
+      "topic": "shadow_ai",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "The Q3 2026 timeline and prioritized site list are subject to change based on community feedback gathered via the referenced form. The 'Unknown' authors suggest usernames were not captured — likely an internal product/engineering team announcement. Phase 2 capabilities (interaction auditing/classification/blocking) have no committed timeline beyond 'in parallel development'.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:23:20.285045Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1780009844643",
+      "question": "How does Knostic's AgentSonar approach AI discovery, and is it relevant to customer concerns about unknown AI tool usage?",
+      "answer": "Knostic's AgentSonar augments a static list of known AI services by using traffic analysis to identify whether network traffic looks like LLM API calls — effectively helping discover unknown or new AI endpoints that customers haven't explicitly catalogued. This is relevant to a common customer concern: 'I don't know which AI sites my users might visit or which new ones will popup.' AgentSonar operates at the network traffic level, beyond just browser-based visibility, making it applicable to endpoint AI usage monitoring. This has come up in multiple customer-facing meetings as a point of interest, particularly around endpoint activity and shadow AI discovery.",
+      "topic": "shadow_ai",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "All contributors are listed as 'Unknown' — no named SMEs identifiable. This appears to be competitive/market intelligence about a third-party product (Knostic AgentSonar), not a discussion about Varonis Atlas AI Security capabilities directly. May be relevant to competitive positioning or roadmap discussions around shadow AI discovery.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:23:27.874663Z",
       "superseded_by": null
     },
     {
       "thread_id": "1776374840072",
-      "question": "How are Atlas AI Security SKUs structured — which features (AI Usage, MCP, Investigation, TPRM) map to which SKUs, and how is agentic risk (excessive tools/agency) detected?",
-      "answer": "Atlas AI Security is structured across three SKUs with progressive feature enrichment:\n\n**SKU 1** includes AI Usage and AI SPM (Security Posture Management). Agentic Risk analysis is part of AI SPM and works by analyzing the *configuration* of discovered assets — no runtime observation is required, making it available at SKU 1.\n\n**SKU 2** builds on SKU 1 and adds Investigation capabilities, plus runtime features including guardrails and monitoring.\n\n**SKU 3** builds on SKUs 1 and 2 and adds TPRM (Third-Party Risk Management) and compliance features.\n\nRegarding excessive tools or excessive agency detection: this is handled through Agentic Risk within AI SPM (configuration-based, no runtime needed). However, Shadow MCP server risks are detected at *runtime* because the tools available to an external MCP server cannot be known until they are actually called. This runtime detection surfaces in the dedicated 'AI MCP' section of the UI.",
+      "question": "How are Atlas AI Security menus (AI Usage, MCP, Investigation, TPRM) tied to SKUs, and how is agentic/excessive tool risk identified?",
+      "answer": "The Atlas UI menus map directly to specific SKUs with each higher tier enriching the experience:\n\n**SKU Mapping:**\n- **AI Usage** is part of SKU 1 (base tier)\n- **Investigation** is part of SKU 2, which includes all SKU 1 features plus runtime monitoring, guardrails, and runtime observability\n- **TPRM** is part of SKU 3, which includes all SKU 1 and SKU 2 features plus compliance capabilities\n\n**Agentic Risk / Excessive Tools Detection:**\nAgentic Risk is a component of AI SPM (Security Posture Management) and works by analyzing the *configuration* of discovered assets — it does not require runtime observation. This means agentic risk detection is available with SKU 1.\n\nHowever, Shadow MCP server risks are detected at *runtime*, because the tools available to an external MCP server cannot be determined until they are actually called. This runtime-based MCP risk detection surfaces in the dedicated **AI MCP** section of the UI, and is therefore part of SKU 2 or higher.",
       "topic": "licensing",
       "answer_complete": true,
       "confidence": "sme_validated",
@@ -1027,16 +617,16 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Source document referenced: Atlas_FAQ_ObjectionHandling_Categorized_v2.docx. The distinction between configuration-based agentic risk (SKU 1) and runtime Shadow MCP detection (requires runtime/SKU 2+) is an important technical nuance for sales positioning.",
+      "notes": "Content appears sourced from an internal FAQ/objection handling document (Atlas_FAQ_ObjectionHandling_Categorized_v2.docx). The distinction between configuration-based (SKU 1) and runtime-based (SKU 2+) agentic risk detection is a key technical nuance for sales and SE teams.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:02:11.424830Z",
+      "processed_at": "2026-06-24T15:08:38.131732Z",
       "superseded_by": null
     },
     {
       "thread_id": "1777478448991",
-      "question": "How does Atlas AI Security pricing work, specifically around 'use cases' and 'AI systems', and is usage enforced or honor-based?",
-      "answer": "The Atlas pricing model uses terms like 'use case' and 'AI systems' that can be unclear to sales reps and customers. The model is not strictly enforced in real-time — customers are notified if they exceed their purchased limits rather than being blocked. In practice, customers proactively purchase more AI system slots than they currently need (e.g., buying 10 when they only have 5 active AI systems) to accommodate anticipated growth. The sales deck appendix is being updated to include pricing explanation slides plus the 3 SKUs breakdown. There is also a recognized need for a visual aid slide covering the 6 most common AI reference architectures to help customers contextualize what counts as a 'use case': (1) SaaS Copilot & Managed AI, (2) Standalone LLM Chatbot, (3) RAG-Based Enterprise Knowledge Assistant, (4) Developer Copilots & Code Assistants, (5) Agentic RAG & Tool-Calling Systems, and (6) Internal AI Platforms / AI Gateways.",
+      "question": "How does Atlas AI Security pricing work, specifically around the 'use case' or 'AI systems' licensing unit, and is it enforced?",
+      "answer": "Atlas pricing is based on the number of AI systems/projects (use cases). The term 'use case' has been causing confusion in the field — most SRs struggle to explain it clearly, which is why pricing explanation slides are being added to the Atlas sales deck appendix along with slides showing the 3 SKUs. On enforcement: it operates on an honor system with notification — Varonis will notify customers if they exceed their licensed number of AI systems, but does not hard-block them. In practice, customers are proactively purchasing more AI system licenses than they currently need (e.g., buying 10 when they only have 5 today) because they anticipate growth. For additional context, the 6 most common AI reference architectures that map to these use cases are: 1) SaaS Copilot & Managed AI, 2) Standalone LLM Chatbot, 3) RAG-Based Enterprise Knowledge Assistant, 4) Developer Copilots & Code Assistants, 5) Agentic RAG & Tool-Calling Systems, and 6) Internal AI Platforms / AI Gateways.",
       "topic": "licensing",
       "answer_complete": true,
       "confidence": "community_consensus",
@@ -1044,171 +634,356 @@
         "Cale Bollman"
       ],
       "date_sensitive": false,
-      "notes": "The 6 AI reference architectures were surfaced from an internal MS Copilot query and proposed as a future slide addition — not yet confirmed as a shipped asset. Sales deck updates were in progress at time of conversation.",
+      "notes": "Slides covering pricing model and 3 SKUs were being added to the Atlas sales deck appendix at time of conversation. A visual slide showing the 6 AI reference architectures was also suggested as a future addition. The AI architecture list was generated by MS Copilot, not a human SME.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:06:43.010546Z",
+      "processed_at": "2026-06-24T15:13:36.842790Z",
       "superseded_by": null
     },
     {
       "thread_id": "1779909181457",
       "question": "Does Atlas require E5 licenses to monitor Microsoft AI services (M365 Copilot, Copilot Studio, Azure AI Foundry)?",
-      "answer": "This claim appears to be false. There is no known E5 license requirement for Atlas to monitor Microsoft AI services. As of the time of acquisition, collecting M365 Copilot and Copilot Studio telemetry only requires that the customer tenant have Microsoft Purview Audit enabled — Purview Audit Standard is sufficient, which is included with E3 licensing. No formal license change has ever been communicated internally. The claim may have originated from Microsoft, but it has no confirmed basis. One caveat: it may be worth confirming with Jonathan or Ryan whether the Copilot Studio Agent external threat detection feature has introduced any new licensing requirements.",
+      "answer": "No, E5 licenses are not required. This appears to be an incorrect claim, likely from Microsoft. As of the time of acquisition, monitoring M365 Copilot and Copilot Studio telemetry only requires Microsoft Purview Audit to be enabled on the tenant — the Standard tier is sufficient, which is included with E3 licensing. Azure AI Foundry and Copilot Studio use different licensing models than E5 entirely. No formal change in license requirement has been communicated internally. It is worth confirming with Jonathan or Ryan whether the Copilot Studio Agent external threat detection feature has introduced any new licensing dependencies.",
       "topic": "licensing",
       "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "All contributors are listed as 'Unknown' in the thread. The answer is tentative because it recommends verifying with named internal SMEs (Jonathan, Ryan) regarding potential changes related to Copilot Studio Agent external threat detection. Information reflects state as of acquisition date.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:15:58.480977Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1777475618010",
-      "question": "What are the release ETAs for External GenAI coverage in Atlas, including Gemini?",
-      "answer": "The release ETAs for External GenAI coverage in Atlas (including Gemini) are: Shadow AI Usage & Blocking — Q3; Auditing & Runtime Protections for AI Conversations (Prompts & Responses) — Q4. Note: If the customer is using Island browser, visibility and prompt auditing can be delivered sooner via the Atlas <> Island integration.",
-      "topic": "shadow_ai",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Thread dated 2026-04-29. Q3/Q4 timelines are relative to 2026. The Island integration represents an accelerated path for customers already using that browser.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:06:34.815907Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1780008028364",
-      "question": "Which AI websites should be prioritized for Shadow AI controls coverage in Atlas, and what feedback is sought on the initial prioritization list?",
-      "answer": "Varonis is planning a two-phase Shadow AI controls rollout in Atlas via a browser extension. Phase 1 (early Q3) covers auditing access to AI websites and blocking unsanctioned AI websites. Phase 2 focuses on auditing AI interactions (prompts and responses), classifying AI interactions, and blocking illegitimate or suspicious interactions. Phase 2 requires site-specific implementations such as DOM inspection and traffic analysis, necessitating prioritization of which services to support first.\n\nThe initial prioritized list of 20 AI services (ranked by a composite of enterprise popularity and sensitive data upload likelihood) is:\n1. Google Gemini (gemini.google.com) — Chat/LLM\n2. ChatGPT (chatgpt.com) — Chat/LLM\n3. Microsoft Copilot (copilot.microsoft.com) — Chat/Productivity\n4. Claude (claude.ai) — Chat/LLM\n5. GitHub Copilot (github.com/features/copilot) — Coding\n6. Notion AI (notion.so/product/ai) — Writing/Productivity\n7. DeepSeek Chat (chat.deepseek.com) — Chat/LLM\n8. Atlassian Intelligence (atlassian.com/artificial-intelligence) — Productivity/Collaboration\n9. Canva (canva.com) — Design/Productivity\n10. Perplexity (perplexity.ai) — Chat/AI Search\n11. Cursor (cursor.com) — Coding\n12. Replit (replit.com) — Coding\n13. Hugging Face Chat (huggingface.co/chat) — Chat/Open Models\n14. Grok/xAI (x.ai/grok) — Chat\n15. Character AI (character.ai) — Chat/Companion\n16. Phind (phindai.org) — Dev AI Search\n17. You.com (you.com) — AI Search\n18. Poe (poe.com) — Chat/Multi-model\n19. Midjourney (midjourney.com) — Image Generation\n20. Mistral Chat (chat.mistral.ai) — Chat/LLM\n\nFeedback was requested via a linked form on: missing services to include, services less relevant for enterprise use cases, and any prioritization adjustments.",
-      "topic": "shadow_ai",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Timeline reference is early Q3 2026 for Phase 1 release. The ranking methodology combines a 'Popularity Rank' and 'Sensitive Data Upload Likelihood Rank' into an Overall Rank. No external feedback responses are captured in this thread — only the ask was posted. DeepSeek's inclusion may warrant compliance/security scrutiny given its origin.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:16:55.399455Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1780009844643",
-      "question": "What is Knostic's AgentSonar and how does it address customer concerns about unknown AI site usage?",
-      "answer": "AgentSonar by Knostic augments a static list with traffic analysis to identify whether network traffic looks like LLM API calls. This addresses a common customer concern: 'I don't know which AI sites my users might visit or which new ones will pop up.' It provides a dynamic discovery mechanism beyond just browser-level visibility, operating at the network/endpoint traffic layer. The capability has come up frequently in customer meetings, with significant worry about what AI tools are being used on endpoints.",
-      "topic": "shadow_ai",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "All contributors are listed as 'Unknown' — likely anonymized. This is a competitive/market observation thread rather than a Varonis product discussion. AgentSonar operates beyond browser-level visibility, at the traffic/endpoint layer, which may be relevant for competitive positioning.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:17:01.479665Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778159754801",
-      "question": "Has Varonis encountered Witness AI as a competitor, and how does it compare to Atlas AI Security?",
-      "answer": "Witness AI does overlap significantly with Atlas AI Security but tends to be focused on the end-user use case rather than the broader data security angle Varonis takes. Competitive intelligence suggests Witness AI is not performing well in the market: Delta owned the product for a year and chose not to renew. Tractor Supply (another known Witness AI customer) was actively interested in discussing Atlas, suggesting dissatisfaction there as well.",
-      "topic": "competitive",
-      "answer_complete": true,
       "confidence": "community_consensus",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "All authors are listed as 'Unknown' in the source thread. Intel is anecdotal and based on two customer data points (Delta, Tractor Supply) as of May 2026. Should be validated before use in formal competitive materials.",
+      "notes": "All authors are listed as 'Unknown' in the thread. The answer is based on the state at time of acquisition and should be verified with Jonathan or Ryan regarding any changes related to Copilot Studio Agent external threat detection. The E5 claim appears to be competitive misinformation from Microsoft.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:11:00.115024Z",
+      "processed_at": "2026-06-24T15:22:25.578903Z",
       "superseded_by": null
     },
     {
-      "thread_id": "1778249733177",
-      "question": "Is Glean a competitor to Atlas AI Security, or is there a 'better together' partnership angle?",
-      "answer": "Glean is not a direct competitor to Atlas AI Security — Glean competes with Microsoft Copilot in the enterprise AI assistant space. While Glean does have 'guardrails' on their website, these are configuration-based limits on what can be asked or used in prompts, similar to how Copilot handles restrictions. Atlas's differentiated story should focus on AI-agnostic guardrails, protection, and posture management across all approved AI projects in an environment. The key point is that Glean will rarely be the only AI tool in use at any given customer — Atlas covers the broader, heterogeneous AI landscape that Glean and similar point solutions do not.",
-      "topic": "competitive",
-      "answer_complete": true,
-      "confidence": "community_consensus",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "All contributors are listed as 'Unknown' in the source thread. The positioning advice (AI-agnostic, posture management) reflects internal sales/GTM alignment, not official product documentation.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:11:20.148640Z",
-      "superseded_by": null
-    },
-    {
-      "thread_id": "1778691886533",
-      "question": "What competitive positioning materials exist for Atlas vs Microsoft Agent 365, and what are the key differentiators?",
-      "answer": "A three-slide competitive deck exists for Atlas vs Microsoft Agent 365 (intended as 'break glass' material, not a starting point). All slides have a build sequence. The talk track is in the slide notes. Summary of each slide: Slide 1 focuses on Agent 365's inability to cover all AI systems and data sources feeding those systems — i.e., limited scope of coverage. Slide 2 is a balanced comparison acknowledging what Microsoft does bring (primarily Agent IDs, since Varonis is not an identity provider) while highlighting areas where Agent 365 has no comparable capability to Atlas, such as AI pen testing. Slide 3 covers areas where Atlas enhances and goes beyond Agent 365's capabilities. A potential fourth slide is planned that would illustrate the number of Microsoft products a customer must configure, manage, and cobble together to approximate Agent 365's capability claims.",
-      "topic": "competitive",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "Deck is positioned as 'break glass' — not a default starting point for competitive conversations. Fourth slide (product sprawl view) was not yet built as of 2026-05-13. Author identity is 'Unknown' so attribution is limited.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:12:46.041739Z",
-      "superseded_by": null
-    }
-  ],
-  "superseded": [
-    {
-      "thread_id": "1774449943581",
-      "question": "What documentation exists about Cloudflare/Netskope integration with Atlas AI Security (TRiSM Hub)?",
-      "answer": "The available documentation covers inbound integration with ZTNA providers like Cloudflare. Inbound integration allows Atlas (TRiSM Hub) to receive log push events from systems such as Cloudflare ZTNA in order to identify what external AI services are being used by company employees. Setup is done via an endpoint and an API key. TRiSM Hub inbound endpoints function as either a Splunk HEC endpoint or a Datadog log endpoint, meaning the configuration is identical to setting up those log push integrations — the same fields apply. To enable inbound listeners: generate an API key of the appropriate type, the system will automatically assign the appropriate role to that key, then connect to the API endpoint. No additional Netskope-specific documentation was found beyond this.",
-      "topic": "gateway_architecture",
+      "thread_id": "1776395165522",
+      "question": "Can Atlas disable resource discovery for specific resource types (e.g., Agent translations), and can it retroactively remove already-discovered resources from inventory?",
+      "answer": "In Atlas, you can configure discovery exceptions by navigating to AI Inventory -> Configuration -> Discovery Policy, where you can set include/exclude rules for specific resource types at a granular level. To remove already-discovered resources (e.g., 5000+ Agent translations), the recommended approach is to first create a discovery exception to exclude that resource type, then manually re-trigger a discovery scan — the expectation is that excluded resources will be removed from inventory on rescan, though this behavior has not been confirmed with certainty. If that doesn't work, bulk removal would require either manual deletion or an API-based automation script. Bulk exclusion of already-discovered resources is also being tracked as a feature request, as AI agents generate many resource types and this is likely to be a recurring need.",
+      "topic": "discovery",
       "answer_complete": true,
       "confidence": "tentative",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "The contributor flagged uncertainty about whether additional Cloudflare/Netskope documentation exists. Netskope is mentioned in the question context but not covered in the found documentation. The author identity was listed as 'Unknown' in the source thread.",
+      "notes": "The retroactive removal behavior (re-triggering discovery to purge excluded resources) was not confirmed by direct experience — the respondent explicitly noted they hadn't seen it done. Treat this as a suggested approach to test rather than documented behavior. Bulk exclusion post-discovery flagged as an open feature request.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T15:59:06.677058Z",
-      "superseded_by": "1771346300076"
+      "processed_at": "2026-06-24T15:08:52.291142Z",
+      "superseded_by": null
     },
     {
-      "thread_id": "1778030328161",
-      "question": "What gateway products are compatible with Atlas AI Security?",
-      "answer": "Any API gateway that supports callouts is compatible with Atlas AI Security. Since Atlas operates as a set of API calls, any gateway—by definition—will work, as long as it has the ability to add a callout.",
-      "topic": "gateway_architecture",
+      "thread_id": "1776810327791",
+      "question": "What is Varonis's current discovery and integration support for Amazon Q?",
+      "answer": "Varonis can already discover the following Amazon Q asset types as part of AI Inventory Discovery: Amazon Q App Library Items, Applications, Apps, Data Accessors, Data Sources, Documents, Indices, Plugin Actions, Plugins, Retrievers, and Web Experiences. Varonis also maps out relationship graphs between these assets. However, it is not yet confirmed whether there is a direct API integration for runtime controls or SPM (Security Posture Management) policies specific to Amazon Q — this requires follow-up with the product team.",
+      "topic": "discovery",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Michael Gruver"
+      ],
+      "date_sensitive": false,
+      "notes": "The answer covers discovery capabilities confidently, but runtime controls and SPM policy support for Amazon Q were flagged as unconfirmed pending product team validation.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:09:56.775928Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777657521596",
+      "question": "Are there example MCP server integrations (Bitbucket, Snowflake, etc.) available in the VA tenant for a Comscore demo?",
+      "answer": "No pre-built MCP server examples (Bitbucket, Snowflake, etc.) exist in the VA tenant — they would need to be created from scratch. One team member has already built a working MCP server integration in AWS Bedrock using the architecture: Bedrock Agent → Action Group → Lambda → MCP Server hosted on EC2. They offered to walk through this setup on a Monday call. The longer-term goal is to reproduce these kinds of integrations in the DAC demo platforms so the same environments can be viewed from multiple angles.",
+      "topic": "discovery",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "All authors appear as 'Unknown' — contributor attribution is not possible. The Monday walkthrough and DAC demo platform replication are pending follow-up actions. Thread dated 2026-05-01.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:14:24.826842Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778002712472",
+      "question": "Does Atlas AI Security provide visibility into chatbots created in Copilot Chat, and can it show who created discovered AI assets in the inventory?",
+      "answer": "For Copilot Studio Agents, Atlas AI Security does have visibility. For custom AI (chatbots made directly in Copilot Chat), support is not yet available but is estimated for Q3 2026, possibly sooner. Regarding creator attribution — who created the assets identified in the inventory — that information is not currently pulled in. The team will follow up with product to determine whether it is part of the metadata exposed by the scan APIs.",
+      "topic": "discovery",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "The Q3 2026 timeline for Copilot Chat chatbot visibility was described as an estimate and 'possibly sooner.' Creator metadata availability is pending product investigation. The reference to a prior answer about Copilot Studio Agents (attributed to Anthony Vanoni) was summarized in-thread but not fully quoted.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:16:16.395088Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778082130599",
+      "question": "Can Varonis/Noma discover and handle OpenClaw framework-based tools and actions at the endpoint?",
+      "answer": "Yes. Noma can discover OpenClaw framework-based tools and actions today. Additionally, with the Varonis browser extension and endpoint agent, the solution should have parity with — if not superior capabilities to — competing approaches for visibility and control at the endpoint layer.",
+      "topic": "discovery",
       "answer_complete": true,
       "confidence": "tentative",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Single contributor with no corroboration; author identity is 'Unknown'. Answer is architecturally logical but lacks specifics about tested or certified gateway integrations.",
+      "notes": "Single contributor with no corroboration or follow-up. 'OpenClaw' may be a misspelling or informal reference to a lesser-known agentic AI framework — worth verifying the exact framework name before using in customer-facing materials. Confidence is tentative due to single unvalidated source.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:10:06.500235Z",
-      "superseded_by": "1778028448671"
+      "processed_at": "2026-06-24T15:16:58.656799Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778509953295",
+      "question": "Can Varonis Atlas AI Security discover and cover Harvey AI (harvey.ai), including its MCP integration?",
+      "answer": "Not at the moment. Harvey AI is a closed-off system that operates primarily within the browser, and its APIs are not LLM endpoints that Atlas would typically discover. The Harvey MCP integration acts as a connector to tools like Claude Desktop or Claude rather than exposing discoverable AI endpoints directly. There is prior experience evaluating Harvey for a UK account that confirmed it is a pretty closed-off system, making discovery via Atlas unlikely with current capabilities.",
+      "topic": "discovery",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Alan"
+      ],
+      "date_sensitive": false,
+      "notes": "Harvey AI (https://developers.harvey.ai) is a legal AI platform. The MCP referenced is at https://developers.harvey.ai/guides/harvey_mcp. Coverage may change if Harvey exposes standard LLM endpoints in the future.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:18:29.021808Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779286683089",
+      "question": "Which sovereign hyperscalers should be prioritized for feature requests (FRs) and business value requests (BVRs) related to Atlas AI Security cloud support?",
+      "answer": "FRs and BVRs should be opened for the sovereign hyperscaler use cases discussed. The three biggest sovereign hyperscalers identified for prioritization are ScaleWay, OVH, and OutScale.",
+      "topic": "discovery",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Khuram Yasin"
+      ],
+      "date_sensitive": false,
+      "notes": "Context appears to be a regional/European sovereign cloud discussion. 'Unknown' sender labels suggest author metadata was stripped from the export. FRs = Feature Requests, BVRs = Business Value Requests.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:21:14.150016Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1781616092175",
+      "question": "How do you find or filter for a Copilot Studio agent in the technology inventory?",
+      "answer": "In the technology inventory, you must first select 'Azure Copilot Studio' on the first page. Once inside, you can then filter by or find a specific Copilot Studio agent.",
+      "topic": "discovery",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Single contributor with no corroboration; author identity is unknown. Answer describes a UI navigation workflow in the technology inventory for locating Copilot Studio agents.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:28:42.451477Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1776855848638",
+      "question": "Where are evaluation tenants hosted, and when will dedicated eval tenants be available?",
+      "answer": "All current evaluations run in a US-based shared environment. When dedicated eval tenants become available, they will be spun up in the EU by default unless the customer is in the US or Canada. There is no ETA for the dedicated eval tenant rollout.",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "No ETA provided for dedicated eval tenants. The EU hosting detail only applies once dedicated tenants launch. Author identity is 'Unknown' — source credibility cannot be fully assessed.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:10:14.648504Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777052170165",
+      "question": "Where can Atlas AI Security integration prerequisites and documentation be found?",
+      "answer": "For now, prerequisites can be grabbed from the UI. Varonis is actively creating formal documentation for Atlas prerequisites. The planned documentation will include two tiers: (1) high-level documentation for integrations to Azure, AWS, GitHub, etc. aimed at customers early in their AI journey, and (2) detailed prerequisites covering the same integrations plus MCP configurations, custom LLMs, and more. This documentation was expected to be available by the following week (around 2026-05-01).",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Cale"
+      ],
+      "date_sensitive": true,
+      "notes": "Answer was given on 2026-04-24 with documentation promised 'by next week.' Verify whether this documentation has since been published. The person asking was Justin Wilkins.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:11:52.121433Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778235304726",
+      "question": "What are the deployment options for Atlas AI Security — is bare metal or on-premises infrastructure supported?",
+      "answer": "When deployed in the customer's own AWS or Azure environment, it is effectively treated as an on-premises deployment. There are no plans to support bare metal or other on-premises infrastructure options.",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Single contributor with no name captured ('Unknown'). Answer is brief and lacks additional context or confirmation from other participants. Confidence is tentative due to single unidentified source.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:17:44.709388Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778613234077",
+      "question": "Can Atlas monitor AI workloads (LLMs) running in Azure GCC High environments?",
+      "answer": "As of May 2026, deploying an Atlas data plane in Azure Government Cloud (including GCC High) is not supported. The customer's specific ask — monitoring LLMs running in Azure GCC High — is distinct from deploying Atlas itself in GCC High, but since the data plane cannot currently be deployed in Azure Gov Cloud, monitoring AI workloads in that environment is not supported today. This requirement has come up multiple times and a Feature Request (FR) or Business Value Request (BVR) should be submitted to track demand.",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "The thread clarified two distinct questions: (1) deploying Atlas data plane in Azure Gov/GCC High — not supported; (2) monitoring AI workloads in Azure GCC High — also blocked by the same limitation. A FR/BVR was requested to track this recurring ask. Status may change; verify current support before quoting to customers.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:18:51.886896Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779796129634",
+      "question": "What is the current stability/maturity status of the Azure vs AWS data plane for Atlas AI Security, and what is the recommended approach during evaluations?",
+      "answer": "The Azure data plane is still effectively in beta and has known vulnerabilities that were uncovered during a customer evaluation (Miami deal). AWS is considered more hardened by comparison. It is recommended to avoid testing either data plane during evaluations, as dedicated/private deployments are typically only provisioned post-purchase order. If a deal is at risk due to these issues, Deal Desk has shown willingness to honor original quotes to protect the opportunity.",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Azure data plane described as 'effectively in beta' as of 2026-05-26. This is a single internal source with no corroboration. The deal-desk flexibility noted is anecdotal and may not apply universally. Author identity is unknown, which reduces reliability.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:21:55.069797Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779923639019",
+      "question": "What is the process for Varonis-hosted data plane during evals — should the deploy step be skipped?",
+      "answer": "Yes, skip the deploy step during eval setup. The deploy prompt is a default setting that still populates automatically. When you skip through, the eval tenant will already be populated with projects and data — no manual deployment action is needed.",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Both messages are from 'Unknown' authors; the answering message directly confirms the skip-and-proceed approach for eval tenants.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:22:29.725842Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1781557394173",
+      "question": "How should customers prioritize and structure their business units or assets when onboarding into Atlas AI Security?",
+      "answer": "Start with the customer's most critical business units first. A business unit can be defined as an AI system, or if they have a high-value asset (HVA) that is used broadly across the organization, that can serve as the initial focus as well. It is worth noting that a single system is not limited to being tied to only one project in Atlas — it can be associated with multiple projects.",
+      "topic": "deployment",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "All messages were from 'Unknown' authors, so individual attribution is not possible. The advice appears to be onboarding/scoping guidance for Atlas project setup.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:28:19.348615Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777047893231",
+      "question": "What is the timeline and scope for ChatGPT Enterprise log ingestion and inline blocking capabilities in Atlas AI Security?",
+      "answer": "Log Ingestion (the audit and alerting piece) for ChatGPT Enterprise is coming in early June 2026. This will cover all ChatGPT Enterprise traffic available through the logs provided by the ChatGPT Enterprise platform. The inline blocking portion requires a browser extension that is further out on the roadmap; it will initially support Chrome, Edge, and Firefox (subject to change).",
+      "topic": "roadmap",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "Timeline stated as 'a few weeks' with a suggested target of early June 2026. Browser extension browser support is explicitly marked as subject to change. Author identity is Unknown, which reduces confidence in authoritative sourcing.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:11:34.689278Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1777318801503",
+      "question": "What are the new features and updates included in Atlas AI Security V3.2.0?",
+      "answer": "Atlas V3.2.0 was released on April 24, 2026 and includes the following new capabilities:\n\n1. **Browser-based Pentests**: Extends pentest coverage to AI applications accessed via browser, going beyond direct API/endpoint testing.\n\n2. **Multi-modal Guardrails**: Expands runtime protection beyond text to enforce policy across additional content types (e.g., images or other modalities) in supported AI applications.\n\n3. **AWS Assumed Role Authentication in the Gateway**: Enables customers to route Gateway requests using AWS role assumption for secure downstream access, improving Bedrock and AWS integration support.\n\n4. **Pentest Strategies**: A new organizational framework for structuring and executing attack approaches during AI red team assessments, making it easier to expand and compare attack methods.\n\n5. **AI Investigation Anomaly Detectors**: New detectors in AI Investigation to surface unusual behavior patterns and outliers in runtime activity, improving visibility into risky or unexpected AI system behavior.\n\n6. **Bedrock AgentCore Discovery**: Adds inventory and discovery support for AWS Bedrock AgentCore resources within existing AI asset discovery workflows.\n\n7. **Runtime Policy Automations**: Automated response actions tied to runtime policy outcomes, reducing manual follow-up for common detections.\n\n8. **Gateway Selective Logging**: Granular control over what Atlas stores per prompt source. Customers can independently configure Prompt Logging and Operational Metrics Logging with three options: store all content, store content only when actions/issues occur, or store no prompt content.",
+      "topic": "roadmap",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "This appears to be an official release notes post for V3.2.0 dated April 24, 2026. The contributor name was listed as 'Unknown' — may be a system/bot post or the sender metadata was unavailable. No discussion or follow-up questions were present in the thread.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:12:33.724633Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778684225387",
+      "question": "What is the release timeline for Gemini coverage in Atlas AI Security?",
+      "answer": "The release ETAs for External GenAI coverage in Atlas, including Gemini, are as follows: Shadow AI Usage & Blocking is targeted for Q3, and Auditing & Runtime Protections for AI Conversations (Prompts & Responses) is targeted for Q4. Note: If the customer is using Island browser, visibility and prompt auditing can be delivered sooner via the Atlas <> Island integration.",
+      "topic": "roadmap",
+      "answer_complete": true,
+      "confidence": "sme_validated",
+      "key_contributors": [
+        "Jonathan Kofman"
+      ],
+      "date_sensitive": true,
+      "notes": "Timelines are relative to a 2026-04-29 message; Q3/Q4 refer to 2026. The Island integration offers an accelerated path for customers already using that browser.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:19:08.118849Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1779231162419",
+      "question": "Does Atlas AI Security monitor token usage and associate it with cloud provider costs, and is there a shareable customer-facing roadmap?",
+      "answer": "Atlas does monitor tokens used, but does not directly associate token consumption with cloud provider costs — so cost attribution to specific cloud billing is not a current capability. On the misuse monitoring side, Atlas does address that use case (e.g., detecting inappropriate or off-policy queries). Regarding a customer-facing roadmap: there is no static shareable roadmap document; instead, the recommended approach is to set up a dedicated roadmap session with the customer to walk through planned high-level items.",
+      "topic": "roadmap",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "All contributors are listed as 'Unknown' — attribution is not possible. The cost-association gap may be a feature request or roadmap item worth tracking. Roadmap session setup is the prescribed customer engagement model.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:21:02.763052Z",
+      "superseded_by": null
     },
     {
       "thread_id": "1777914733595",
-      "question": "When will Cursor IDE support and related coding assistant coverage be available?",
-      "answer": "Cursor support is being released that weekend, after which both CXC and Codex coverage will follow within a few weeks, covering the use case end to end including guardrails.",
+      "question": "When will Cursor IDE support and related AI coding assistant coverage be available?",
+      "answer": "Cursor support is releasing that weekend, after which both CXC and Codex coverage will follow within a few weeks, providing end-to-end coverage of the AI coding assistant use case including guardrails.",
       "topic": "ide_support",
       "answer_complete": true,
       "confidence": "tentative",
@@ -1216,33 +991,86 @@
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "Message contains multiple typos suggesting informal/rushed communication. 'CXC' and 'Codex' likely refer to specific AI coding assistant products. Timeline is relative ('this weekend', 'a few weeks') anchored to message date of 2026-05-04. Author identity unknown — confidence in authority of this claim cannot be verified.",
+      "notes": "Message contains significant typos suggesting informal/rushed communication. 'CXC' and 'Codex' likely refer to specific Varonis product components or AI services — verify exact names. Date referenced is relative to 2026-05-04, meaning release weekend would be ~2026-05-10. Single unverified source with no corroboration from other thread participants.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:08:23.869411Z",
-      "superseded_by": "1774005412469"
+      "processed_at": "2026-06-24T15:15:01.989448Z",
+      "superseded_by": null
     },
     {
-      "thread_id": "1772202492869",
-      "question": "When will customers who don't use AWS be able to deploy the Atlas AI Security data plane in Azure (or other clouds)?",
-      "answer": "Azure data plane support is targeted for end of March 2026. This is considered soon enough for any customers currently beginning to evaluate the platform. Other cloud providers beyond Azure are still being explored, per the FAQ.",
-      "topic": "deployment",
+      "thread_id": "1778159754801",
+      "question": "Has Varonis encountered Witness AI as a competitor, and how does it compare to Atlas AI Security?",
+      "answer": "Yes, Witness AI has been encountered in competitive situations. There is significant overlap with Atlas AI Security, but Witness AI is primarily focused on the end-user use case rather than a broader enterprise security approach. Witness AI appears to be underperforming in the market — Delta owned it for a year and chose not to renew, and Tractor Supply (another customer prospect) also signaled dissatisfaction, showing strong interest in Atlas as an alternative.",
+      "topic": "competitive",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": true,
+      "notes": "All authors appear as 'Unknown' in the thread. Competitive intelligence is anecdotal and based on two customer data points (Delta, Tractor Supply) as of May 2026. Situation may evolve.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:17:31.086106Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778249733177",
+      "question": "Is Glean a competitor to Varonis Atlas AI Security, or is there a 'better together' partnership opportunity?",
+      "answer": "Glean is primarily a competitor to Microsoft Copilot, not directly to Varonis Atlas. Glean does have 'guardrails' functionality, but these are config-based limits on what can be asked or used in prompts — similar to how Copilot handles guardrails. The Varonis Atlas differentiator is AI-agnostic guardrails and posture management across all approved AI projects in an environment. Since Glean will rarely be the only AI tool in a customer's environment, the Atlas pitch should focus on providing protection and oversight across all AI usage — including Glean — rather than positioning Atlas as a direct Glean competitor.",
+      "topic": "competitive",
+      "answer_complete": true,
+      "confidence": "community_consensus",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "All contributors are listed as 'Unknown' in the source thread. The core competitive positioning insight — AI-agnostic coverage vs. single-tool guardrails — is the key takeaway for sales positioning.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:17:51.263828Z",
+      "superseded_by": null
+    },
+    {
+      "thread_id": "1778691886533",
+      "question": "What competitive positioning material exists for Atlas AI Security vs Microsoft Agent 365, and what are the key differentiators?",
+      "answer": "A three-slide competitive battle card deck exists for Atlas vs Microsoft Agent 365, intended as a 'break glass' resource (not a default starting point) when customers raise the comparison. A full talk track is included in the slide notes. The deck structure is: Slide 1 covers Agent 365's inability to provide comprehensive coverage across all AI systems and data sources feeding those systems. Slide 2 gives a fair acknowledgment of what Microsoft does bring (primarily Agent IDs, since Microsoft is an identity provider and Varonis is not), while highlighting areas where Agent 365 has no comparable capability to Atlas — specifically calling out AI pen testing as a gap. Slide 3 covers areas where Atlas enhances and goes beyond Microsoft's offering. A fourth slide is planned that will illustrate all the Microsoft products a customer must configure, manage, and integrate just to approximate some of Agent 365's capability claims.",
+      "topic": "competitive",
       "answer_complete": true,
       "confidence": "sme_validated",
       "key_contributors": [
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "End of March 2026 is the stated target date for Azure data plane. No confirmed timeline was given for clouds other than Azure. All contributors are listed as 'Unknown' due to anonymized thread data.",
+      "notes": "The fourth slide (showing the Microsoft product sprawl required) was noted as 'may build soon' as of 2026-05-13 and may not yet exist. The deck is positioned as a secondary resource, not a primary sales tool.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T15:57:03.381338Z",
-      "superseded_by": "1779796129634"
+      "processed_at": "2026-06-24T15:19:16.033229Z",
+      "superseded_by": null
+    }
+  ],
+  "superseded": [
+    {
+      "thread_id": "1778028448671",
+      "question": "What gateway integrations does Atlas AI Gateway (TRiSM Hub) support?",
+      "answer": "Atlas AI Gateway (TRiSM Hub) supports the following gateway integrations: (1) LiteLLM Proxy — Full guardrails integration via LiteLLM's Generic Guardrail API; applies PII detection, prompt injection protection, topic blocking, and more on every LLM call without requiring application code changes. (2) Kong Konnect (Enterprise Edition) — Quarantining/sanctioning integration via a Kong plugin; all LLM access routes through Kong, and the plugin calls TRiSM Hub to allow or deny based on whether the LLM endpoint is sanctioned. (3) Microsoft Copilot Studio — External Threat Detection webhook integration that evaluates every tool invocation against guardrail rules before execution; applies only to generative agents with generative orchestration — classic agents are not evaluated. (4) Apigee — Referenced in FAQ as a supported existing API gateway integration alongside Kong, but depth of support should be confirmed with an SME as no dedicated integration doc was found. (5) Native NGINX Proxy — Atlas's own reverse proxy, deployable via Docker on the customer data plane as a standalone option when no existing gateway is in place.",
+      "topic": "gateway_architecture",
+      "answer_complete": true,
+      "confidence": "tentative",
+      "key_contributors": [
+        "Unknown"
+      ],
+      "date_sensitive": false,
+      "notes": "Content was generated by an AI bot with a 'trust but verify' caveat. Apigee support depth is explicitly flagged as unconfirmed and should be validated with an SME. The Copilot Studio integration limitation (generative orchestration only, not classic agents) is an important scoping detail.",
+      "source": "teams_ai_security_sme",
+      "raw_date": "",
+      "processed_at": "2026-06-24T15:16:35.601765Z",
+      "superseded_by": "1778030328161"
     },
     {
       "thread_id": "1778253502022",
-      "question": "Is Azure Data Plane considered GA, and is it safe to use for a customer evaluation?",
-      "answer": "Azure Data Plane is GA (Generally Available) and is safe to proceed with for an evaluation.",
+      "question": "Is Azure Data Plane considered GA and is it safe to use for a customer evaluation?",
+      "answer": "Azure Data Plane is GA and is suitable for use in a customer evaluation.",
       "topic": "deployment",
       "answer_complete": true,
       "confidence": "community_consensus",
@@ -1250,16 +1078,16 @@
         "Unknown"
       ],
       "date_sensitive": false,
-      "notes": "Contributors were not identified by name in the thread. The GA status was confirmed promptly but no documentation reference was provided.",
+      "notes": "Author noted this information was not clearly documented at the time of the thread (May 2026), suggesting documentation may need updating.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:11:28.104446Z",
+      "processed_at": "2026-06-24T15:17:55.117286Z",
       "superseded_by": "1779796129634"
     },
     {
       "thread_id": "1778254370993",
       "question": "Is there GCP data plane support available?",
-      "answer": "There is no GCP data plane support yet as of May 2026.",
+      "answer": "There is no GCP data plane support yet.",
       "topic": "deployment",
       "answer_complete": true,
       "confidence": "tentative",
@@ -1267,62 +1095,11 @@
         "Unknown"
       ],
       "date_sensitive": true,
-      "notes": "Single message from an unidentified author with no corroboration or additional context. Treat as tentative until validated by a named SME.",
+      "notes": "Single message from an unidentified contributor with no corroboration or context. 'Yet' implies it may be on the roadmap. Should be verified with a named SME or product documentation.",
       "source": "teams_ai_security_sme",
       "raw_date": "",
-      "processed_at": "2026-06-11T16:11:31.610186Z",
+      "processed_at": "2026-06-24T15:17:58.650994Z",
       "superseded_by": "1779796129634"
-    },
-    {
-      "thread_id": "1775747468361",
-      "question": "What is the process for reporting bugs in Atlas AI Security, and what is the specific bug being reported?",
-      "answer": "There is no formal bug reporting process currently documented. The suggested workaround is to drop bug reports directly in the Teams channel or share them with a team contact to pass along. The specific bug reported involves navigating the AI Inventory: clicking into an 'Azure Machine Learning' inventory model and following through to a misconfiguration on blob opens a new tab, which then changes or restricts the AI Inventory main view in a non-obvious way. Users are required to close the newly opened tab to reliably continue using the UI. A reproduction video was captured by the reporter.",
-      "topic": "other",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": false,
-      "notes": "No formal bug reporting process exists as of this thread. The bug involves a UI/navigation issue in the AI Inventory view related to Azure Machine Learning misconfiguration drill-down. All contributors are listed as 'Unknown' — contributor attribution is not possible from this thread.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:00:20.294872Z",
-      "superseded_by": "1776097561178"
-    },
-    {
-      "thread_id": "1778684225387",
-      "question": "What is the release timeline for Gemini coverage in Atlas AI Security?",
-      "answer": "The release ETAs for External GenAI coverage in Atlas, including Gemini, are: Shadow AI Usage & Blocking in Q3 2026, and Auditing & Runtime Protections for AI Conversations (Prompts & Responses) in Q4 2026. If the customer is using Island browser, visibility and prompt auditing can be delivered sooner via the Atlas <> Island integration.",
-      "topic": "shadow_ai",
-      "answer_complete": true,
-      "confidence": "sme_validated",
-      "key_contributors": [
-        "Jonathan Kofman"
-      ],
-      "date_sensitive": true,
-      "notes": "Timelines are Q3/Q4 2026 as communicated on 4/29/2026. Island browser integration is called out as an accelerated path for visibility and prompt auditing for eligible customers.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:12:38.160716Z",
-      "superseded_by": "1777475618010"
-    },
-    {
-      "thread_id": "1777760847729",
-      "question": "What new capabilities and availability status does Microsoft Agent 365 have?",
-      "answer": "Microsoft Agent 365 reached General Availability on May 1, 2026. New GA capabilities include policy-based controls and runtime blocking and alerting on endpoint agents such as OpenClaw, delivered via integrations with Microsoft Intune and Defender. The endpoint-specific features are scheduled for public preview in June 2026. Reference: https://www.microsoft.com/en-us/security/blog/2026/05/01/microsoft-agent-365-now-generally-available-expands-capabilities-and-integrations/",
-      "topic": "competitive",
-      "answer_complete": true,
-      "confidence": "tentative",
-      "key_contributors": [
-        "Unknown"
-      ],
-      "date_sensitive": true,
-      "notes": "This is a competitive intelligence update about a Microsoft product, not an Atlas AI Security feature. The poster's identity is unknown. The linked blog post should be treated as the authoritative source. 'OpenClaw' may be a codename or lesser-known endpoint agent product — verify spelling and context before citing externally.",
-      "source": "teams_ai_security_sme",
-      "raw_date": "",
-      "processed_at": "2026-06-11T16:08:14.797095Z",
-      "superseded_by": "1778691886533"
     }
   ]
 }
