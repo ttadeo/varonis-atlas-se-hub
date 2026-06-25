@@ -533,6 +533,7 @@ export default function DemoPage() {
 
   // ── MCP Multi-Agent Demo state ─────────────────────────────────────────────
   const [mcpCompany, setMcpCompany] = useState("");
+  const [mcpEndpointId, setMcpEndpointId] = useState("tadeo-demo-env");
   const [mcpRunning, setMcpRunning] = useState(false);
   const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
   const [mcpReport, setMcpReport] = useState<string | null>(null);
@@ -561,7 +562,7 @@ export default function DemoPage() {
       const fireRes = await fetch("/api/demo/mcp/research", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company: mcpCompany.trim() }),
+        body: JSON.stringify({ company: mcpCompany.trim(), projectId: selectedProjectId, endpointId: mcpEndpointId.trim() || "tadeo-demo-env" }),
       });
 
       if (!fireRes.ok) {
@@ -927,6 +928,49 @@ export default function DemoPage() {
                 <div>
                   <h2 className="text-base font-semibold text-white mb-1">AI Deal Research Agent</h2>
                   <p className="text-sm text-gray-400">Enter a prospect company name. A multi-agent workflow will research them in real-time using Exa Search — all LLM traffic routed through Atlas Gateway.</p>
+                </div>
+
+                {/* Atlas Project selector */}
+                <div>
+                  <label className="text-xs font-medium text-gray-400 mb-1 block">Atlas Project</label>
+                  <p className="text-xs text-red-400 font-medium mb-2">⚠ Select YOUR project — all LLM activity will appear here in Atlas</p>
+                  {chainProjects.length > 0 ? (
+                    <select
+                      className="w-full bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600"
+                      value={selectedProjectId}
+                      onChange={(e) => setSelectedProjectId(e.target.value)}
+                      disabled={mcpRunning}
+                    >
+                      {chainProjects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name} — {p.orgName}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      className="w-full bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600 placeholder-gray-500"
+                      placeholder="Paste Atlas project ID (loading projects…)"
+                      value={selectedProjectId}
+                      onChange={(e) => setSelectedProjectId(e.target.value)}
+                      disabled={mcpRunning}
+                    />
+                  )}
+                </div>
+
+                {/* Endpoint identifier */}
+                <div>
+                  <label className="text-xs font-medium text-gray-400 mb-1 block">Atlas Endpoint Identifier</label>
+                  <input
+                    type="text"
+                    value={mcpEndpointId}
+                    onChange={(e) => setMcpEndpointId(e.target.value)}
+                    placeholder="e.g. tadeo-demo-env"
+                    disabled={mcpRunning}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-600"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Must match the endpoint identifier registered in your Atlas project</p>
                 </div>
 
                 <div className="flex gap-2">

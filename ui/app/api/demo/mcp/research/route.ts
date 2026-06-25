@@ -13,6 +13,8 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}));
   const company: string = (body.company ?? "").trim();
+  const projectId: string = (body.projectId ?? "").trim();
+  const endpointId: string = (body.endpointId ?? "tadeo-demo-env").trim();
   if (!company) return NextResponse.json({ error: "company is required" }, { status: 400 });
 
   const jobId = randomUUID();
@@ -21,7 +23,7 @@ export async function POST(req: NextRequest) {
     const res = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ company, jobId }),
+      body: JSON.stringify({ company, jobId, projectId, endpointId }),
       signal: AbortSignal.timeout(15_000),
     });
 

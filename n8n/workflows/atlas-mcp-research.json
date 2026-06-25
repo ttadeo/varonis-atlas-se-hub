@@ -17,7 +17,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const company = $('Webhook').item.json.body.company;\nconst jobId = $('Webhook').item.json.body.jobId;\n\nconst systemPrompt = 'You are an AI research orchestrator. Given a company name, produce a JSON research plan with exactly 3 fields: overview_query, news_query, risk_query. Each is a concise, targeted search query string. Respond with only valid JSON — no markdown, no explanation.';\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 300,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'Company to research: ' + company }\n  ]\n};\n\nreturn [{ json: { company, jobId, requestBody: JSON.stringify(requestBody) } }];"
+        "jsCode": "const company = $('Webhook').item.json.body.company;\nconst jobId = $('Webhook').item.json.body.jobId;\nconst endpointId = $('Webhook').item.json.body.endpointId || 'tadeo-demo-env';\n\nconst systemPrompt = 'You are an AI research orchestrator. Given a company name, produce a JSON research plan with exactly 3 fields: overview_query, news_query, risk_query. Each is a concise, targeted search query string. Respond with only valid JSON — no markdown, no explanation.';\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 300,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'Company to research: ' + company }\n  ]\n};\n\nreturn [{ json: { company, jobId, endpointId, requestBody: JSON.stringify(requestBody) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,13 +33,13 @@
         "headerParameters": {
           "parameters": [
             { "name": "Authorization", "value": "=Bearer {{ $vars.OPENAI_API_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "tadeo-demo-openai" },
+            { "name": "x-alltrue-llm-endpoint-identifier", "value": "={{ $json.endpointId }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
-        "specifyBody": "string",
-        "body": "={{ $('Prepare Orchestrator Body').item.json.requestBody }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -50,7 +50,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const company = $('Prepare Orchestrator Body').item.json.company;\nconst jobId = $('Prepare Orchestrator Body').item.json.jobId;\nconst content = $('Orchestrator LLM').item.json.choices[0].message.content;\n\nlet plan;\ntry {\n  const match = content.match(/\\{[\\s\\S]*\\}/);\n  plan = match ? JSON.parse(match[0]) : null;\n} catch(e) { plan = null; }\n\nreturn [{\n  json: {\n    company,\n    jobId,\n    overview_query: plan?.overview_query || (company + ' company overview business model products services'),\n    news_query: plan?.news_query || (company + ' latest news 2025'),\n    risk_query: plan?.risk_query || (company + ' AI security risk data privacy compliance breach')\n  }\n}];"
+        "jsCode": "const company = $('Prepare Orchestrator Body').item.json.company;\nconst jobId = $('Prepare Orchestrator Body').item.json.jobId;\nconst endpointId = $('Prepare Orchestrator Body').item.json.endpointId;\nconst content = $('Orchestrator LLM').item.json.choices[0].message.content;\n\nlet plan;\ntry {\n  const match = content.match(/\\{[\\s\\S]*\\}/);\n  plan = match ? JSON.parse(match[0]) : null;\n} catch(e) { plan = null; }\n\nreturn [{\n  json: {\n    company,\n    jobId,\n    endpointId,\n    overview_query: plan?.overview_query || (company + ' company overview business model products services'),\n    news_query: plan?.news_query || (company + ' latest news 2025'),\n    risk_query: plan?.risk_query || (company + ' AI security risk data privacy compliance breach')\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -104,7 +104,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const plan = $('Parse Research Plan').item.json;\nconst overviewResults = $('Exa Research Search').item.json.results || [];\nconst newsResults = $('Exa News Search').item.json.results || [];\n\nconst overviewText = overviewResults.slice(0, 3).map(r => r.title + ': ' + (r.text || '').slice(0, 400)).join('\\n\\n');\nconst newsText = newsResults.slice(0, 3).map(r => r.title + ' (' + (r.publishedDate || 'recent') + '): ' + (r.text || '').slice(0, 300)).join('\\n\\n');\n\nconst systemPrompt = `You are an AI security risk analyst at Varonis. Analyze the company research and identify the following — be specific and concise, max 3 bullets per section:\n\n**AI Adoption Signals** — What AI tools, vendors, or models they use or plan to use\n**Data Security Risks** — Sensitive data exposure, compliance gaps, breach history\n**Shadow AI Risks** — Unauthorized or unmonitored AI tool usage indicators\n**Atlas Opportunity** — Why Varonis Atlas AI Security Platform fits their situation`;\n\nconst userContent = `Company: ${plan.company}\\n\\nOVERVIEW RESEARCH:\\n${overviewText}\\n\\nRECENT NEWS:\\n${newsText}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 700,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: plan.company,\n    jobId: plan.jobId,\n    overviewResults: overviewResults.slice(0, 4).map(r => ({ title: r.title, url: r.url })),\n    newsResults: newsResults.slice(0, 4).map(r => ({ title: r.title, url: r.url, date: r.publishedDate })),\n    overviewText,\n    newsText,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
+        "jsCode": "const plan = $('Parse Research Plan').item.json;\nconst overviewResults = $('Exa Research Search').item.json.results || [];\nconst newsResults = $('Exa News Search').item.json.results || [];\n\nconst overviewText = overviewResults.slice(0, 3).map(r => r.title + ': ' + (r.text || '').slice(0, 400)).join('\\n\\n');\nconst newsText = newsResults.slice(0, 3).map(r => r.title + ' (' + (r.publishedDate || 'recent') + '): ' + (r.text || '').slice(0, 300)).join('\\n\\n');\n\nconst systemPrompt = `You are an AI security risk analyst at Varonis. Analyze the company research and identify the following — be specific and concise, max 3 bullets per section:\n\n**AI Adoption Signals** — What AI tools, vendors, or models they use or plan to use\n**Data Security Risks** — Sensitive data exposure, compliance gaps, breach history\n**Shadow AI Risks** — Unauthorized or unmonitored AI tool usage indicators\n**Atlas Opportunity** — Why Varonis Atlas AI Security Platform fits their situation`;\n\nconst userContent = `Company: ${plan.company}\\n\\nOVERVIEW RESEARCH:\\n${overviewText}\\n\\nRECENT NEWS:\\n${newsText}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 700,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: plan.company,\n    jobId: plan.jobId,\n    endpointId: plan.endpointId,\n    overviewResults: overviewResults.slice(0, 4).map(r => ({ title: r.title, url: r.url })),\n    newsResults: newsResults.slice(0, 4).map(r => ({ title: r.title, url: r.url, date: r.publishedDate })),\n    overviewText,\n    newsText,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -120,13 +120,13 @@
         "headerParameters": {
           "parameters": [
             { "name": "Authorization", "value": "=Bearer {{ $vars.OPENAI_API_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "tadeo-demo-openai" },
+            { "name": "x-alltrue-llm-endpoint-identifier", "value": "={{ $json.endpointId }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
-        "specifyBody": "string",
-        "body": "={{ $('Prepare Risk Body').item.json.requestBody }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -137,7 +137,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const prep = $('Prepare Risk Body').item.json;\nconst riskAnalysis = $('Risk Analyst LLM').item.json.choices[0].message.content;\n\nconst systemPrompt = `You are an expert AI research assistant preparing a pre-meeting briefing for a Varonis sales engineer. Using the research provided, write a structured, actionable briefing in markdown.\n\nUse these exact sections:\n## Company Overview\n## Recent Developments  \n## AI & Data Security Risk Profile\n## Recommended Atlas Demo Angle\n## Suggested Discovery Questions\n\nBe specific, concise, and tailored to help the SE have a compelling conversation about AI security risks.`;\n\nconst userContent = `Company: ${prep.company}\\n\\nOVERVIEW:\\n${prep.overviewText}\\n\\nRECENT NEWS:\\n${prep.newsText}\\n\\nRISK ANALYSIS:\\n${riskAnalysis}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 1500,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: prep.company,\n    jobId: prep.jobId,\n    overviewResults: prep.overviewResults,\n    newsResults: prep.newsResults,\n    riskAnalysis,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
+        "jsCode": "const prep = $('Prepare Risk Body').item.json;\nconst riskAnalysis = $('Risk Analyst LLM').item.json.choices[0].message.content;\n\nconst systemPrompt = `You are an expert AI research assistant preparing a pre-meeting briefing for a Varonis sales engineer. Using the research provided, write a structured, actionable briefing in markdown.\n\nUse these exact sections:\n## Company Overview\n## Recent Developments  \n## AI & Data Security Risk Profile\n## Recommended Atlas Demo Angle\n## Suggested Discovery Questions\n\nBe specific, concise, and tailored to help the SE have a compelling conversation about AI security risks.`;\n\nconst userContent = `Company: ${prep.company}\\n\\nOVERVIEW:\\n${prep.overviewText}\\n\\nRECENT NEWS:\\n${prep.newsText}\\n\\nRISK ANALYSIS:\\n${riskAnalysis}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 1500,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: prep.company,\n    jobId: prep.jobId,\n    endpointId: prep.endpointId,\n    overviewResults: prep.overviewResults,\n    newsResults: prep.newsResults,\n    riskAnalysis,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -153,13 +153,13 @@
         "headerParameters": {
           "parameters": [
             { "name": "Authorization", "value": "=Bearer {{ $vars.OPENAI_API_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "tadeo-demo-openai" },
+            { "name": "x-alltrue-llm-endpoint-identifier", "value": "={{ $json.endpointId }}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
         "sendBody": true,
-        "specifyBody": "string",
-        "body": "={{ $('Prepare Report Body').item.json.requestBody }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.requestBody }}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -190,8 +190,8 @@
           ]
         },
         "sendBody": true,
-        "specifyBody": "string",
-        "body": "={{ $('Build Final Result').item.json.pipeline }}",
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pipeline }}\n",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
