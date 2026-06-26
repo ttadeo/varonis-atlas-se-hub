@@ -480,7 +480,7 @@ export default function DemoPage() {
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       // Key works — load projects from SE's account
       const map = buildProjectMap(data);
-      const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
+      const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName, ownerEmail: meta.ownerEmail }));
       list.sort((a, b) => a.name.localeCompare(b.name));
       setAtlasApiKey(apiKeyInput.trim());
       setApiKeyInput("");
@@ -509,8 +509,17 @@ export default function DemoPage() {
 
   // ── Project selection (shared between provision + chain) ───────────────────
   const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string }[]>([]);
+  const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string; ownerEmail: string | null }[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+
+  // Fetch logged-in SE's email once on mount for ownership checks
+  useEffect(() => {
+    fetch("/api/me")
+      .then((r) => r.json())
+      .then((d) => setCurrentUserEmail(d.userId ?? null))
+      .catch(() => {});
+  }, []);
 
   // Load projects on mount — needed for both provision and chain modes
   // Skip if SE has connected their own key (projects already loaded by connectApiKey)
@@ -521,7 +530,7 @@ export default function DemoPage() {
       .then((r) => r.json())
       .then((data) => {
         const map = buildProjectMap(data);
-        const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName }));
+        const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName, ownerEmail: meta.ownerEmail }));
         list.sort((a, b) => a.name.localeCompare(b.name));
         setChainProjects(list);
         // Default to Tadeo-Demo-Environment project, fallback to first
@@ -766,6 +775,13 @@ export default function DemoPage() {
       setApplying(false);
     }
   }
+
+  // Superuser has R/W on everything; other SEs can only delete from projects they own
+  const SUPERUSER = "ttadeo@timthecoder.net";
+  const selectedProject = chainProjects.find((p) => p.id === selectedProjectId);
+  const canDeleteSelected =
+    currentUserEmail === SUPERUSER ||
+    (!!selectedProject?.ownerEmail && selectedProject.ownerEmail === currentUserEmail);
 
   async function checkCleanup() {
     if (!selectedProjectId) return;
@@ -1348,7 +1364,8 @@ export default function DemoPage() {
                       </button>
                       <button
                         onClick={handleCleanup}
-                        disabled={cleaningUp || cleanupCount === 0}
+                        disabled={cleaningUp || cleanupCount === 0 || !canDeleteSelected}
+                        title={!canDeleteSelected ? "You can only delete resources in projects you own" : undefined}
                         className="text-xs px-3 py-1.5 rounded-lg bg-red-800 hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed text-white transition-colors"
                       >
                         {cleaningUp ? "Cleaning…" : "Delete All"}
@@ -1619,19 +1636,19 @@ export default function DemoPage() {
 // ─── Chain of Custody View ────────────────────────────────────────────────────
 
 // Build a map of project_id → { name, orgName } from whatever shape Atlas returns
-function buildProjectMap(orgProjects: unknown): Record<string, { name: string; orgName: string }> {
-  const map: Record<string, { name: string; orgName: string }> = {};
+function buildProjectMap(orgProjects: unknown): Record<string, { name: string; orgName: string; ownerEmail: string | null }> {
+  const map: Record<string, { name: string; orgName: string; ownerEmail: string | null }> = {};
   if (!orgProjects || typeof orgProjects !== "object") return map;
 
   // Try array of orgs, each with projects array
-  // Atlas returns: organization_name, projects: [{ project_id, project_name, ... }]
+  // Atlas returns: organization_name, projects: [{ project_id, project_name, owner_email, ... }]
   const tryOrgsArray = (orgs: AtlasProject[]) => {
     for (const org of orgs) {
       const orgName = org.organization_name ?? org.name ?? org.display_name ?? "";
       const projects: AtlasProject[] = org.projects ?? [];
       for (const p of projects) {
         const pid = p.project_id ?? p.id ?? "";
-        if (pid) map[pid] = { name: p.project_name ?? p.name ?? p.display_name ?? pid, orgName };
+        if (pid) map[pid] = { name: p.project_name ?? p.name ?? p.display_name ?? pid, orgName, ownerEmail: p.owner_email ?? null };
       }
     }
   };
@@ -1644,6 +1661,7 @@ function buildProjectMap(orgProjects: unknown): Record<string, { name: string; o
         map[pid] = {
           name: item.project_name ?? item.name ?? item.display_name ?? pid,
           orgName: item.organization_name ?? "",
+          ownerEmail: item.owner_email ?? null,
         };
       }
     }

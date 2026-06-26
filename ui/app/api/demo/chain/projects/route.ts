@@ -43,26 +43,95 @@ export async function GET(req: NextRequest) {
     const apiKey = resolveApiKey(req);
     const token = await getAtlasJWT(apiKey);
 
-    // Prefer env var customer ID; fall back to JWT claim (for SE-provided keys)
     const customerId = process.env.ATLAS_CUSTOMER_ID || extractCustomerId(token);
     if (!customerId) throw new Error("Could not determine customer ID from API key");
 
-    const res = await fetch(
-      `${ATLAS_API_URL}/v1/admin/customers/${customerId}/organizations/projects`,
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        signal: AbortSignal.timeout(10000),
-      }
-    );
+    // Fetch projects and users in parallel — users needed to resolve owner_auth0_id → email
+    const [projectsRes, usersRes] = await Promise.all([
+      fetch(
+        `${ATLAS_API_URL}/v1/admin/customers/${customerId}/organizations/projects`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: AbortSignal.timeout(10000),
+        }
+      ),
+      fetch(
+        `${ATLAS_API_URL}/v1/admin/auth0-customer/${customerId}/users`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: AbortSignal.timeout(10000),
+        }
+      ),
+    ]);
 
-    if (!res.ok) {
-      const body = await res.text();
-      return NextResponse.json({ error: `Atlas projects returned ${res.status}`, detail: body }, { status: 502 });
+    if (!projectsRes.ok) {
+      const body = await projectsRes.text();
+      return NextResponse.json({ error: `Atlas projects returned ${projectsRes.status}`, detail: body }, { status: 502 });
     }
 
-    const data = await res.json();
-    return NextResponse.json(data);
+    const projectsData = await projectsRes.json();
+
+    // Build auth0_user_id → email map (non-fatal if users call fails)
+    const auth0ToEmail: Record<string, string> = {};
+    if (usersRes.ok) {
+      try {
+        const users = await usersRes.json();
+        if (Array.isArray(users)) {
+          for (const u of users) {
+            if (u.user_id && u.email) auth0ToEmail[u.user_id] = u.email;
+          }
+        }
+      } catch {
+        // Non-fatal — owner_email will be null on all projects
+      }
+    }
+
+    // Walk the organizations/projects structure and inject owner_email
+    const enriched = injectOwnerEmails(projectsData, auth0ToEmail);
+
+    return NextResponse.json(enriched);
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
+}
+
+// Inject owner_email into every project object, preserving the original response shape
+function injectOwnerEmails(
+  data: unknown,
+  auth0ToEmail: Record<string, string>
+): unknown {
+  if (!data || typeof data !== "object") return data;
+
+  const resolveEmail = (ownerAuth0Id: unknown): string | null =>
+    typeof ownerAuth0Id === "string" ? (auth0ToEmail[ownerAuth0Id] ?? null) : null;
+
+  // Shape: { organizations: [ { ..., projects: [...] } ] }
+  const obj = data as Record<string, unknown>;
+  if (Array.isArray(obj.organizations)) {
+    return {
+      ...obj,
+      organizations: obj.organizations.map((org: unknown) => {
+        const o = org as Record<string, unknown>;
+        return {
+          ...o,
+          projects: Array.isArray(o.projects)
+            ? o.projects.map((p: unknown) => {
+                const proj = p as Record<string, unknown>;
+                return { ...proj, owner_email: resolveEmail(proj.owner_auth0_id) };
+              })
+            : o.projects,
+        };
+      }),
+    };
+  }
+
+  // Shape: flat array of projects
+  if (Array.isArray(data)) {
+    return (data as Record<string, unknown>[]).map((p) => ({
+      ...p,
+      owner_email: resolveEmail(p.owner_auth0_id),
+    }));
+  }
+
+  return data;
 }
