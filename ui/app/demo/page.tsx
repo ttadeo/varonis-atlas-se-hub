@@ -1162,8 +1162,8 @@ export default function DemoPage() {
           {step === "input" && (
             <div className="space-y-6">
 
-              {/* Atlas Account — session-only API key */}
-              <div className="rounded-xl border border-gray-700 bg-gray-900/50 overflow-hidden">
+              {/* Atlas Account — session-only API key (hidden from UI, preserved for future use) */}
+              <div className="hidden rounded-xl border border-gray-700 bg-gray-900/50 overflow-hidden">
                 <button
                   onClick={() => setApiKeyOpen((o) => !o)}
                   className="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-800/50 transition-colors"
