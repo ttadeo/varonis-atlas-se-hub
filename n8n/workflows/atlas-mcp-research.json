@@ -10,8 +10,8 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [848, 384],
-      "id": "cd0f975d-3816-49f6-a41f-b680876ecff8",
+      "position": [8432, 1792],
+      "id": "44180dc3-c3a9-49c8-996d-69b4887ef56f",
       "name": "Webhook",
       "webhookId": "atlas-mcp-research"
     },
@@ -21,8 +21,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1152, 384],
-      "id": "b65e839d-39c2-42fa-9efd-c89c103b36b3",
+      "position": [8736, 1792],
+      "id": "b5631a66-6bc8-4e72-82dc-34dbb8416940",
       "name": "Prepare Orchestrator Body"
     },
     {
@@ -45,8 +45,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1456, 384],
-      "id": "c7630631-1450-4c77-abff-d79d576c3ed2",
+      "position": [8960, 1744],
+      "id": "f7cfbe26-fa9f-4b5d-b0b7-fe71e9a539c5",
       "name": "Orchestrator LLM",
       "onError": "continueErrorOutput"
     },
@@ -56,8 +56,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1456, 600],
-      "id": "err1-orchestrator",
+      "position": [9040, 2240],
+      "id": "0ab9e05c-94fb-459d-8a49-e14a10eb6179",
       "name": "Handle Orchestrator Block"
     },
     {
@@ -78,8 +78,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1760, 600],
-      "id": "err1-upstash",
+      "position": [9344, 2016],
+      "id": "a3609b91-1934-4169-9357-d7f97b4421a6",
       "name": "Write Orchestrator Block to Upstash"
     },
     {
@@ -88,8 +88,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1760, 384],
-      "id": "5cd342aa-f3f2-43f1-8f37-cc88b176d882",
+      "position": [9344, 1792],
+      "id": "1b391acd-56dd-4c9e-a0e0-9fe503d7b4c6",
       "name": "Parse Research Plan"
     },
     {
@@ -110,8 +110,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2048, 384],
-      "id": "c6c903c4-8017-4078-9b68-d815399d77d4",
+      "position": [9632, 1792],
+      "id": "d05aebbe-6578-47a4-b9d0-1274790632ad",
       "name": "Exa Research Search"
     },
     {
@@ -132,8 +132,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2048, 592],
-      "id": "de694aec-3068-4492-af6d-9d8691bb1c74",
+      "position": [9632, 2000],
+      "id": "0ae176a8-2b7f-4b5a-b81d-b8ce1f88c873",
       "name": "Exa News Search"
     },
     {
@@ -142,8 +142,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2352, 496],
-      "id": "bd6f3f61-953d-47b0-902f-2f6621366de2",
+      "position": [9936, 1904],
+      "id": "55e8758c-3585-4e50-8db3-d30bba622428",
       "name": "Prepare Risk Body"
     },
     {
@@ -166,8 +166,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2656, 496],
-      "id": "37f0cadb-1cd5-412d-b122-c2851cf6b0b3",
+      "position": [10240, 1904],
+      "id": "22197596-4862-4719-ba65-76b14503bbe4",
       "name": "Risk Analyst LLM",
       "onError": "continueErrorOutput"
     },
@@ -177,8 +177,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2656, 700],
-      "id": "err2-risk",
+      "position": [10240, 2112],
+      "id": "c1f7d99a-3f52-43da-a7e5-036bb92d5b2c",
       "name": "Handle Risk Block"
     },
     {
@@ -199,8 +199,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2960, 700],
-      "id": "err2-upstash",
+      "position": [10512, 2208],
+      "id": "9cc68798-a4cb-4df5-b814-c3b1e259e1c2",
       "name": "Write Risk Block to Upstash"
     },
     {
@@ -209,8 +209,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2960, 496],
-      "id": "4fc9bef9-852d-40d2-ac55-e2298413e3e9",
+      "position": [10544, 1904],
+      "id": "1238b358-a0fe-453d-b0ed-e6066e1e3607",
       "name": "Prepare Report Body"
     },
     {
@@ -233,8 +233,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [3248, 496],
-      "id": "d641ff6d-e17f-4005-b234-0a6837dbc2cb",
+      "position": [10832, 1904],
+      "id": "25c1a2b6-2672-417b-bbd3-fd8ecd08c452",
       "name": "Report Agent LLM",
       "onError": "continueErrorOutput"
     },
@@ -244,8 +244,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [3248, 700],
-      "id": "err3-report",
+      "position": [10864, 2272],
+      "id": "1e2afcd3-f96f-49ba-a0fc-df7fd65ca151",
       "name": "Handle Report Block"
     },
     {
@@ -266,8 +266,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [3552, 700],
-      "id": "err3-upstash",
+      "position": [11264, 2176],
+      "id": "ae64f4b0-a62c-4216-9e7d-235e3173076b",
       "name": "Write Report Block to Upstash"
     },
     {
@@ -276,8 +276,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [3552, 496],
-      "id": "b3ef26e9-6122-488e-bb61-6835ce7e499f",
+      "position": [11136, 1904],
+      "id": "d6acdc24-2968-40bd-8574-7b92dda6f58d",
       "name": "Build Final Result"
     },
     {
@@ -298,8 +298,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [3856, 496],
-      "id": "e3a54572-001a-43c2-8272-e83cda9eafa4",
+      "position": [11440, 1904],
+      "id": "ff041402-bd4a-4221-96b4-87d7898e94a3",
       "name": "Write to Upstash"
     }
   ],
@@ -312,8 +312,10 @@
       "main": [[{ "node": "Orchestrator LLM", "type": "main", "index": 0 }]]
     },
     "Orchestrator LLM": {
-      "main": [[{ "node": "Parse Research Plan", "type": "main", "index": 0 }]],
-      "error": [[{ "node": "Handle Orchestrator Block", "type": "main", "index": 0 }]]
+      "main": [
+        [{ "node": "Parse Research Plan", "type": "main", "index": 0 }],
+        [{ "node": "Handle Orchestrator Block", "type": "main", "index": 0 }]
+      ]
     },
     "Handle Orchestrator Block": {
       "main": [[{ "node": "Write Orchestrator Block to Upstash", "type": "main", "index": 0 }]]
@@ -331,8 +333,10 @@
       "main": [[{ "node": "Risk Analyst LLM", "type": "main", "index": 0 }]]
     },
     "Risk Analyst LLM": {
-      "main": [[{ "node": "Prepare Report Body", "type": "main", "index": 0 }]],
-      "error": [[{ "node": "Handle Risk Block", "type": "main", "index": 0 }]]
+      "main": [
+        [{ "node": "Prepare Report Body", "type": "main", "index": 0 }],
+        [{ "node": "Handle Risk Block", "type": "main", "index": 0 }]
+      ]
     },
     "Handle Risk Block": {
       "main": [[{ "node": "Write Risk Block to Upstash", "type": "main", "index": 0 }]]
@@ -341,8 +345,10 @@
       "main": [[{ "node": "Report Agent LLM", "type": "main", "index": 0 }]]
     },
     "Report Agent LLM": {
-      "main": [[{ "node": "Build Final Result", "type": "main", "index": 0 }]],
-      "error": [[{ "node": "Handle Report Block", "type": "main", "index": 0 }]]
+      "main": [
+        [{ "node": "Build Final Result", "type": "main", "index": 0 }],
+        [{ "node": "Handle Report Block", "type": "main", "index": 0 }]
+      ]
     },
     "Handle Report Block": {
       "main": [[{ "node": "Write Report Block to Upstash", "type": "main", "index": 0 }]]
