@@ -93,7 +93,7 @@ interface DiscoverResult {
 interface McpStep {
   type: "step";
   step: string;
-  status: "running" | "done";
+  status: "running" | "done" | "blocked" | "skipped";
   agent: string;
   message: string;
   tool: string | null;
@@ -586,6 +586,23 @@ export default function DemoPage() {
 
         if (data.status === "pending") continue;
 
+        // Atlas guardrail block
+        if (data.status === "blocked") {
+          const blockedAt = data.blocked_at ?? "Agent";
+          const atlasMessage = data.atlas_message ?? "Atlas guardrail blocked this request";
+          const agentOrder = ["Orchestrator Agent", "Research Agent", "News Agent", "Risk Analyst Agent", "Report Agent"];
+          const blockedIndex = agentOrder.findIndex(a => blockedAt.includes(a.split(" ")[0]));
+          setMcpSteps([
+            { type: "step", step: "orchestrator", status: blockedAt === "Orchestrator Agent" ? "blocked" : "done", agent: "Orchestrator Agent", message: blockedAt === "Orchestrator Agent" ? `Blocked by Atlas — ${atlasMessage}` : "Research plan created", tool: null },
+            { type: "step", step: "research",     status: blockedIndex > 1 ? "done" : blockedAt === "Research Agent" ? "blocked" : "skipped", agent: "Research Agent",     message: blockedAt === "Research Agent" ? `Blocked by Atlas — ${atlasMessage}` : "Company overview gathered", tool: "exa_search" },
+            { type: "step", step: "news",         status: blockedIndex > 2 ? "done" : blockedAt === "News Agent" ? "blocked" : "skipped", agent: "News Agent",         message: blockedAt === "News Agent" ? `Blocked by Atlas — ${atlasMessage}` : "Recent news gathered", tool: "exa_search" },
+            { type: "step", step: "risk",         status: blockedAt === "Risk Analyst Agent" ? "blocked" : blockedIndex > 3 ? "done" : "skipped", agent: "Risk Analyst Agent", message: blockedAt === "Risk Analyst Agent" ? `Blocked by Atlas — ${atlasMessage}` : "Risk analysis complete", tool: "atlas_llm" },
+            { type: "step", step: "report",       status: blockedAt === "Report Agent" ? "blocked" : "skipped", agent: "Report Agent",       message: blockedAt === "Report Agent" ? `Blocked by Atlas — ${atlasMessage}` : "Skipped", tool: "atlas_llm" },
+          ]);
+          setMcpError(`Atlas guardrail triggered at ${blockedAt}: ${atlasMessage}`);
+          return;
+        }
+
         // Done
         setMcpReport(data.report ?? null);
         setMcpSources(data.sources ?? []);
@@ -1012,10 +1029,14 @@ export default function DemoPage() {
                 <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-3">
                   <h3 className="text-sm font-semibold text-gray-300 mb-3">Agent Activity</h3>
                   {mcpSteps.map((s, i) => (
-                    <div key={i} className={`flex items-start gap-3 rounded-lg px-3 py-2.5 ${s.status === "running" ? "bg-violet-900/20 border border-violet-800/40" : "bg-gray-800/40"}`}>
+                    <div key={i} className={`flex items-start gap-3 rounded-lg px-3 py-2.5 ${s.status === "running" ? "bg-violet-900/20 border border-violet-800/40" : s.status === "blocked" ? "bg-red-900/20 border border-red-800/40" : s.status === "skipped" ? "bg-gray-800/20 opacity-50" : "bg-gray-800/40"}`}>
                       <div className="mt-0.5">
                         {s.status === "running"
                           ? <div className="w-4 h-4 border-2 border-violet-400 border-t-transparent rounded-full animate-spin" />
+                          : s.status === "blocked"
+                          ? <div className="w-4 h-4 rounded-full bg-red-600 flex items-center justify-center text-white text-xs">✕</div>
+                          : s.status === "skipped"
+                          ? <div className="w-4 h-4 rounded-full bg-gray-600 flex items-center justify-center text-white text-xs">—</div>
                           : <div className="w-4 h-4 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs">✓</div>
                         }
                       </div>

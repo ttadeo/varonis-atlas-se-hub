@@ -10,19 +10,19 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [-1600, 0],
-      "id": "a1000000-0001-0001-0001-000000000001",
+      "position": [848, 384],
+      "id": "cd0f975d-3816-49f6-a41f-b680876ecff8",
       "name": "Webhook",
       "webhookId": "atlas-mcp-research"
     },
     {
       "parameters": {
-        "jsCode": "const company = $('Webhook').item.json.body.company;\nconst jobId = $('Webhook').item.json.body.jobId;\nconst endpointId = $('Webhook').item.json.body.endpointId || 'tadeo-demo-env';\n\nconst systemPrompt = 'You are an AI research orchestrator. Given a company name, produce a JSON research plan with exactly 3 fields: overview_query, news_query, risk_query. Each is a concise, targeted search query string. Respond with only valid JSON — no markdown, no explanation.';\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 300,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'Company to research: ' + company }\n  ]\n};\n\nreturn [{ json: { company, jobId, endpointId, requestBody: JSON.stringify(requestBody) } }];"
+        "jsCode": "const company = $('Webhook').item.json.body.company;\nconst jobId = $('Webhook').item.json.body.jobId;\nconst endpointId = $('Webhook').item.json.body.endpointId || 'OpenAIKey-Tadeo-Demo';\n\nconst systemPrompt = 'You are an AI research orchestrator. Given a company name, produce a JSON research plan with exactly 3 fields: overview_query, news_query, risk_query. Each is a concise, targeted search query string. Respond with only valid JSON — no markdown, no explanation.';\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 300,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'Company to research: ' + company }\n  ]\n};\n\nreturn [{ json: { company, jobId, endpointId, requestBody: JSON.stringify(requestBody) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-1300, 0],
-      "id": "a1000000-0002-0002-0002-000000000002",
+      "position": [1152, 384],
+      "id": "b65e839d-39c2-42fa-9efd-c89c103b36b3",
       "name": "Prepare Orchestrator Body"
     },
     {
@@ -32,8 +32,9 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.OPENAI_API_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "={{ $json.endpointId }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}" },
+            { "name": "x-alltrue-llm-endpoint-identifier", "value": "OpenAIKey-Tadeo-Demo" },
+            { "name": "x-alltrue-llm-firewall-user-session", "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -44,9 +45,42 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [-1000, 0],
-      "id": "a1000000-0003-0003-0003-000000000003",
-      "name": "Orchestrator LLM"
+      "position": [1456, 384],
+      "id": "c7630631-1450-4c77-abff-d79d576c3ed2",
+      "name": "Orchestrator LLM",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const jobId = $('Prepare Orchestrator Body').item.json.jobId;\nconst company = $('Prepare Orchestrator Body').item.json.company;\nconst error = $input.item.json.error || {};\nconst atlasMessage = error.message || 'Atlas guardrail blocked this request';\nconst result = {\n  status: 'blocked',\n  company,\n  jobId,\n  blocked_at: 'Orchestrator Agent',\n  atlas_message: atlasMessage,\n  atlas_audit: {\n    gateway: 'Atlas AI Gateway',\n    policy_enforced: true,\n    endpoint_id: 'OpenAIKey-Tadeo-Demo'\n  },\n  blocked_at_time: new Date().toISOString()\n};\nreturn [{ json: { pipeline: JSON.stringify([[\"SET\", 'mcp:' + jobId, JSON.stringify(result), \"EX\", 86400]]) } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1456, 600],
+      "id": "err1-orchestrator",
+      "name": "Handle Orchestrator Block"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pipeline }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1760, 600],
+      "id": "err1-upstash",
+      "name": "Write Orchestrator Block to Upstash"
     },
     {
       "parameters": {
@@ -54,8 +88,8 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-700, 0],
-      "id": "a1000000-0004-0004-0004-000000000004",
+      "position": [1760, 384],
+      "id": "5cd342aa-f3f2-43f1-8f37-cc88b176d882",
       "name": "Parse Research Plan"
     },
     {
@@ -76,8 +110,8 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [-400, 0],
-      "id": "a1000000-0005-0005-0005-000000000005",
+      "position": [2048, 384],
+      "id": "c6c903c4-8017-4078-9b68-d815399d77d4",
       "name": "Exa Research Search"
     },
     {
@@ -98,18 +132,18 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [-400, 200],
-      "id": "a1000000-0006-0006-0006-000000000006",
+      "position": [2048, 592],
+      "id": "de694aec-3068-4492-af6d-9d8691bb1c74",
       "name": "Exa News Search"
     },
     {
       "parameters": {
-        "jsCode": "const plan = $('Parse Research Plan').item.json;\nconst overviewResults = $('Exa Research Search').item.json.results || [];\nconst newsResults = $('Exa News Search').item.json.results || [];\n\nconst overviewText = overviewResults.slice(0, 3).map(r => r.title + ': ' + (r.text || '').slice(0, 400)).join('\\n\\n');\nconst newsText = newsResults.slice(0, 3).map(r => r.title + ' (' + (r.publishedDate || 'recent') + '): ' + (r.text || '').slice(0, 300)).join('\\n\\n');\n\nconst systemPrompt = `You are an AI security risk analyst at Varonis. Analyze the company research and identify the following — be specific and concise, max 3 bullets per section:\n\n**AI Adoption Signals** — What AI tools, vendors, or models they use or plan to use\n**Data Security Risks** — Sensitive data exposure, compliance gaps, breach history\n**Shadow AI Risks** — Unauthorized or unmonitored AI tool usage indicators\n**Atlas Opportunity** — Why Varonis Atlas AI Security Platform fits their situation`;\n\nconst userContent = `Company: ${plan.company}\\n\\nOVERVIEW RESEARCH:\\n${overviewText}\\n\\nRECENT NEWS:\\n${newsText}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 700,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: plan.company,\n    jobId: plan.jobId,\n    endpointId: plan.endpointId,\n    overviewResults: overviewResults.slice(0, 4).map(r => ({ title: r.title, url: r.url })),\n    newsResults: newsResults.slice(0, 4).map(r => ({ title: r.title, url: r.url, date: r.publishedDate })),\n    overviewText,\n    newsText,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
+        "jsCode": "const plan = $('Parse Research Plan').item.json;\nconst overviewResults = $('Exa Research Search').item.json.results || [];\nconst newsResults = $('Exa News Search').item.json.results || [];\n\nconst overviewText = overviewResults.slice(0, 3).map(r => r.title + ': ' + (r.text || '').slice(0, 400)).join('\\n\\n');\nconst newsText = newsResults.slice(0, 3).map(r => r.title + ' (' + (r.publishedDate || 'recent') + '): ' + (r.text || '').slice(0, 300)).join('\\n\\n');\n\nconst systemPrompt = `You are an AI security risk analyst at Varonis. Analyze the company research and identify the following — be specific and concise, max 3 bullets per section:\\n\\n**AI Adoption Signals** — What AI tools, vendors, or models they use or plan to use\\n**Data Security Risks** — Sensitive data exposure, compliance gaps, breach history\\n**Shadow AI Risks** — Unauthorized or unmonitored AI tool usage indicators\\n**Atlas Opportunity** — Why Varonis Atlas AI Security Platform fits their situation`;\n\nconst userContent = `Company: ${plan.company}\\n\\nOVERVIEW RESEARCH:\\n${overviewText}\\n\\nRECENT NEWS:\\n${newsText}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 700,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: plan.company,\n    jobId: plan.jobId,\n    endpointId: plan.endpointId,\n    overviewResults: overviewResults.slice(0, 4).map(r => ({ title: r.title, url: r.url })),\n    newsResults: newsResults.slice(0, 4).map(r => ({ title: r.title, url: r.url, date: r.publishedDate })),\n    overviewText,\n    newsText,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-100, 100],
-      "id": "a1000000-0007-0007-0007-000000000007",
+      "position": [2352, 496],
+      "id": "bd6f3f61-953d-47b0-902f-2f6621366de2",
       "name": "Prepare Risk Body"
     },
     {
@@ -119,8 +153,9 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.OPENAI_API_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "={{ $json.endpointId }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}" },
+            { "name": "x-alltrue-llm-endpoint-identifier", "value": "OpenAIKey-Tadeo-Demo" },
+            { "name": "x-alltrue-llm-firewall-user-session", "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -131,18 +166,51 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [200, 100],
-      "id": "a1000000-0008-0008-0008-000000000008",
-      "name": "Risk Analyst LLM"
+      "position": [2656, 496],
+      "id": "37f0cadb-1cd5-412d-b122-c2851cf6b0b3",
+      "name": "Risk Analyst LLM",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "const prep = $('Prepare Risk Body').item.json;\nconst riskAnalysis = $('Risk Analyst LLM').item.json.choices[0].message.content;\n\nconst systemPrompt = `You are an expert AI research assistant preparing a pre-meeting briefing for a Varonis sales engineer. Using the research provided, write a structured, actionable briefing in markdown.\n\nUse these exact sections:\n## Company Overview\n## Recent Developments  \n## AI & Data Security Risk Profile\n## Recommended Atlas Demo Angle\n## Suggested Discovery Questions\n\nBe specific, concise, and tailored to help the SE have a compelling conversation about AI security risks.`;\n\nconst userContent = `Company: ${prep.company}\\n\\nOVERVIEW:\\n${prep.overviewText}\\n\\nRECENT NEWS:\\n${prep.newsText}\\n\\nRISK ANALYSIS:\\n${riskAnalysis}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 1500,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: prep.company,\n    jobId: prep.jobId,\n    endpointId: prep.endpointId,\n    overviewResults: prep.overviewResults,\n    newsResults: prep.newsResults,\n    riskAnalysis,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
+        "jsCode": "const jobId = $('Prepare Risk Body').item.json.jobId;\nconst company = $('Prepare Risk Body').item.json.company;\nconst error = $input.item.json.error || {};\nconst atlasMessage = error.message || 'Atlas guardrail blocked this request';\nconst result = {\n  status: 'blocked',\n  company,\n  jobId,\n  blocked_at: 'Risk Analyst Agent',\n  atlas_message: atlasMessage,\n  atlas_audit: {\n    gateway: 'Atlas AI Gateway',\n    policy_enforced: true,\n    endpoint_id: 'OpenAIKey-Tadeo-Demo'\n  },\n  blocked_at_time: new Date().toISOString()\n};\nreturn [{ json: { pipeline: JSON.stringify([[\"SET\", 'mcp:' + jobId, JSON.stringify(result), \"EX\", 86400]]) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [500, 100],
-      "id": "a1000000-0009-0009-0009-000000000009",
+      "position": [2656, 700],
+      "id": "err2-risk",
+      "name": "Handle Risk Block"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pipeline }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2960, 700],
+      "id": "err2-upstash",
+      "name": "Write Risk Block to Upstash"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prep = $('Prepare Risk Body').item.json;\nconst riskAnalysis = $('Risk Analyst LLM').item.json.choices[0].message.content;\n\nconst systemPrompt = `You are an expert AI research assistant preparing a pre-meeting briefing for a Varonis sales engineer. Using the research provided, write a structured, actionable briefing in markdown.\\n\\nUse these exact sections:\\n## Company Overview\\n## Recent Developments\\n## AI & Data Security Risk Profile\\n## Recommended Atlas Demo Angle\\n## Suggested Discovery Questions\\n\\nBe specific, concise, and tailored to help the SE have a compelling conversation about AI security risks.`;\n\nconst userContent = `Company: ${prep.company}\\n\\nOVERVIEW:\\n${prep.overviewText}\\n\\nRECENT NEWS:\\n${prep.newsText}\\n\\nRISK ANALYSIS:\\n${riskAnalysis}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 1500,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: prep.company,\n    jobId: prep.jobId,\n    endpointId: prep.endpointId,\n    overviewResults: prep.overviewResults,\n    newsResults: prep.newsResults,\n    riskAnalysis,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2960, 496],
+      "id": "4fc9bef9-852d-40d2-ac55-e2298413e3e9",
       "name": "Prepare Report Body"
     },
     {
@@ -152,8 +220,9 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.OPENAI_API_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "={{ $json.endpointId }}" },
+            { "name": "Authorization", "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}" },
+            { "name": "x-alltrue-llm-endpoint-identifier", "value": "OpenAIKey-Tadeo-Demo" },
+            { "name": "x-alltrue-llm-firewall-user-session", "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}" },
             { "name": "Content-Type", "value": "application/json" }
           ]
         },
@@ -164,18 +233,51 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [800, 100],
-      "id": "a1000000-0010-0010-0010-000000000010",
-      "name": "Report Agent LLM"
+      "position": [3248, 496],
+      "id": "d641ff6d-e17f-4005-b234-0a6837dbc2cb",
+      "name": "Report Agent LLM",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
-        "jsCode": "const prep = $('Prepare Report Body').item.json;\nconst report = $('Report Agent LLM').item.json.choices[0].message.content;\n\nconst sources = [\n  ...prep.overviewResults.map(r => ({ ...r, category: 'Overview' })),\n  ...prep.newsResults.map(r => ({ ...r, category: 'News' }))\n];\n\nconst result = {\n  status: 'done',\n  company: prep.company,\n  jobId: prep.jobId,\n  report,\n  risk_analysis: prep.riskAnalysis,\n  sources,\n  atlas_audit: {\n    llm_calls: 3,\n    tool_calls: 2,\n    agents: ['Orchestrator Agent', 'Research Agent (Exa)', 'News Agent (Exa)', 'Risk Analyst Agent', 'Report Agent'],\n    gateway: 'Atlas AI Gateway',\n    policy_enforced: true\n  },\n  completed_at: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    key: 'mcp:' + prep.jobId,\n    value: JSON.stringify(result),\n    pipeline: JSON.stringify([[\"SET\", 'mcp:' + prep.jobId, JSON.stringify(result), \"EX\", 86400]])\n  }\n}];"
+        "jsCode": "const jobId = $('Prepare Report Body').item.json.jobId;\nconst company = $('Prepare Report Body').item.json.company;\nconst error = $input.item.json.error || {};\nconst atlasMessage = error.message || 'Atlas guardrail blocked this request';\nconst result = {\n  status: 'blocked',\n  company,\n  jobId,\n  blocked_at: 'Report Agent',\n  atlas_message: atlasMessage,\n  atlas_audit: {\n    gateway: 'Atlas AI Gateway',\n    policy_enforced: true,\n    endpoint_id: 'OpenAIKey-Tadeo-Demo'\n  },\n  blocked_at_time: new Date().toISOString()\n};\nreturn [{ json: { pipeline: JSON.stringify([[\"SET\", 'mcp:' + jobId, JSON.stringify(result), \"EX\", 86400]]) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1100, 100],
-      "id": "a1000000-0011-0011-0011-000000000011",
+      "position": [3248, 700],
+      "id": "err3-report",
+      "name": "Handle Report Block"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pipeline }}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [3552, 700],
+      "id": "err3-upstash",
+      "name": "Write Report Block to Upstash"
+    },
+    {
+      "parameters": {
+        "jsCode": "const prep = $('Prepare Report Body').item.json;\nconst report = $('Report Agent LLM').item.json.choices[0].message.content;\n\nconst sources = [\n  ...prep.overviewResults.map(r => ({ ...r, category: 'Overview' })),\n  ...prep.newsResults.map(r => ({ ...r, category: 'News' }))\n];\n\nconst result = {\n  status: 'done',\n  company: prep.company,\n  jobId: prep.jobId,\n  report,\n  risk_analysis: prep.riskAnalysis,\n  sources,\n  atlas_audit: {\n    llm_calls: 3,\n    tool_calls: 2,\n    agents: ['Orchestrator Agent', 'Research Agent (Exa)', 'News Agent (Exa)', 'Risk Analyst Agent', 'Report Agent'],\n    gateway: 'Atlas AI Gateway',\n    endpoint_id: prep.endpointId,\n    policy_enforced: true\n  },\n  completed_at: new Date().toISOString()\n};\n\nreturn [{\n  json: {\n    key: 'mcp:' + prep.jobId,\n    value: JSON.stringify(result),\n    pipeline: JSON.stringify([[\"SET\", 'mcp:' + prep.jobId, JSON.stringify(result), \"EX\", 86400]])\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [3552, 496],
+      "id": "b3ef26e9-6122-488e-bb61-6835ce7e499f",
       "name": "Build Final Result"
     },
     {
@@ -196,11 +298,12 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1400, 100],
-      "id": "a1000000-0012-0012-0012-000000000012",
+      "position": [3856, 496],
+      "id": "e3a54572-001a-43c2-8272-e83cda9eafa4",
       "name": "Write to Upstash"
     }
   ],
+  "pinData": {},
   "connections": {
     "Webhook": {
       "main": [[{ "node": "Prepare Orchestrator Body", "type": "main", "index": 0 }]]
@@ -209,18 +312,17 @@
       "main": [[{ "node": "Orchestrator LLM", "type": "main", "index": 0 }]]
     },
     "Orchestrator LLM": {
-      "main": [[{ "node": "Parse Research Plan", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Parse Research Plan", "type": "main", "index": 0 }]],
+      "error": [[{ "node": "Handle Orchestrator Block", "type": "main", "index": 0 }]]
+    },
+    "Handle Orchestrator Block": {
+      "main": [[{ "node": "Write Orchestrator Block to Upstash", "type": "main", "index": 0 }]]
     },
     "Parse Research Plan": {
-      "main": [
-        [
-          { "node": "Exa Research Search", "type": "main", "index": 0 },
-          { "node": "Exa News Search", "type": "main", "index": 0 }
-        ]
-      ]
+      "main": [[{ "node": "Exa Research Search", "type": "main", "index": 0 }]]
     },
     "Exa Research Search": {
-      "main": [[{ "node": "Prepare Risk Body", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Exa News Search", "type": "main", "index": 0 }]]
     },
     "Exa News Search": {
       "main": [[{ "node": "Prepare Risk Body", "type": "main", "index": 0 }]]
@@ -229,13 +331,21 @@
       "main": [[{ "node": "Risk Analyst LLM", "type": "main", "index": 0 }]]
     },
     "Risk Analyst LLM": {
-      "main": [[{ "node": "Prepare Report Body", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Prepare Report Body", "type": "main", "index": 0 }]],
+      "error": [[{ "node": "Handle Risk Block", "type": "main", "index": 0 }]]
+    },
+    "Handle Risk Block": {
+      "main": [[{ "node": "Write Risk Block to Upstash", "type": "main", "index": 0 }]]
     },
     "Prepare Report Body": {
       "main": [[{ "node": "Report Agent LLM", "type": "main", "index": 0 }]]
     },
     "Report Agent LLM": {
-      "main": [[{ "node": "Build Final Result", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Build Final Result", "type": "main", "index": 0 }]],
+      "error": [[{ "node": "Handle Report Block", "type": "main", "index": 0 }]]
+    },
+    "Handle Report Block": {
+      "main": [[{ "node": "Write Report Block to Upstash", "type": "main", "index": 0 }]]
     },
     "Build Final Result": {
       "main": [[{ "node": "Write to Upstash", "type": "main", "index": 0 }]]
