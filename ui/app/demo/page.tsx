@@ -1327,7 +1327,7 @@ export default function DemoPage() {
                   Atlas Project
                 </label>
                 <p className="text-xs text-red-400 font-medium mb-2">
-                  ⚠ Select YOUR project — do not provision into someone else&apos;s environment
+                  ⚠ You may only provision demos into your own project — select it from the dropdown below
                 </p>
                 {chainProjects.length > 0 ? (
                   <select
