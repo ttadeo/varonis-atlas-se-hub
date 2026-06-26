@@ -1025,7 +1025,8 @@ export default function DemoPage() {
                   />
                   <button
                     onClick={handleMcpResearch}
-                    disabled={!mcpCompany.trim() || mcpRunning}
+                    disabled={!mcpCompany.trim() || mcpRunning || !canDeleteSelected}
+                    title={!canDeleteSelected ? "You can only run research into projects you own" : undefined}
                     className="bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
                   >
                     {mcpRunning ? "Running…" : "Run Research"}
