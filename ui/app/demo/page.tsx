@@ -543,7 +543,23 @@ export default function DemoPage() {
 
   // ── MCP Multi-Agent Demo state ─────────────────────────────────────────────
   const [mcpCompany, setMcpCompany] = useState("");
-  const [mcpEndpointId, setMcpEndpointId] = useState("tadeo-demo-env");
+  const [mcpEndpointId, setMcpEndpointId] = useState("");
+  const [mcpEndpoints, setMcpEndpoints] = useState<string[]>([]);
+
+  // Fetch endpoint identifiers whenever the selected project changes
+  useEffect(() => {
+    if (!selectedProjectId) return;
+    setMcpEndpoints([]);
+    setMcpEndpointId("");
+    fetch(`/api/demo/chain/endpoints?project_id=${selectedProjectId}`)
+      .then((r) => r.json())
+      .then((d) => {
+        const ids: string[] = d.identifiers ?? [];
+        setMcpEndpoints(ids);
+        setMcpEndpointId(ids[0] ?? "");
+      })
+      .catch(() => {});
+  }, [selectedProjectId]);
   const [mcpRunning, setMcpRunning] = useState(false);
   const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
   const [mcpReport, setMcpReport] = useState<string | null>(null);
@@ -1002,15 +1018,28 @@ export default function DemoPage() {
                 {/* Endpoint identifier */}
                 <div>
                   <label className="text-xs font-medium text-gray-400 mb-1 block">Atlas Endpoint Identifier</label>
-                  <input
-                    type="text"
-                    value={mcpEndpointId}
-                    onChange={(e) => setMcpEndpointId(e.target.value)}
-                    placeholder="e.g. tadeo-demo-env"
-                    disabled={mcpRunning}
-                    className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-600"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">Must match the endpoint identifier registered in your Atlas project</p>
+                  {mcpEndpoints.length > 0 ? (
+                    <select
+                      value={mcpEndpointId}
+                      onChange={(e) => setMcpEndpointId(e.target.value)}
+                      disabled={mcpRunning}
+                      className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-600"
+                    >
+                      {mcpEndpoints.map((id) => (
+                        <option key={id} value={id}>{id}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={mcpEndpointId}
+                      onChange={(e) => setMcpEndpointId(e.target.value)}
+                      placeholder={selectedProjectId ? "No endpoints found for this project" : "Select a project first"}
+                      disabled={mcpRunning}
+                      className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-600"
+                    />
+                  )}
+                  <p className="text-xs text-gray-500 mt-1">Endpoints registered in your Atlas project</p>
                 </div>
 
                 <div className="flex gap-2">
