@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ identifiers });
+    return NextResponse.json({ identifiers, _debug: { total: Array.isArray(all) ? all.length : typeof all, sample: Array.isArray(all) ? all.slice(0, 2) : all } });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
