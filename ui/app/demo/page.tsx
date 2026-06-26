@@ -446,6 +446,7 @@ export default function DemoPage() {
   const [activeScenario, setActiveScenario] = useState<string | null>(null);
   const [cleanupCount, setCleanupCount] = useState<number | null>(null);
   const [cleaningUp, setCleaningUp] = useState(false);
+  const [checking, setChecking] = useState(false);
   const [cleanupResult, setCleanupResult] = useState<string | null>(null);
   const [autoDeploy, setAutoDeploy] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
@@ -784,13 +785,19 @@ export default function DemoPage() {
     (!!selectedProject?.ownerEmail && selectedProject.ownerEmail === currentUserEmail);
 
   async function checkCleanup() {
-    if (!selectedProjectId) return;
-    const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`, {
-      headers: demoHeaders(),
-    });
-    const data = await res.json();
-    setCleanupCount(data.count ?? 0);
+    if (!selectedProjectId || checking) return;
+    setChecking(true);
+    setCleanupCount(null);
     setCleanupResult(null);
+    try {
+      const res = await fetch(`/api/demo/cleanup?project_id=${selectedProjectId}`, {
+        headers: demoHeaders(),
+      });
+      const data = await res.json();
+      setCleanupCount(data.count ?? 0);
+    } finally {
+      setChecking(false);
+    }
   }
 
   async function handleCleanup() {
@@ -1358,9 +1365,10 @@ export default function DemoPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={checkCleanup}
-                        className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 text-gray-300 transition-colors"
+                        disabled={checking}
+                        className="text-xs px-3 py-1.5 rounded-lg bg-gray-700 hover:bg-gray-600 disabled:opacity-40 disabled:cursor-not-allowed text-gray-300 transition-colors"
                       >
-                        Check
+                        {checking ? "Checking…" : "Check"}
                       </button>
                       <button
                         onClick={handleCleanup}
