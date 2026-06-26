@@ -1,7 +1,7 @@
 # Atlas Learning Platform — Architecture & Security Documentation
 
 **Audience:** Internal (Varonis SEs and technical staff)  
-**Last Updated:** 2026-06-04 (rev 4 — added /knowledge, SME pipeline, MCP/multi-agent/custom runtime demo, updated Neo4j schema, new n8n workflows, Vercel 2FA)  
+**Last Updated:** 2026-06-25 (rev 5 — added Agentic Demo / AI Deal Research Agent, atlas-mcp-research n8n workflow, Atlas Gateway dedicated key setup, updated SMEKnowledge count 62→92, added blocked-state UI handling, Upstash mcp:{jobId} pattern)  
 **Purpose:** Comprehensive reference covering system architecture, authentication/security, software stack, and data stores.
 
 ---
@@ -16,8 +16,9 @@ The Atlas Learning Platform is an internal AI-powered tool for Varonis SEs. It p
 - **Meeting Co-Pilot** — real-time Q&A support during customer calls
 - **Demo Provisioning** — describe a customer use case → Claude matches and auto-deploys Atlas policy templates
 - **AI Runtime Demo** — fires live traffic through the Atlas Gateway across three simulation types: prompt traffic, MCP tool call chains, and multi-agent workflows; demonstrates real-time policy enforcement with per-scenario talking points and Atlas AI Investigation deep-links
-- **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 62 field-validated entries across 11 topics; SME-first chat powered by a dedicated n8n workflow
-- **Agentic RAG** — all responses grounded in official Atlas documentation (3,038 chunks) + SME field knowledge (62 nodes) via vector + semantic search
+- **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 92 field-validated entries across 11 topics; SME-first chat powered by a dedicated n8n workflow
+- **Agentic Demo** — AI Deal Research Agent: SE enters a company name → 5-agent n8n workflow fires (Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent), all LLM calls routed through Atlas Gateway → populates Tadeo-Demo-Environment with real AI activity; blocked requests surface Atlas guardrail message in the UI within seconds
+- **Agentic RAG** — all responses grounded in official Atlas documentation + SME field knowledge (92 nodes) via vector + semantic search
 
 ---
 
@@ -44,8 +45,8 @@ Browser (SE / Internal User)
       ▼
   Neo4j (Local Linux Server)
   ┌─────────────────────────────────────┐
-  │  3,038 DocChunk nodes               │
-  │  62 SMEKnowledge nodes              │
+  │  ~2,070 DocChunk nodes               │
+  │  92 SMEKnowledge nodes              │
   │  Vector indexes (OpenAI embeddings) │
   │  Graph relationships                │
   │  User + Session nodes               │
@@ -62,6 +63,7 @@ Browser (SE / Internal User)
   Atlas Gateway
   (api.7df8a5a7.5.us-west-2.prod.alltrue-be.com)
   (AI Runtime Demo — live policy enforcement)
+  (Agentic Demo — AI Deal Research Agent)
 ```
 
 ---
@@ -77,7 +79,7 @@ Browser (SE / Internal User)
 | Learn | `/learn` | 3-tier interactive course (22 lessons) |
 | Ask | `/ask` | Agentic RAG Q&A — direct Atlas knowledge queries |
 | Meeting | `/meeting` | Meeting Co-Pilot — live customer Q&A with context |
-| Demo | `/demo` | Demo Provisioning (use case → template match → auto-deploy), Chain of Custody, Mock Scenario Builder |
+| Demo | `/demo` | Three tabs: (1) **Chain of Custody** — use case → Atlas template match → auto-deploy; (2) **Agentic Demo** — AI Deal Research Agent (5-agent workflow via Atlas Gateway, fire-and-poll, blocked-state UI); (3) **Mock Scenario Builder** |
 | Runtime | `/runtime` | AI Runtime Demo — prompt traffic, MCP tool call simulation, multi-agent workflow simulation, custom scenario builder; all through Atlas Gateway with live policy enforcement |
 | Architect | `/architect` | Architecture Builder — Mermaid diagram + narrative |
 | Guides | `/guides` | Technical Guide Producer — grounded in Atlas docs + SME field knowledge |
@@ -111,6 +113,8 @@ Browser (SE / Internal User)
 | `/api/demo/chain/resource` | GET | Atlas API — single resource detail |
 | `/api/demo/chain/search` | POST | AI-powered resource search (Claude) |
 | `/api/demo/runtime/simulate` | POST | Fires prompt traffic, MCP tool call chains, or multi-agent workflows through Atlas Gateway; handles custom scenarios; returns per-step blocked/sent/error results |
+| `/api/demo/mcp/research` | POST | Fires atlas-mcp-research n8n webhook (AI Deal Research Agent); returns `{jobId, status: "pending"}` |
+| `/api/demo/mcp/status` | GET | Polls Upstash KV key `mcp:{jobId}`; returns `done` (report) or `blocked` (Atlas guardrail message) |
 | `/api/resources/[slug]` | GET | Serve competitive resource files |
 | `/api/sessions/share` | POST | Share meeting session |
 | `/api/extract-context` | POST | Extract customer context from URL/doc |
@@ -206,12 +210,14 @@ All protected routes use the shared `requireAuth()` helper (`ui/lib/auth.ts`) wh
 | `NEO4J_PASSWORD` | Neo4j password |
 | `ATLAS_API_KEY` | Varonis Atlas custom integration key |
 | `ATLAS_GATEWAY_URL` | Atlas Gateway base URL |
-| `ATLAS_GATEWAY_ENDPOINT_ID` | Gateway endpoint identifier (`tadeo-demo-openai`) |
+| `ATLAS_GATEWAY_ENDPOINT_ID` | Gateway endpoint identifier for AI Runtime Demo (`tadeo-demo-openai`, Unsanctioned-Tim project) |
+| `ATLAS_DEMO_KEY` | Dedicated OpenAI API key registered ONLY in Tadeo-Demo-Environment — used by Agentic Demo (n8n `$vars.ATLAS_DEMO_KEY`); separate from `OPENAI_API_KEY` |
 | `NEXT_PUBLIC_N8N_WEBHOOK_URL` | n8n RAG workflow webhook (public, non-sensitive) |
 | `N8N_ARCHITECT_WEBHOOK_URL` | n8n Architecture Builder webhook |
 | `N8N_GUIDES_WEBHOOK_URL` | n8n Guide Producer webhook |
 | `N8N_SME_WEBHOOK_URL` | n8n SME Knowledge chat webhook |
 | `N8N_DEMO_DISCOVER_URL` | n8n Demo Provisioning Discover webhook |
+| `N8N_MCP_WEBHOOK_URL` | n8n AI Deal Research Agent webhook (`atlas-mcp-research`) |
 | `GITHUB_PAT` | GitHub personal access token |
 
 ---
@@ -358,8 +364,8 @@ These tools were used during development and are not part of the production runt
 
 | Label | Count | Purpose |
 |---|---|---|
-| `DocChunk` / `Chunk` | ~3,038 | Atlas documentation chunks (knowledge base) |
-| `SMEKnowledge` | 62 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
+| `DocChunk` / `Chunk` | ~2,070 | Atlas documentation chunks (knowledge base, v3.4.0, 54 pages) |
+| `SMEKnowledge` | 92 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
 | `UIPage` | ~486 (readCount) | Atlas UI navigation pages |
 | `User` | 1 per SE | Tracks SE identity for session + analytics |
 | `Session` | 1 per meeting | Meeting Co-Pilot session metadata |
@@ -388,20 +394,22 @@ These tools were used during development and are not part of the production runt
 
 #### SMEKnowledge Topic Distribution
 
-| Topic | Count |
+92 nodes total (last scraped 2026-06-24). Distribution approximate — topic counts grow with each scrape.
+
+| Topic | Count (approx) |
 |---|---|
-| Gateway Architecture | 11 |
-| Guardrails | 10 |
-| Deployment | 10 |
-| Discovery | 8 |
-| Roadmap | 5 |
-| IDE Support | 3 |
-| Compliance | 3 |
-| Licensing | 3 |
-| Shadow AI | 3 |
-| Competitive Intel | 3 |
-| PII Detection | 1 |
-| Other | 2 |
+| Gateway Architecture | ~14 |
+| Guardrails | ~13 |
+| Deployment | ~13 |
+| Discovery | ~10 |
+| Roadmap | ~7 |
+| Compliance | ~6 |
+| Licensing | ~6 |
+| Shadow AI | ~5 |
+| Competitive Intel | ~5 |
+| IDE Support | ~4 |
+| PII Detection | ~4 |
+| Other | ~5 |
 
 #### Vector Indexes
 
@@ -417,9 +425,8 @@ These tools were used during development and are not part of the production runt
 
 | Source | Nodes | Description |
 |---|---|---|
-| Atlas Docs (Playwright scraper) | ~2,143 chunks | All Atlas documentation pages (37 sections) |
-| OpenAPI Reference | ~895 chunks | All Atlas API endpoints (by tag) |
-| Teams AI Security SME Channel | 62 SMEKnowledge | Field-validated Q&A, 11 topics, processed 2026-06-03 |
+| Atlas Docs (Playwright scraper, v3.4.0) | ~2,070 DocChunk | 54 documentation pages, scraped 2026-06-10 |
+| Teams AI Security SME Channel | 92 SMEKnowledge | Field-validated Q&A, 11 topics, last scraped 2026-06-24 |
 
 #### RAG Retrieval Strategy (`/api/ask`, `/api/meeting`)
 - **Vector search** — top-K cosine similarity via `atlas_chunk_embeddings`
@@ -447,8 +454,8 @@ These tools were used during development and are not part of the production runt
 |---|---|---|
 | `otp:{email}` | 10 minutes | 6-digit OTP code (deleted on use) |
 | `ratelimit:{email}` | 10 minutes | OTP request counter (max 3) |
-
-No persistent user data — Redis is used only for ephemeral auth state.
+| `guide:{jobId}` | 24 hours | Async guide generation result (Guide Producer fire-and-poll) |
+| `mcp:{jobId}` | 24 hours | Async AI Deal Research Agent result — `{status: "done"\|"blocked", company, report, risk_analysis, sources, atlas_audit}` or `{status: "blocked", blocked_at, atlas_message, atlas_audit}` |
 
 ### Vercel (No persistent storage)
 
@@ -468,6 +475,7 @@ All agentic pipelines run in **n8n Cloud** (`ttadeo.app.n8n.cloud`). The Next.js
 | Atlas Demo Provisioning - Discover | `atlas-demo-discover` | Webhook → Claude (Basic LLM Chain) → Code node → scored template matches |
 | Atlas Demo Provisioning - Apply | `atlas-demo-apply` | Webhook → Atlas API apply call → result JSON |
 | Atlas SME Query | `atlas-sme-query` | SME-first chat for /knowledge page — embed → SMEKnowledge search (top 5) → DocChunk search (top 3) → Claude |
+| Atlas MCP Multi-Agent Research | `atlas-mcp-research` | AI Deal Research Agent — Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent; all LLM calls through Atlas Gateway; writes result to Upstash KV; handles blocked state via error output |
 
 ### Atlas SME Query Workflow (n8n)
 
@@ -495,6 +503,27 @@ Webhook (POST /webhook/atlas-guide-producer)
   → Claude (system prompt: surface SME notes as "Field Note" callouts)
   → Respond to Webhook
 ```
+
+### AI Deal Research Agent Workflow (atlas-mcp-research)
+
+```
+Webhook (POST /webhook/atlas-mcp-research, responseMode: onReceived → ACK immediately)
+  → Prepare Orchestrator Body
+  → Orchestrator LLM (Atlas Gateway, gpt-4o) ─── [ERROR] → Handle Orchestrator Block → Write Blocked to Upstash
+  → Parse Research Plan
+  → Exa Research Search (sequential)
+  → Exa News Search (sequential)
+  → Prepare Risk Body
+  → Risk Analyst LLM (Atlas Gateway, gpt-4o) ──── [ERROR] → Handle Risk Block → Write Blocked to Upstash
+  → Prepare Report Body
+  → Report Agent LLM (Atlas Gateway, gpt-4o) ──── [ERROR] → Handle Report Block → Write Blocked to Upstash
+  → Build Final Result
+  → Write to Upstash (mcp:{jobId}, 24hr TTL)
+```
+
+**Error handling:** Each LLM node has `onError: "continueErrorOutput"` — Atlas 4xx/block responses trigger the error pin, handler writes `{status: "blocked", blocked_at, atlas_message}` to Upstash, UI surfaces the message within seconds (no 5-minute timeout).
+
+**n8n import note:** Error output connections are NOT preserved on workflow import. After importing, manually set each LLM node's "On Error" to "Continue (using error output)" and draw the error pin connections in the canvas.
 
 ### Demo Provisioning — Auto-Deploy Flow
 
@@ -547,15 +576,32 @@ After each simulation run:
 
 ### Atlas Gateway Configuration
 
+**Key principle:** Atlas attributes gateway traffic by **API key** (Bearer token), NOT by endpoint identifier. The identifier header is metadata/label only. If the same API key is registered in multiple projects, Atlas routes to the first-registered project regardless of the identifier. Each demo target needs its own dedicated API key.
+
+#### AI Runtime Demo (`/runtime`)
+
 | Property | Value |
 |---|---|
 | Gateway URL | `https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/openai/v1` |
-| Auth pattern | `Authorization: Bearer <OPENAI_API_KEY>` — use the OpenAI sk-proj-... key, NOT the Firewall Proxy key |
-| Routing header | `x-alltrue-llm-endpoint-identifier: tadeo-demo-openai` |
-| Registered endpoint | `tadeo-demo-openai` — OpenAI API Key (Tadeo-Demo) |
-| Active policies | PII Detection — CONFIRMED WORKING (2026-06-03); MCP Quarantine Rule active |
+| Auth | `Authorization: Bearer <OPENAI_API_KEY>` (Vercel env var) |
+| Endpoint identifier | `x-alltrue-llm-endpoint-identifier: tadeo-demo-openai` |
+| Model | `gpt-4o-mini` |
 | Atlas project | Unsanctioned-Tim-The-AI-Guy (`68869c92-9502-432c-8508-713264a919c7`) |
-| AI Investigation URL | `prod.alltrue-be.com/ai-monitor?organization=985dfc2e...&project=68869c92...` |
+| Active policies | PII Detection — CONFIRMED WORKING; MCP Quarantine Rule active |
+| Session header | `x-alltrue-llm-firewall-user-session` (required) |
+
+#### Agentic Demo — AI Deal Research Agent (`/demo` Agentic tab)
+
+| Property | Value |
+|---|---|
+| Gateway URL | `https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/openai/v1/chat/completions` |
+| Auth | `Authorization: Bearer <ATLAS_DEMO_KEY>` (n8n variable `$vars.ATLAS_DEMO_KEY`) |
+| Endpoint identifier | `x-alltrue-llm-endpoint-identifier: OpenAIKey-Tadeo-Demo` |
+| Model | `gpt-4o` |
+| Atlas project | Tadeo-Demo-Environment (dedicated key registered ONLY here — no attribution ambiguity) |
+| Session header | `x-alltrue-llm-firewall-user-session` (required) |
+| Blocked state | n8n error output → Handle *X* Block node → Upstash write `{status: "blocked", atlas_message: ...}` → UI surfaces Atlas guardrail message within ~8s |
+| Policy demo flow | Policy OFF → full 5-step research report; Policy ON → Atlas block message appears in UI at the step that triggered it |
 
 ---
 
