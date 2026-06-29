@@ -547,18 +547,22 @@ export default function DemoPage() {
   const [mcpEndpoints, setMcpEndpoints] = useState<string[]>([]);
 
   // Fetch endpoint identifiers whenever the selected project changes
+  const [mcpEndpointError, setMcpEndpointError] = useState<string | null>(null);
   useEffect(() => {
     if (!selectedProjectId) return;
     setMcpEndpoints([]);
     setMcpEndpointId("");
+    setMcpEndpointError(null);
     fetch(`/api/demo/chain/endpoints?project_id=${selectedProjectId}`)
       .then((r) => r.json())
       .then((d) => {
+        if (d.error) { setMcpEndpointError(d.error); return; }
         const ids: string[] = d.identifiers ?? [];
         setMcpEndpoints(ids);
         setMcpEndpointId(ids[0] ?? "");
+        if (ids.length === 0) setMcpEndpointError("No endpoints found for this project");
       })
-      .catch(() => {});
+      .catch((e) => setMcpEndpointError(String(e)));
   }, [selectedProjectId]);
   const [mcpRunning, setMcpRunning] = useState(false);
   const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
@@ -1039,7 +1043,8 @@ export default function DemoPage() {
                       className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-600"
                     />
                   )}
-                  <p className="text-xs text-gray-500 mt-1">Endpoints registered in your Atlas project</p>
+                  {mcpEndpointError && <p className="text-xs text-red-400 mt-1">{mcpEndpointError}</p>}
+                  {!mcpEndpointError && <p className="text-xs text-gray-500 mt-1">Endpoints registered in your Atlas project</p>}
                 </div>
 
                 <div className="flex gap-2">
