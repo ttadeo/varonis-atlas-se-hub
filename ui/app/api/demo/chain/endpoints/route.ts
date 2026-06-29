@@ -30,9 +30,9 @@ export async function GET(req: NextRequest) {
   try {
     const token = await getAtlasJWT();
 
-    const res = await fetch(`${ATLAS_API_URL}/v1/llm-firewall/all-endpoint-settings`, {
+    const res = await fetch(`${ATLAS_API_URL}/v1/llm-firewall/all-endpoint-settings?limit=500&offset=0`, {
       headers: { Authorization: `Bearer ${token}` },
-      signal: AbortSignal.timeout(10000),
+      signal: AbortSignal.timeout(15000),
     });
 
     if (!res.ok) {
@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ identifiers, _debug: { total: Array.isArray(all) ? all.length : typeof all, sample: Array.isArray(all) ? all.slice(0, 2) : all } });
+    return NextResponse.json({ identifiers });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
