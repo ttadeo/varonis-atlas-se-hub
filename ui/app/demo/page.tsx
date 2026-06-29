@@ -481,7 +481,7 @@ export default function DemoPage() {
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       // Key works — load projects from SE's account
       const map = buildProjectMap(data);
-      const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName, ownerEmail: meta.ownerEmail }));
+      const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName, orgId: meta.orgId, ownerEmail: meta.ownerEmail }));
       list.sort((a, b) => a.name.localeCompare(b.name));
       setAtlasApiKey(apiKeyInput.trim());
       setApiKeyInput("");
@@ -510,7 +510,7 @@ export default function DemoPage() {
 
   // ── Project selection (shared between provision + chain) ───────────────────
   const [selectedProjectId, setSelectedProjectId] = useState("");
-  const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string; ownerEmail: string | null }[]>([]);
+  const [chainProjects, setChainProjects] = useState<{ id: string; name: string; orgName: string; orgId: string; ownerEmail: string | null }[]>([]);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
@@ -531,7 +531,7 @@ export default function DemoPage() {
       .then((r) => r.json())
       .then((data) => {
         const map = buildProjectMap(data);
-        const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName, ownerEmail: meta.ownerEmail }));
+        const list = Object.entries(map).map(([id, meta]) => ({ id, name: meta.name, orgName: meta.orgName, orgId: meta.orgId, ownerEmail: meta.ownerEmail }));
         list.sort((a, b) => a.name.localeCompare(b.name));
         setChainProjects(list);
         // Default to Tadeo-Demo-Environment project, fallback to first
@@ -550,20 +550,22 @@ export default function DemoPage() {
   const [mcpEndpointError, setMcpEndpointError] = useState<string | null>(null);
   useEffect(() => {
     if (!selectedProjectId) return;
+    const orgId = chainProjects.find((p) => p.id === selectedProjectId)?.orgId ?? "";
+    if (!orgId) return;
     setMcpEndpoints([]);
     setMcpEndpointId("");
     setMcpEndpointError(null);
-    fetch(`/api/demo/chain/endpoints?project_id=${selectedProjectId}`)
+    fetch(`/api/demo/chain/endpoints?org_id=${encodeURIComponent(orgId)}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.error) { setMcpEndpointError(d.error); return; }
         const ids: string[] = d.identifiers ?? [];
         setMcpEndpoints(ids);
         setMcpEndpointId(ids[0] ?? "");
-        if (ids.length === 0) setMcpEndpointError("No endpoints found for this project");
+        if (ids.length === 0) setMcpEndpointError("No endpoints found for this org");
       })
       .catch((e) => setMcpEndpointError(String(e)));
-  }, [selectedProjectId]);
+  }, [selectedProjectId, chainProjects]);
   const [mcpRunning, setMcpRunning] = useState(false);
   const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
   const [mcpReport, setMcpReport] = useState<string | null>(null);
@@ -1678,20 +1680,21 @@ export default function DemoPage() {
 
 // ─── Chain of Custody View ────────────────────────────────────────────────────
 
-// Build a map of project_id → { name, orgName } from whatever shape Atlas returns
-function buildProjectMap(orgProjects: unknown): Record<string, { name: string; orgName: string; ownerEmail: string | null }> {
-  const map: Record<string, { name: string; orgName: string; ownerEmail: string | null }> = {};
+// Build a map of project_id → { name, orgName, orgId, ownerEmail } from whatever shape Atlas returns
+function buildProjectMap(orgProjects: unknown): Record<string, { name: string; orgName: string; orgId: string; ownerEmail: string | null }> {
+  const map: Record<string, { name: string; orgName: string; orgId: string; ownerEmail: string | null }> = {};
   if (!orgProjects || typeof orgProjects !== "object") return map;
 
   // Try array of orgs, each with projects array
-  // Atlas returns: organization_name, projects: [{ project_id, project_name, owner_email, ... }]
+  // Atlas returns: organization_name, organization_id, projects: [{ project_id, project_name, owner_email, ... }]
   const tryOrgsArray = (orgs: AtlasProject[]) => {
     for (const org of orgs) {
       const orgName = org.organization_name ?? org.name ?? org.display_name ?? "";
+      const orgId = org.organization_id ?? org.id ?? "";
       const projects: AtlasProject[] = org.projects ?? [];
       for (const p of projects) {
         const pid = p.project_id ?? p.id ?? "";
-        if (pid) map[pid] = { name: p.project_name ?? p.name ?? p.display_name ?? pid, orgName, ownerEmail: p.owner_email ?? null };
+        if (pid) map[pid] = { name: p.project_name ?? p.name ?? p.display_name ?? pid, orgName, orgId, ownerEmail: p.owner_email ?? null };
       }
     }
   };
@@ -1704,6 +1707,7 @@ function buildProjectMap(orgProjects: unknown): Record<string, { name: string; o
         map[pid] = {
           name: item.project_name ?? item.name ?? item.display_name ?? pid,
           orgName: item.organization_name ?? "",
+          orgId: item.organization_id ?? "",
           ownerEmail: item.owner_email ?? null,
         };
       }
