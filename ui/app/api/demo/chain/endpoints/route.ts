@@ -29,34 +29,37 @@ export async function GET(req: NextRequest) {
 
   try {
     const token = await getAtlasJWT();
+    const headers = { Authorization: `Bearer ${token}` };
+    const PAGE_SIZE = 100;
+    const all: Record<string, unknown>[] = [];
 
-    const res = await fetch(`${ATLAS_API_URL}/v1/llm-firewall/all-endpoint-settings?limit=500&offset=0`, {
-      headers: { Authorization: `Bearer ${token}` },
-      signal: AbortSignal.timeout(15000),
-    });
-
-    if (!res.ok) {
-      const body = await res.text();
-      return NextResponse.json({ error: `Atlas returned ${res.status}`, detail: body }, { status: 502 });
+    // Paginate through all endpoint settings (max 100 per page)
+    let offset = 0;
+    while (true) {
+      const res = await fetch(
+        `${ATLAS_API_URL}/v1/llm-firewall/all-endpoint-settings?limit=${PAGE_SIZE}&offset=${offset}`,
+        { headers, signal: AbortSignal.timeout(15000) }
+      );
+      if (!res.ok) {
+        const body = await res.text();
+        return NextResponse.json({ error: `Atlas returned ${res.status}`, detail: body }, { status: 502 });
+      }
+      const page = await res.json();
+      if (!Array.isArray(page) || page.length === 0) break;
+      all.push(...page);
+      if (page.length < PAGE_SIZE) break; // last page
+      offset += PAGE_SIZE;
     }
-
-    const all = await res.json();
 
     // Filter to this project and extract non-null identifiers
     const identifiers: string[] = [];
-    if (Array.isArray(all)) {
-      for (const ep of all) {
-        if (ep.project_id === projectId && ep.endpoint_identifier) {
-          identifiers.push(ep.endpoint_identifier);
-        }
+    for (const ep of all) {
+      if (ep.project_id === projectId && ep.endpoint_identifier) {
+        identifiers.push(ep.endpoint_identifier as string);
       }
     }
 
-    // Debug: show all unique project_ids in the response and any matching records
-    const allProjectIds = Array.isArray(all) ? [...new Set(all.map((ep: Record<string, string>) => ep.project_id))] : [];
-    const matches = Array.isArray(all) ? all.filter((ep: Record<string, string>) => ep.project_id === projectId) : [];
-
-    return NextResponse.json({ identifiers, _debug: { total: Array.isArray(all) ? all.length : 0, project_ids_in_response: allProjectIds, matches_for_requested_project: matches.map((ep: Record<string, string>) => ({ project_id: ep.project_id, endpoint_identifier: ep.endpoint_identifier })) } });
+    return NextResponse.json({ identifiers });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
