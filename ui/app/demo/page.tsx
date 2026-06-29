@@ -546,26 +546,21 @@ export default function DemoPage() {
   const [mcpEndpointId, setMcpEndpointId] = useState("");
   const [mcpEndpoints, setMcpEndpoints] = useState<string[]>([]);
 
-  // Fetch endpoint identifiers whenever the selected project changes
+  // Fetch endpoint identifiers on mount — LLM endpoints are at the account/org level,
+  // not per-project, so one fetch is sufficient regardless of selected project
   const [mcpEndpointError, setMcpEndpointError] = useState<string | null>(null);
   useEffect(() => {
-    if (!selectedProjectId) return;
-    const orgId = chainProjects.find((p) => p.id === selectedProjectId)?.orgId ?? "";
-    if (!orgId) return;
-    setMcpEndpoints([]);
-    setMcpEndpointId("");
-    setMcpEndpointError(null);
-    fetch(`/api/demo/chain/endpoints?org_id=${encodeURIComponent(orgId)}`)
+    fetch("/api/demo/chain/endpoints")
       .then((r) => r.json())
       .then((d) => {
         if (d.error) { setMcpEndpointError(d.error); return; }
         const ids: string[] = d.identifiers ?? [];
         setMcpEndpoints(ids);
         setMcpEndpointId(ids[0] ?? "");
-        if (ids.length === 0) setMcpEndpointError("No endpoints found for this org");
+        if (ids.length === 0) setMcpEndpointError("No endpoints found");
       })
       .catch((e) => setMcpEndpointError(String(e)));
-  }, [selectedProjectId, chainProjects]);
+  }, []);
   const [mcpRunning, setMcpRunning] = useState(false);
   const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
   const [mcpReport, setMcpReport] = useState<string | null>(null);

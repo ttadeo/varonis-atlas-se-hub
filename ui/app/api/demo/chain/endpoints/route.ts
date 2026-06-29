@@ -16,16 +16,13 @@ async function getAtlasJWT(): Promise<string> {
   return data.access_token as string;
 }
 
-// GET /api/demo/chain/endpoints?org_id=xxx
-// Returns endpoint identifiers registered to the given Atlas organization (LLM endpoints live at org level)
+// GET /api/demo/chain/endpoints
+// Returns all endpoint identifiers visible to the Atlas API key.
+// LLM endpoints live at the org level, not the project level — all endpoints
+// returned here belong to the same Atlas account as the API key.
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
-
-  const orgId = req.nextUrl.searchParams.get("org_id");
-  if (!orgId) {
-    return NextResponse.json({ error: "org_id required" }, { status: 400 });
-  }
 
   try {
     const token = await getAtlasJWT();
@@ -51,10 +48,10 @@ export async function GET(req: NextRequest) {
       offset += PAGE_SIZE;
     }
 
-    // LLM endpoints are stored at the org level — filter by organization_id
+    // Return all endpoint identifiers — all belong to the same Atlas account
     const identifiers: string[] = [];
     for (const ep of all) {
-      if (ep.organization_id === orgId && ep.endpoint_identifier) {
+      if (ep.endpoint_identifier) {
         identifiers.push(ep.endpoint_identifier as string);
       }
     }
