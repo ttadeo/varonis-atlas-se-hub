@@ -52,7 +52,11 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ identifiers });
+    // Debug: show all unique project_ids in the response and any matching records
+    const allProjectIds = Array.isArray(all) ? [...new Set(all.map((ep: Record<string, string>) => ep.project_id))] : [];
+    const matches = Array.isArray(all) ? all.filter((ep: Record<string, string>) => ep.project_id === projectId) : [];
+
+    return NextResponse.json({ identifiers, _debug: { total: Array.isArray(all) ? all.length : 0, project_ids_in_response: allProjectIds, matches_for_requested_project: matches.map((ep: Record<string, string>) => ({ project_id: ep.project_id, endpoint_identifier: ep.endpoint_identifier })) } });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
