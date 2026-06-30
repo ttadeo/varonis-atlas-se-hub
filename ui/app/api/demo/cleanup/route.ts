@@ -39,7 +39,20 @@ function getProjectIds(r: any): string[] {
   return [];
 }
 
-// Fetch all resources associated with a given project
+// LLM endpoint resource types — never touch these during cleanup.
+// They are registered at the org level and deleting their project assignment
+// removes them from the org entirely, not just the project.
+const LLM_ENDPOINT_TYPES = new Set([
+  "OpenAIEndpoint",
+  "CustomLlmEndpoint",
+  "ModelPackage",
+  "LlmEndpoint",
+  "llm_endpoint",
+  "openai_endpoint",
+  "custom_llm_endpoint",
+]);
+
+// Fetch scenario resources associated with a given project, excluding LLM endpoints
 async function fetchProjectResources(projectId: string, customerId: string, token: string) {
   const res = await fetch(
     `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources`,
@@ -49,7 +62,12 @@ async function fetchProjectResources(projectId: string, customerId: string, toke
   const data = await res.json();
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const all: any[] = Array.isArray(data) ? data : (data.resources ?? data.items ?? []);
-  return all.filter((r) => getProjectIds(r).includes(projectId));
+  return all.filter((r) => {
+    if (!getProjectIds(r).includes(projectId)) return false;
+    const rtype = (r.resource_type ?? r.type ?? "").trim();
+    if (LLM_ENDPOINT_TYPES.has(rtype)) return false;
+    return true;
+  });
 }
 
 export async function GET(req: NextRequest) {
