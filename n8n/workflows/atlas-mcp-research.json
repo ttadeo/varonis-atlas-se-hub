@@ -10,18 +10,24 @@
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [8432, 1792],
+      "position": [
+        8432,
+        1792
+      ],
       "id": "44180dc3-c3a9-49c8-996d-69b4887ef56f",
       "name": "Webhook",
       "webhookId": "atlas-mcp-research"
     },
     {
       "parameters": {
-        "jsCode": "const company = $('Webhook').item.json.body.company;\nconst jobId = $('Webhook').item.json.body.jobId;\nconst endpointId = $('Webhook').item.json.body.endpointId || 'OpenAIKey-Tadeo-Demo';\n\nconst systemPrompt = 'You are an AI research orchestrator. Given a company name, produce a JSON research plan with exactly 3 fields: overview_query, news_query, risk_query. Each is a concise, targeted search query string. Respond with only valid JSON — no markdown, no explanation.';\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 300,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'Company to research: ' + company }\n  ]\n};\n\nreturn [{ json: { company, jobId, endpointId, requestBody: JSON.stringify(requestBody) } }];"
+        "jsCode": "const company = $('Webhook').item.json.body.company;\nconst jobId = $('Webhook').item.json.body.jobId;\nconst endpointId = $('Webhook').item.json.body.endpointId || 'OpenAIKey-Tadeo-Demo';\n\nconst systemPrompt = 'You are an AI research orchestrator. Given a company name, produce a JSON research plan with exactly 3 fields: overview_query, news_query, risk_query. Each is a concise, targeted search query string. Respond with only valid JSON \u2014 no markdown, no explanation.';\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 300,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: 'Company to research: ' + company }\n  ]\n};\n\nreturn [{ json: { company, jobId, endpointId, requestBody: JSON.stringify(requestBody) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [8736, 1792],
+      "position": [
+        8736,
+        1792
+      ],
       "id": "b5631a66-6bc8-4e72-82dc-34dbb8416940",
       "name": "Prepare Orchestrator Body"
     },
@@ -32,10 +38,22 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "OpenAIKey-Tadeo-Demo" },
-            { "name": "x-alltrue-llm-firewall-user-session", "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}"
+            },
+            {
+              "name": "x-alltrue-llm-endpoint-identifier",
+              "value": "={{ $json.endpointId }}"
+            },
+            {
+              "name": "x-alltrue-llm-firewall-user-session",
+              "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -45,7 +63,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [8960, 1744],
+      "position": [
+        8960,
+        1744
+      ],
       "id": "f7cfbe26-fa9f-4b5d-b0b7-fe71e9a539c5",
       "name": "Orchestrator LLM",
       "onError": "continueErrorOutput"
@@ -56,7 +77,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [9040, 2240],
+      "position": [
+        9040,
+        2240
+      ],
       "id": "0ab9e05c-94fb-459d-8a49-e14a10eb6179",
       "name": "Handle Orchestrator Block"
     },
@@ -67,8 +91,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -78,7 +108,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [9344, 2016],
+      "position": [
+        9344,
+        2016
+      ],
       "id": "a3609b91-1934-4169-9357-d7f97b4421a6",
       "name": "Write Orchestrator Block to Upstash"
     },
@@ -88,7 +121,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [9344, 1792],
+      "position": [
+        9344,
+        1792
+      ],
       "id": "1b391acd-56dd-4c9e-a0e0-9fe503d7b4c6",
       "name": "Parse Research Plan"
     },
@@ -99,8 +135,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "x-api-key", "value": "={{ $vars.EXA_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "x-api-key",
+              "value": "={{ $vars.EXA_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -110,7 +152,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [9632, 1792],
+      "position": [
+        9632,
+        1792
+      ],
       "id": "d05aebbe-6578-47a4-b9d0-1274790632ad",
       "name": "Exa Research Search"
     },
@@ -121,8 +166,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "x-api-key", "value": "={{ $vars.EXA_API_KEY }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "x-api-key",
+              "value": "={{ $vars.EXA_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -132,17 +183,23 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [9632, 2000],
+      "position": [
+        9632,
+        2000
+      ],
       "id": "0ae176a8-2b7f-4b5a-b81d-b8ce1f88c873",
       "name": "Exa News Search"
     },
     {
       "parameters": {
-        "jsCode": "const plan = $('Parse Research Plan').item.json;\nconst overviewResults = $('Exa Research Search').item.json.results || [];\nconst newsResults = $('Exa News Search').item.json.results || [];\n\nconst overviewText = overviewResults.slice(0, 3).map(r => r.title + ': ' + (r.text || '').slice(0, 400)).join('\\n\\n');\nconst newsText = newsResults.slice(0, 3).map(r => r.title + ' (' + (r.publishedDate || 'recent') + '): ' + (r.text || '').slice(0, 300)).join('\\n\\n');\n\nconst systemPrompt = `You are an AI security risk analyst at Varonis. Analyze the company research and identify the following — be specific and concise, max 3 bullets per section:\\n\\n**AI Adoption Signals** — What AI tools, vendors, or models they use or plan to use\\n**Data Security Risks** — Sensitive data exposure, compliance gaps, breach history\\n**Shadow AI Risks** — Unauthorized or unmonitored AI tool usage indicators\\n**Atlas Opportunity** — Why Varonis Atlas AI Security Platform fits their situation`;\n\nconst userContent = `Company: ${plan.company}\\n\\nOVERVIEW RESEARCH:\\n${overviewText}\\n\\nRECENT NEWS:\\n${newsText}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 700,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: plan.company,\n    jobId: plan.jobId,\n    endpointId: plan.endpointId,\n    overviewResults: overviewResults.slice(0, 4).map(r => ({ title: r.title, url: r.url })),\n    newsResults: newsResults.slice(0, 4).map(r => ({ title: r.title, url: r.url, date: r.publishedDate })),\n    overviewText,\n    newsText,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
+        "jsCode": "const plan = $('Parse Research Plan').item.json;\nconst overviewResults = $('Exa Research Search').item.json.results || [];\nconst newsResults = $('Exa News Search').item.json.results || [];\n\nconst overviewText = overviewResults.slice(0, 3).map(r => r.title + ': ' + (r.text || '').slice(0, 400)).join('\\n\\n');\nconst newsText = newsResults.slice(0, 3).map(r => r.title + ' (' + (r.publishedDate || 'recent') + '): ' + (r.text || '').slice(0, 300)).join('\\n\\n');\n\nconst systemPrompt = `You are an AI security risk analyst at Varonis. Analyze the company research and identify the following \u2014 be specific and concise, max 3 bullets per section:\\n\\n**AI Adoption Signals** \u2014 What AI tools, vendors, or models they use or plan to use\\n**Data Security Risks** \u2014 Sensitive data exposure, compliance gaps, breach history\\n**Shadow AI Risks** \u2014 Unauthorized or unmonitored AI tool usage indicators\\n**Atlas Opportunity** \u2014 Why Varonis Atlas AI Security Platform fits their situation`;\n\nconst userContent = `Company: ${plan.company}\\n\\nOVERVIEW RESEARCH:\\n${overviewText}\\n\\nRECENT NEWS:\\n${newsText}`;\n\nconst requestBody = {\n  model: 'gpt-4o',\n  max_tokens: 700,\n  messages: [\n    { role: 'system', content: systemPrompt },\n    { role: 'user', content: userContent }\n  ]\n};\n\nreturn [{\n  json: {\n    company: plan.company,\n    jobId: plan.jobId,\n    endpointId: plan.endpointId,\n    overviewResults: overviewResults.slice(0, 4).map(r => ({ title: r.title, url: r.url })),\n    newsResults: newsResults.slice(0, 4).map(r => ({ title: r.title, url: r.url, date: r.publishedDate })),\n    overviewText,\n    newsText,\n    requestBody: JSON.stringify(requestBody)\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [9936, 1904],
+      "position": [
+        9936,
+        1904
+      ],
       "id": "55e8758c-3585-4e50-8db3-d30bba622428",
       "name": "Prepare Risk Body"
     },
@@ -153,10 +210,22 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "OpenAIKey-Tadeo-Demo" },
-            { "name": "x-alltrue-llm-firewall-user-session", "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}"
+            },
+            {
+              "name": "x-alltrue-llm-endpoint-identifier",
+              "value": "={{ $json.endpointId }}"
+            },
+            {
+              "name": "x-alltrue-llm-firewall-user-session",
+              "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -166,7 +235,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [10240, 1904],
+      "position": [
+        10240,
+        1904
+      ],
       "id": "22197596-4862-4719-ba65-76b14503bbe4",
       "name": "Risk Analyst LLM",
       "onError": "continueErrorOutput"
@@ -177,7 +249,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [10240, 2112],
+      "position": [
+        10240,
+        2112
+      ],
       "id": "c1f7d99a-3f52-43da-a7e5-036bb92d5b2c",
       "name": "Handle Risk Block"
     },
@@ -188,8 +263,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -199,7 +280,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [10512, 2208],
+      "position": [
+        10512,
+        2208
+      ],
       "id": "9cc68798-a4cb-4df5-b814-c3b1e259e1c2",
       "name": "Write Risk Block to Upstash"
     },
@@ -209,7 +293,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [10544, 1904],
+      "position": [
+        10544,
+        1904
+      ],
       "id": "1238b358-a0fe-453d-b0ed-e6066e1e3607",
       "name": "Prepare Report Body"
     },
@@ -220,10 +307,22 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}" },
-            { "name": "x-alltrue-llm-endpoint-identifier", "value": "OpenAIKey-Tadeo-Demo" },
-            { "name": "x-alltrue-llm-firewall-user-session", "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}"
+            },
+            {
+              "name": "x-alltrue-llm-endpoint-identifier",
+              "value": "={{ $json.endpointId }}"
+            },
+            {
+              "name": "x-alltrue-llm-firewall-user-session",
+              "value": "={\"user-session-id\":\"mcp-research-{{ $json.jobId }}\",\"user-session-user-id\":\"atlas-se-hub\",\"user-session-user-email\":\"simulator@varonis.com\"}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -233,7 +332,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [10832, 1904],
+      "position": [
+        10832,
+        1904
+      ],
       "id": "25c1a2b6-2672-417b-bbd3-fd8ecd08c452",
       "name": "Report Agent LLM",
       "onError": "continueErrorOutput"
@@ -244,7 +346,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [10864, 2272],
+      "position": [
+        10864,
+        2272
+      ],
       "id": "1e2afcd3-f96f-49ba-a0fc-df7fd65ca151",
       "name": "Handle Report Block"
     },
@@ -255,8 +360,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -266,7 +377,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [11264, 2176],
+      "position": [
+        11264,
+        2176
+      ],
       "id": "ae64f4b0-a62c-4216-9e7d-235e3173076b",
       "name": "Write Report Block to Upstash"
     },
@@ -276,7 +390,10 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [11136, 1904],
+      "position": [
+        11136,
+        1904
+      ],
       "id": "d6acdc24-2968-40bd-8574-7b92dda6f58d",
       "name": "Build Final Result"
     },
@@ -287,8 +404,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "Authorization", "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -298,7 +421,10 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [11440, 1904],
+      "position": [
+        11440,
+        1904
+      ],
       "id": "ff041402-bd4a-4221-96b4-87d7898e94a3",
       "name": "Write to Upstash"
     }
@@ -306,55 +432,179 @@
   "pinData": {},
   "connections": {
     "Webhook": {
-      "main": [[{ "node": "Prepare Orchestrator Body", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Prepare Orchestrator Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Prepare Orchestrator Body": {
-      "main": [[{ "node": "Orchestrator LLM", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Orchestrator LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Orchestrator LLM": {
       "main": [
-        [{ "node": "Parse Research Plan", "type": "main", "index": 0 }],
-        [{ "node": "Handle Orchestrator Block", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Parse Research Plan",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Orchestrator Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Handle Orchestrator Block": {
-      "main": [[{ "node": "Write Orchestrator Block to Upstash", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Write Orchestrator Block to Upstash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Parse Research Plan": {
-      "main": [[{ "node": "Exa Research Search", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Exa Research Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Exa Research Search": {
-      "main": [[{ "node": "Exa News Search", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Exa News Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Exa News Search": {
-      "main": [[{ "node": "Prepare Risk Body", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Prepare Risk Body",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Prepare Risk Body": {
-      "main": [[{ "node": "Risk Analyst LLM", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Risk Analyst LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Risk Analyst LLM": {
       "main": [
-        [{ "node": "Prepare Report Body", "type": "main", "index": 0 }],
-        [{ "node": "Handle Risk Block", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Prepare Report Body",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Risk Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Handle Risk Block": {
-      "main": [[{ "node": "Write Risk Block to Upstash", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Write Risk Block to Upstash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Prepare Report Body": {
-      "main": [[{ "node": "Report Agent LLM", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Report Agent LLM",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Report Agent LLM": {
       "main": [
-        [{ "node": "Build Final Result", "type": "main", "index": 0 }],
-        [{ "node": "Handle Report Block", "type": "main", "index": 0 }]
+        [
+          {
+            "node": "Build Final Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Handle Report Block",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Handle Report Block": {
-      "main": [[{ "node": "Write Report Block to Upstash", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Write Report Block to Upstash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     },
     "Build Final Result": {
-      "main": [[{ "node": "Write to Upstash", "type": "main", "index": 0 }]]
+      "main": [
+        [
+          {
+            "node": "Write to Upstash",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
