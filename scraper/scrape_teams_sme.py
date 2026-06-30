@@ -1,23 +1,24 @@
 """
 Teams SME Channel Scraper
 Scrapes the "AI Security - SME" Teams channel via browser automation.
-Connects to your already-running Chrome session — no login needed, nothing to close.
+Connects to your already-running Chromium session — no login needed, nothing to close.
 
 Output: scraper/output/teams_sme/raw_threads.json
 
 Usage:
-    Step 1 — Launch Chrome with remote debugging (first time only, add to your shell alias):
-        /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222
+    Step 1 — Launch Chromium with remote debugging (Chromium has the saved Varonis/Teams session):
+        /Applications/Chromium.app/Contents/MacOS/Chromium --remote-debugging-port=9222
 
-    Step 2 — In Chrome, navigate to the "AI Security - SME" Teams channel
+    Step 2 — In Chromium, navigate to the "AI Security - SME" Teams channel
 
     Step 3 — Run this script:
         python scraper/scrape_teams_sme.py
 
 Notes:
-    - Chrome must be launched with --remote-debugging-port=9222 BEFORE running this script
+    - Use Chromium, NOT Google Chrome — Chromium has the saved Varonis/Teams session
+    - Chromium must be launched with --remote-debugging-port=9222 BEFORE running this script
     - You do NOT need to close Teams desktop app or any browser tabs
-    - If Chrome is already open without the debug flag, quit Chrome fully and relaunch with the flag
+    - If Chromium is already open without the debug flag, quit it fully and relaunch with the flag
 """
 
 import asyncio
@@ -29,7 +30,7 @@ from playwright.async_api import async_playwright
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-# Chrome remote debugging endpoint — Chrome must be launched with --remote-debugging-port=9222
+# Chromium remote debugging endpoint — Chromium must be launched with --remote-debugging-port=9222
 CDP_URL = "http://localhost:9222"
 
 # Output
@@ -351,19 +352,19 @@ async def main():
     print()
 
     async with async_playwright() as p:
-        print(f"Connecting to Chrome at {CDP_URL}...")
-        print("Make sure Chrome was launched with: --remote-debugging-port=9222\n")
+        print(f"Connecting to Chromium at {CDP_URL}...")
+        print("Make sure Chromium was launched with: --remote-debugging-port=9222\n")
 
         try:
             browser = await p.chromium.connect_over_cdp(CDP_URL)
         except Exception as e:
-            print(f"✗ Could not connect to Chrome: {e}")
+            print(f"✗ Could not connect to Chromium: {e}")
             print()
-            print("Fix: Quit Chrome fully, then relaunch with:")
-            print("  /Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222")
+            print("Fix: Quit Chromium fully, then relaunch with:")
+            print("  /Applications/Chromium.app/Contents/MacOS/Chromium --remote-debugging-port=9222")
             return
 
-        print("✓ Connected to Chrome")
+        print("✓ Connected to Chromium")
 
         # Find the Teams tab — check multiple possible URLs including MCAS proxy
         TEAMS_URL_PATTERNS = [
@@ -396,7 +397,7 @@ async def main():
         if not any(pattern in current_url for pattern in TEAMS_URL_PATTERNS):
             print("\n" + "=" * 50)
             print("ACTION REQUIRED:")
-            print("1. In Chrome, navigate to the 'AI Security - SME' Teams channel")
+            print("1. In Chromium, navigate to the 'AI Security - SME' Teams channel")
             print("2. Wait for messages to load")
             print("3. Press Enter here to start scraping")
             print("=" * 50)
@@ -404,7 +405,7 @@ async def main():
         else:
             print("\n" + "=" * 50)
             print("ACTION REQUIRED:")
-            print("Confirm you are on the 'AI Security - SME' channel in Chrome.")
+            print("Confirm you are on the 'AI Security - SME' channel in Chromium.")
             print("Press Enter when ready to start scraping.")
             print("=" * 50)
             input()
@@ -419,7 +420,7 @@ async def main():
         # Run the scrape
         threads = await scrape_channel(page)
 
-        # Disconnect from Chrome (does NOT close the browser — your tabs stay open)
+        # Disconnect from Chromium (does NOT close the browser — your tabs stay open)
         await browser.close()
 
     # ── Post-process ──────────────────────────────────────────────────────────
