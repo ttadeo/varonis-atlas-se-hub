@@ -1,7 +1,7 @@
 # Atlas Learning Platform — Architecture & Security Documentation
 
 **Audience:** Internal (Varonis SEs and technical staff)  
-**Last Updated:** 2026-06-25 (rev 5 — added Agentic Demo / AI Deal Research Agent, atlas-mcp-research n8n workflow, Atlas Gateway dedicated key setup, updated SMEKnowledge count 62→92, added blocked-state UI handling, Upstash mcp:{jobId} pattern)  
+**Last Updated:** 2026-07-01 (rev 6 — SMEKnowledge 92→102 (scraped 2026-06-30); Agentic Demo endpoint identifier now dynamic dropdown (all endpoints fetched on mount, wired through n8n headers); Demo cleanup safety: LLM endpoint types excluded from Delete All; owner-matching complete (orgId propagated through buildProjectMap); SME Knowledge Base open to all varonis.com users; Teams SME scraper fixed Chrome→Chromium; n8n atlas-mcp-research endpoint identifier dynamic)  
 **Purpose:** Comprehensive reference covering system architecture, authentication/security, software stack, and data stores.
 
 ---
@@ -16,8 +16,8 @@ The Atlas Learning Platform is an internal AI-powered tool for Varonis SEs. It p
 - **Meeting Co-Pilot** — real-time Q&A support during customer calls
 - **Demo Provisioning** — describe a customer use case → Claude matches and auto-deploys Atlas policy templates
 - **AI Runtime Demo** — fires live traffic through the Atlas Gateway across three simulation types: prompt traffic, MCP tool call chains, and multi-agent workflows; demonstrates real-time policy enforcement with per-scenario talking points and Atlas AI Investigation deep-links
-- **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 92 field-validated entries across 11 topics; SME-first chat powered by a dedicated n8n workflow
-- **Agentic Demo** — AI Deal Research Agent: SE enters a company name → 5-agent n8n workflow fires (Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent), all LLM calls routed through Atlas Gateway → populates Tadeo-Demo-Environment with real AI activity; blocked requests surface Atlas guardrail message in the UI within seconds
+- **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 102 field-validated entries across 12 topics; SME-first chat powered by a dedicated n8n workflow; visible to all authenticated varonis.com users
+- **Agentic Demo** — AI Deal Research Agent: SE enters a company name → 5-agent n8n workflow fires (Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent), all LLM calls routed through Atlas Gateway using the SE's selected endpoint identifier → populates the selected Atlas project with real AI activity; blocked requests surface Atlas guardrail message in the UI within seconds
 - **Agentic RAG** — all responses grounded in official Atlas documentation + SME field knowledge (92 nodes) via vector + semantic search
 
 ---
@@ -46,7 +46,7 @@ Browser (SE / Internal User)
   Neo4j (Local Linux Server)
   ┌─────────────────────────────────────┐
   │  ~2,070 DocChunk nodes               │
-  │  92 SMEKnowledge nodes              │
+  │  102 SMEKnowledge nodes             │
   │  Vector indexes (OpenAI embeddings) │
   │  Graph relationships                │
   │  User + Session nodes               │
@@ -109,12 +109,14 @@ Browser (SE / Internal User)
 | `/api/demo/apply` | POST | Proxy to n8n Apply workflow — applies selected template to target Atlas project |
 | `/api/demo/chain` | GET | Atlas API — full resource chain scan (read-only) |
 | `/api/demo/chain/scenario` | POST | Atlas API — create mock scenario resources in Atlas inventory |
-| `/api/demo/chain/projects` | GET | Atlas API — list all org projects |
+| `/api/demo/chain/projects` | GET | Atlas API — list all org projects, enriched with owner_email + orgId |
 | `/api/demo/chain/resource` | GET | Atlas API — single resource detail |
 | `/api/demo/chain/search` | POST | AI-powered resource search (Claude) |
 | `/api/demo/runtime/simulate` | POST | Fires prompt traffic, MCP tool call chains, or multi-agent workflows through Atlas Gateway; handles custom scenarios; returns per-step blocked/sent/error results |
 | `/api/demo/mcp/research` | POST | Fires atlas-mcp-research n8n webhook (AI Deal Research Agent); returns `{jobId, status: "pending"}` |
 | `/api/demo/mcp/status` | GET | Polls Upstash KV key `mcp:{jobId}`; returns `done` (report) or `blocked` (Atlas guardrail message) |
+| `/api/demo/chain/endpoints` | GET | Atlas API — fetches all LLM endpoint identifiers for the account (org-level, no project filter); used to populate Agentic Demo endpoint dropdown |
+| `/api/demo/cleanup` | GET / DELETE | GET: count scenario resources in project; DELETE: remove all non-LLM resources from project (LLM endpoint types are excluded by blocklist) |
 | `/api/resources/[slug]` | GET | Serve competitive resource files |
 | `/api/sessions/share` | POST | Share meeting session |
 | `/api/extract-context` | POST | Extract customer context from URL/doc |
@@ -365,7 +367,7 @@ These tools were used during development and are not part of the production runt
 | Label | Count | Purpose |
 |---|---|---|
 | `DocChunk` / `Chunk` | ~2,070 | Atlas documentation chunks (knowledge base, v3.4.0, 54 pages) |
-| `SMEKnowledge` | 92 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
+| `SMEKnowledge` | 102 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
 | `UIPage` | ~486 (readCount) | Atlas UI navigation pages |
 | `User` | 1 per SE | Tracks SE identity for session + analytics |
 | `Session` | 1 per meeting | Meeting Co-Pilot session metadata |
@@ -394,22 +396,22 @@ These tools were used during development and are not part of the production runt
 
 #### SMEKnowledge Topic Distribution
 
-92 nodes total (last scraped 2026-06-24). Distribution approximate — topic counts grow with each scrape.
+102 nodes total (last scraped 2026-06-30). Distribution from last run:
 
-| Topic | Count (approx) |
+| Topic | Count |
 |---|---|
-| Gateway Architecture | ~14 |
-| Guardrails | ~13 |
-| Deployment | ~13 |
-| Discovery | ~10 |
-| Roadmap | ~7 |
-| Compliance | ~6 |
-| Licensing | ~6 |
-| Shadow AI | ~5 |
-| Competitive Intel | ~5 |
-| IDE Support | ~4 |
-| PII Detection | ~4 |
-| Other | ~5 |
+| gateway_architecture | 14 |
+| deployment | 14 |
+| guardrails | 12 |
+| discovery | 12 |
+| roadmap | 5 |
+| competitive | 4 |
+| other | 4 |
+| shadow_ai | 3 |
+| licensing | 3 |
+| compliance | 3 |
+| ide_support | 2 |
+| pii_detection | 1 |
 
 #### Vector Indexes
 
@@ -426,7 +428,7 @@ These tools were used during development and are not part of the production runt
 | Source | Nodes | Description |
 |---|---|---|
 | Atlas Docs (Playwright scraper, v3.4.0) | ~2,070 DocChunk | 54 documentation pages, scraped 2026-06-10 |
-| Teams AI Security SME Channel | 92 SMEKnowledge | Field-validated Q&A, 11 topics, last scraped 2026-06-24 |
+| Teams AI Security SME Channel | 102 SMEKnowledge | Field-validated Q&A, 12 topics, last scraped 2026-06-30 |
 
 #### RAG Retrieval Strategy (`/api/ask`, `/api/meeting`)
 - **Vector search** — top-K cosine similarity via `atlas_chunk_embeddings`
@@ -596,12 +598,15 @@ After each simulation run:
 |---|---|
 | Gateway URL | `https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/openai/v1/chat/completions` |
 | Auth | `Authorization: Bearer <ATLAS_DEMO_KEY>` (n8n variable `$vars.ATLAS_DEMO_KEY`) |
-| Endpoint identifier | `x-alltrue-llm-endpoint-identifier: OpenAIKey-Tadeo-Demo` |
+| Endpoint identifier | `x-alltrue-llm-endpoint-identifier: ={{ $json.endpointId }}` (dynamic — SE selects from dropdown) |
+| Endpoint dropdown | Populated on mount by `/api/demo/chain/endpoints` — fetches all LLM endpoints at account/org level |
 | Model | `gpt-4o` |
-| Atlas project | Tadeo-Demo-Environment (dedicated key registered ONLY here — no attribution ambiguity) |
+| Atlas project | SE selects project from dropdown; traffic attributed via API key |
 | Session header | `x-alltrue-llm-firewall-user-session` (required) |
 | Blocked state | n8n error output → Handle *X* Block node → Upstash write `{status: "blocked", atlas_message: ...}` → UI surfaces Atlas guardrail message within ~8s |
 | Policy demo flow | Policy OFF → full 5-step research report; Policy ON → Atlas block message appears in UI at the step that triggered it |
+
+**CRITICAL — Delete All safety:** The cleanup route (`/api/demo/cleanup`) excludes LLM endpoint resource types (`OpenAIEndpoint`, `CustomLlmEndpoint`, `ModelPackage`) from deletion. These are registered at the org level — patching their `project_ids` to `[]` removes them from the org entirely, not just the project. Only scenario-builder resources (users, apps, data stores, policies) are deleted.
 
 ---
 
@@ -626,7 +631,7 @@ Extracts field-validated Q&A from the Varonis AI Security SME Teams channel and 
 
 | Step | Script | Input | Output |
 |---|---|---|---|
-| 1. Scrape | `scrape_teams_sme.py` | Chrome (CDP) on Teams channel | `raw_threads_latest.json` |
+| 1. Scrape | `scrape_teams_sme.py` | Chromium (CDP) on Teams channel | `raw_threads_latest.json` |
 | 2. Regroup | `regroup_threads.py` | raw_threads | `regrouped_threads_latest.json` |
 | 3. LLM Process | `process_teams_sme.py` | regrouped_threads | `processed_qa_latest.json` |
 | 4. Ingest | `ingest_teams_sme.py` | processed_qa | Neo4j SMEKnowledge nodes |
@@ -634,8 +639,10 @@ Extracts field-validated Q&A from the Varonis AI Security SME Teams channel and 
 ### Step Details
 
 **Step 1 — Scrape (Playwright + CDP):**
-- Connects to an already-open Chrome session via `--remote-debugging-port=9222`
-- Does NOT launch a new browser — requires Chrome running with CDP enabled
+- Connects to an already-open **Chromium** session via `--remote-debugging-port=9222`
+- **Must use Chromium, NOT Chrome** — Chromium has the saved Varonis/Teams session
+- Launch: `/Applications/Chromium.app/Contents/MacOS/Chromium --remote-debugging-port=9222`
+- Does NOT launch a new browser — requires Chromium running with CDP enabled
 - Extracts message text and IDs (IDs are ms Unix timestamps, used for ordering)
 - Output: raw message list with derived timestamps
 
@@ -656,21 +663,23 @@ Extracts field-validated Q&A from the Varonis AI Security SME Teams channel and 
 ### Re-run Instructions
 
 ```bash
+# 1. Launch Chromium with CDP (Chromium has saved Varonis/Teams session — NOT Chrome)
+/Applications/Chromium.app/Contents/MacOS/Chromium --remote-debugging-port=9222
+# Navigate to the "AI Security - SME" Teams channel
+
 cd /Users/timtadeo/Desktop/AtlasLearningPlatform
 source scraper/atlas-docs-scraper/bin/activate
-export ANTHROPIC_API_KEY=...
-export OPENAI_API_KEY=...
+set -a && source ui/.env.local && set +a  # EXA_API_KEY warning is harmless
 
-# Chrome must be open with: --remote-debugging-port=9222, on the Teams SME channel
-python scraper/scrape_teams_sme.py   # Step 1
-python scraper/regroup_threads.py    # Step 2
-python scraper/process_teams_sme.py  # Step 3 (~10-15 min, uses Haiku + Sonnet)
-python scraper/ingest_teams_sme.py   # Step 4 (choose option 1 = merge for incremental)
+python scraper/scrape_teams_sme.py        # Step 1 — hit Enter when prompted
+python scraper/regroup_threads.py         # Step 2
+python scraper/process_teams_sme.py       # Step 3 (~10-15 min, Anthropic 500s non-fatal)
+echo "1" | python scraper/ingest_teams_sme.py  # Step 4 — option 1 = MERGE (incremental)
 ```
 
 **Known constraints:**
 - Authors show as "Unknown" — Teams MCAS proxy hides author names in DOM
-- `SCRAPE_SINCE` in `scrape_teams_sme.py` — set to last scrape date for incremental runs
+- `SCRAPE_SINCE` is auto-detected from last run — no manual date edits needed
 
 ---
 
