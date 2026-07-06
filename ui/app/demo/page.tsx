@@ -546,21 +546,24 @@ export default function DemoPage() {
   const [mcpEndpointId, setMcpEndpointId] = useState("");
   const [mcpEndpoints, setMcpEndpoints] = useState<string[]>([]);
 
-  // Fetch endpoint identifiers on mount — LLM endpoints are at the account/org level,
-  // not per-project, so one fetch is sufficient regardless of selected project
+  // Fetch endpoint identifiers for the selected project
   const [mcpEndpointError, setMcpEndpointError] = useState<string | null>(null);
   useEffect(() => {
-    fetch("/api/demo/chain/endpoints")
+    if (!selectedProjectId) return;
+    setMcpEndpoints([]);
+    setMcpEndpointId("");
+    setMcpEndpointError(null);
+    fetch(`/api/demo/chain/endpoints?project_id=${encodeURIComponent(selectedProjectId)}`)
       .then((r) => r.json())
       .then((d) => {
         if (d.error) { setMcpEndpointError(d.error); return; }
         const ids: string[] = d.identifiers ?? [];
         setMcpEndpoints(ids);
         setMcpEndpointId(ids[0] ?? "");
-        if (ids.length === 0) setMcpEndpointError("No endpoints found");
+        if (ids.length === 0) setMcpEndpointError("none");
       })
       .catch((e) => setMcpEndpointError(String(e)));
-  }, []);
+  }, [selectedProjectId]);
   const [mcpRunning, setMcpRunning] = useState(false);
   const [mcpSteps, setMcpSteps] = useState<McpStep[]>([]);
   const [mcpReport, setMcpReport] = useState<string | null>(null);
@@ -1031,17 +1034,19 @@ export default function DemoPage() {
                       ))}
                     </select>
                   ) : (
-                    <input
-                      type="text"
-                      value={mcpEndpointId}
-                      onChange={(e) => setMcpEndpointId(e.target.value)}
-                      placeholder={selectedProjectId ? "No endpoints found for this project" : "Select a project first"}
-                      disabled={mcpRunning}
-                      className="w-full bg-gray-800 border border-gray-600 rounded-xl px-4 py-3 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-violet-600"
-                    />
+                    <div className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-sm text-gray-500 italic">
+                      {selectedProjectId ? "No LLM endpoints found in this project" : "Select a project first"}
+                    </div>
                   )}
-                  {mcpEndpointError && <p className="text-xs text-red-400 mt-1">{mcpEndpointError}</p>}
-                  {!mcpEndpointError && <p className="text-xs text-gray-500 mt-1">Endpoints registered in your Atlas project</p>}
+                  {mcpEndpointError === "none" ? (
+                    <p className="text-xs text-amber-400 mt-1">
+                      No LLM endpoints registered in this project. In Atlas UI, go to AI Inventory → Add LLM Endpoint and assign it to this project.
+                    </p>
+                  ) : mcpEndpointError ? (
+                    <p className="text-xs text-red-400 mt-1">{mcpEndpointError}</p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">LLM endpoints registered in your selected Atlas project</p>
+                  )}
                 </div>
 
                 <div className="flex gap-2">

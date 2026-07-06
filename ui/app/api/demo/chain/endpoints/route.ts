@@ -16,13 +16,17 @@ async function getAtlasJWT(): Promise<string> {
   return data.access_token as string;
 }
 
-// GET /api/demo/chain/endpoints
-// Returns all endpoint identifiers visible to the Atlas API key.
-// LLM endpoints live at the org level, not the project level — all endpoints
-// returned here belong to the same Atlas account as the API key.
+// GET /api/demo/chain/endpoints?project_id=xxx
+// Returns endpoint identifiers registered to the given Atlas project.
+// If none found, returns empty identifiers array — UI shows "add in Atlas UI" message.
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
+
+  const projectId = req.nextUrl.searchParams.get("project_id");
+  if (!projectId) {
+    return NextResponse.json({ error: "project_id required" }, { status: 400 });
+  }
 
   try {
     const token = await getAtlasJWT();
@@ -48,10 +52,10 @@ export async function GET(req: NextRequest) {
       offset += PAGE_SIZE;
     }
 
-    // Return all endpoint identifiers — all belong to the same Atlas account
+    // Filter to endpoints registered to this project
     const identifiers: string[] = [];
     for (const ep of all) {
-      if (ep.endpoint_identifier) {
+      if (ep.project_id === projectId && ep.endpoint_identifier) {
         identifiers.push(ep.endpoint_identifier as string);
       }
     }
