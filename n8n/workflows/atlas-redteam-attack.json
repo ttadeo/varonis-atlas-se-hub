@@ -84,16 +84,6 @@
     },
     {
       "parameters": {
-        "numberInputs": 2
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3,
-      "position": [1080, 300],
-      "id": "rt-merge",
-      "name": "Merge Result"
-    },
-    {
-      "parameters": {
         "jsCode": "// Collect all attack results across all items and build final payload\nconst allItems = $input.all();\nconst attacks = allItems.map(item => item.json);\n\nconst jobId = attacks[0]?.jobId || '';\nconst endpointId = attacks[0]?.endpointId || '';\n\nconst blocked = attacks.filter(a => a.status === 'blocked').length;\nconst passed = attacks.filter(a => a.status === 'passed').length;\n\nconst result = {\n  status: 'done',\n  jobId,\n  attacks,\n  summary: {\n    blocked,\n    passed,\n    total: attacks.length\n  },\n  atlas_audit: {\n    gateway: 'Atlas AI Gateway',\n    endpoint_id: endpointId,\n    policy_enforced: blocked > 0,\n    llm_calls: attacks.length,\n    attack_types: attacks.map(a => a.type)\n  },\n  completed_at: new Date().toISOString()\n};\n\nreturn [{ json: {\n  pipeline: JSON.stringify([[\"SET\", 'mcp:' + jobId, JSON.stringify(result), \"EX\", 86400]])\n} }];"
       },
       "type": "n8n-nodes-base.code",
@@ -151,15 +141,10 @@
     },
     "Handle Pass": {
       "main": [
-        [{ "node": "Merge Result", "type": "main", "index": 0 }]
+        [{ "node": "Aggregate Results", "type": "main", "index": 0 }]
       ]
     },
     "Handle Block": {
-      "main": [
-        [{ "node": "Merge Result", "type": "main", "index": 1 }]
-      ]
-    },
-    "Merge Result": {
       "main": [
         [{ "node": "Aggregate Results", "type": "main", "index": 0 }]
       ]
