@@ -1423,7 +1423,7 @@ export default function DemoPage() {
                     </p>
                   )}
                   {cleanupResult && (
-                    <p className="text-xs text-emerald-400">{cleanupResult}</p>
+                    <p className="text-xs text-emerald-400">{cleanupResult} Pre-existing resources in this project are not affected.</p>
                   )}
                 </div>
               )}
