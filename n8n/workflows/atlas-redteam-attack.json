@@ -34,7 +34,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $vars.ATLAS_DEMO_KEY }}"
+              "value": "={{ 'Bearer ' + $vars.ATLAS_DEMO_KEY }}"
             },
             {
               "name": "x-alltrue-llm-endpoint-identifier",
