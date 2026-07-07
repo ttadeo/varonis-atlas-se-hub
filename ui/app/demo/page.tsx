@@ -1235,7 +1235,25 @@ export default function DemoPage() {
                       <div className="text-xs text-gray-400">Policy Enforcement</div>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500 mt-3">Every LLM call in this workflow was routed through <span className="text-violet-300">Atlas AI Gateway</span> — full prompt/response audit trail available in Atlas AI Investigation.</p>
+                  <div className="flex items-center justify-between mt-3">
+                    <p className="text-xs text-gray-500">Every LLM call in this workflow was routed through <span className="text-violet-300">Atlas AI Gateway</span> — full prompt/response audit trail available in Atlas AI Investigation.</p>
+                    {(() => {
+                      const proj = chainProjects.find(p => p.id === selectedProjectId);
+                      const orgId = proj?.orgId || "985dfc2e-2cfd-4b4a-9c8a-6a98ec1efbdb";
+                      if (!selectedProjectId) return null;
+                      const url = `https://prod.alltrue-be.com/ai-monitor/requests?organization=${orgId}&project=${selectedProjectId}&tab=prompt-events`;
+                      return (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="ml-4 shrink-0 inline-flex items-center gap-1.5 bg-violet-700 hover:bg-violet-600 text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors"
+                        >
+                          View in Atlas →
+                        </a>
+                      );
+                    })()}
+                  </div>
                 </div>
               )}
 
