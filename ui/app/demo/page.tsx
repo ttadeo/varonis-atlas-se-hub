@@ -1427,8 +1427,8 @@ export default function DemoPage() {
                         </button>
                         {(() => {
                           const proj = chainProjects.find(p => p.id === selectedProjectId);
-                          const orgId = proj?.orgId;
-                          if (!orgId || !selectedProjectId) return null;
+                          const orgId = proj?.orgId || "985dfc2e-2cfd-4b4a-9c8a-6a98ec1efbdb";
+                          if (!selectedProjectId) return null;
                           const url = `https://prod.alltrue-be.com/ai-monitor/requests?organization=${orgId}&project=${selectedProjectId}&tab=prompt-events`;
                           return (
                             <a
