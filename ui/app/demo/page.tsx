@@ -122,6 +122,35 @@ interface RedTeamAttack {
   atlas_message?: string;
 }
 
+interface McpToolCall {
+  tool: string;
+  status: "executed" | "quarantined_at_runtime";
+  args?: Record<string, unknown>;
+  result?: string;
+  note?: string;
+}
+
+interface McpQuarantineAudit {
+  total_tools_available: number;
+  tools_visible_to_agent: number;
+  tools_quarantined: number;
+  quarantined_tool_names: string[];
+  allowed_tool_names: string[];
+  llm_calls: number;
+  gateway: string;
+  endpoint_id: string;
+  virtual_mcp_allowlist: string;
+}
+
+interface McpQuarantineResult {
+  task: string;
+  quarantine_enabled: boolean;
+  reasoning: string;
+  tool_calls: McpToolCall[];
+  final_answer: string;
+  mcp_audit: McpQuarantineAudit;
+}
+
 // ─── Scenario Templates ────────────────────────────────────────────────────────
 
 const SCENARIO_TEMPLATES = [
@@ -579,7 +608,7 @@ export default function DemoPage() {
   const [mcpSources, setMcpSources] = useState<{ title: string; url: string; category: string }[]>([]);
   const [mcpAudit, setMcpAudit] = useState<McpAudit | null>(null);
   const [mcpError, setMcpError] = useState<string | null>(null);
-  const [mcpSubTab, setMcpSubTab] = useState<"research" | "redteam">("research");
+  const [mcpSubTab, setMcpSubTab] = useState<"research" | "redteam" | "quarantine">("research");
 
   // ── Red Team Attack state ───────────────────────────────────────────────────
   const [redTeamSeedPrompt, setRedTeamSeedPrompt] = useState("");
@@ -587,6 +616,13 @@ export default function DemoPage() {
   const [redTeamAttacks, setRedTeamAttacks] = useState<RedTeamAttack[]>([]);
   const [redTeamSummary, setRedTeamSummary] = useState<{ blocked: number; passed: number; total: number } | null>(null);
   const [redTeamError, setRedTeamError] = useState<string | null>(null);
+
+  // ── MCP Quarantine state ───────────────────────────────────────────────────
+  const [mcqTask, setMcqTask] = useState("");
+  const [mcqQuarantineEnabled, setMcqQuarantineEnabled] = useState(true);
+  const [mcqRunning, setMcqRunning] = useState(false);
+  const [mcqResult, setMcqResult] = useState<McpQuarantineResult | null>(null);
+  const [mcqError, setMcqError] = useState<string | null>(null);
 
   // ── Chain of Custody state ──────────────────────────────────────────────────
   const [scanning, setScanning] = useState(false);
@@ -721,6 +757,58 @@ export default function DemoPage() {
       setRedTeamError(String(err));
     } finally {
       setRedTeamRunning(false);
+    }
+  }
+
+  // ── MCP Quarantine ────────────────────────────────────────────────────────
+
+  async function handleMcqRun() {
+    if (!mcqTask.trim() || !mcpEndpointId || mcqRunning) return;
+    setMcqRunning(true);
+    setMcqResult(null);
+    setMcqError(null);
+
+    try {
+      const fireRes = await fetch("/api/demo/mcp/quarantine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          task: mcqTask.trim(),
+          projectId: selectedProjectId,
+          endpointId: mcpEndpointId,
+          quarantineEnabled: mcqQuarantineEnabled,
+        }),
+      });
+
+      if (!fireRes.ok) {
+        const data = await fireRes.json().catch(() => ({}));
+        throw new Error(data.error ?? `HTTP ${fireRes.status}`);
+      }
+
+      const { jobId } = await fireRes.json();
+      const started = Date.now();
+      const TIMEOUT_MS = 3 * 60 * 1000;
+
+      while (Date.now() - started < TIMEOUT_MS) {
+        await new Promise((r) => setTimeout(r, 3000));
+        const statusRes = await fetch(`/api/demo/mcp/status?jobId=${jobId}`);
+        if (!statusRes.ok) continue;
+        const data = await statusRes.json();
+        if (data.status === "pending") continue;
+
+        if (data.status === "blocked") {
+          throw new Error(`Atlas blocked at ${data.blocked_at ?? "agent"}: ${data.atlas_message ?? "Policy violation"}`);
+        }
+
+        setMcqResult(data as McpQuarantineResult);
+        return;
+      }
+
+      throw new Error("Timed out after 3 minutes");
+    } catch (err) {
+      setMcqError(String(err));
+    } finally {
+      setMcqRunning(false);
     }
   }
 
@@ -1065,6 +1153,12 @@ export default function DemoPage() {
                   className={`px-4 py-2 transition-colors ${mcpSubTab === "redteam" ? "bg-red-700 text-white font-medium" : "bg-gray-800 text-gray-400 hover:text-white"}`}
                 >
                   Red Team Attack
+                </button>
+                <button
+                  onClick={() => setMcpSubTab("quarantine")}
+                  className={`px-4 py-2 transition-colors ${mcpSubTab === "quarantine" ? "bg-orange-700 text-white font-medium" : "bg-gray-800 text-gray-400 hover:text-white"}`}
+                >
+                  MCP Quarantine
                 </button>
               </div>
 
@@ -1466,6 +1560,221 @@ export default function DemoPage() {
                   {redTeamError && (
                     <div className="rounded-xl border border-red-800 bg-red-900/20 px-4 py-3 text-sm text-red-300">
                       {redTeamError}
+                    </div>
+                  )}
+
+                </div>
+              )}
+
+              {/* ── MCP Quarantine sub-tab ─────────────────────────────────── */}
+              {mcpSubTab === "quarantine" && (
+                <div className="space-y-4">
+
+                  {/* Input card */}
+                  <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-4">
+                    <div>
+                      <h2 className="text-base font-semibold text-white mb-1">MCP Quarantine Demo</h2>
+                      <p className="text-sm text-gray-400">An AI agent is given a task and a set of MCP tools. With quarantine enabled, Atlas strips non-approved tools from the agent&apos;s view before it plans — the model never sees them.</p>
+                    </div>
+
+                    <div className="flex items-center gap-2 text-xs text-gray-500">
+                      <span>Project:</span>
+                      <span className="text-gray-300 font-mono">{(chainProjects.find(p => p.id === selectedProjectId)?.name ?? selectedProjectId) || "—"}</span>
+                      <span>·</span>
+                      <span>Endpoint:</span>
+                      <span className="text-gray-300 font-mono">{mcpEndpointId || "—"}</span>
+                    </div>
+
+                    {!mcpEndpointId && (
+                      <p className="text-xs text-amber-400">Select a project with an LLM endpoint in the AI Deal Research tab first.</p>
+                    )}
+
+                    {/* Virtual MCP Allowlist preview */}
+                    <div className="rounded-lg border border-gray-700 bg-gray-800/60 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Virtual MCP Allowlist</p>
+                      <div className="grid grid-cols-1 gap-1.5">
+                        {[
+                          { name: "web_search", desc: "Search the web for information", allowed: true },
+                          { name: "company_research", desc: "Research a company overview and news", allowed: true },
+                          { name: "send_email", desc: "Send email on behalf of the user", allowed: false },
+                          { name: "read_files", desc: "Read files from the file system", allowed: false },
+                          { name: "database_query", desc: "Execute SQL queries against databases", allowed: false },
+                        ].map(tool => (
+                          <div key={tool.name} className="flex items-center gap-2">
+                            <span className={`text-xs font-mono px-2 py-0.5 rounded ${tool.allowed ? "bg-emerald-900/40 text-emerald-400 border border-emerald-800/60" : "bg-red-900/30 text-red-400 border border-red-800/50 line-through"}`}>
+                              {tool.name}
+                            </span>
+                            <span className="text-xs text-gray-500">{tool.desc}</span>
+                            {!tool.allowed && <span className="text-xs text-orange-400 ml-auto">QUARANTINED</span>}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Quarantine toggle */}
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setMcqQuarantineEnabled(e => !e)}
+                        className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${mcqQuarantineEnabled ? "bg-orange-600" : "bg-gray-600"}`}
+                      >
+                        <span className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${mcqQuarantineEnabled ? "translate-x-5" : "translate-x-1"}`} />
+                      </button>
+                      <span className="text-sm text-gray-300">
+                        Quarantine {mcqQuarantineEnabled ? <span className="text-orange-400 font-medium">ON</span> : <span className="text-gray-500 font-medium">OFF</span>}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {mcqQuarantineEnabled ? "Agent sees 2 tools (send_email, read_files, database_query stripped)" : "Agent sees all 5 tools — no enforcement"}
+                      </span>
+                    </div>
+
+                    {/* Task input */}
+                    <textarea
+                      value={mcqTask}
+                      onChange={(e) => setMcqTask(e.target.value)}
+                      placeholder="Research Varonis Systems as a potential technology partner — summarize their AI security capabilities"
+                      rows={3}
+                      className="w-full bg-gray-800 border border-gray-600 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 resize-none"
+                      disabled={mcqRunning}
+                    />
+
+                    <div className="flex flex-wrap gap-2">
+                      {[
+                        "Research Varonis Systems as a potential technology partner",
+                        "Find the top AI governance frameworks relevant to healthcare compliance",
+                        "Summarize recent news about enterprise AI security risks",
+                      ].map((t) => (
+                        <button
+                          key={t}
+                          onClick={() => setMcqTask(t)}
+                          disabled={mcqRunning}
+                          className="text-xs text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-full px-3 py-1 transition-colors disabled:opacity-40 text-left"
+                        >
+                          {t.length > 60 ? t.slice(0, 60) + "…" : t}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={handleMcqRun}
+                      disabled={!mcpEndpointId || !mcqTask.trim() || mcqRunning}
+                      className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg px-5 py-2 text-sm font-medium transition-colors"
+                    >
+                      {mcqRunning ? "Running Agent…" : "Run MCP Agent"}
+                    </button>
+                  </div>
+
+                  {/* Running spinner */}
+                  {mcqRunning && (
+                    <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 flex items-center gap-3 text-sm text-gray-400">
+                      <div className="w-4 h-4 border-2 border-orange-400 border-t-transparent rounded-full animate-spin" />
+                      Agent planning tool calls through Atlas Gateway…
+                    </div>
+                  )}
+
+                  {/* Results */}
+                  {mcqResult && (
+                    <div className="space-y-3">
+
+                      {/* Tool calls */}
+                      <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-3">
+                        <h3 className="text-sm font-semibold text-gray-300">Agent Tool Calls</h3>
+                        <p className="text-xs text-gray-500 italic">{mcqResult.reasoning}</p>
+                        {mcqResult.tool_calls.length === 0 && (
+                          <p className="text-xs text-gray-500">No tool calls planned.</p>
+                        )}
+                        {mcqResult.tool_calls.map((tc, i) => (
+                          <div key={i} className="rounded-lg border border-gray-700 bg-gray-800/60 px-4 py-3 space-y-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-mono text-orange-300">{tc.tool}</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${tc.status === "executed" ? "bg-emerald-900/40 text-emerald-400" : "bg-red-900/30 text-red-400"}`}>
+                                {tc.status === "executed" ? "EXECUTED" : "QUARANTINED"}
+                              </span>
+                            </div>
+                            {tc.args && Object.keys(tc.args).length > 0 && (
+                              <p className="text-xs font-mono text-gray-500">args: {JSON.stringify(tc.args)}</p>
+                            )}
+                            {tc.result && (
+                              <p className="text-xs text-gray-400">{tc.result.slice(0, 200)}{tc.result.length > 200 ? "…" : ""}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Final answer */}
+                      <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-2">
+                        <h3 className="text-sm font-semibold text-gray-300">Agent Response</h3>
+                        <p className="text-sm text-gray-300 whitespace-pre-wrap leading-relaxed">{mcqResult.final_answer}</p>
+                      </div>
+
+                      {/* MCP Audit */}
+                      <div className="rounded-xl border border-orange-800/50 bg-orange-900/10 p-4 space-y-3">
+                        <h3 className="text-sm font-semibold text-orange-300">Atlas MCP Audit</h3>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div>
+                            <span className="text-gray-500">Tools available:</span>
+                            <span className="text-white ml-2">{mcqResult.mcp_audit.total_tools_available}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Tools visible to agent:</span>
+                            <span className="text-white ml-2">{mcqResult.mcp_audit.tools_visible_to_agent}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Quarantined:</span>
+                            <span className={`ml-2 font-medium ${mcqResult.mcp_audit.tools_quarantined > 0 ? "text-orange-400" : "text-gray-400"}`}>
+                              {mcqResult.mcp_audit.tools_quarantined} tools
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Virtual MCP allowlist:</span>
+                            <span className={`ml-2 font-medium ${mcqResult.mcp_audit.virtual_mcp_allowlist === "enforced" ? "text-orange-400" : "text-gray-500"}`}>
+                              {mcqResult.mcp_audit.virtual_mcp_allowlist}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">LLM calls through Atlas Gateway:</span>
+                            <span className="text-white ml-2">{mcqResult.mcp_audit.llm_calls}</span>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Endpoint:</span>
+                            <span className="text-white font-mono ml-2">{mcqResult.mcp_audit.endpoint_id}</span>
+                          </div>
+                        </div>
+                        {mcqResult.mcp_audit.quarantined_tool_names.length > 0 && (
+                          <div className="text-xs text-orange-400">
+                            Quarantined tools (stripped before model saw them): <span className="font-mono">{mcqResult.mcp_audit.quarantined_tool_names.join(", ")}</span>
+                          </div>
+                        )}
+                        <div className="flex items-center justify-between pt-1">
+                          <button
+                            onClick={() => { setMcqResult(null); setMcqError(null); setMcqTask(""); }}
+                            className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                          >
+                            ← New Task
+                          </button>
+                          {(() => {
+                            const proj = chainProjects.find(p => p.id === selectedProjectId);
+                            const orgId = proj?.orgId || "985dfc2e-2cfd-4b4a-9c8a-6a98ec1efbdb";
+                            if (!selectedProjectId) return null;
+                            const url = `https://prod.alltrue-be.com/ai-monitor/requests?organization=${orgId}&project=${selectedProjectId}&tab=prompt-events`;
+                            return (
+                              <a
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 bg-orange-700 hover:bg-orange-600 text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors"
+                              >
+                                View in Atlas →
+                              </a>
+                            );
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {mcqError && (
+                    <div className="rounded-xl border border-red-800 bg-red-900/20 px-4 py-3 text-sm text-red-300">
+                      {mcqError}
                     </div>
                   )}
 

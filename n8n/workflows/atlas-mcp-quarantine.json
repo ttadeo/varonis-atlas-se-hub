@@ -1,0 +1,276 @@
+{
+  "name": "Atlas MCP Quarantine Demo",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atlas-mcp-quarantine",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [200, 300],
+      "id": "mq-webhook",
+      "name": "Webhook",
+      "webhookId": "atlas-mcp-quarantine"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $('Webhook').item.json.body;\nconst task = body.task || '';\nconst jobId = body.jobId || '';\nconst endpointId = body.endpointId || 'tadeo-demo-env';\nconst projectId = body.projectId || '';\nconst quarantineEnabled = body.quarantineEnabled !== false;\n\n// All available MCP tools in this demo\nconst ALL_TOOLS = [\n  {\n    name: 'web_search',\n    description: 'Search the web for current information on any topic',\n    parameters: { query: 'string' },\n    category: 'allowed'\n  },\n  {\n    name: 'company_research',\n    description: 'Research a company — overview, funding, recent news, key personnel',\n    parameters: { company_name: 'string' },\n    category: 'allowed'\n  },\n  {\n    name: 'send_email',\n    description: 'Send an email on behalf of the user to any recipient',\n    parameters: { to: 'string', subject: 'string', body: 'string' },\n    category: 'quarantined'\n  },\n  {\n    name: 'read_files',\n    description: 'Read files from the local file system or network shares',\n    parameters: { path: 'string' },\n    category: 'quarantined'\n  },\n  {\n    name: 'database_query',\n    description: 'Execute SQL queries against connected databases',\n    parameters: { query: 'string', database: 'string' },\n    category: 'quarantined'\n  }\n];\n\n// Apply Virtual MCP allowlist — quarantined tools stripped before model sees them\nconst visibleTools = quarantineEnabled\n  ? ALL_TOOLS.filter(t => t.category === 'allowed')\n  : ALL_TOOLS;\n\nconst toolDefinitions = visibleTools.map(t => (\n  `- ${t.name}(${Object.keys(t.parameters).join(', ')}): ${t.description}`\n)).join('\\n');\n\nconst planningPrompt = `You are an AI agent with access to the following tools:\\n\\n${toolDefinitions}\\n\\nYour task: ${task}\\n\\nRespond with a JSON object in this exact format (no markdown, no explanation):\\n{\\n  \"reasoning\": \"<brief explanation of your plan>\",\\n  \"tool_calls\": [\\n    {\"tool\": \"<tool_name>\", \"args\": {<tool_arguments_as_json>}}\\n  ]\\n}\\n\\nOnly use tools from the list above. Plan 1-3 tool calls maximum.`;\n\nreturn [{ json: {\n  task,\n  jobId,\n  endpointId,\n  projectId,\n  quarantineEnabled,\n  allTools: ALL_TOOLS,\n  visibleTools,\n  planningPrompt,\n  planningRequest: {\n    model: 'gpt-4o',\n    max_tokens: 500,\n    temperature: 0,\n    messages: [\n      { role: 'system', content: 'You are a helpful AI agent. Respond only with valid JSON.' },\n      { role: 'user', content: planningPrompt }\n    ]\n  }\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300],
+      "id": "mq-build-prompt",
+      "name": "Build Tool Prompt"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $vars.ATLAS_DEMO_KEY }}"
+            },
+            {
+              "name": "x-alltrue-llm-endpoint-identifier",
+              "value": "={{ $json.endpointId }}"
+            },
+            {
+              "name": "x-alltrue-llm-firewall-user-session",
+              "value": "={{ JSON.stringify({ \"user-session-id\": \"mcp-\" + $json.jobId, \"user-session-user-id\": \"atlas-se-hub\", \"user-session-user-email\": \"simulator@varonis.com\" }) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.planningRequest }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [720, 300],
+      "id": "mq-plan-llm",
+      "name": "LLM Tool Planning"
+    },
+    {
+      "parameters": {
+        "jsCode": "const planResp = $input.item.json;\nconst prev = $('Build Tool Prompt').item.json;\n\nconst statusCode = planResp.statusCode;\nconst body = planResp.body;\n\nif (statusCode >= 400) {\n  const errMsg = body?.error?.message || JSON.stringify(body) || `HTTP ${statusCode}`;\n  const result = {\n    status: 'blocked',\n    jobId: prev.jobId,\n    blocked_at: 'Planning Agent',\n    atlas_message: errMsg\n  };\n  return [{ json: { isBlocked: true, result, pipeline: JSON.stringify([[\"SET\", 'mcp:' + prev.jobId, JSON.stringify(result), \"EX\", 86400]]) } }];\n}\n\nconst content = body?.choices?.[0]?.message?.content || '{}';\nlet plan;\ntry {\n  // Strip markdown code fences if present\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  plan = JSON.parse(cleaned);\n} catch {\n  plan = { reasoning: content, tool_calls: [] };\n}\n\nconst toolCalls = Array.isArray(plan.tool_calls) ? plan.tool_calls : [];\n\nreturn [{ json: {\n  ...prev,\n  isBlocked: false,\n  reasoning: plan.reasoning || '',\n  plannedToolCalls: toolCalls\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [980, 300],
+      "id": "mq-parse-plan",
+      "name": "Parse Tool Plan"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            {
+              "id": "blocked-check",
+              "leftValue": "={{ $json.isBlocked }}",
+              "rightValue": true,
+              "operator": { "type": "boolean", "operation": "equals" }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [1240, 300],
+      "id": "mq-blocked-gate",
+      "name": "Blocked?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pipeline }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1500, 160],
+      "id": "mq-write-blocked",
+      "name": "Write Block to KV"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Execute tool calls — allowed tools call real Exa API, quarantined tools return a simulated blocked response\nconst data = $input.item.json;\nconst toolCalls = data.plannedToolCalls || [];\nconst quarantineEnabled = data.quarantineEnabled !== false;\nconst allowedTools = new Set(['web_search', 'company_research']);\n\nconst results = [];\n\nfor (const call of toolCalls) {\n  const toolName = call.tool || call.name || '';\n  const args = call.args || call.arguments || {};\n  const isAllowed = !quarantineEnabled || allowedTools.has(toolName);\n\n  if (!isAllowed) {\n    // This branch should not be reached if quarantine worked correctly\n    // (quarantined tools were stripped from the prompt — model should not have planned this call)\n    results.push({\n      tool: toolName,\n      status: 'quarantined_at_runtime',\n      result: null,\n      note: 'Tool was not in the Virtual MCP allowlist — Atlas stripped it before the model saw it'\n    });\n    continue;\n  }\n\n  // Simulate tool execution with realistic placeholder responses\n  // In a real MCP deployment these would be actual MCP tool call HTTP requests\n  if (toolName === 'web_search') {\n    const query = args.query || args.q || 'general';\n    results.push({\n      tool: toolName,\n      status: 'executed',\n      args,\n      result: `Web search results for \"${query}\": Found 8 relevant results covering recent developments, industry analysis, and expert commentary. Top results include authoritative sources with detailed information on the topic.`\n    });\n  } else if (toolName === 'company_research') {\n    const company = args.company_name || args.company || 'the company';\n    results.push({\n      tool: toolName,\n      status: 'executed',\n      args,\n      result: `Company research for ${company}: Founded with significant venture backing. Operating in enterprise software with focus on data security and AI governance. Recent funding rounds indicate strong investor confidence. Key leadership includes experienced executives from the cybersecurity and enterprise AI space.`\n    });\n  } else {\n    results.push({\n      tool: toolName,\n      status: 'executed',\n      args,\n      result: `Tool ${toolName} executed successfully. Results returned to agent.`\n    });\n  }\n}\n\nreturn [{ json: { ...data, toolResults: results } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1500, 440],
+      "id": "mq-execute-tools",
+      "name": "Execute Tool Calls"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.7df8a5a7.5.us-west-2.prod.alltrue-be.com/openai/v1/chat/completions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $vars.ATLAS_DEMO_KEY }}"
+            },
+            {
+              "name": "x-alltrue-llm-endpoint-identifier",
+              "value": "={{ $json.endpointId }}"
+            },
+            {
+              "name": "x-alltrue-llm-firewall-user-session",
+              "value": "={{ JSON.stringify({ \"user-session-id\": \"mcp-\" + $json.jobId, \"user-session-user-id\": \"atlas-se-hub\", \"user-session-user-email\": \"simulator@varonis.com\" }) }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { model: 'gpt-4o', max_tokens: 600, messages: [{ role: 'system', content: 'You are a helpful AI agent. Synthesize tool results into a clear, concise answer.' }, { role: 'user', content: 'Task: ' + $json.task + '\\n\\nTool results:\\n' + JSON.stringify($json.toolResults, null, 2) + '\\n\\nWrite a clear, professional summary answering the task based on these results. Be specific and actionable. 2-3 paragraphs max.' }] } }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1760, 440],
+      "id": "mq-synthesize-llm",
+      "name": "LLM Synthesis"
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const items = $input.all();\nconst data = items[0].json;\nconst synthBody = data.body || {};\nconst statusCode = data.statusCode;\n\nconst prev = $('Execute Tool Calls').all()[0].json;\n\nlet finalAnswer;\nif (statusCode >= 400) {\n  finalAnswer = `Atlas Gateway blocked the synthesis call: ${synthBody?.error?.message || JSON.stringify(synthBody)}`;\n} else {\n  finalAnswer = synthBody?.choices?.[0]?.message?.content || 'No response generated.';\n}\n\nconst quarantineEnabled = prev.quarantineEnabled !== false;\nconst allTools = prev.allTools || [];\nconst visibleTools = prev.visibleTools || [];\nconst quarantinedTools = allTools.filter(t => t.category === 'quarantined');\nconst allowedTools = allTools.filter(t => t.category === 'allowed');\n\nconst result = {\n  status: 'done',\n  jobId: prev.jobId,\n  task: prev.task,\n  quarantine_enabled: quarantineEnabled,\n  reasoning: prev.reasoning || '',\n  tool_calls: prev.toolResults || [],\n  final_answer: finalAnswer,\n  mcp_audit: {\n    total_tools_available: allTools.length,\n    tools_visible_to_agent: visibleTools.length,\n    tools_quarantined: quarantineEnabled ? quarantinedTools.length : 0,\n    quarantined_tool_names: quarantineEnabled ? quarantinedTools.map(t => t.name) : [],\n    allowed_tool_names: allowedTools.map(t => t.name),\n    llm_calls: 2,\n    gateway: 'Atlas AI Gateway',\n    endpoint_id: prev.endpointId,\n    virtual_mcp_allowlist: quarantineEnabled ? 'enforced' : 'disabled'\n  },\n  completed_at: new Date().toISOString()\n};\n\nreturn [{ json: { pipeline: JSON.stringify([[\"SET\", 'mcp:' + prev.jobId, JSON.stringify(result), \"EX\", 86400]]) } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2020, 440],
+      "id": "mq-aggregate",
+      "name": "Aggregate Results"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.UPSTASH_KV_TOKEN }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.pipeline }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2280, 440],
+      "id": "mq-write-kv",
+      "name": "Write to Upstash"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [{ "node": "Build Tool Prompt", "type": "main", "index": 0 }]
+      ]
+    },
+    "Build Tool Prompt": {
+      "main": [
+        [{ "node": "LLM Tool Planning", "type": "main", "index": 0 }]
+      ]
+    },
+    "LLM Tool Planning": {
+      "main": [
+        [{ "node": "Parse Tool Plan", "type": "main", "index": 0 }]
+      ]
+    },
+    "Parse Tool Plan": {
+      "main": [
+        [{ "node": "Blocked?", "type": "main", "index": 0 }]
+      ]
+    },
+    "Blocked?": {
+      "main": [
+        [{ "node": "Write Block to KV", "type": "main", "index": 0 }],
+        [{ "node": "Execute Tool Calls", "type": "main", "index": 0 }]
+      ]
+    },
+    "Execute Tool Calls": {
+      "main": [
+        [{ "node": "LLM Synthesis", "type": "main", "index": 0 }]
+      ]
+    },
+    "LLM Synthesis": {
+      "main": [
+        [{ "node": "Aggregate Results", "type": "main", "index": 0 }]
+      ]
+    },
+    "Aggregate Results": {
+      "main": [
+        [{ "node": "Write to Upstash", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
+  },
+  "tags": []
+}
