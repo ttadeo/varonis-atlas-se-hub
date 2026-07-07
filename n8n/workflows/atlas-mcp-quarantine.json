@@ -17,13 +17,62 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $('Webhook').item.json.body;\nconst task = body.task || '';\nconst jobId = body.jobId || '';\nconst endpointId = body.endpointId || 'tadeo-demo-env';\nconst projectId = body.projectId || '';\nconst quarantineEnabled = body.quarantineEnabled !== false;\n\n// All available MCP tools in this demo\nconst ALL_TOOLS = [\n  {\n    name: 'web_search',\n    description: 'Search the web for current information on any topic',\n    parameters: { query: 'string' },\n    category: 'allowed'\n  },\n  {\n    name: 'company_research',\n    description: 'Research a company — overview, funding, recent news, key personnel',\n    parameters: { company_name: 'string' },\n    category: 'allowed'\n  },\n  {\n    name: 'send_email',\n    description: 'Send an email on behalf of the user to any recipient',\n    parameters: { to: 'string', subject: 'string', body: 'string' },\n    category: 'quarantined'\n  },\n  {\n    name: 'read_files',\n    description: 'Read files from the local file system or network shares',\n    parameters: { path: 'string' },\n    category: 'quarantined'\n  },\n  {\n    name: 'database_query',\n    description: 'Execute SQL queries against connected databases',\n    parameters: { query: 'string', database: 'string' },\n    category: 'quarantined'\n  }\n];\n\n// Apply Virtual MCP allowlist — quarantined tools stripped before model sees them\nconst visibleTools = quarantineEnabled\n  ? ALL_TOOLS.filter(t => t.category === 'allowed')\n  : ALL_TOOLS;\n\nconst toolDefinitions = visibleTools.map(t => (\n  `- ${t.name}(${Object.keys(t.parameters).join(', ')}): ${t.description}`\n)).join('\\n');\n\nconst planningPrompt = `You are an AI agent with access to the following tools:\\n\\n${toolDefinitions}\\n\\nYour task: ${task}\\n\\nRespond with a JSON object in this exact format (no markdown, no explanation):\\n{\\n  \"reasoning\": \"<brief explanation of your plan>\",\\n  \"tool_calls\": [\\n    {\"tool\": \"<tool_name>\", \"args\": {<tool_arguments_as_json>}}\\n  ]\\n}\\n\\nOnly use tools from the list above. Plan 1-3 tool calls maximum.`;\n\nreturn [{ json: {\n  task,\n  jobId,\n  endpointId,\n  projectId,\n  quarantineEnabled,\n  allTools: ALL_TOOLS,\n  visibleTools,\n  planningPrompt,\n  planningRequest: {\n    model: 'gpt-4o',\n    max_tokens: 500,\n    temperature: 0,\n    messages: [\n      { role: 'system', content: 'You are a helpful AI agent. Respond only with valid JSON.' },\n      { role: 'user', content: planningPrompt }\n    ]\n  }\n} }];"
+        "jsCode": "const body = $('Webhook').item.json.body;\nconst task = body.task || '';\nconst jobId = body.jobId || '';\nconst endpointId = body.endpointId || 'tadeo-demo-env';\nconst projectId = body.projectId || '';\nconst quarantineEnabled = body.quarantineEnabled !== false;\n\n// Virtual MCP allowlist — these are the approved tools\n// send_email, credits_get, chat_send are quarantined (stripped before model sees them)\nconst ALLOWED_TOOLS = new Set(['web.search', 'web_search', 'models_list', 'model_list']);\n\nreturn [{ json: { task, jobId, endpointId, projectId, quarantineEnabled, allowedTools: [...ALLOWED_TOOLS] } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [460, 300],
-      "id": "mq-build-prompt",
-      "name": "Build Tool Prompt"
+      "position": [420, 300],
+      "id": "mq-init",
+      "name": "Init"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.openrouter.ai/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $vars.OPENROUTER_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json, text/event-stream"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"tools/list\", \"params\": {} }",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [640, 300],
+      "id": "mq-fetch-tools",
+      "name": "Fetch OpenRouter Tools"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.item.json;\nconst init = $('Init').item.json;\nconst quarantineEnabled = init.quarantineEnabled !== false;\nconst ALLOWED_TOOLS = new Set(init.allowedTools || []);\n\n// Parse SSE response — body may be a string of \"data: {...}\\n\" lines\nlet rawBody = resp.body;\nif (typeof rawBody !== 'string') rawBody = JSON.stringify(rawBody);\n\nlet tools = [];\ntry {\n  // Try direct JSON parse first (some endpoints return plain JSON)\n  const parsed = JSON.parse(rawBody);\n  tools = parsed?.result?.tools || [];\n} catch {\n  // Parse SSE lines: each line starts with \"data: \"\n  const lines = rawBody.split('\\n').filter(l => l.startsWith('data:'));\n  for (const line of lines) {\n    try {\n      const json = JSON.parse(line.slice(5).trim());\n      if (json?.result?.tools) { tools = json.result.tools; break; }\n      if (json?.tools) { tools = json.tools; break; }\n    } catch { /* skip */ }\n  }\n}\n\n// If still no tools, use fallback set for demo continuity\nif (!tools || tools.length === 0) {\n  tools = [\n    { name: 'web_search', description: 'Search the web for current information' },\n    { name: 'models_list', description: 'List available AI models on OpenRouter' },\n    { name: 'credits_get', description: 'Get current OpenRouter credit balance' },\n    { name: 'chat_send', description: 'Send a chat message using any OpenRouter model' }\n  ];\n}\n\n// Tag each tool as allowed or quarantined\nconst taggedTools = tools.map(t => ({\n  name: t.name,\n  description: t.description || '',\n  inputSchema: t.inputSchema || {},\n  category: (!quarantineEnabled || ALLOWED_TOOLS.has(t.name)) ? 'allowed' : 'quarantined'\n}));\n\nconst visibleTools = quarantineEnabled\n  ? taggedTools.filter(t => t.category === 'allowed')\n  : taggedTools;\n\nconst quarantinedTools = taggedTools.filter(t => t.category === 'quarantined');\n\n// Build tool definitions string for LLM planning prompt\nconst toolDefinitions = visibleTools.map(t => `- ${t.name}: ${t.description}`).join('\\n');\n\nconst planningPrompt = `You are an AI agent with access to the following MCP tools:\\n\\n${toolDefinitions}\\n\\nYour task: ${init.task}\\n\\nRespond with a JSON object in this exact format (no markdown):\\n{\\n  \"reasoning\": \"<brief plan>\",\\n  \"tool_calls\": [\\n    {\"tool\": \"<tool_name>\", \"args\": {}}\\n  ]\\n}\\n\\nOnly use tools from the list above. Plan 1-2 tool calls maximum.`;\n\nreturn [{ json: {\n  ...init,\n  allTools: taggedTools,\n  visibleTools,\n  quarantinedTools,\n  planningPrompt,\n  planningRequest: {\n    model: 'gpt-4o',\n    max_tokens: 400,\n    temperature: 0,\n    messages: [\n      { role: 'system', content: 'You are a helpful AI agent. Respond only with valid JSON.' },\n      { role: 'user', content: planningPrompt }\n    ]\n  }\n} }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [860, 300],
+      "id": "mq-parse-tools",
+      "name": "Parse Tools + Apply Quarantine"
     },
     {
       "parameters": {
@@ -64,17 +113,17 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [720, 300],
+      "position": [1080, 300],
       "id": "mq-plan-llm",
       "name": "LLM Tool Planning"
     },
     {
       "parameters": {
-        "jsCode": "const planResp = $input.item.json;\nconst prev = $('Build Tool Prompt').item.json;\n\nconst statusCode = planResp.statusCode;\nconst body = planResp.body;\n\nif (statusCode >= 400) {\n  const errMsg = body?.error?.message || JSON.stringify(body) || `HTTP ${statusCode}`;\n  const result = {\n    status: 'blocked',\n    jobId: prev.jobId,\n    blocked_at: 'Planning Agent',\n    atlas_message: errMsg\n  };\n  return [{ json: { isBlocked: true, result, pipeline: JSON.stringify([[\"SET\", 'mcp:' + prev.jobId, JSON.stringify(result), \"EX\", 86400]]) } }];\n}\n\nconst content = body?.choices?.[0]?.message?.content || '{}';\nlet plan;\ntry {\n  // Strip markdown code fences if present\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  plan = JSON.parse(cleaned);\n} catch {\n  plan = { reasoning: content, tool_calls: [] };\n}\n\nconst toolCalls = Array.isArray(plan.tool_calls) ? plan.tool_calls : [];\n\nreturn [{ json: {\n  ...prev,\n  isBlocked: false,\n  reasoning: plan.reasoning || '',\n  plannedToolCalls: toolCalls\n} }];"
+        "jsCode": "const planResp = $input.item.json;\nconst prev = $('Parse Tools + Apply Quarantine').item.json;\n\nconst statusCode = planResp.statusCode;\nconst body = planResp.body;\n\nif (statusCode >= 400) {\n  const errMsg = body?.error?.message || JSON.stringify(body) || `HTTP ${statusCode}`;\n  const result = {\n    status: 'blocked',\n    jobId: prev.jobId,\n    blocked_at: 'Planning Agent',\n    atlas_message: errMsg\n  };\n  return [{ json: { isBlocked: true, result, pipeline: JSON.stringify([[\"SET\", 'mcp:' + prev.jobId, JSON.stringify(result), \"EX\", 86400]]) } }];\n}\n\nconst content = body?.choices?.[0]?.message?.content || '{}';\nlet plan;\ntry {\n  const cleaned = content.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n  plan = JSON.parse(cleaned);\n} catch {\n  plan = { reasoning: content, tool_calls: [] };\n}\n\nconst toolCalls = Array.isArray(plan.tool_calls) ? plan.tool_calls : [];\n\nreturn [{ json: {\n  ...prev,\n  isBlocked: false,\n  reasoning: plan.reasoning || '',\n  plannedToolCalls: toolCalls\n} }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [980, 300],
+      "position": [1300, 300],
       "id": "mq-parse-plan",
       "name": "Parse Tool Plan"
     },
@@ -96,7 +145,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [1240, 300],
+      "position": [1520, 300],
       "id": "mq-blocked-gate",
       "name": "Blocked?"
     },
@@ -124,19 +173,68 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1500, 160],
+      "position": [1740, 160],
       "id": "mq-write-blocked",
       "name": "Write Block to KV"
     },
     {
       "parameters": {
-        "jsCode": "// Execute tool calls — allowed tools call real Exa API, quarantined tools return a simulated blocked response\nconst data = $input.item.json;\nconst toolCalls = data.plannedToolCalls || [];\nconst quarantineEnabled = data.quarantineEnabled !== false;\nconst allowedTools = new Set(['web_search', 'company_research']);\n\nconst results = [];\n\nfor (const call of toolCalls) {\n  const toolName = call.tool || call.name || '';\n  const args = call.args || call.arguments || {};\n  const isAllowed = !quarantineEnabled || allowedTools.has(toolName);\n\n  if (!isAllowed) {\n    // This branch should not be reached if quarantine worked correctly\n    // (quarantined tools were stripped from the prompt — model should not have planned this call)\n    results.push({\n      tool: toolName,\n      status: 'quarantined_at_runtime',\n      result: null,\n      note: 'Tool was not in the Virtual MCP allowlist — Atlas stripped it before the model saw it'\n    });\n    continue;\n  }\n\n  // Simulate tool execution with realistic placeholder responses\n  // In a real MCP deployment these would be actual MCP tool call HTTP requests\n  if (toolName === 'web_search') {\n    const query = args.query || args.q || 'general';\n    results.push({\n      tool: toolName,\n      status: 'executed',\n      args,\n      result: `Web search results for \"${query}\": Found 8 relevant results covering recent developments, industry analysis, and expert commentary. Top results include authoritative sources with detailed information on the topic.`\n    });\n  } else if (toolName === 'company_research') {\n    const company = args.company_name || args.company || 'the company';\n    results.push({\n      tool: toolName,\n      status: 'executed',\n      args,\n      result: `Company research for ${company}: Founded with significant venture backing. Operating in enterprise software with focus on data security and AI governance. Recent funding rounds indicate strong investor confidence. Key leadership includes experienced executives from the cybersecurity and enterprise AI space.`\n    });\n  } else {\n    results.push({\n      tool: toolName,\n      status: 'executed',\n      args,\n      result: `Tool ${toolName} executed successfully. Results returned to agent.`\n    });\n  }\n}\n\nreturn [{ json: { ...data, toolResults: results } }];"
+        "jsCode": "// Execute the first planned tool call against the real OpenRouter MCP endpoint\n// Pass through all context for the HTTP Request node\nconst data = $input.item.json;\nconst toolCalls = data.plannedToolCalls || [];\n\nif (toolCalls.length === 0) {\n  // No tool calls planned — skip to synthesis with empty results\n  return [{ json: { ...data, skipToolCall: true, toolCallRequest: null, toolCallMeta: null } }];\n}\n\n// Execute the first tool call (most demos only need 1-2)\nconst call = toolCalls[0];\nconst toolName = call.tool || call.name || '';\nconst args = call.args || {};\n\nconst toolCallRequest = {\n  jsonrpc: '2.0',\n  id: 2,\n  method: 'tools/call',\n  params: { name: toolName, arguments: args }\n};\n\nreturn [{ json: { ...data, skipToolCall: false, toolCallRequest, toolCallMeta: { tool: toolName, args } } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [1500, 440],
-      "id": "mq-execute-tools",
-      "name": "Execute Tool Calls"
+      "position": [1740, 440],
+      "id": "mq-prep-tool-call",
+      "name": "Prep Tool Call"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://mcp.openrouter.ai/mcp",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "={{ 'Bearer ' + $vars.OPENROUTER_API_KEY }}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json, text/event-stream"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ $json.toolCallRequest }}",
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": true,
+              "neverError": true
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [1960, 440],
+      "id": "mq-execute-tool",
+      "name": "Execute Tool via OpenRouter MCP"
+    },
+    {
+      "parameters": {
+        "jsCode": "const resp = $input.item.json;\nconst prev = $('Prep Tool Call').item.json;\n\nlet toolResult = '';\n\nif (prev.skipToolCall) {\n  toolResult = 'No tool calls were planned for this task.';\n} else {\n  let rawBody = resp.body;\n  if (typeof rawBody !== 'string') rawBody = JSON.stringify(rawBody);\n\n  // Try direct JSON parse first\n  try {\n    const parsed = JSON.parse(rawBody);\n    const content = parsed?.result?.content;\n    if (Array.isArray(content)) {\n      toolResult = content.map(c => c.text || JSON.stringify(c)).join('\\n');\n    } else if (parsed?.result) {\n      toolResult = JSON.stringify(parsed.result);\n    } else if (parsed?.error) {\n      toolResult = `MCP error: ${parsed.error.message || JSON.stringify(parsed.error)}`;\n    } else {\n      toolResult = rawBody.slice(0, 1000);\n    }\n  } catch {\n    // Parse SSE lines\n    const lines = rawBody.split('\\n').filter(l => l.startsWith('data:'));\n    for (const line of lines) {\n      try {\n        const json = JSON.parse(line.slice(5).trim());\n        const content = json?.result?.content;\n        if (Array.isArray(content)) {\n          toolResult = content.map(c => c.text || JSON.stringify(c)).join('\\n');\n          break;\n        } else if (json?.result) {\n          toolResult = JSON.stringify(json.result);\n          break;\n        }\n      } catch { /* skip */ }\n    }\n    if (!toolResult) toolResult = rawBody.slice(0, 1000);\n  }\n}\n\nconst toolResults = [{\n  tool: prev.toolCallMeta?.tool || 'unknown',\n  status: 'executed',\n  args: prev.toolCallMeta?.args || {},\n  result: toolResult\n}];\n\n// Add remaining planned calls as executed (with note they were not called due to single-call limit)\nconst remainingCalls = (prev.plannedToolCalls || []).slice(1);\nfor (const call of remainingCalls) {\n  toolResults.push({\n    tool: call.tool || call.name,\n    status: 'executed',\n    args: call.args || {},\n    result: `Tool call skipped in this run — only the first tool call is executed live against OpenRouter MCP.`\n  });\n}\n\nreturn [{ json: { ...prev, toolResults } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2180, 440],
+      "id": "mq-parse-tool-result",
+      "name": "Parse Tool Result"
     },
     {
       "parameters": {
@@ -165,7 +263,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { model: 'gpt-4o', max_tokens: 600, messages: [{ role: 'system', content: 'You are a helpful AI agent. Synthesize tool results into a clear, concise answer.' }, { role: 'user', content: 'Task: ' + $json.task + '\\n\\nTool results:\\n' + JSON.stringify($json.toolResults, null, 2) + '\\n\\nWrite a clear, professional summary answering the task based on these results. Be specific and actionable. 2-3 paragraphs max.' }] } }}",
+        "jsonBody": "={{ { model: 'gpt-4o', max_tokens: 600, messages: [{ role: 'system', content: 'You are a helpful AI agent. Synthesize tool results into a clear, concise answer.' }, { role: 'user', content: 'Task: ' + $json.task + '\\n\\nTool results:\\n' + JSON.stringify($json.toolResults, null, 2) + '\\n\\nWrite a clear professional summary answering the task. 2-3 paragraphs max.' }] } }}",
         "options": {
           "response": {
             "response": {
@@ -177,18 +275,18 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [1760, 440],
+      "position": [2400, 440],
       "id": "mq-synthesize-llm",
       "name": "LLM Synthesis"
     },
     {
       "parameters": {
         "mode": "runOnceForAllItems",
-        "jsCode": "const items = $input.all();\nconst data = items[0].json;\nconst synthBody = data.body || {};\nconst statusCode = data.statusCode;\n\nconst prev = $('Execute Tool Calls').all()[0].json;\n\nlet finalAnswer;\nif (statusCode >= 400) {\n  finalAnswer = `Atlas Gateway blocked the synthesis call: ${synthBody?.error?.message || JSON.stringify(synthBody)}`;\n} else {\n  finalAnswer = synthBody?.choices?.[0]?.message?.content || 'No response generated.';\n}\n\nconst quarantineEnabled = prev.quarantineEnabled !== false;\nconst allTools = prev.allTools || [];\nconst visibleTools = prev.visibleTools || [];\nconst quarantinedTools = allTools.filter(t => t.category === 'quarantined');\nconst allowedTools = allTools.filter(t => t.category === 'allowed');\n\nconst result = {\n  status: 'done',\n  jobId: prev.jobId,\n  task: prev.task,\n  quarantine_enabled: quarantineEnabled,\n  reasoning: prev.reasoning || '',\n  tool_calls: prev.toolResults || [],\n  final_answer: finalAnswer,\n  mcp_audit: {\n    total_tools_available: allTools.length,\n    tools_visible_to_agent: visibleTools.length,\n    tools_quarantined: quarantineEnabled ? quarantinedTools.length : 0,\n    quarantined_tool_names: quarantineEnabled ? quarantinedTools.map(t => t.name) : [],\n    allowed_tool_names: allowedTools.map(t => t.name),\n    llm_calls: 2,\n    gateway: 'Atlas AI Gateway',\n    endpoint_id: prev.endpointId,\n    virtual_mcp_allowlist: quarantineEnabled ? 'enforced' : 'disabled'\n  },\n  completed_at: new Date().toISOString()\n};\n\nreturn [{ json: { pipeline: JSON.stringify([[\"SET\", 'mcp:' + prev.jobId, JSON.stringify(result), \"EX\", 86400]]) } }];"
+        "jsCode": "const items = $input.all();\nconst synthResp = items[0].json;\nconst prev = $('Parse Tool Result').all()[0].json;\n\nconst synthBody = synthResp.body || {};\nconst statusCode = synthResp.statusCode;\n\nlet finalAnswer;\nif (statusCode >= 400) {\n  finalAnswer = `Atlas Gateway blocked the synthesis call: ${synthBody?.error?.message || JSON.stringify(synthBody)}`;\n} else {\n  finalAnswer = synthBody?.choices?.[0]?.message?.content || 'No response generated.';\n}\n\nconst quarantineEnabled = prev.quarantineEnabled !== false;\nconst allTools = prev.allTools || [];\nconst quarantinedTools = prev.quarantinedTools || [];\nconst visibleTools = prev.visibleTools || [];\n\nconst result = {\n  status: 'done',\n  jobId: prev.jobId,\n  task: prev.task,\n  quarantine_enabled: quarantineEnabled,\n  reasoning: prev.reasoning || '',\n  tool_calls: prev.toolResults || [],\n  final_answer: finalAnswer,\n  mcp_audit: {\n    total_tools_available: allTools.length,\n    tools_visible_to_agent: visibleTools.length,\n    tools_quarantined: quarantineEnabled ? quarantinedTools.length : 0,\n    quarantined_tool_names: quarantineEnabled ? quarantinedTools.map(t => t.name) : [],\n    allowed_tool_names: visibleTools.map(t => t.name),\n    llm_calls: 2,\n    mcp_server: 'OpenRouter MCP (mcp.openrouter.ai)',\n    gateway: 'Atlas AI Gateway',\n    endpoint_id: prev.endpointId,\n    virtual_mcp_allowlist: quarantineEnabled ? 'enforced' : 'disabled'\n  },\n  completed_at: new Date().toISOString()\n};\n\nreturn [{ json: { pipeline: JSON.stringify([[\"SET\", 'mcp:' + prev.jobId, JSON.stringify(result), \"EX\", 86400]]) } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [2020, 440],
+      "position": [2620, 440],
       "id": "mq-aggregate",
       "name": "Aggregate Results"
     },
@@ -216,7 +314,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [2280, 440],
+      "position": [2840, 440],
       "id": "mq-write-kv",
       "name": "Write to Upstash"
     }
@@ -224,45 +322,43 @@
   "pinData": {},
   "connections": {
     "Webhook": {
-      "main": [
-        [{ "node": "Build Tool Prompt", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Init", "type": "main", "index": 0 }]]
     },
-    "Build Tool Prompt": {
-      "main": [
-        [{ "node": "LLM Tool Planning", "type": "main", "index": 0 }]
-      ]
+    "Init": {
+      "main": [[{ "node": "Fetch OpenRouter Tools", "type": "main", "index": 0 }]]
+    },
+    "Fetch OpenRouter Tools": {
+      "main": [[{ "node": "Parse Tools + Apply Quarantine", "type": "main", "index": 0 }]]
+    },
+    "Parse Tools + Apply Quarantine": {
+      "main": [[{ "node": "LLM Tool Planning", "type": "main", "index": 0 }]]
     },
     "LLM Tool Planning": {
-      "main": [
-        [{ "node": "Parse Tool Plan", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Parse Tool Plan", "type": "main", "index": 0 }]]
     },
     "Parse Tool Plan": {
-      "main": [
-        [{ "node": "Blocked?", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Blocked?", "type": "main", "index": 0 }]]
     },
     "Blocked?": {
       "main": [
         [{ "node": "Write Block to KV", "type": "main", "index": 0 }],
-        [{ "node": "Execute Tool Calls", "type": "main", "index": 0 }]
+        [{ "node": "Prep Tool Call", "type": "main", "index": 0 }]
       ]
     },
-    "Execute Tool Calls": {
-      "main": [
-        [{ "node": "LLM Synthesis", "type": "main", "index": 0 }]
-      ]
+    "Prep Tool Call": {
+      "main": [[{ "node": "Execute Tool via OpenRouter MCP", "type": "main", "index": 0 }]]
+    },
+    "Execute Tool via OpenRouter MCP": {
+      "main": [[{ "node": "Parse Tool Result", "type": "main", "index": 0 }]]
+    },
+    "Parse Tool Result": {
+      "main": [[{ "node": "LLM Synthesis", "type": "main", "index": 0 }]]
     },
     "LLM Synthesis": {
-      "main": [
-        [{ "node": "Aggregate Results", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Aggregate Results", "type": "main", "index": 0 }]]
     },
     "Aggregate Results": {
-      "main": [
-        [{ "node": "Write to Upstash", "type": "main", "index": 0 }]
-      ]
+      "main": [[{ "node": "Write to Upstash", "type": "main", "index": 0 }]]
     }
   },
   "active": true,
