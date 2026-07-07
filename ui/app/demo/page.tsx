@@ -1418,12 +1418,30 @@ export default function DemoPage() {
                         <p className="text-xs text-emerald-400">All attacks blocked — Atlas policy is catching all obfuscation variants on this endpoint.</p>
                       )}
                       <p className="text-xs text-gray-500 mt-2">All {redTeamSummary.total} LLM calls were routed through Atlas AI Gateway — full audit trail in Atlas AI Investigation.</p>
-                      <button
-                        onClick={() => { setRedTeamAttacks([]); setRedTeamSummary(null); setRedTeamError(null); setRedTeamSeedPrompt(""); }}
-                        className="mt-3 text-xs text-gray-500 hover:text-gray-300 transition-colors"
-                      >
-                        ← New Attack
-                      </button>
+                      <div className="mt-3 flex items-center justify-between">
+                        <button
+                          onClick={() => { setRedTeamAttacks([]); setRedTeamSummary(null); setRedTeamError(null); setRedTeamSeedPrompt(""); }}
+                          className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+                        >
+                          ← New Attack
+                        </button>
+                        {(() => {
+                          const proj = chainProjects.find(p => p.id === selectedProjectId);
+                          const orgId = proj?.orgId;
+                          if (!orgId || !selectedProjectId) return null;
+                          const url = `https://prod.alltrue-be.com/ai-monitor/requests?organization=${orgId}&project=${selectedProjectId}&tab=prompt-events`;
+                          return (
+                            <a
+                              href={url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1.5 bg-red-700 hover:bg-red-600 text-white text-xs font-medium rounded-lg px-3 py-1.5 transition-colors"
+                            >
+                              View in Atlas →
+                            </a>
+                          );
+                        })()}
+                      </div>
                     </div>
                   )}
 
