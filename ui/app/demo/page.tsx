@@ -1594,11 +1594,13 @@ export default function DemoPage() {
                       <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Virtual MCP Allowlist</p>
                       <div className="grid grid-cols-1 gap-1.5">
                         {[
-                          { name: "web_search", desc: "Search the web for information", allowed: true },
-                          { name: "company_research", desc: "Research a company overview and news", allowed: true },
-                          { name: "send_email", desc: "Send email on behalf of the user", allowed: false },
-                          { name: "read_files", desc: "Read files from the file system", allowed: false },
-                          { name: "database_query", desc: "Execute SQL queries against databases", allowed: false },
+                          { name: "benchmarks", desc: "Compare model quality using third-party benchmarks", allowed: true },
+                          { name: "models-list", desc: "Browse the live OpenRouter model catalog", allowed: true },
+                          { name: "rankings-daily", desc: "See most used and trending models by token volume", allowed: true },
+                          { name: "docs-search", desc: "Search OpenRouter documentation", allowed: true },
+                          { name: "credits-get", desc: "Check account credit balance", allowed: false },
+                          { name: "chat-send", desc: "Send chat messages using any OpenRouter model", allowed: false },
+                          { name: "generation-get", desc: "Inspect cost and token counts for a generation", allowed: false },
                         ].map(tool => (
                           <div key={tool.name} className="flex items-center gap-2">
                             <span className={`text-xs font-mono px-2 py-0.5 rounded ${tool.allowed ? "bg-emerald-900/40 text-emerald-400 border border-emerald-800/60" : "bg-red-900/30 text-red-400 border border-red-800/50 line-through"}`}>

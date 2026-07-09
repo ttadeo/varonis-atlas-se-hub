@@ -17,7 +17,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const body = $('Webhook').item.json.body;\nconst task = body.task || '';\nconst jobId = body.jobId || '';\nconst endpointId = body.endpointId || 'tadeo-demo-env';\nconst projectId = body.projectId || '';\nconst quarantineEnabled = body.quarantineEnabled !== false;\n\n// Virtual MCP allowlist — these are the approved tools\n// send_email, credits_get, chat_send are quarantined (stripped before model sees them)\nconst ALLOWED_TOOLS = new Set(['web.search', 'web_search', 'models_list', 'model_list']);\n\nreturn [{ json: { task, jobId, endpointId, projectId, quarantineEnabled, allowedTools: [...ALLOWED_TOOLS] } }];"
+        "jsCode": "const body = $('Webhook').item.json.body;\nconst task = body.task || '';\nconst jobId = body.jobId || '';\nconst endpointId = body.endpointId || 'tadeo-demo-env';\nconst projectId = body.projectId || '';\nconst quarantineEnabled = body.quarantineEnabled !== false;\n\n// Virtual MCP allowlist — approved tools (safe, read-only, informational)\n// credits-get, chat-send, generation-get quarantined (financial/sensitive)\nconst ALLOWED_TOOLS = new Set(['benchmarks', 'models-list', 'model-get', 'rankings-daily', 'task-classifications', 'providers-list', 'docs-search', 'ping']);\n\nreturn [{ json: { task, jobId, endpointId, projectId, quarantineEnabled, allowedTools: [...ALLOWED_TOOLS] } }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
