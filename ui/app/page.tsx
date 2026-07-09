@@ -1,11 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Home() {
   const [securityOpen, setSecurityOpen] = useState(false);
   const [truelensOpen, setTruelensOpen] = useState(false);
+  const [userCount, setUserCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/users/count")
+      .then(r => r.json())
+      .then(d => { if (d.total !== null) setUserCount(d.total); })
+      .catch(() => {});
+  }, []);
 
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
@@ -17,6 +25,14 @@ export default function Home() {
           <h1 className="font-semibold text-white">Atlas Learning Platform</h1>
           <p className="text-xs text-gray-400">Varonis Atlas AI Security — Internal SE Tool</p>
         </div>
+
+        {/* User count */}
+        {userCount !== null && (
+          <div className="flex items-center gap-1.5 text-xs text-gray-400 border border-gray-700 rounded-lg px-3 py-1.5">
+            <span>👤</span>
+            <span><span className="text-white font-semibold">{userCount}</span> registered users</span>
+          </div>
+        )}
 
         {/* TrueLens evaluation disclosure */}
         <div className="relative">
