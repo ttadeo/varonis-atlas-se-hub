@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -62,6 +63,7 @@ const TOPIC_ICONS: Record<string, string> = {
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
   function copy() {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
@@ -184,11 +186,17 @@ export default function KnowledgePage() {
           <Link href="/" className="text-gray-400 hover:text-white text-sm block mb-3">← Back</Link>
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-teal-600 flex items-center justify-center text-sm">💡</div>
-            <div>
+            <div className="flex-1">
               <p className="text-sm font-semibold text-white">SME Knowledge</p>
               <p className="text-xs text-gray-500">{total} field Q&A pairs</p>
             </div>
+            <button
+              onClick={() => setHelpOpen(true)}
+              className="w-6 h-6 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-gray-300 hover:text-white text-xs font-bold transition-colors shrink-0"
+              title="Help"
+            >?</button>
           </div>
+          <HelpPanel page="knowledge" open={helpOpen} onClose={() => setHelpOpen(false)} />
         </div>
 
         <div className="flex-1 overflow-y-auto py-2">
