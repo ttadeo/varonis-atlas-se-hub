@@ -63,7 +63,6 @@ const TOPIC_ICONS: Record<string, string> = {
 
 function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
-  const [helpOpen, setHelpOpen] = useState(false);
   function copy() {
     navigator.clipboard.writeText(text).then(() => {
       setCopied(true);
@@ -97,6 +96,7 @@ export default function KnowledgePage() {
   const [chatLoading, setChatLoading] = useState(false);
   const [chatError, setChatError] = useState<string | null>(null);
   const [webhookMissing, setWebhookMissing] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
