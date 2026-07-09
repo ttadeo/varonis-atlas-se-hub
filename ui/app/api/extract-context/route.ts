@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import mammoth from "mammoth";
 import { NextRequest, NextResponse } from "next/server";
+import * as XLSX from "xlsx";
 import { requireAuth } from "@/lib/auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -17,6 +18,11 @@ const TEXT_MIME_TYPES = new Set([
 const DOCX_MIME_TYPES = new Set([
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   "application/msword",
+]);
+
+const XLSX_MIME_TYPES = new Set([
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
 ]);
 
 const IMAGE_MIME_TYPES = new Set([
@@ -129,6 +135,12 @@ export async function POST(req: NextRequest) {
       text = await extractPdf(buffer);
     } else if (DOCX_MIME_TYPES.has(mimeType) || filename.match(/\.(docx|doc)$/i)) {
       text = await extractDocx(buffer);
+    } else if (XLSX_MIME_TYPES.has(mimeType) || filename.match(/\.(xlsx|xls)$/i)) {
+      const workbook = XLSX.read(buffer, { type: "buffer" });
+      text = workbook.SheetNames.map((name) => {
+        const csv = XLSX.utils.sheet_to_csv(workbook.Sheets[name]);
+        return `## Sheet: ${name}\n${csv}`;
+      }).join("\n\n");
     } else if (IMAGE_MIME_TYPES.has(mimeType) || filename.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
       const imageMime = IMAGE_MIME_TYPES.has(mimeType) ? mimeType : "image/jpeg";
       text = await extractImage(buffer, imageMime);

@@ -28,6 +28,7 @@ interface SessionMeta {
 
 const MAX_FILES = 4;
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024;
+const ATTACH_NUDGE_KEY = "atlas_attach_nudge_dismissed";
 const MAX_PDF_BYTES = 32 * 1024 * 1024;
 const MAX_OTHER_BYTES = 20 * 1024 * 1024;
 
@@ -64,6 +65,11 @@ export default function AskPage() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [showAttachNudge, setShowAttachNudge] = useState(false);
+
+  useEffect(() => {
+    if (!localStorage.getItem(ATTACH_NUDGE_KEY)) setShowAttachNudge(true);
+  }, []);
 
   const [attachments, setAttachments] = useState<Attachment[]>([]);
   const [attachError, setAttachError] = useState<string | null>(null);
@@ -390,11 +396,36 @@ export default function AskPage() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
           {messages.length === 0 && (
-            <div className="text-center text-gray-500 mt-20">
-              <div className="text-4xl mb-4">💬</div>
-              <p className="text-lg font-medium text-gray-300">Ask anything about Varonis Atlas</p>
-              <p className="text-sm mt-2">AI Gateway, policies, guardrails, API endpoints, and more.</p>
-              <p className="text-xs mt-3 text-gray-600">Attach files for context — PDF, Word, CSV, images</p>
+            <div className="flex flex-col items-center mt-16 gap-6">
+              <div className="text-center text-gray-500">
+                <div className="text-4xl mb-4">💬</div>
+                <p className="text-lg font-medium text-gray-300">Ask anything about Varonis Atlas</p>
+                <p className="text-sm mt-2">AI Gateway, policies, guardrails, API endpoints, and more.</p>
+              </div>
+
+              {showAttachNudge && (
+                <div className="w-full max-w-xl rounded-xl border border-blue-800/50 bg-blue-950/30 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-start gap-3">
+                      <span className="text-xl mt-0.5">📎</span>
+                      <div>
+                        <p className="text-sm font-medium text-blue-200">Have a document? Attach it for better answers.</p>
+                        <p className="text-xs text-blue-300/70 mt-1">Upload customer emails, install guides, spreadsheets, or screenshots — the system will use them as context for your question.</p>
+                        <div className="flex flex-wrap gap-1.5 mt-3">
+                          {["PDF", "Word", "Excel (.xlsx)", "CSV", "TXT", "Images"].map(f => (
+                            <span key={f} className="text-xs bg-blue-900/50 border border-blue-700/50 text-blue-300 rounded px-2 py-0.5">{f}</span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => { setShowAttachNudge(false); localStorage.setItem(ATTACH_NUDGE_KEY, "1"); }}
+                      className="text-blue-400 hover:text-white text-lg leading-none shrink-0"
+                      title="Dismiss"
+                    >×</button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -500,7 +531,7 @@ export default function AskPage() {
                 type="file"
                 multiple
                 className="hidden"
-                accept=".pdf,.docx,.doc,.txt,.csv,.md,.tsv,.json,.jpg,.jpeg,.png,.gif,.webp"
+                accept=".pdf,.docx,.doc,.xlsx,.xls,.txt,.csv,.md,.tsv,.json,.jpg,.jpeg,.png,.gif,.webp"
                 onChange={(e) => { if (e.target.files?.length) handleFiles(e.target.files); }}
               />
 
@@ -508,7 +539,7 @@ export default function AskPage() {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={attachments.length >= MAX_FILES || extracting}
                 className="shrink-0 w-10 h-10 rounded-xl bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed text-gray-400 hover:text-gray-200 flex items-center justify-center transition-colors"
-                title="Attach file (PDF, Word, CSV, image)"
+                title="Attach file (PDF, Word, Excel, CSV, image)"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />

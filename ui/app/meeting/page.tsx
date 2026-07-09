@@ -487,9 +487,12 @@ export default function MeetingPage() {
     for (const file of fileArray) {
       const isImage = file.type.startsWith("image/");
       const isPDF = file.type === "application/pdf";
+      const isXlsx = file.type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ||
+        file.type === "application/vnd.ms-excel" ||
+        file.name.match(/\.(xlsx|xls)$/i) !== null;
 
-      if (!isImage && !isPDF) {
-        setAttachError(`${file.name}: only images and PDFs are supported.`);
+      if (!isImage && !isPDF && !isXlsx) {
+        setAttachError(`${file.name}: only images, PDFs, and spreadsheets are supported.`);
         continue;
       }
       if (isImage && file.size > MAX_IMAGE_BYTES) {
@@ -498,6 +501,18 @@ export default function MeetingPage() {
       }
       if (isPDF && file.size > MAX_PDF_BYTES) {
         setAttachError(`${file.name}: PDFs must be under 32 MB.`);
+        continue;
+      }
+
+      if (isXlsx) {
+        try {
+          const form = new FormData();
+          form.append("file", file);
+          const res = await fetch("/api/extract-context", { method: "POST", body: form });
+          const data = await res.json();
+          if (!res.ok) { setAttachError(`${file.name}: ${data.error ?? "Extraction failed"}`); continue; }
+          newAttachments.push({ name: file.name, mediaType: "text/plain", data: data.text, size: file.size });
+        } catch (err) { setAttachError(`${file.name}: ${String(err)}`); }
         continue;
       }
 
@@ -1036,7 +1051,7 @@ export default function MeetingPage() {
                     onClick={() => contextFileInputRef.current?.click()}
                     disabled={extractingContext}
                     className="text-xs text-blue-400 hover:text-blue-300 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
-                    title="Upload a file to extract text (PDF, Word, CSV, TXT, image)"
+                    title="Upload a file to extract text (PDF, Word, Excel, CSV, TXT, image)"
                   >
                     {extractingContext ? "Extracting…" : "Upload file"}
                   </button>
@@ -1044,7 +1059,7 @@ export default function MeetingPage() {
                     ref={contextFileInputRef}
                     type="file"
                     className="hidden"
-                    accept=".pdf,.docx,.doc,.txt,.csv,.md,.tsv,.json,.jpg,.jpeg,.png,.gif,.webp"
+                    accept=".pdf,.docx,.doc,.xlsx,.xls,.txt,.csv,.md,.tsv,.json,.jpg,.jpeg,.png,.gif,.webp"
                     onChange={(e) => {
                       const f = e.target.files?.[0];
                       if (f) handleContextFile(f);
@@ -1847,7 +1862,7 @@ export default function MeetingPage() {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="image/*,application/pdf"
+                  accept="image/*,application/pdf,.xlsx,.xls"
                   multiple
                   className="hidden"
                   onChange={(e) => { if (e.target.files) handleFiles(e.target.files); e.target.value = ""; }}
