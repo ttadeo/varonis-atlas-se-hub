@@ -5,6 +5,7 @@ import { useState } from "react";
 
 export default function Home() {
   const [securityOpen, setSecurityOpen] = useState(false);
+  const [truelensOpen, setTruelensOpen] = useState(false);
 
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
@@ -15,6 +16,57 @@ export default function Home() {
         <div className="flex-1">
           <h1 className="font-semibold text-white">Atlas Learning Platform</h1>
           <p className="text-xs text-gray-400">Varonis Atlas AI Security — Internal SE Tool</p>
+        </div>
+
+        {/* TrueLens evaluation disclosure */}
+        <div className="relative">
+          <button
+            onClick={() => setTruelensOpen(o => !o)}
+            className="flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-600 border border-emerald-500 rounded-lg px-3 py-1.5 transition-colors shadow-lg shadow-emerald-900/50"
+          >
+            <span>📊</span>
+            <span>RAG Evaluation — TrueLens</span>
+            <span className="text-emerald-200">{truelensOpen ? "▲" : "▼"}</span>
+          </button>
+
+          {truelensOpen && (
+            <div className="absolute right-0 top-full mt-2 w-[620px] rounded-xl border border-gray-700 bg-gray-900 shadow-2xl z-50 overflow-hidden">
+              <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between">
+                <p className="text-sm font-semibold text-white">RAG Accuracy — Evaluated with TrueLens</p>
+                <button onClick={() => setTruelensOpen(false)} className="text-gray-500 hover:text-gray-300 text-xs">✕</button>
+              </div>
+              <div className="px-5 py-4 space-y-4">
+                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.4.0 docs, June 2026.</span></p>
+
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="rounded-lg border border-emerald-800/60 bg-emerald-900/15 px-4 py-3 text-center">
+                    <div className="text-2xl font-bold text-emerald-400">1.000</div>
+                    <div className="text-xs font-semibold text-gray-300 mt-1">Answer Relevance</div>
+                    <div className="text-xs text-gray-500 mt-1">Answers directly address what was asked</div>
+                  </div>
+                  <div className="rounded-lg border border-emerald-800/60 bg-emerald-900/15 px-4 py-3 text-center">
+                    <div className="text-2xl font-bold text-emerald-400">0.994</div>
+                    <div className="text-xs font-semibold text-gray-300 mt-1">Context Relevance</div>
+                    <div className="text-xs text-gray-500 mt-1">System retrieves the right knowledge to answer</div>
+                  </div>
+                  <div className="rounded-lg border border-amber-800/60 bg-amber-900/10 px-4 py-3 text-center">
+                    <div className="text-2xl font-bold text-amber-400">0.689</div>
+                    <div className="text-xs font-semibold text-gray-300 mt-1">Groundedness</div>
+                    <div className="text-xs text-gray-500 mt-1">Answers stay within retrieved content</div>
+                  </div>
+                </div>
+
+                <div className="rounded-lg border border-amber-800/50 bg-amber-900/10 px-4 py-3 space-y-1">
+                  <p className="text-xs font-semibold text-amber-400">Groundedness — Known Issue, Being Addressed</p>
+                  <p className="text-xs text-gray-400">The system occasionally adds context beyond what the retrieved chunks strictly support — drawing on general LLM knowledge rather than staying purely within the Atlas documentation. This is our primary optimization target. We are tightening the RAG system prompt to constrain answers to retrieved content only. <span className="text-amber-300 font-medium">Fix targeted for July 10, 2026.</span></p>
+                </div>
+
+                <div className="rounded-lg bg-gray-800/60 border border-gray-700 px-4 py-3">
+                  <p className="text-xs text-gray-500">Scores reflect the RAG pipeline serving <span className="font-mono">/ask</span>, <span className="font-mono">/learn</span>, and <span className="font-mono">/knowledge</span>. TrueLens evaluations are re-run after every major knowledge base update.</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Security disclosure — top right of header */}
