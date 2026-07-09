@@ -135,6 +135,11 @@ export default function Home() {
                     <p className="text-xs text-gray-300">Delete All is owner-scoped — SEs can only clean up projects they own. LLM endpoints are permanently excluded from deletion via a server-side blocklist. Superuser access is restricted to a single hardcoded admin email.</p>
                   </div>
 
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">File Attachments — Not Stored</p>
+                    <p className="text-xs text-gray-300">Documents uploaded in Ask Atlas or Meeting Co-Pilot (PDFs, Word, Excel, images) are <span className="text-white font-medium">never persisted</span>. File content exists only in browser memory, is sent once to Claude as part of the message, and is discarded immediately. Only the filename is saved in session history — never the content.</p>
+                  </div>
+
                 </div>
 
                 <div className="rounded-lg bg-gray-800/60 border border-gray-700 px-4 py-3">
