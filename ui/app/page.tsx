@@ -12,10 +12,71 @@ export default function Home() {
         <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-sm">
           A
         </div>
-        <div>
+        <div className="flex-1">
           <h1 className="font-semibold text-white">Atlas Learning Platform</h1>
           <p className="text-xs text-gray-400">Varonis Atlas AI Security — Internal SE Tool</p>
         </div>
+
+        {/* Security disclosure — top right of header */}
+        <div className="relative">
+          <button
+            onClick={() => setSecurityOpen(o => !o)}
+            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1.5 transition-colors"
+          >
+            <span>🔒</span>
+            <span>How this system is secured</span>
+            <span className="text-gray-600">{securityOpen ? "▲" : "▼"}</span>
+          </button>
+
+          {securityOpen && (
+            <div className="absolute right-0 top-full mt-2 w-[640px] rounded-xl border border-gray-700 bg-gray-900 shadow-2xl z-50 overflow-hidden">
+              <div className="px-5 py-4 border-b border-gray-700 flex items-center justify-between">
+                <p className="text-sm font-semibold text-white">How the Atlas Learning System is Secured</p>
+                <button onClick={() => setSecurityOpen(false)} className="text-gray-500 hover:text-gray-300 text-xs">✕</button>
+              </div>
+              <div className="px-5 py-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Authentication</p>
+                    <p className="text-xs text-gray-300">Email OTP restricted to <span className="font-mono text-blue-400">@varonis.com</span> addresses only. No passwords stored. A time-limited one-time code is sent via Resend and verified server-side before a signed JWT session cookie is issued.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Session Management</p>
+                    <p className="text-xs text-gray-300">Sessions are JWT-signed with a server-side secret. The cookie is <span className="font-mono text-blue-400">HttpOnly</span> and <span className="font-mono text-blue-400">SameSite=Strict</span>. Sessions expire automatically and cannot be forged without the secret.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">API Route Protection</p>
+                    <p className="text-xs text-gray-300">Every protected API route calls <span className="font-mono text-blue-400">requireAuth()</span> as its first operation. Unauthenticated requests are rejected before any business logic or database access occurs. Only four public endpoints exist: send-otp, verify-otp, logout, and the n8n guide callback.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Data Scoping</p>
+                    <p className="text-xs text-gray-300">User preferences and session history are scoped to <span className="font-mono text-blue-400">auth.email</span> — the verified email from the JWT. Users can only read and write their own data. No user can access another user&apos;s records.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Secrets Management</p>
+                    <p className="text-xs text-gray-300">All API keys (Anthropic, OpenAI, Atlas, Resend, Upstash) are server-side Vercel environment variables — never exposed to the browser or client bundle.</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Demo Provisioning Safety</p>
+                    <p className="text-xs text-gray-300">Delete All is owner-scoped — SEs can only clean up projects they own. LLM endpoints are permanently excluded from deletion via a server-side blocklist. Superuser access is restricted to a single hardcoded admin email.</p>
+                  </div>
+
+                </div>
+
+                <div className="rounded-lg bg-gray-800/60 border border-gray-700 px-4 py-3">
+                  <p className="text-xs text-gray-500">Internal use only — not customer-facing. All traffic is encrypted in transit via Vercel TLS. No customer data is stored — only SE session state and learning progress.</p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6">
@@ -184,65 +245,6 @@ export default function Home() {
             </Link>
           </div>
 
-
-          {/* Security Model */}
-          <div className="mt-6 rounded-2xl border border-gray-700 bg-gray-900/50 overflow-hidden">
-            <button
-              onClick={() => setSecurityOpen(o => !o)}
-              className="w-full flex items-center justify-between px-6 py-4 text-sm hover:bg-gray-800/50 transition-colors"
-            >
-              <div className="flex items-center gap-3">
-                <span className="text-gray-400">🔒</span>
-                <span className="font-medium text-gray-300">Security Model</span>
-                <span className="text-xs text-gray-500">How this platform protects your data</span>
-              </div>
-              <span className="text-gray-500 text-xs">{securityOpen ? "▲" : "▼"}</span>
-            </button>
-
-            {securityOpen && (
-              <div className="border-t border-gray-700 px-6 py-5 space-y-5">
-
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Authentication</p>
-                    <p className="text-sm text-gray-300">Email OTP — restricted to <span className="font-mono text-blue-400">@varonis.com</span> addresses only. No passwords stored. A time-limited one-time code is sent via Resend and verified server-side before a signed JWT session cookie is issued.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Session Management</p>
-                    <p className="text-sm text-gray-300">All sessions are JWT-signed with a server-side secret (<span className="font-mono text-blue-400">SESSION_SECRET</span>). The cookie is <span className="font-mono text-blue-400">HttpOnly</span> and <span className="font-mono text-blue-400">SameSite=Strict</span>. Sessions expire automatically and cannot be forged without the secret.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">API Route Protection</p>
-                    <p className="text-sm text-gray-300">Every protected API route calls <span className="font-mono text-blue-400">requireAuth()</span> as its first operation. Unauthenticated requests are rejected before any business logic or database access occurs. Only four public endpoints exist: send-otp, verify-otp, logout, and the n8n guide callback.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Data Scoping</p>
-                    <p className="text-sm text-gray-300">User preferences and session history are scoped to <span className="font-mono text-blue-400">auth.email</span> — the verified email from the JWT. Users can only read and write their own data. No user can access another user&apos;s preferences, lesson progress, or chat history.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Secrets Management</p>
-                    <p className="text-sm text-gray-300">All API keys (Anthropic, OpenAI, Atlas, Resend, Upstash) are server-side Vercel environment variables — never exposed to the browser. The Next.js server-only boundary ensures no key leaks to the client bundle.</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide">Demo Provisioning Safety</p>
-                    <p className="text-sm text-gray-300">Delete All operations are owner-scoped — SEs can only clean up projects they own. LLM endpoints are permanently excluded from deletion via a server-side blocklist. Superuser access is restricted to a single hardcoded admin email.</p>
-                  </div>
-
-                </div>
-
-                <div className="rounded-lg bg-gray-800/60 border border-gray-700 px-4 py-3">
-                  <p className="text-xs text-gray-500">This platform is for internal Varonis SE use only. It is not customer-facing. All traffic is encrypted in transit via Vercel TLS. No customer data is stored — only SE session state and learning progress.</p>
-                </div>
-
-              </div>
-            )}
-          </div>
 
         </div>
       </main>
