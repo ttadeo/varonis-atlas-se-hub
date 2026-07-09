@@ -1570,6 +1570,15 @@ export default function DemoPage() {
               {mcpSubTab === "quarantine" && (
                 <div className="space-y-4">
 
+                  {/* Enforcement layer callout */}
+                  <div className="rounded-lg border border-orange-800/50 bg-orange-950/30 px-4 py-3 flex items-start gap-3">
+                    <span className="text-orange-400 text-base mt-0.5">⚠</span>
+                    <div className="text-xs text-orange-300 space-y-0.5">
+                      <p><span className="font-semibold">Quarantine enforced at: Prompt Layer (n8n)</span> — quarantined tools are stripped from the agent&apos;s planning prompt before the LLM runs. Atlas observes the LLM traffic but does not enforce at the MCP protocol level.</p>
+                      <p className="text-orange-400/70">Atlas MCP Gateway enforcement (wire-level tool blocking) — coming soon.</p>
+                    </div>
+                  </div>
+
                   {/* Input card */}
                   <div className="rounded-xl border border-gray-700 bg-gray-900/50 p-5 space-y-4">
                     <div>
@@ -1625,7 +1634,7 @@ export default function DemoPage() {
                         Quarantine {mcqQuarantineEnabled ? <span className="text-orange-400 font-medium">ON</span> : <span className="text-gray-500 font-medium">OFF</span>}
                       </span>
                       <span className="text-xs text-gray-500">
-                        {mcqQuarantineEnabled ? "Agent sees 2 tools (send_email, read_files, database_query stripped)" : "Agent sees all 5 tools — no enforcement"}
+                        {mcqQuarantineEnabled ? "Agent sees 4 allowed tools — credits-get, chat-send, generation-get stripped" : "Agent sees all 14 tools — no enforcement"}
                       </span>
                     </div>
 
