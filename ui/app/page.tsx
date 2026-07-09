@@ -21,11 +21,11 @@ export default function Home() {
         <div className="relative">
           <button
             onClick={() => setSecurityOpen(o => !o)}
-            className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-200 border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1.5 transition-colors"
+            className="flex items-center gap-1.5 text-xs font-bold text-white bg-red-600 hover:bg-red-500 border border-red-500 rounded-lg px-3 py-1.5 transition-colors shadow-lg shadow-red-900/50"
           >
             <span>🔒</span>
             <span>How this system is secured</span>
-            <span className="text-gray-600">{securityOpen ? "▲" : "▼"}</span>
+            <span className="text-red-200">{securityOpen ? "▲" : "▼"}</span>
           </button>
 
           {securityOpen && (
