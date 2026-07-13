@@ -73,8 +73,8 @@ export default function Home() {
                 </div>
 
                 <div className="rounded-lg border border-amber-800/50 bg-amber-900/10 px-4 py-3 space-y-1">
-                  <p className="text-xs font-semibold text-amber-400">Groundedness — Known Issue, Being Addressed</p>
-                  <p className="text-xs text-gray-400">The system occasionally adds context beyond what the retrieved chunks strictly support — drawing on general LLM knowledge rather than staying purely within the Atlas documentation. This is our primary optimization target. We are tightening the RAG system prompt to constrain answers to retrieved content only. <span className="text-amber-300 font-medium">Fix targeted for July 10, 2026.</span></p>
+                  <p className="text-xs font-semibold text-amber-400">Groundedness — Active Optimization Target</p>
+                  <p className="text-xs text-gray-400">The system occasionally adds context beyond what the retrieved chunks strictly support — drawing on general LLM knowledge rather than staying purely within the Atlas documentation. We are actively tightening the RAG system prompt and context framing to constrain answers to retrieved content only.</p>
                 </div>
 
                 <div className="rounded-lg bg-gray-800/60 border border-gray-700 px-4 py-3">
