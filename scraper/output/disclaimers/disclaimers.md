@@ -6,7 +6,7 @@ section: disclaimers
 
 # Disclaimers
 
-- [](/_docs/)- DisclaimersOn this page# Disclaimers
+- [](/_docs/)- DisclaimersExport PDFOn this page# Disclaimers
 ## **VARONIS ATLAS PRODUCT-SPECIFIC DISCLAIMERS**[​](#varonis-atlas-product-specific-disclaimers)
 **THE DISCLAIMERS SET FORTH HEREIN ARE HEREBY INCORPORATED INTO AND MADE A PART OF THE SUBSCRIPTION SERVICES AGREEMENT ENTERED INTO BETWEEN SUBSCRIBER AND VARONIS.**
 

@@ -1,10 +1,12 @@
 # customer-llm API Endpoints
 
-## GET /v1/customer-llm/llm-config-for-workload-and-feature-groups — Get Llm Config For Feature Group And Use Case For Customer External
+## GET /v1/customer-llm/llm-config-for-workload-and-feature-groups — Get LLM configuration for a workload type and feature group
 
 **Endpoint**: `GET /v1/customer-llm/llm-config-for-workload-and-feature-groups`
-**Summary**: Get Llm Config For Feature Group And Use Case For Customer External
+**Summary**: Get LLM configuration for a workload type and feature group
 **Tags**: customer-llm
+
+Returns the resolved LiteLLM configurations for the specified workload type and feature group combination. Scoped to the authenticated customer. Use when an agent needs to discover which LLM models and endpoints are configured for a given use case such as firewall processing or evaluation workloads.
 
 **Parameters**:
 - `dataplane_id` (query, optional): 
@@ -13,6 +15,8 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid workload or feature group
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -32,13 +36,13 @@
 
 ---
 
-## POST /v1/customer-llm/configurations — Create Customer Llm Configuration
+## POST /v1/customer-llm/configurations — Register a new customer LLM configuration
 
 **Endpoint**: `POST /v1/customer-llm/configurations`
-**Summary**: Create Customer Llm Configuration
+**Summary**: Register a new customer LLM configuration
 **Tags**: customer-llm
 
-Create a new customer LLM configuration.
+Creates and persists a new LLM provider configuration for the customer, optionally verifying connectivity to the provider before saving. Scoped to the authenticated customer. Use when onboarding a new LLM endpoint or API key for use in firewall rules or AI evaluation workloads.
 
 **Parameters**:
 - `verify_connection` (query, optional): Verify the connection to the LLM provider before saving the configuration.
@@ -48,17 +52,19 @@ Create a new customer LLM configuration.
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid configuration parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/customer-llm/configurations — Get Customer Llm Configurations
+## GET /v1/customer-llm/configurations — List all customer LLM configurations
 
 **Endpoint**: `GET /v1/customer-llm/configurations`
-**Summary**: Get Customer Llm Configurations
+**Summary**: List all customer LLM configurations
 **Tags**: customer-llm
 
-Get all customer LLM configurations.
+Returns all LLM provider configurations registered for the customer, with optional filtering by provider, enabled status, and last connection test result. Scoped to the authenticated customer. Use to discover which LLM integrations are active and their current connectivity status before creating or updating firewall rules.
 
 **Parameters**:
 - `customer_llm_configuration_id` (query, optional): 
@@ -68,17 +74,19 @@ Get all customer LLM configurations.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid filter parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/customer-llm/configurations/{customer_llm_configuration_id} — Update Customer Llm Configuration
+## PUT /v1/customer-llm/configurations/{customer_llm_configuration_id} — Update an existing customer LLM configuration
 
 **Endpoint**: `PUT /v1/customer-llm/configurations/{customer_llm_configuration_id}`
-**Summary**: Update Customer Llm Configuration
+**Summary**: Update an existing customer LLM configuration
 **Tags**: customer-llm
 
-Update an existing customer LLM configuration.
+Updates fields on an existing LLM provider configuration, such as model name, API base URL, or enabled status. Optionally re-verifies connectivity after the update. Scoped to the authenticated customer. Use when rotating API keys or changing model routing for an existing LLM integration.
 
 **Parameters**:
 - `customer_llm_configuration_id` (path, required): 
@@ -89,34 +97,40 @@ Update an existing customer LLM configuration.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid configuration parameters
+- `404`: Configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/customer-llm/configurations/{customer_llm_configuration_id} — Delete Customer Llm Configuration
+## DELETE /v1/customer-llm/configurations/{customer_llm_configuration_id} — Permanently delete a customer LLM configuration
 
 **Endpoint**: `DELETE /v1/customer-llm/configurations/{customer_llm_configuration_id}`
-**Summary**: Delete Customer Llm Configuration
+**Summary**: Permanently delete a customer LLM configuration
 **Tags**: customer-llm
 
-Delete a customer LLM configuration.
+Permanently removes the specified LLM provider configuration from the customer's account. This is irreversible — any firewall rules or evaluation workloads that reference this configuration will lose their associated LLM endpoint. Scoped to the token's customer. Use with caution; prefer disabling the configuration via the update endpoint if temporary deactivation is intended.
 
 **Parameters**:
 - `customer_llm_configuration_id` (path, required): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/customer-llm/configurations/{customer_llm_configuration_id} — Get Customer Llm Configurations
+## GET /v1/customer-llm/configurations/{customer_llm_configuration_id} — Get a single customer LLM configuration by ID
 
 **Endpoint**: `GET /v1/customer-llm/configurations/{customer_llm_configuration_id}`
-**Summary**: Get Customer Llm Configurations
+**Summary**: Get a single customer LLM configuration by ID
 **Tags**: customer-llm
 
-Get all customer LLM configurations.
+Returns the LLM provider configuration for the specified configuration ID, applying the same optional filters as the list endpoint. Scoped to the authenticated customer. Use to inspect a specific LLM configuration and its current enabled and connectivity state.
 
 **Parameters**:
 - `customer_llm_configuration_id` (path, required): 
@@ -126,40 +140,49 @@ Get all customer LLM configurations.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid filter parameters
+- `404`: Configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/customer-llm/configurations/{customer_llm_configuration_id}/details — Get Customer Llm Configuration Details
+## GET /v1/customer-llm/configurations/{customer_llm_configuration_id}/details — Get detailed info for a customer LLM configuration including safe credentials
 
 **Endpoint**: `GET /v1/customer-llm/configurations/{customer_llm_configuration_id}/details`
-**Summary**: Get Customer Llm Configuration Details
+**Summary**: Get detailed info for a customer LLM configuration including safe credentials
 **Tags**: customer-llm
 
-Get the details of a specific customer LLM configuration, including safe credentials.
+Returns full details for the specified LLM configuration, including provider, model, API base URL, and non-secret credential metadata (masked key references). Scoped to the authenticated customer. Use when an agent needs to verify configuration details or audit the credential setup without exposing raw secret values.
 
 **Parameters**:
 - `customer_llm_configuration_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/customer-llm/configurations/{customer_llm_configuration_id}/verify-connection — Check Customer Llm Configuration Connection
+## POST /v1/customer-llm/configurations/{customer_llm_configuration_id}/verify-connection — Test connectivity for a customer LLM configuration
 
 **Endpoint**: `POST /v1/customer-llm/configurations/{customer_llm_configuration_id}/verify-connection`
-**Summary**: Check Customer Llm Configuration Connection
+**Summary**: Test connectivity for a customer LLM configuration
 **Tags**: customer-llm
 
-Check the connection for a specific customer LLM configuration.
+Attempts a live connectivity check against the LLM provider endpoint for the given configuration and persists the result. Scoped to the authenticated customer. Use to validate a new or updated LLM configuration before relying on it in production firewall or evaluation workloads.
 
 **Parameters**:
 - `customer_llm_configuration_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---

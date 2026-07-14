@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.11
 
-- [](/_docs/)- Release Notes- What's New in V3.0.11# What's New in V3.0.11
+- [](/_docs/)- Release Notes- What's New in V3.0.11Export PDF# What's New in V3.0.11
 Release Date: June 27, 2025
 
 Reporting – New Generate Report functionality for all modules to export events from the Varonis platform. This feature can be accessed via the Report tab.

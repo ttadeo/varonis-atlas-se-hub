@@ -6,97 +6,145 @@ section: providers
 
 # AWS Bedrock
 
-- [](/_docs/)- Providers- AWS BedrockOn this page# AWS Bedrock
-Atlas supports AWS Bedrock across multiple features, including Gateway Runtime and Pentests. Depending on how you want Atlas to invoke Bedrock, you can configure either direct credentials or an assumed role.
+- [](/_docs/)- [Providers](/_docs/docs/providers)- AWS BedrockExport PDFOn this page# AWS Bedrock
+Atlas discovers AWS Bedrock resources through its AWS cloud-discovery pipeline and surfaces them in AI Inventory and AI SPM. This page explains what Bedrock resources Atlas inventories, how dependency graph relationships are captured, which posture checks apply, and what you need to configure in AWS for discovery to run. Runtime invocation of Bedrock from manually added LLM endpoints is a separate workflow covered on the AI Runtime and AI Red Team pages.
 
-## Bedrock invocation options[​](#bedrock-invocation-options)
-Atlas supports the following ways to invoke AWS Bedrock:
+## How AWS Bedrock discovery works[​](#how-aws-bedrock-discovery-works)
+Atlas runs an AWS discovery pipeline against each linked AWS cloud account. When a discovery scan starts for an AWS account, the pipeline executes a suite of AWS service-specific discovery steps, including dedicated steps for Bedrock model discovery, Bedrock agent discovery, and Bedrock AgentCore discovery.
 
-### Access keys[​](#access-keys)
-You can configure Bedrock access using AWS access key credentials. In this case, Atlas uses the provided credentials to sign requests sent to Bedrock.
+You can review and trigger this workflow from the UI:
 
-### Assumed role[​](#assumed-role)
-You can configure Atlas to assume a customer-managed IAM role before invoking Bedrock. This is the recommended option when you want Atlas to invoke Bedrock without storing long-lived access keys and when you want tighter control over permissions.
+- Go to **AI Inventory &gt; Configuration &gt; Cloud Accounts** to view linked AWS accounts, their last scan status, and the resources they have discovered.
+- Go to **AI Inventory &gt; Resource Management &gt; Add New Cloud Account** to link a new AWS account.
+- From the Cloud Accounts page, use **Run Discovery Scan** to trigger an on-demand scan for a linked account, or wait for the next scheduled scan.
 
-Assumed roles are supported for:
+Discovered Bedrock resources are written into AI Inventory. Posture findings against those resources surface in AI SPM after the scan completes.
 
-- Gateway Runtime invocation from the data plane
-- Pentest invocation from the control plane
+## Bedrock resources Atlas inventories[​](#bedrock-resources-atlas-inventories)
+For each linked AWS account and each region where Bedrock is in use, Atlas inventories:
 
-These are separate execution paths and should be considered independently when configuring trust relationships.
+- **Foundation models** observed in invocation logs.
+- **Imported models** and the import jobs that created them.
+- **Marketplace model endpoints.**
+- **Custom models**, provisioned model deployments, and customization jobs.
+- **Bedrock agents** with their aliases, versions, drafts, and action groups.
+- **Knowledge bases** and their data sources.
+- **Flows** and **prompts**, including prompt configuration metadata.
+- **AgentCore** runtimes, endpoints, versions, gateways and gateway targets, memories and sessions, credential providers, token vaults, policy engines, policy generations and assets, registries and records, browsers, and code interpreters.
+- **Related AWS resources** referenced by the above, including IAM roles, Lambda functions linked to action groups, Redshift clusters referenced by data sources, and S3-backed data sources.
 
-## Gateway Runtime with AWS Bedrock[​](#gateway-runtime-with-aws-bedrock)
-When using Gateway Runtime, your application sends Bedrock traffic to the Atlas proxy instead of directly to AWS Bedrock.
+Each resource family is written to AI Inventory with the AWS identifiers Atlas captured, and is available for resource drill-down, search, and project assignment.
 
-The flow works as follows:
+## Foundation model discovery from invocation logs[​](#foundation-model-discovery-from-invocation-logs)
+Foundation model usage is inferred from S3-backed Bedrock invocation logs: Atlas reads model identifiers seen in actual invocations and adds the corresponding foundation models to inventory for the AWS account.
 
-- Your application sends the Bedrock request to the Atlas gateway.
-- The Atlas data plane evaluates runtime policies and takes any configured actions.
-- If the request is allowed to continue, Atlas re-signs the request and forwards it to AWS Bedrock.
+For this signal to be available, Bedrock model-invocation-logging must be turned on for the AWS account. Atlas does **not** enable it — you enable model-invocation-logging yourself in the AWS Bedrock console (per region), pointing it at an S3 bucket. Atlas's discovery role then reads the resulting logs. The account-linking CloudFormation provisions only the cross-account discovery role; it does not configure Bedrock logging.
 
-If you configure Bedrock using an assumed role, the Atlas data plane assumes the IAM role you provide and uses the resulting credentials to invoke Bedrock on your behalf.
+Accounts that do not have Bedrock invocation logging configured will still surface other Bedrock resources (agents, imported models, marketplace endpoints, custom models, AgentCore), but foundation models inferred from invocations will be missing.
 
-**Note:** When using the SDK, Bedrock authentication is not required by Atlas Runtime.
+## Custom, imported, and marketplace model discovery[​](#custom-imported-and-marketplace-model-discovery)
+In addition to foundation models inferred from logs, Atlas inventories models that the AWS account has explicitly created or subscribed to:
 
-### When an assumed role is needed[​](#when-an-assumed-role-is-needed)
+- **Imported models** and **import jobs** — discovered through the Bedrock APIs that list imported models and the import jobs that produced them. Each imported model appears in inventory with its associated import job context.
+- **Marketplace model endpoints** — discovered through the Bedrock marketplace endpoint APIs. Each marketplace endpoint appears in inventory as its own resource.
+- **Custom models, provisioned deployments, and customization jobs** — discovered through the Bedrock custom-model APIs. Customization jobs are linked to the custom models they produce, and provisioned deployments are linked to the model they serve.
+
+These resources do not depend on invocation logging and are inventoried whenever the discovery role has read access to the corresponding Bedrock APIs.
+
+## Agent, knowledge base, flow, and prompt discovery[​](#agent-knowledge-base-flow-and-prompt-discovery)
+Bedrock agents are inventoried with their full configuration tree:
+
+- **Agents** with their aliases and versions, including drafts.
+- **Action groups** attached to each agent, including their executor configuration.
+- **Knowledge bases** referenced by agents, including the underlying data sources.
+- **Flows** and **prompts** authored in Bedrock, including prompt configuration metadata.
+
+Agent discovery also captures related-resource edges that become dependency graph relationships:
+
+- **IAM role attachments** on agents.
+- **Lambda function references** from action group executors.
+- **Redshift references** from data sources backed by Redshift.
+- **S3-backed data source links** for data sources stored in S3.
+
+## AgentCore discovery[​](#agentcore-discovery)
+AgentCore is covered by its own discovery step. For each region where AgentCore is in use, Atlas inventories:
+
+- **Runtimes**, **endpoints**, and **versions** of the AgentCore service.
+- **Gateways** and **gateway targets**.
+- **Memories** and **sessions**.
+- **Credential providers** and **token vaults**.
+- **Policy engines**, **policy generations**, and **policy assets**.
+- **Registries** and **registry records**.
+- **Browsers** and **code interpreters**.
+
+Each AgentCore resource family appears in AI Inventory under its AWS account and region, with child resources linked to their parent (for example, versions linked to their runtime, gateway targets linked to their gateway).
+
+## Dependency graph relationships[​](#dependency-graph-relationships)
+Discovered Bedrock resources appear in the AI Inventory dependency graph with the relationships that Atlas captures during discovery:
+
+- **Model build and deployment lineage** — customization jobs to custom models, provisioned deployments to the model they serve, import jobs to imported models.
+- **Agent configuration relationships** — agents to aliases and versions, agents to action groups, agents to knowledge bases and the data sources beneath them.
+- **Knowledge base and data source access** — knowledge bases to their data sources, data sources to the S3 location or Redshift cluster that backs them.
+- **Lambda invocation edges** — action groups to the Lambda functions they invoke.
+- **Redshift access edges** — data sources to the Redshift clusters they read from.
+- **IAM role permission edges** — agents and other resources to the IAM roles that grant them access, with edges materialized from the permissions those roles carry.
+
+You can navigate these relationships from any Bedrock resource detail in AI Inventory.
+
+## Posture checks for Bedrock resources[​](#posture-checks-for-bedrock-resources)
+Atlas applies a set of Bedrock-specific posture checks to discovered resources. After a discovery scan writes resources into inventory, the corresponding findings surface in AI SPM. The implemented checks cover:
+
+- **Agent encryption** and **agent-version encryption.**
+- **Agent guardrails** and **agent-version guardrails.**
+- **Flow encryption.**
+- **Prompt encryption.**
+- **Custom-model encryption.**
+- **Prompt max-token configuration.**
+
+Findings can be reviewed and triaged from AI SPM alongside posture findings for other AWS services.
+
+## Cloud account setup requirements[​](#cloud-account-setup-requirements)
+To enable Bedrock discovery for an AWS account, link the account from **AI Inventory &gt; Resource Management &gt; Add New Cloud Account** and choose the AWS provider. The linking form exposes the following setup options:
+
+- **Single Account** setup, with either the **Command** option (a CLI command you run against the account) or the **Manual** option (a CloudFormation quick-create link).
+- **Multiple Accounts** setup, which provides a CloudFormation **StackSet** template that you apply across the accounts in your AWS organization.
+- **Test Connection** action, which verifies that Atlas can assume the discovery role you provisioned before you commit the linked account.
+
+The discovery role is the only AWS principal Atlas needs in order to inventory Bedrock resources; the account-linking CloudFormation creates only that cross-account role. It does **not** enable Bedrock model-invocation-logging — that is a separate, manual step you perform in the AWS Bedrock console (see [Foundation model discovery from invocation logs](#foundation-model-discovery-from-invocation-logs) above).
+
+## Related runtime: manually added Bedrock endpoints[​](#related-runtime-manually-added-bedrock-endpoints)
+If you want the platform to invoke Bedrock at runtime — for example, to route application traffic through AI Runtime or to run AI Red Team pentests — you configure that separately from cloud-account discovery. A manually added Bedrock LLM endpoint is its own resource in AI Inventory and accepts either an **assumed role ARN** or **AWS access keys** plus a region. Manually added endpoints are independent of the AWS cloud account link used for discovery.
+
+### When to use an assumed role[​](#when-to-use-an-assumed-role)
 Use an assumed role when:
 
-- You want Atlas Proxy Runtime to forward Bedrock requests on your behalf using AWS IAM-based authentication
-- You do not want to provide long-lived AWS access keys directly
-- You want to control which Bedrock resources Atlas can invoke
+- You want the platform to forward Bedrock requests on your behalf using AWS IAM-based authentication.
+- You do not want to provide long-lived AWS access keys directly.
+- You want to control which Bedrock resources the platform can invoke.
 
-### How to configure it in Atlas[​](#how-to-configure-it-in-atlas)
-To configure Gateway Runtime with an assumed role:
+### How to configure an assumed-role Bedrock endpoint[​](#how-to-configure-an-assumed-role-bedrock-endpoint)
 
-- Create or identify an IAM role in your AWS account that Atlas can assume.
-- Grant that role the Bedrock permissions required for your use case (see details at the end of this document).
-- Ensure the role trust relationship allows the relevant Atlas data plane account(s) to assume the role.
-- Add or edit your Bedrock LLM Endpoint resource in Atlas.
-- Select **Use Assumed Role**.
-- Enter the role ARN in the **AWS Role ARN** field.
-- Select the AWS region and complete the rest of the endpoint configuration.
+- Create or identify an IAM role in your AWS account that the platform can assume.
+- Grant that role the Bedrock permissions required for your use case (model invocation, agent invocation, knowledge-base retrieval, list/describe — your account team can supply a reference policy).
+- Ensure the role's trust relationship allows the relevant data plane account(s) to assume it.
+- Add or edit your Bedrock LLM Endpoint resource: **AI Inventory &gt; Resource Management &gt; Add New Resources Manually &gt; Add New LLM Endpoint**.
+- Select **Bedrock API Key** as the provider.
+- Choose **Use Assumed Role** and enter the role ARN in the **AWS Role ARN** field.
+- Select the AWS region and complete the rest of the endpoint configuration (project assignment, endpoint identifier).
 
-## Pentests with AWS Bedrock[​](#pentests-with-aws-bedrock)
-Atlas also supports Bedrock invocation from the control plane for Pentests. This is a separate feature from Gateway Runtime.
+The endpoint resource is what the platform uses for policy assignment and runtime enforcement. The role ARN tells the platform which IAM role to assume when forwarding Bedrock traffic.
 
-When Bedrock invocation is enabled during installation of the discovery stack, Atlas can automatically provision the role path needed for control-plane Bedrock invocation. This allows Pentests to make requests to Bedrock from the Atlas control plane.
-
-**Important:** Gateway Runtime and Pentests do not run from the same place:
-
-- Gateway Runtime invokes Bedrock from the Atlas **data plane**
-- Pentests invoke Bedrock from the Atlas **control plane**
-
-Because of this, the IAM trust relationship must match the feature or features you plan to use.
-
-### Using one role for both Gateway Runtime and Pentests[​](#using-one-role-for-both-gateway-runtime-and-pentests)
-If you want to support both:
-
-- Gateway Runtime from the data plane, and
-- Pentests from the control plane
-
-then the IAM role must trust both:
-
-- The relevant Atlas data plane AWS account(s), and
-- The Atlas control-plane AWS account
-
-A single role can be used for both as long as the trust relationship and permissions allow both execution paths.
-
-## IAM role requirements[​](#iam-role-requirements)
+### IAM role requirements[​](#iam-role-requirements)
 The assumed role used for Bedrock must include:
 
-- A trust relationship allowing the required Atlas AWS account(s) to assume it
-- Permissions to invoke the relevant Bedrock resources
-- The tag `varonis:atlas-bedrock-assume=true`
+- A trust relationship allowing the required platform AWS account(s) to assume it.
+- Permissions to invoke the relevant Bedrock resources (foundation models, custom or imported models, agents, knowledge bases).
+- The tag `varonis:atlas-bedrock-assume=true`.
 
-**Note:** The role name does not matter.
+The role name does not matter.
 
-### Required role tag[​](#required-role-tag)
-Add the following tag to the role:
-
-`varonis:atlas-bedrock-assume=true`
-
-### Example trust relationship[​](#example-trust-relationship)
-For Gateway Runtime, the role must trust the Atlas data plane account or accounts that will process Bedrock traffic.
+#### Example trust relationship[​](#example-trust-relationship)
+For Gateway Runtime, the role must trust the data plane account(s) that will process Bedrock traffic. If you also want the same role to support Pentests (which invoke Bedrock from the control plane), add the control-plane AWS account to the `Principal` list as well.
 
 ```
 {
@@ -116,9 +164,9 @@ For Gateway Runtime, the role must trust the Atlas data plane account or account
 }
 
 ```
-If you also want the same role to support Pentests, add the Atlas control-plane AWS account to the Principal list as well.
+Replace each `&lt;DATAPLANE_n_ACCOUNT_ID&gt;` with the account IDs your account team provides for your deployment.
 
-### Example role policy[​](#example-role-policy)
+#### Example role policy[​](#example-role-policy)
 Attach a policy equivalent to the following to the role:
 
 ```
@@ -189,30 +237,5 @@ Attach a policy equivalent to the following to the role:
 }
 
 ```
-Replace:
-
-- `&lt;ACCOUNT_ID&gt;` with your AWS account ID
-- `&lt;DATAPLANE_1_ACCOUNT_ID&gt;`, `&lt;DATAPLANE_2_ACCOUNT_ID&gt;`, and any additional placeholders with the Atlas account IDs provided for your deployment
-
-## Configuring the LLM Endpoint in Atlas[​](#configuring-the-llm-endpoint-in-atlas)
-When adding a Bedrock LLM Endpoint in Atlas:
-
-- Go to **AI Inventory &gt; Resource Management &gt; Add New Resources Manually &gt; Add New LLM Endpoint**
-- Select **Bedrock API Key** as the provider
-- Choose **Use Assumed Role**
-- Enter the role ARN in **AWS Role ARN**
-- Select the AWS region
-- Assign the endpoint to the appropriate project
-- Set the endpoint identifier if needed for policy targeting
-- Add the endpoint to inventory
-
-This LLM Endpoint resource is the object Atlas uses for policy assignment and runtime enforcement. The role ARN tells Atlas which IAM role it should assume when forwarding Bedrock traffic from the data plane.
-
-## Summary[​](#summary)
-Use an assumed role for Bedrock when you want Atlas to invoke Bedrock securely using AWS IAM-based access.
-
-- For Gateway Runtime, the role must trust the Atlas data plane account(s)
-- For Pentests, the role must trust the Atlas control-plane account
-- For both features together, one role may be used if it trusts both sets of Atlas accounts
-- The role must include Bedrock permissions and the tag `varonis:atlas-bedrock-assume=true`
-[PreviousMCP Server for Coding Agents](/_docs/docs/platform_services/mcp_server)[NextLiteLLM Proxy Integration](/_docs/docs/integration_examples/litellm)- [Bedrock invocation options](#bedrock-invocation-options)[Access keys](#access-keys)- [Assumed role](#assumed-role)- [Gateway Runtime with AWS Bedrock](#gateway-runtime-with-aws-bedrock)[When an assumed role is needed](#when-an-assumed-role-is-needed)- [How to configure it in Atlas](#how-to-configure-it-in-atlas)- [Pentests with AWS Bedrock](#pentests-with-aws-bedrock)[Using one role for both Gateway Runtime and Pentests](#using-one-role-for-both-gateway-runtime-and-pentests)- [IAM role requirements](#iam-role-requirements)[Required role tag](#required-role-tag)- [Example trust relationship](#example-trust-relationship)- [Example role policy](#example-role-policy)- [Configuring the LLM Endpoint in Atlas](#configuring-the-llm-endpoint-in-atlas)- [Summary](#summary)
+Replace `&lt;ACCOUNT_ID&gt;` with your AWS account ID. Scope the `Resource` fields down further if you only want the role to invoke a specific subset of Bedrock resources.
+[PreviousGoogle Cloud](/_docs/docs/providers/gcp)[NextAnthropic](/_docs/docs/providers/anthropic)- [How AWS Bedrock discovery works](#how-aws-bedrock-discovery-works)- [Bedrock resources Atlas inventories](#bedrock-resources-atlas-inventories)- [Foundation model discovery from invocation logs](#foundation-model-discovery-from-invocation-logs)- [Custom, imported, and marketplace model discovery](#custom-imported-and-marketplace-model-discovery)- [Agent, knowledge base, flow, and prompt discovery](#agent-knowledge-base-flow-and-prompt-discovery)- [AgentCore discovery](#agentcore-discovery)- [Dependency graph relationships](#dependency-graph-relationships)- [Posture checks for Bedrock resources](#posture-checks-for-bedrock-resources)- [Cloud account setup requirements](#cloud-account-setup-requirements)- [Related runtime: manually added Bedrock endpoints](#related-runtime-manually-added-bedrock-endpoints)[When to use an assumed role](#when-to-use-an-assumed-role)- [How to configure an assumed-role Bedrock endpoint](#how-to-configure-an-assumed-role-bedrock-endpoint)- [IAM role requirements](#iam-role-requirements)

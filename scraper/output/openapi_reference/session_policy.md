@@ -1,25 +1,27 @@
 # session-policy API Endpoints
 
-## GET /v1/session-policy/rules — Get Session Policy Rules
+## GET /v1/session-policy/rules — List all session policy rule definitions
 
 **Endpoint**: `GET /v1/session-policy/rules`
-**Summary**: Get Session Policy Rules
+**Summary**: List all session policy rule definitions
 **Tags**: session-policy
 
-Return all session-type firewall rule definitions.
+Returns the catalogue of available session policy rule types for the platform. Each rule entry includes its identifier, display name, and description. Use this to discover which rule types can be configured via the stage-settings and toggle endpoints. These are platform-wide rule definitions; this endpoint does not expose tenant-specific settings values.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## GET /v1/session-policy/configs — Get Session Policy Configs
+## GET /v1/session-policy/configs — Get resolved session policy configurations for a scope
 
 **Endpoint**: `GET /v1/session-policy/configs`
-**Summary**: Get Session Policy Configs
+**Summary**: Get resolved session policy configurations for a scope
 **Tags**: session-policy
 
-Return resolved session policy configs including disabled ones.
+Returns the effective session policy settings for the authenticated customer, optionally scoped to an organization, project, or resource. Use shape='flat' (default) for one row per (level, rule_type) or shape='resolved' for one entry per rule_type with the full parent inheritance chain. Useful for inspecting which rules are active and at which hierarchy level they were configured.
 
 **Parameters**:
 - `organization_id` (query, optional): 
@@ -29,34 +31,38 @@ Return resolved session policy configs including disabled ones.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/customer — Stage Customer Settings
+## POST /v1/session-policy/stage-settings/customer — Save session policy settings at customer level
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/customer`
-**Summary**: Stage Customer Settings
+**Summary**: Save session policy settings at customer level
 **Tags**: session-policy
 
-Save session policy settings at customer level.
+Persist session policy rule settings for the authenticated customer's top-level scope. These settings apply as the default for all organizations, projects, and resources unless overridden at a lower hierarchy level. Writes directly to the installed configuration — there is no staging or approval step. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/organization/{organization_id} — Stage Organization Settings
+## POST /v1/session-policy/stage-settings/organization/{organization_id} — Save session policy settings at organization level
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/organization/{organization_id}`
-**Summary**: Stage Organization Settings
+**Summary**: Save session policy settings at organization level
 **Tags**: session-policy
 
-Save session policy settings at organization level.
+Persist session policy rule settings for a specific organization within the authenticated customer's tenant. Organization-level settings override the customer-level defaults and serve as the baseline for all projects and resources under that organization. Writes directly to the installed configuration. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -66,17 +72,20 @@ Save session policy settings at organization level.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Organization not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id} — Stage Project Settings
+## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id} — Save session policy settings at project level
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}`
-**Summary**: Stage Project Settings
+**Summary**: Save session policy settings at project level
 **Tags**: session-policy
 
-Save session policy settings at project level.
+Persist session policy rule settings for a specific project within an organization. Project-level settings override both organization-level and customer-level defaults, applying to all AI resources under that project. Writes directly to the installed configuration. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -87,17 +96,20 @@ Save session policy settings at project level.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Project not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}/resource/{resource_id} — Stage Resource Settings
+## POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}/resource/{resource_id} — Save session policy settings at resource level
 
 **Endpoint**: `POST /v1/session-policy/stage-settings/organization/{organization_id}/project/{project_id}/resource/{resource_id}`
-**Summary**: Stage Resource Settings
+**Summary**: Save session policy settings at resource level
 **Tags**: session-policy
 
-Save session policy settings at resource level.
+Persist session policy rule settings for a specific AI resource. Resource-level settings are the most granular override in the hierarchy, taking precedence over project, organization, and customer defaults. Writes directly to the installed configuration. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -109,34 +121,39 @@ Save session policy settings at resource level.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/customer — Toggle Customer Status
+## POST /v1/session-policy/toggle/customer — Enable or disable session policy rules at customer level
 
 **Endpoint**: `POST /v1/session-policy/toggle/customer`
-**Summary**: Toggle Customer Status
+**Summary**: Enable or disable session policy rules at customer level
 **Tags**: session-policy
 
-Toggle session policy enabled/disabled at customer level.
+Enable or disable one or more session policy rules for the authenticated customer's top-level scope. These enable/disable states cascade to all organizations, projects, and resources unless overridden at a lower level. Use to activate or deactivate AI investigation policies tenant-wide. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/organization/{organization_id} — Toggle Organization Status
+## POST /v1/session-policy/toggle/organization/{organization_id} — Enable or disable session policy rules at organization level
 
 **Endpoint**: `POST /v1/session-policy/toggle/organization/{organization_id}`
-**Summary**: Toggle Organization Status
+**Summary**: Enable or disable session policy rules at organization level
 **Tags**: session-policy
 
-Toggle session policy enabled/disabled at organization level.
+Enable or disable one or more session policy rules for a specific organization. Organization-level toggles override the customer-level defaults for that organization and all its projects and resources. Use to apply different AI investigation policy activation states per organization. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -146,17 +163,20 @@ Toggle session policy enabled/disabled at organization level.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Organization not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id} — Toggle Project Status
+## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id} — Enable or disable session policy rules at project level
 
 **Endpoint**: `POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}`
-**Summary**: Toggle Project Status
+**Summary**: Enable or disable session policy rules at project level
 **Tags**: session-policy
 
-Toggle session policy enabled/disabled at project level.
+Enable or disable one or more session policy rules for a specific project within an organization. Project-level toggles override both organization and customer defaults, applying to all AI resources under that project. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -167,17 +187,20 @@ Toggle session policy enabled/disabled at project level.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Project not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}/resource/{resource_id} — Toggle Resource Status
+## POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}/resource/{resource_id} — Enable or disable session policy rules at resource level
 
 **Endpoint**: `POST /v1/session-policy/toggle/organization/{organization_id}/project/{project_id}/resource/{resource_id}`
-**Summary**: Toggle Resource Status
+**Summary**: Enable or disable session policy rules at resource level
 **Tags**: session-policy
 
-Toggle session policy enabled/disabled at resource level.
+Enable or disable one or more session policy rules for a specific AI resource. Resource-level toggles are the most granular override, taking precedence over project, organization, and customer settings. Use to activate or deactivate AI investigation policies for individual AI resources. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -189,17 +212,20 @@ Toggle session policy enabled/disabled at resource level.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/session-policy/override/organization/{organization_id}/{rule_type} — Revert Organization Override Route
+## DELETE /v1/session-policy/override/organization/{organization_id}/{rule_type} — Revert organization-level session policy rule to inherited default
 
 **Endpoint**: `DELETE /v1/session-policy/override/organization/{organization_id}/{rule_type}`
-**Summary**: Revert Organization Override Route
+**Summary**: Revert organization-level session policy rule to inherited default
 **Tags**: session-policy
 
-Delete the org-level installed override row; resolution falls back to the customer level.
+Delete the organization-level override for a specific session policy rule type, causing that rule to fall back to the customer-level setting. Use when an organization-level customization should no longer diverge from the tenant default. Returns 204 on success (including when no override existed). Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -207,17 +233,20 @@ Delete the org-level installed override row; resolution falls back to the custom
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Organization or rule type not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/session-policy/override/organization/{organization_id}/project/{project_id}/{rule_type} — Revert Project Override Route
+## DELETE /v1/session-policy/override/organization/{organization_id}/project/{project_id}/{rule_type} — Revert project-level session policy rule to inherited default
 
 **Endpoint**: `DELETE /v1/session-policy/override/organization/{organization_id}/project/{project_id}/{rule_type}`
-**Summary**: Revert Project Override Route
+**Summary**: Revert project-level session policy rule to inherited default
 **Tags**: session-policy
 
-Delete the project-level installed override row; resolution walks up to the parent.
+Delete the project-level override for a specific session policy rule type, causing that rule to walk up to the organization- or customer-level setting. Use when a project-level customization should no longer diverge from its parent. Returns 204 on success (including when no override existed). Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -226,17 +255,20 @@ Delete the project-level installed override row; resolution walks up to the pare
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Project or rule type not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/session-policy/override/organization/{organization_id}/project/{project_id}/resource/{resource_id}/{rule_type} — Revert Resource Override Route
+## DELETE /v1/session-policy/override/organization/{organization_id}/project/{project_id}/resource/{resource_id}/{rule_type} — Revert resource-level session policy rule to inherited default
 
 **Endpoint**: `DELETE /v1/session-policy/override/organization/{organization_id}/project/{project_id}/resource/{resource_id}/{rule_type}`
-**Summary**: Revert Resource Override Route
+**Summary**: Revert resource-level session policy rule to inherited default
 **Tags**: session-policy
 
-Delete the resource-level installed override row; resolution walks up to the parent.
+Delete the resource-level override for a specific session policy rule type, causing that rule to walk up to the project-, organization-, or customer-level setting. Use when a per-resource customization should no longer diverge from its parent. Returns 204 on success (including when no override existed). Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (path, required): 
@@ -246,6 +278,9 @@ Delete the resource-level installed override row; resolution walks up to the par
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource or rule type not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -301,26 +336,37 @@ Return composite config: rule metadata + default settings + JSON schema.
 
 ---
 
-## POST /v1/session-policy/reprocess — Reprocess Sessions
+## POST /v1/session-policy/reprocess — Mark all customer sessions for session policy re-evaluation
 
 **Endpoint**: `POST /v1/session-policy/reprocess`
-**Summary**: Reprocess Sessions
+**Summary**: Mark all customer sessions for session policy re-evaluation
 **Tags**: session-policy, internal
 
-Clear session_policies_processed_at for a customer's sessions.
-
-This allows previously processed sessions to be re-evaluated by the
-next dispatch cycle. Use when policies are enabled after sessions
-were already marked as processed.
-
-Callable by both internal (ETL) and external Admin tokens; the route
-is gated to the ``Admin`` role for external callers in
-``permissions_roles_config.json`` because clearing
-``session_policies_processed_at`` for the entire customer is a
-blast-radius-heavy operation. The successful clear is audited via
-logfire so admin invocations are attributable.
+Clears the processed-at timestamp on all LLM sessions for the authenticated customer, allowing them to be re-evaluated by the next session policy dispatch cycle. Use after enabling session policies that were previously inactive, so already-processed sessions are picked up. This is a blast-radius operation — it affects every session in the customer tenant. Restricted to the Admin role for external callers. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+
+---
+
+## GET /v1/session-policy/overruling-settings — Get child-level overrides that overrule a parent session policy scope
+
+**Endpoint**: `GET /v1/session-policy/overruling-settings`
+**Summary**: Get child-level overrides that overrule a parent session policy scope
+**Tags**: session-policy, session-policy
+
+Returns the child scopes (organizations, projects, or resources) that have overridden session policy settings at a level below the queried scope. Use this to identify which downstream entities have diverged from the inherited policy — for example, to populate an 'Overruled By' column in a policy management UI. Scoped to the authenticated customer.
+
+**Parameters**:
+- `organization_id` (query, optional): 
+- `project_id` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
 
 ---

@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.2.0
 
-- [](/_docs/)- Release Notes- What's New in V3.2.0On this page# What's New in V3.2.0
+- [](/_docs/)- Release Notes- What's New in V3.2.0Export PDFOn this page# What's New in V3.2.0
 **Release Date: April 24, 2026**
 
 ### Browser-based Pentests[​](#browser-based-pentests)

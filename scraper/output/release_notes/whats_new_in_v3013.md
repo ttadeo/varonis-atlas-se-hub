@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.13
 
-- [](/_docs/)- Release Notes- What's New in V3.0.13# What's New in V3.0.13
+- [](/_docs/)- Release Notes- What's New in V3.0.13Export PDF# What's New in V3.0.13
 Release Date: August 1, 2025
 
 Agentic Discovery – Added a new code scanning tool for Agentic Discovery. Discover agents, sub-agents, and tools from code repositories.

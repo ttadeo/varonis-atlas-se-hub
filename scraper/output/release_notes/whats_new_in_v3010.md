@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.10
 
-- [](/_docs/)- Release Notes- What's New in V3.0.10# What's New in V3.0.10
+- [](/_docs/)- Release Notes- What's New in V3.0.10Export PDF# What's New in V3.0.10
 Release Date: June 13, 2025
 
 Model Discovery – Added a new code scanning tool for Model Discovery. Discover Model Packages and Artifacts stored in code repositories.

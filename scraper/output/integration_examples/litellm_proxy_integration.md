@@ -6,26 +6,26 @@ section: integration_examples
 
 # LiteLLM Proxy Integration
 
-- [](/_docs/)- Integration Examples- LiteLLM Proxy IntegrationOn this page# LiteLLM Proxy Integration
-If you use [LiteLLM Proxy](https://docs.litellm.ai/docs/simple_proxy) as your AI gateway, you can add TRiSM Hub guardrails to every LLM call without changing application code. LiteLLM Proxy's [Generic Guardrail API](https://docs.litellm.ai/docs/proxy/guardrails/quick_start) sends each request and response to the TRiSM Hub for policy evaluation. The TRiSM Hub applies all installed guardrail rules — PII detection, prompt injection protection, topic blocking, and more — and returns a decision that LiteLLM Proxy enforces automatically.
+- [](/_docs/)- Integration Examples- LiteLLM Proxy IntegrationExport PDFOn this page# LiteLLM Proxy Integration
+If you use [LiteLLM Proxy](https://docs.litellm.ai/docs/simple_proxy) as your AI gateway, you can add Atlas guardrails to every LLM call without changing application code. LiteLLM Proxy's [Generic Guardrail API](https://docs.litellm.ai/docs/proxy/guardrails/quick_start) sends each request and response to Atlas for policy evaluation. Atlas applies all installed guardrail rules — PII detection, prompt injection protection, topic blocking, and more — and returns a decision that LiteLLM Proxy enforces automatically.
 
 ## How It Works[​](#how-it-works)
 When a client sends a request through LiteLLM Proxy:
 
-- **Pre-call evaluation** — Before the request reaches the LLM, the proxy sends it to TRiSM Hub. If a guardrail rule blocks the request, the proxy returns an error to the client and the LLM is never called. If a rule modifies the input (e.g., redacting PII), the modified content is forwarded to the LLM.
+- **Pre-call evaluation** — Before the request reaches the LLM, the proxy sends it to Atlas. If a guardrail rule blocks the request, the proxy returns an error to the client and the LLM is never called. If a rule modifies the input (e.g., redacting PII), the modified content is forwarded to the LLM.
 - **LLM call** — The (potentially modified) request is sent to the configured LLM provider.
-- **Post-call evaluation** — After the LLM responds, the proxy sends the output to TRiSM Hub. Rules can block the response, modify it (e.g., re-identifying previously redacted PII), or let it pass through unchanged.
+- **Post-call evaluation** — After the LLM responds, the proxy sends the output to Atlas. Rules can block the response, modify it (e.g., re-identifying previously redacted PII), or let it pass through unchanged.
 - **Response to client** — The client receives the final, guardrail-processed response.
 
-All rule processing happens on the customer data plane. Rule settings are retrieved from the TRiSM Hub control plane, but no unencrypted LLM data leaves your account.
+All rule processing happens on the customer data plane. Rule settings are retrieved from Atlas control plane, but no unencrypted LLM data leaves your account.
 
 ## Prerequisites[​](#prerequisites)
 Before configuring the integration, you need:
 
-- **A TRiSM Hub API key.** Generate one from the [Admin Console](/_docs/docs/platform_services/admin_console).
-- **An endpoint identifier.** Create one in the TRiSM Hub to associate guardrail policies with your LLM endpoint.
+- **An Atlas API key.** Generate one from the [Admin Console](/_docs/docs/admin_console/general#api-keys).
+- **An endpoint identifier.** Create one in Atlas to associate guardrail policies with your LLM endpoint.
 - **LiteLLM Proxy** deployed and accessible to your applications (see [LiteLLM Proxy documentation](https://docs.litellm.ai/docs/simple_proxy)).
-- **Guardrail rules installed** on the endpoint in TRiSM Hub. Use the AI Runtime Protection policy configuration to select which rules to apply.
+- **Guardrail rules installed** on the endpoint in Atlas. Use the AI Runtime Protection policy configuration to select which rules to apply.
 
 ## Configuration[​](#configuration)
 Add a `guardrails` section to your LiteLLM Proxy `config.yaml`:
@@ -33,12 +33,12 @@ Add a `guardrails` section to your LiteLLM Proxy `config.yaml`:
 ```
 litellm_settings:
  guardrails:
- - guardrail_name: "trism-hub"
+ - guardrail_name: "atlas-guardrail"
  litellm_params:
  guardrail: generic_guardrail_api
  mode: [pre_call, post_call]
- api_base: &lt;YOUR-TRISM-GUARDRAIL-BASE-URL&gt;
- api_key: &lt;YOUR-TRISM-API-KEY&gt;
+ api_base: &lt;YOUR-ATLAS-GUARDRAIL-BASE-URL&gt;
+ api_key: &lt;YOUR-ATLAS-API-KEY&gt;
  default_on: true
 
  extra_headers:
@@ -49,9 +49,9 @@ litellm_settings:
 
 ```
 ### Configuration Parameters[​](#configuration-parameters)
-ParameterDescriptionRequired`guardrail_name`A unique name for this guardrail (used by clients to reference it)Yes`guardrail`Must be `generic_guardrail_api`Yes`mode`When to evaluate: `pre_call`, `post_call`, `during_call`, or a list (e.g., `[pre_call, post_call]`)Yes`api_base`Base URL of the TRiSM Hub guardrail endpointYes`api_key`Your TRiSM Hub API keyYes`default_on`When `true`, this guardrail runs on every request automatically. When `false`, clients must opt in per requestNo (default: `false`)`unreachable_fallback`Behavior when TRiSM Hub is unreachable: `fail_closed` blocks the request, `fail_open` allows it throughNo (default: `fail_closed`)`extra_headers`List of client request header names to forward to the guardrail endpoint. Include `x-litellm-varonis-endpoint-identifier` so that per-request endpoint routing worksNo`additional_provider_specific_params`Key-value pairs passed to the guardrail in every request. Use `llm-endpoint-identifier` as a fallback when the header is not setNo
+ParameterDescriptionRequired`guardrail_name`A unique name for this guardrail (used by clients to reference it)Yes`guardrail`Must be `generic_guardrail_api`Yes`mode`When to evaluate: `pre_call`, `post_call`, `during_call`, or a list (e.g., `[pre_call, post_call]`)Yes`api_base`Base URL of Atlas guardrail endpointYes`api_key`Your Atlas API keyYes`default_on`When `true`, this guardrail runs on every request automatically. When `false`, clients must opt in per requestNo (default: `false`)`unreachable_fallback`Behavior when Atlas is unreachable: `fail_closed` blocks the request, `fail_open` allows it throughNo (default: `fail_closed`)`extra_headers`List of client request header names to forward to the guardrail endpoint. Include `x-litellm-varonis-endpoint-identifier` so that per-request endpoint routing worksNo`additional_provider_specific_params`Key-value pairs passed to the guardrail in every request. Use `llm-endpoint-identifier` as a fallback when the header is not setNo
 ### Endpoint Identifier Resolution[​](#endpoint-identifier-resolution)
-The TRiSM Hub uses an **endpoint identifier** to determine which guardrail policies apply to a given request. The identifier is resolved in this order:
+Atlas uses an **endpoint identifier** to determine which guardrail policies apply to a given request. The identifier is resolved in this order:
 
 - The `x-litellm-varonis-endpoint-identifier` request header (if forwarded via `extra_headers`)
 - The `llm-endpoint-identifier` value in `additional_provider_specific_params`
@@ -138,7 +138,7 @@ console.log(response.choices[0].message.content);
 
 ```
 ## Guardrail Behavior[​](#guardrail-behavior)
-When a request or response is evaluated, the TRiSM Hub returns one of three outcomes:
+When a request or response is evaluated, Atlas returns one of three outcomes:
 
 OutcomeWhat happensExample**Pass**The request or response proceeds unchangedContent passes all policy rules**Block**The proxy returns an error to the client; the LLM is not called (pre-call) or the response is not delivered (post-call)A prompt injection attempt is detected**Modify**The content is altered before continuingPII is redacted from the prompt before sending to the LLM, then re-identified in the response
 When a request is blocked, the client receives an error response from LiteLLM Proxy:
@@ -162,7 +162,7 @@ If `default_on` is set to `false`, clients must explicitly request the guardrail
 {
  "model": "gpt-4o",
  "messages": [{"role": "user", "content": "Hello"}],
- "guardrails": ["trism-hub"]
+ "guardrails": ["atlas-guardrail"]
 }
 
 ```Pass the guardrail name via `extra_body`:
@@ -170,7 +170,7 @@ If `default_on` is set to `false`, clients must explicitly request the guardrail
 response = client.chat.completions.create(
  model="gpt-4o",
  messages=[{"role": "user", "content": "Hello"}],
- extra_body={"guardrails": ["trism-hub"]}
+ extra_body={"guardrails": ["atlas-guardrail"]}
 )
 
 ```Assign guardrails when generating a LiteLLM virtual key to enforce them for all requests using that key:
@@ -180,18 +180,18 @@ curl --request POST \
  --header 'Authorization: Bearer &lt;YOUR-LITELLM-MASTER-KEY&gt;' \
  --header 'Content-Type: application/json' \
  --data '{
- "guardrails": ["trism-hub"]
+ "guardrails": ["atlas-guardrail"]
  }'
 
 ```
 ## Unreachable Fallback[​](#unreachable-fallback)
-The `unreachable_fallback` parameter controls what happens when the TRiSM Hub guardrail endpoint is unreachable (network errors, timeouts):
+The `unreachable_fallback` parameter controls what happens when the Atlas guardrail endpoint is unreachable (network errors, timeouts):
 
 SettingBehavior`fail_closed` (default)Block the request. No LLM calls proceed until the guardrail is reachable again`fail_open`Allow the request through to the LLM without guardrail evaluation
 For production environments where availability is critical, consider `fail_open` with `logging_only` mode as a secondary guardrail to ensure requests are still audited even when the primary guardrail is unavailable.
 
 ## Full Configuration Example[​](#full-configuration-example)
-The following example shows a complete `config.yaml` with the TRiSM Hub guardrail alongside a model configuration:
+The following example shows a complete `config.yaml` with Atlas guardrail alongside a model configuration:
 
 ```
 model_list:
@@ -207,12 +207,12 @@ model_list:
 
 litellm_settings:
  guardrails:
- - guardrail_name: "trism-hub"
+ - guardrail_name: "atlas-guardrail"
  litellm_params:
  guardrail: generic_guardrail_api
  mode: [pre_call, post_call]
- api_base: &lt;YOUR-TRISM-GUARDRAIL-BASE-URL&gt;
- api_key: os.environ/TRISM_API_KEY
+ api_base: &lt;YOUR-ATLAS-GUARDRAIL-BASE-URL&gt;
+ api_key: os.environ/ATLAS_API_KEY
  default_on: true
  unreachable_fallback: fail_closed
 
@@ -234,8 +234,8 @@ After configuring the guardrail:
 curl &lt;YOUR-LITELLM-PROXY-URL&gt;/guardrails/list
 
 ```
-You should see `trism-hub` in the response.
+You should see `atlas-guardrail` in the response.
 - Send a test request through the proxy and verify that LiteLLM returns the `x-litellm-applied-guardrails` response header.
-- Check the TRiSM Hub **AI Runtime Protection** dashboard to confirm that the request appears in the activity log.
+- Check Atlas **AI Runtime Protection** dashboard to confirm that the request appears in the activity log.
 - Test a blocked scenario by sending a prompt that triggers one of your installed policy rules (e.g., a prompt containing PII if you have a PII detection rule installed).
-[PreviousAWS Bedrock](/_docs/docs/providers/aws_bedrock)[NextMicrosoft Copilot Studio Integration](/_docs/docs/integration_examples/copilot_studio)- [How It Works](#how-it-works)- [Prerequisites](#prerequisites)- [Configuration](#configuration)[Configuration Parameters](#configuration-parameters)- [Endpoint Identifier Resolution](#endpoint-identifier-resolution)- [Guardrail Modes](#guardrail-modes)- [Sending Requests Through the Proxy](#sending-requests-through-the-proxy)- [Guardrail Behavior](#guardrail-behavior)- [Per-Request Guardrail Control](#per-request-guardrail-control)- [Unreachable Fallback](#unreachable-fallback)- [Full Configuration Example](#full-configuration-example)- [Verifying the Integration](#verifying-the-integration)
+[PreviousNetskope](/_docs/docs/shadow_ai_usage_monitoring/netskope)[NextLLM Pentest Execution Workflow Using REST API](/_docs/docs/integration_examples/llm_pentest)- [How It Works](#how-it-works)- [Prerequisites](#prerequisites)- [Configuration](#configuration)[Configuration Parameters](#configuration-parameters)- [Endpoint Identifier Resolution](#endpoint-identifier-resolution)- [Guardrail Modes](#guardrail-modes)- [Sending Requests Through the Proxy](#sending-requests-through-the-proxy)- [Guardrail Behavior](#guardrail-behavior)- [Per-Request Guardrail Control](#per-request-guardrail-control)- [Unreachable Fallback](#unreachable-fallback)- [Full Configuration Example](#full-configuration-example)- [Verifying the Integration](#verifying-the-integration)

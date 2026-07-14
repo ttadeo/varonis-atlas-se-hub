@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.7
 
-- [](/_docs/)- Release Notes- What's New in V3.0.7On this page# What's New in V3.0.7
+- [](/_docs/)- Release Notes- What's New in V3.0.7Export PDFOn this page# What's New in V3.0.7
 Release Date: April 12, 2025
 
 ## Admin console invitations[​](#admin-console-invitations)

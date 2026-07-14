@@ -6,32 +6,34 @@ section:
 
 # GraphQL API Reference
 
-- [](/_docs/)- GraphQL Reference- GraphQL API ReferenceOn this page# GraphQL API Reference
+- [](/_docs/)- GraphQL Reference- GraphQL API ReferenceExport PDFOn this page# GraphQL API Reference
 ## About Our GraphQL API[​](#about-our-graphql-api)
-Our GraphQL API is built using [Strawberry](https://strawberry.rocks/), a Python GraphQL library. We serve GraphQL queries over REST endpoints, allowing you to interact with our API using standard HTTP requests.
+The GraphQL API is built using [Strawberry](https://strawberry.rocks/), a Python GraphQL library. GraphQL operations are served over HTTP, so you can interact with the API using standard HTTP requests against the versioned endpoints below.
 
-### API Versions[​](#api-versions)
-We currently offer two API versions:
+## API Versions[​](#api-versions)
+Two API versions are available:
 
-- **V1 API (Default)**: The stable, fully-featured API - `/v1/graphql`
-- **V2 API (Preview)**: Our newer API (work in progress) - `/v2/graphql`
+- **V1 API (Default)** — the broad, stable, fully-featured surface at `/v1/graphql`.
+- **V2 API (Preview)** — a narrower, newer surface at `/v2/graphql` that focuses on specific product capabilities and is still in active development.
+
+Both versions are Strawberry-backed HTTP GraphQL endpoints. V1 exposes the full default query surface; V2 currently exposes a focused subset and does not yet include all the functionality available in V1.
 
 **Note**: The V2 API is still in preview and does not yet include all the functionality available in V1.
 
 ## Making Requests[​](#making-requests)
-Here's how to make a simple query to our `ping` operation using different languages. Most endpoints require authentication with a Bearer token:
+Here is how to send a simple `ping` query in several languages. GraphQL operations require authentication: send your access token as a Bearer token on each `POST`, and the request will be authorized per operation before it executes.
 
 - cURL- Python- JavaScript```
 curl -X POST \
  -H "Content-Type: application/json" \
  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
  -d '{"query": "query { ping }"}' \
- https://YOUR_ALLTRUE_TENANT_HOST/v1/graphql
+ https://YOUR_ATLAS_TENANT_HOST/v1/graphql
 
 ``````
 import requests
 
-url = "https://YOUR_ALLTRUE_TENANT_HOST/v1/graphql"
+url = "https://YOUR_ATLAS_TENANT_HOST/v1/graphql"
 headers = {
  "Content-Type": "application/json",
  "Authorization": "Bearer YOUR_ACCESS_TOKEN"
@@ -46,7 +48,7 @@ response = requests.post(url, json={"query": query}, headers=headers)
 print(response.json())
 
 ``````
-fetch('https://YOUR_ALLTRUE_TENANT_HOST/v1/graphql', {
+fetch('https://YOUR_ATLAS_TENANT_HOST/v1/graphql', {
  method: 'POST',
  headers: {
  'Content-Type': 'application/json',
@@ -64,15 +66,9 @@ fetch('https://YOUR_ALLTRUE_TENANT_HOST/v1/graphql', {
  .then(data =&gt; console.log(data));
 
 ```
-Use the sidebar to browse the types, queries, and mutations available in this schema.
+Issuing an authenticated `GET` against the same endpoint opens the embedded schema explorer for that version; `POST` requests execute operations and are authorized per operation.
 
 ## Interactive GraphQL Explorer[​](#interactive-graphql-explorer)
-Below you'll find our embedded GraphiQL explorer powered by Strawberry. This interactive tool allows you to:
+The embedded GraphQL explorer below provides version-aware tabs that load the V1 and V2 Strawberry-backed schema explorers directly from your tenant. Use it to browse the available schema for each version. If the docs deployment is not configured to point at a control-plane host, the page renders a configuration warning instead of the live explorer.
 
-- Browse the complete schema documentation
-- Construct and test GraphQL queries in real-time
-- View query results instantly
-- Access autocomplete suggestions based on the schema
-- Explore available types, queries, and mutations
-
-- V1 API (Default)- V2 API (Preview)[PreviousAI Investigation Handbook](/_docs/docs/handbooks/ai_investigation_handbook)[NextWhat's New in V3.4.0](/_docs/docs/release_notes/340)- [About Our GraphQL API](#about-our-graphql-api)[API Versions](#api-versions)- [Making Requests](#making-requests)- [Interactive GraphQL Explorer](#interactive-graphql-explorer)
+- V1 API (Default)- V2 API (Preview)[PreviousAWS AI Security Handbook](/_docs/docs/handbooks/aws_ai_security_handbook)[NextWhat's New in V3.5.0](/_docs/docs/release_notes/350)- [About Our GraphQL API](#about-our-graphql-api)- [API Versions](#api-versions)- [Making Requests](#making-requests)- [Interactive GraphQL Explorer](#interactive-graphql-explorer)

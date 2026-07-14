@@ -93,35 +93,35 @@ def html_to_markdown(page_content: str) -> str:
 # ─── Main Scraper ─────────────────────────────────────────────────────────────
 
 async def login(page):
-    """Navigate to the Atlas docs site and wait for manual login."""
+    """Navigate to the Atlas docs site and wait for manual login confirmation."""
     print("\n" + "="*50)
     print("ACTION REQUIRED: Manual login needed")
     print("="*50)
     await page.goto(DOCS_BASE + "/overview/platform_and_applications")
     await page.wait_for_load_state("domcontentloaded", timeout=60000)
 
-    # Check if we landed on a login page
+    # If redirected to auth0/login, wait for the redirect back automatically
     current_url = page.url
     if "auth0" in current_url or "login" in current_url:
-        print("A browser window has opened.")
-        print("Please log in manually with your Varonis credentials.")
-        print("Waiting for you to complete login...")
-        print("(The script will continue automatically once you're logged in)\n")
-
-        # Wait until we land back on the Atlas docs domain (not an auth0 intermediate redirect)
+        print("Redirected to login page — complete your credentials + MFA in the browser.")
+        print("Waiting for login to complete...")
         await page.wait_for_url(
             lambda url: "prod.alltrue-be.com" in url and "auth0" not in url,
-            timeout=120000  # 2 minute timeout to log in
+            timeout=300000  # 5 minute timeout for MFA
         )
         await page.wait_for_load_state("load", timeout=30000)
-        await page.wait_for_timeout(5000)  # Extra buffer for session cookie to settle
+        await page.wait_for_timeout(3000)
 
-        # Explicitly navigate to docs to confirm session is active
+        # Navigate explicitly to docs after login
         await page.goto(DOCS_BASE + "/overview/platform_and_applications")
         await page.wait_for_load_state("domcontentloaded", timeout=30000)
         await page.wait_for_timeout(3000)
 
-    print("✓ Login successful — continuing with scrape")
+    # Always pause and ask for manual confirmation before proceeding
+    print("\nBrowser is open. Please make sure you are fully logged in")
+    print("and can see the Atlas documentation page in the browser.")
+    input("Press ENTER here when you are ready to start scraping... ")
+    print("✓ Confirmed — continuing with scrape")
 
 
 async def discover_nav_links(page) -> list[dict]:
@@ -135,6 +135,18 @@ async def discover_nav_links(page) -> list[dict]:
         await page.goto(f"{DOCS_BASE}/overview/platform_and_applications")
         await page.wait_for_load_state("load", timeout=30000)
         await page.wait_for_timeout(3000)
+
+    # Wait for Docusaurus React to fully hydrate and render the sidebar
+    print("  Waiting for sidebar nav to render...")
+    try:
+        await page.wait_for_selector(
+            "nav.menu, .theme-doc-sidebar-menu, aside nav, [class*='sidebar'] nav, [class*='menu__list']",
+            timeout=20000
+        )
+        await page.wait_for_timeout(3000)  # extra buffer for all nav items to paint
+    except Exception:
+        print("  Sidebar selector timed out — proceeding anyway")
+        await page.wait_for_timeout(5000)
 
     # Save screenshot and HTML for debugging
     debug_dir = OUTPUT_DIR / "debug"

@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.3
 
-- [](/_docs/)- Release Notes- What's New in V3.1.3On this page# What's New in V3.1.3
+- [](/_docs/)- Release Notes- What's New in V3.1.3Export PDFOn this page# What's New in V3.1.3
 Release Date: Jan 30, 2026
 
 ### Multiple Data Planes[​](#multiple-data-planes)

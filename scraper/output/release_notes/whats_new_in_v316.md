@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.6
 
-- [](/_docs/)- Release Notes- What's New in V3.1.6On this page# What's New in V3.1.6
+- [](/_docs/)- Release Notes- What's New in V3.1.6Export PDFOn this page# What's New in V3.1.6
 **Release Date: April 10, 2026**
 
 ### Azure Data Plane Support[​](#azure-data-plane-support)

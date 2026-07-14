@@ -58,19 +58,22 @@ Update an existing policy automation (partial update).
 
 ---
 
-## DELETE /v1/policy-automations/{automation_id} —  Delete Policy Automation
+## DELETE /v1/policy-automations/{automation_id} — Delete a policy automation rule
 
 **Endpoint**: `DELETE /v1/policy-automations/{automation_id}`
-**Summary**:  Delete Policy Automation
+**Summary**: Delete a policy automation rule
 **Tags**: policy-automations
 
-Soft-delete a policy automation.
+Soft-delete the specified policy automation so it is no longer evaluated or visible. The automation is identified by its UUID. Use when an automation rule is no longer needed and should be permanently retired. This action cannot be undone through the API. Scoped to the token's customer.
 
 **Parameters**:
 - `automation_id` (path, required): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Policy automation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---

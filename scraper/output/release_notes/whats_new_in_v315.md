@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.5
 
-- [](/_docs/)- Release Notes- What's New in V3.1.5On this page# What's New in V3.1.5
+- [](/_docs/)- Release Notes- What's New in V3.1.5Export PDFOn this page# What's New in V3.1.5
 **Release Date: March 27, 2026**
 
 ### Prompt Reader Role[​](#prompt-reader-role)

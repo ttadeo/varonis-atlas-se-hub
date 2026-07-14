@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.14
 
-- [](/_docs/)- Release Notes- What's New in V3.0.14# What's New in V3.0.14
+- [](/_docs/)- Release Notes- What's New in V3.0.14Export PDF# What's New in V3.0.14
 Release Date: August 15, 2025
 
 Email-Based Service Management Integration – Configure integrations with platforms like JIRA and FreshDesk to send incidents and issues. This is configured in the Admin Console.

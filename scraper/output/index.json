@@ -40,100 +40,92 @@
     "file": "overview/organizations_and_projects_overview.md"
   },
   {
-    "title": "GUI Overview",
+    "title": "GUI Navigation",
     "url": "https://prod.alltrue-be.com/_docs/docs/overview/gui_navigation",
     "section": "overview",
     "path": "overview/gui_navigation",
     "status": "success",
-    "file": "overview/gui_overview.md"
+    "file": "overview/gui_navigation.md"
   },
   {
-    "title": "AI 360",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_360",
-    "section": "applications",
-    "path": "applications/ai_360",
+    "title": "Admin Console",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/",
+    "section": "admin_console",
+    "path": "admin_console/",
     "status": "success",
-    "file": "applications/ai_360.md"
+    "file": "admin_console/admin_console.md"
   },
   {
-    "title": "AI Inventory",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_inventory",
-    "section": "applications",
-    "path": "applications/ai_inventory",
+    "title": "General",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/general",
+    "section": "admin_console",
+    "path": "admin_console/general",
     "status": "success",
-    "file": "applications/ai_inventory.md"
+    "file": "admin_console/general.md"
   },
   {
-    "title": "AI Usage",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_usage",
-    "section": "applications",
-    "path": "applications/ai_usage",
+    "title": "Notifications",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/notifications",
+    "section": "admin_console",
+    "path": "admin_console/notifications",
     "status": "success",
-    "file": "applications/ai_usage.md"
+    "file": "admin_console/notifications.md"
   },
   {
-    "title": "AI SPM",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_spm",
-    "section": "applications",
-    "path": "applications/ai_spm",
+    "title": "SIEM Integrations",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/siem",
+    "section": "admin_console",
+    "path": "admin_console/siem",
     "status": "success",
-    "file": "applications/ai_spm.md"
+    "file": "admin_console/siem_integrations.md"
   },
   {
-    "title": "AI Runtime Protection",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_gateway",
-    "section": "applications",
-    "path": "applications/ai_gateway",
+    "title": "Service Management",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/service_management",
+    "section": "admin_console",
+    "path": "admin_console/service_management",
     "status": "success",
-    "file": "applications/ai_runtime_protection.md"
+    "file": "admin_console/service_management.md"
   },
   {
-    "title": "AI MCP",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_mcp",
-    "section": "applications",
-    "path": "applications/ai_mcp",
+    "title": "Integrations",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/integrations",
+    "section": "admin_console",
+    "path": "admin_console/integrations",
     "status": "success",
-    "file": "applications/ai_mcp.md"
+    "file": "admin_console/integrations.md"
   },
   {
-    "title": "AI Investigation",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_monitor",
-    "section": "applications",
-    "path": "applications/ai_monitor",
+    "title": "Runtime Logging",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/runtime_logging",
+    "section": "admin_console",
+    "path": "admin_console/runtime_logging",
     "status": "success",
-    "file": "applications/ai_investigation.md"
+    "file": "admin_console/runtime_logging.md"
   },
   {
-    "title": "AI Compliance",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_compliance",
-    "section": "applications",
-    "path": "applications/ai_compliance",
+    "title": "Log Sources",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/log_sources",
+    "section": "admin_console",
+    "path": "admin_console/log_sources",
     "status": "success",
-    "file": "applications/ai_compliance.md"
+    "file": "admin_console/log_sources.md"
   },
   {
-    "title": "AI Observability",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_observability",
-    "section": "applications",
-    "path": "applications/ai_observability",
+    "title": "Data Plane",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/data_plane",
+    "section": "admin_console",
+    "path": "admin_console/data_plane",
     "status": "success",
-    "file": "applications/ai_observability.md"
+    "file": "admin_console/data_plane.md"
   },
   {
-    "title": "AI Incidents",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_incidents",
-    "section": "applications",
-    "path": "applications/ai_incidents",
+    "title": "Runtime Evaluator LLM",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/runtime_evaluator_llm",
+    "section": "admin_console",
+    "path": "admin_console/runtime_evaluator_llm",
     "status": "success",
-    "file": "applications/ai_incidents.md"
-  },
-  {
-    "title": "AI TPRM",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_tprm",
-    "section": "applications",
-    "path": "applications/ai_tprm",
-    "status": "success",
-    "file": "applications/ai_tprm.md"
+    "file": "admin_console/runtime_evaluator_llm.md"
   },
   {
     "title": "Onboarding",
@@ -142,14 +134,6 @@
     "path": "platform_services/onboarding",
     "status": "success",
     "file": "platform_services/onboarding.md"
-  },
-  {
-    "title": "Admin Console",
-    "url": "https://prod.alltrue-be.com/_docs/docs/platform_services/admin_console",
-    "section": "platform_services",
-    "path": "platform_services/admin_console",
-    "status": "success",
-    "file": "platform_services/admin_console.md"
   },
   {
     "title": "Integrations",
@@ -184,6 +168,38 @@
     "file": "platform_services/mcp_server_for_coding_agents.md"
   },
   {
+    "title": "Providers",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers",
+    "section": "providers",
+    "path": "providers",
+    "status": "success",
+    "file": "providers/providers.md"
+  },
+  {
+    "title": "AWS",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/aws",
+    "section": "providers",
+    "path": "providers/aws",
+    "status": "success",
+    "file": "providers/aws.md"
+  },
+  {
+    "title": "Azure",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/azure",
+    "section": "providers",
+    "path": "providers/azure",
+    "status": "success",
+    "file": "providers/azure.md"
+  },
+  {
+    "title": "Google Cloud",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/gcp",
+    "section": "providers",
+    "path": "providers/gcp",
+    "status": "success",
+    "file": "providers/google_cloud.md"
+  },
+  {
     "title": "AWS Bedrock",
     "url": "https://prod.alltrue-be.com/_docs/docs/providers/aws_bedrock",
     "section": "providers",
@@ -192,28 +208,188 @@
     "file": "providers/aws_bedrock.md"
   },
   {
+    "title": "Anthropic",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/anthropic",
+    "section": "providers",
+    "path": "providers/anthropic",
+    "status": "success",
+    "file": "providers/anthropic.md"
+  },
+  {
+    "title": "Azure OpenAI",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/azure_openai",
+    "section": "providers",
+    "path": "providers/azure_openai",
+    "status": "success",
+    "file": "providers/azure_openai.md"
+  },
+  {
+    "title": "Gemini",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/gemini",
+    "section": "providers",
+    "path": "providers/gemini",
+    "status": "success",
+    "file": "providers/gemini.md"
+  },
+  {
+    "title": "OpenAI",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/openai",
+    "section": "providers",
+    "path": "providers/openai",
+    "status": "success",
+    "file": "providers/openai.md"
+  },
+  {
+    "title": "Custom LLM endpoints",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/custom",
+    "section": "providers",
+    "path": "providers/custom",
+    "status": "success",
+    "file": "providers/custom_llm_endpoints.md"
+  },
+  {
+    "title": "Microsoft Copilot Studio Integration",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/copilot_studio",
+    "section": "providers",
+    "path": "providers/copilot_studio",
+    "status": "success",
+    "file": "providers/microsoft_copilot_studio_integration.md"
+  },
+  {
+    "title": "IBM Watsonx",
+    "url": "https://prod.alltrue-be.com/_docs/docs/providers/ibm_watsonx",
+    "section": "providers",
+    "path": "providers/ibm_watsonx",
+    "status": "success",
+    "file": "providers/ibm_watsonx.md"
+  },
+  {
+    "title": "Coding Agent Protection",
+    "url": "https://prod.alltrue-be.com/_docs/docs/coding_agent_protection/overview",
+    "section": "coding_agent_protection",
+    "path": "coding_agent_protection/overview",
+    "status": "success",
+    "file": "coding_agent_protection/coding_agent_protection.md"
+  },
+  {
+    "title": "Runtime Protection",
+    "url": "https://prod.alltrue-be.com/_docs/docs/coding_agent_protection/runtime_protection",
+    "section": "coding_agent_protection",
+    "path": "coding_agent_protection/runtime_protection",
+    "status": "success",
+    "file": "coding_agent_protection/runtime_protection.md"
+  },
+  {
+    "title": "Visibility",
+    "url": "https://prod.alltrue-be.com/_docs/docs/coding_agent_protection/visibility",
+    "section": "coding_agent_protection",
+    "path": "coding_agent_protection/visibility",
+    "status": "success",
+    "file": "coding_agent_protection/visibility.md"
+  },
+  {
+    "title": "Artifact Discovery and Posture",
+    "url": "https://prod.alltrue-be.com/_docs/docs/coding_agent_protection/artifact_discovery_posture",
+    "section": "coding_agent_protection",
+    "path": "coding_agent_protection/artifact_discovery_posture",
+    "status": "success",
+    "file": "coding_agent_protection/artifact_discovery_and_posture.md"
+  },
+  {
+    "title": "Log Sources",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/overview",
+    "section": "log_sources",
+    "path": "log_sources/overview",
+    "status": "success",
+    "file": "log_sources/log_sources.md"
+  },
+  {
+    "title": "Configuring Log Sources",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/configuration",
+    "section": "log_sources",
+    "path": "log_sources/configuration",
+    "status": "success",
+    "file": "log_sources/configuring_log_sources.md"
+  },
+  {
+    "title": "Anthropic Compliance API",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/anthropic_compliance_api",
+    "section": "log_sources",
+    "path": "log_sources/anthropic_compliance_api",
+    "status": "success",
+    "file": "log_sources/anthropic_compliance_api.md"
+  },
+  {
+    "title": "Copilot events from Varonis Data Security Platform",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/copilot_varonis_dspm",
+    "section": "log_sources",
+    "path": "log_sources/copilot_varonis_dspm",
+    "status": "success",
+    "file": "log_sources/copilot_events_from_varonis_data_security_platform.md"
+  },
+  {
+    "title": "ChatGPT Enterprise events from Varonis Data Security Platform",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/chatgpt_enterprise_varonis_dspm",
+    "section": "log_sources",
+    "path": "log_sources/chatgpt_enterprise_varonis_dspm",
+    "status": "success",
+    "file": "log_sources/chatgpt_enterprise_events_from_varonis_data_security_platform.md"
+  },
+  {
+    "title": "Island Browser",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/island_browser",
+    "section": "log_sources",
+    "path": "log_sources/island_browser",
+    "status": "success",
+    "file": "log_sources/island_browser.md"
+  },
+  {
+    "title": "Anthropic OTEL Logs",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/anthropic_otel",
+    "section": "log_sources",
+    "path": "log_sources/anthropic_otel",
+    "status": "success",
+    "file": "log_sources/anthropic_otel_logs.md"
+  },
+  {
+    "title": "AWS Bedrock",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/aws_bedrock",
+    "section": "log_sources",
+    "path": "log_sources/aws_bedrock",
+    "status": "success",
+    "file": "log_sources/aws_bedrock.md"
+  },
+  {
+    "title": "Shadow AI Usage Monitoring",
+    "url": "https://prod.alltrue-be.com/_docs/docs/shadow_ai_usage_monitoring/overview",
+    "section": "shadow_ai_usage_monitoring",
+    "path": "shadow_ai_usage_monitoring/overview",
+    "status": "success",
+    "file": "shadow_ai_usage_monitoring/shadow_ai_usage_monitoring.md"
+  },
+  {
+    "title": "Cloudflare",
+    "url": "https://prod.alltrue-be.com/_docs/docs/shadow_ai_usage_monitoring/cloudflare",
+    "section": "shadow_ai_usage_monitoring",
+    "path": "shadow_ai_usage_monitoring/cloudflare",
+    "status": "success",
+    "file": "shadow_ai_usage_monitoring/cloudflare.md"
+  },
+  {
+    "title": "Netskope",
+    "url": "https://prod.alltrue-be.com/_docs/docs/shadow_ai_usage_monitoring/netskope",
+    "section": "shadow_ai_usage_monitoring",
+    "path": "shadow_ai_usage_monitoring/netskope",
+    "status": "success",
+    "file": "shadow_ai_usage_monitoring/netskope.md"
+  },
+  {
     "title": "LiteLLM Proxy Integration",
     "url": "https://prod.alltrue-be.com/_docs/docs/integration_examples/litellm",
     "section": "integration_examples",
     "path": "integration_examples/litellm",
     "status": "success",
     "file": "integration_examples/litellm_proxy_integration.md"
-  },
-  {
-    "title": "Microsoft Copilot Studio Integration",
-    "url": "https://prod.alltrue-be.com/_docs/docs/integration_examples/copilot_studio",
-    "section": "integration_examples",
-    "path": "integration_examples/copilot_studio",
-    "status": "success",
-    "file": "integration_examples/microsoft_copilot_studio_integration.md"
-  },
-  {
-    "title": "Coding Agent Integrations",
-    "url": "https://prod.alltrue-be.com/_docs/docs/integration_examples/coding_agents",
-    "section": "integration_examples",
-    "path": "integration_examples/coding_agents",
-    "status": "success",
-    "file": "integration_examples/coding_agent_integrations.md"
   },
   {
     "title": "LLM Pentest Execution Workflow Using REST API",
@@ -240,6 +416,14 @@
     "file": "handbooks/mcp_security_handbook.md"
   },
   {
+    "title": "What Your Coding Agent Can Do with Atlas",
+    "url": "https://prod.alltrue-be.com/_docs/docs/handbooks/mcp_server_runbooks",
+    "section": "handbooks",
+    "path": "handbooks/mcp_server_runbooks",
+    "status": "success",
+    "file": "handbooks/what_your_coding_agent_can_do_with_atlas.md"
+  },
+  {
     "title": "AI Investigation Handbook",
     "url": "https://prod.alltrue-be.com/_docs/docs/handbooks/ai_investigation_handbook",
     "section": "handbooks",
@@ -248,12 +432,28 @@
     "file": "handbooks/ai_investigation_handbook.md"
   },
   {
+    "title": "AWS AI Security Handbook",
+    "url": "https://prod.alltrue-be.com/_docs/docs/handbooks/aws_ai_security_handbook",
+    "section": "handbooks",
+    "path": "handbooks/aws_ai_security_handbook",
+    "status": "success",
+    "file": "handbooks/aws_ai_security_handbook.md"
+  },
+  {
     "title": "GraphQL API Reference",
     "url": "https://prod.alltrue-be.com/_docs/docs/",
     "section": "",
     "path": "",
     "status": "success",
     "file": "/graphql_api_reference.md"
+  },
+  {
+    "title": "What's New in V3.5.0",
+    "url": "https://prod.alltrue-be.com/_docs/docs/release_notes/350",
+    "section": "release_notes",
+    "path": "release_notes/350",
+    "status": "success",
+    "file": "release_notes/whats_new_in_v350.md"
   },
   {
     "title": "What's New in V3.4.0",
@@ -430,5 +630,141 @@
     "path": "disclaimers",
     "status": "success",
     "file": "disclaimers/disclaimers.md"
+  },
+  {
+    "title": "Platform and Applications Overview",
+    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#applications-vs-platform-services",
+    "section": "overview",
+    "path": "overview/platform_and_applications#applications-vs-platform-services",
+    "status": "success",
+    "file": "overview/platform_and_applications_overview.md"
+  },
+  {
+    "title": "Platform and Applications Overview",
+    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#applications",
+    "section": "overview",
+    "path": "overview/platform_and_applications#applications",
+    "status": "success",
+    "file": "overview/platform_and_applications_overview.md"
+  },
+  {
+    "title": "AI 360",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_360",
+    "section": "applications",
+    "path": "applications/ai_360",
+    "status": "success",
+    "file": "applications/ai_360.md"
+  },
+  {
+    "title": "AI Inventory",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_inventory",
+    "section": "applications",
+    "path": "applications/ai_inventory",
+    "status": "success",
+    "file": "applications/ai_inventory.md"
+  },
+  {
+    "title": "AI Usage",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_usage",
+    "section": "applications",
+    "path": "applications/ai_usage",
+    "status": "success",
+    "file": "applications/ai_usage.md"
+  },
+  {
+    "title": "AI Red Team",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_red_team",
+    "section": "applications",
+    "path": "applications/ai_red_team",
+    "status": "success",
+    "file": "applications/ai_red_team.md"
+  },
+  {
+    "title": "AI SPM",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_spm",
+    "section": "applications",
+    "path": "applications/ai_spm",
+    "status": "success",
+    "file": "applications/ai_spm.md"
+  },
+  {
+    "title": "AI Runtime",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_gateway",
+    "section": "applications",
+    "path": "applications/ai_gateway",
+    "status": "success",
+    "file": "applications/ai_runtime.md"
+  },
+  {
+    "title": "AI MCP",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_mcp",
+    "section": "applications",
+    "path": "applications/ai_mcp",
+    "status": "success",
+    "file": "applications/ai_mcp.md"
+  },
+  {
+    "title": "AI Investigation",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_monitor",
+    "section": "applications",
+    "path": "applications/ai_monitor",
+    "status": "success",
+    "file": "applications/ai_investigation.md"
+  },
+  {
+    "title": "Compliance Compass",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_compliance",
+    "section": "applications",
+    "path": "applications/ai_compliance",
+    "status": "success",
+    "file": "applications/compliance_compass.md"
+  },
+  {
+    "title": "AI Third-Party Risk Management",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_tprm",
+    "section": "applications",
+    "path": "applications/ai_tprm",
+    "status": "success",
+    "file": "applications/ai_third_party_risk_management.md"
+  },
+  {
+    "title": "AI Incidents",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_incidents",
+    "section": "applications",
+    "path": "applications/ai_incidents",
+    "status": "success",
+    "file": "applications/ai_incidents.md"
+  },
+  {
+    "title": "Platform and Applications Overview",
+    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#platform-services",
+    "section": "overview",
+    "path": "overview/platform_and_applications#platform-services",
+    "status": "success",
+    "file": "overview/platform_and_applications_overview.md"
+  },
+  {
+    "title": "Platform and Applications Overview",
+    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#admin-console-at-a-glance",
+    "section": "overview",
+    "path": "overview/platform_and_applications#admin-console-at-a-glance",
+    "status": "success",
+    "file": "overview/platform_and_applications_overview.md"
+  },
+  {
+    "title": "Platform and Applications Overview",
+    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#licensing-and-entitlements",
+    "section": "overview",
+    "path": "overview/platform_and_applications#licensing-and-entitlements",
+    "status": "success",
+    "file": "overview/platform_and_applications_overview.md"
+  },
+  {
+    "title": "Platform and Applications Overview",
+    "url": "https://prod.alltrue-be.com/_docs/docs/overview/platform_and_applications#related-pages",
+    "section": "overview",
+    "path": "overview/platform_and_applications#related-pages",
+    "status": "success",
+    "file": "overview/platform_and_applications_overview.md"
   }
 ]

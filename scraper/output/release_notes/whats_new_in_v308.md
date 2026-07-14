@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.8
 
-- [](/_docs/)- Release Notes- What's New in V3.0.8On this page# What's New in V3.0.8
+- [](/_docs/)- Release Notes- What's New in V3.0.8Export PDFOn this page# What's New in V3.0.8
 Release Date: May 8, 2025
 
 - Code Scanning Configuration Bulk Actions (test, reassign, delete multiple repositories)

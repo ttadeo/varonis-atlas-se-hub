@@ -1,29 +1,31 @@
 # posture-management API Endpoints
 
-## POST /v1/posture-management/incidents — Create Incident
+## POST /v1/posture-management/incidents — Create a new posture incident with linked issues
 
 **Endpoint**: `POST /v1/posture-management/incidents`
-**Summary**: Create Incident
+**Summary**: Create a new posture incident with linked issues
 **Tags**: posture-management, incidents
 
-Create Incident with issues
+Create a posture incident for the token's customer, setting its type, severity, status, assignee, due date, and an optional list of posture issue IDs to link immediately. Use this when an agent needs to open a new incident to track one or more related posture findings. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/incidents —  Get All Incidents
+## GET /v1/posture-management/incidents — List all posture incidents for the authenticated customer
 
 **Endpoint**: `GET /v1/posture-management/incidents`
-**Summary**:  Get All Incidents
+**Summary**: List all posture incidents for the authenticated customer
 **Tags**: posture-management, incidents
 
-Get all Incidents for a customer. If you specify project_id, ignores organization_id
+Return all posture incidents belonging to the token's customer, each with their associated issues. Filter by project_id or organization_id to narrow scope; when project_id is provided, organization_id is ignored.
 
 **Parameters**:
 - `project_id` (query, optional): 
@@ -31,6 +33,8 @@ Get all Incidents for a customer. If you specify project_id, ignores organizatio
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -71,28 +75,33 @@ Delete an Incident and its associated IncidentIssue records
 
 ---
 
-## GET /v1/posture-management/incidents/{incident_id} —  Get Incident
+## GET /v1/posture-management/incidents/{incident_id} — Get a single posture incident with its associated issues
 
 **Endpoint**: `GET /v1/posture-management/incidents/{incident_id}`
-**Summary**:  Get Incident
+**Summary**: Get a single posture incident with its associated issues
 **Tags**: posture-management, incidents
+
+Return the full detail of one posture incident — status, severity, assignee, timestamps, and the list of linked posture issues — scoped to the token's customer. Returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
 - `incident_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Incident not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id} — Update Incident
+## PATCH /v1/posture-management/incidents/{incident_id} — Update metadata fields on a posture incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}`
-**Summary**: Update Incident
+**Summary**: Update metadata fields on a posture incident
 **Tags**: posture-management, incidents
 
-Update Incident
+Update editable fields — title, description, severity, or other metadata — on a posture incident owned by the token's customer. Returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
 - `incident_id` (path, required): 
@@ -102,6 +111,9 @@ Update Incident
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Incident not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -161,11 +173,13 @@ Update Incident with issues
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/update-issues —  Update Issue In Incident
+## PATCH /v1/posture-management/incidents/{incident_id}/update-issues — Link one or more posture issues to an incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/update-issues`
-**Summary**:  Update Issue In Incident
+**Summary**: Link one or more posture issues to an incident
 **Tags**: posture-management, incidents
+
+Assign a list of posture issue IDs to the specified incident, creating issue-to-incident associations. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
 - `incident_id` (path, required): 
@@ -175,6 +189,9 @@ Update Incident with issues
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Incident not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -200,11 +217,13 @@ Delete Issues from Incident
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/delete-issues —  Delete Issue From Incident
+## PATCH /v1/posture-management/incidents/{incident_id}/delete-issues — Unlink one or more posture issues from an incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/delete-issues`
-**Summary**:  Delete Issue From Incident
+**Summary**: Unlink one or more posture issues from an incident
 **Tags**: posture-management, incidents
+
+Remove the association between a list of posture issue IDs and the specified incident. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
 - `incident_id` (path, required): 
@@ -214,6 +233,9 @@ Delete Issues from Incident
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Incident not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -239,11 +261,13 @@ Update Incident status, with a required comment if status is changed to CLOSED
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/status — Update Incident Status
+## PATCH /v1/posture-management/incidents/{incident_id}/status — Transition the status of a posture incident
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/status`
-**Summary**: Update Incident Status
+**Summary**: Transition the status of a posture incident
 **Tags**: posture-management, incidents
+
+Update the lifecycle status of a posture incident (e.g. open, in-progress, closed). Closing an incident requires a comment. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
 - `incident_id` (path, required): 
@@ -253,6 +277,9 @@ Update Incident status, with a required comment if status is changed to CLOSED
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Incident not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -278,11 +305,13 @@ Assign an Incident to a user
 
 ---
 
-## PATCH /v1/posture-management/incidents/{incident_id}/assign —  Assign Incident
+## PATCH /v1/posture-management/incidents/{incident_id}/assign — Assign a posture incident to a user
 
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/assign`
-**Summary**:  Assign Incident
+**Summary**: Assign a posture incident to a user
 **Tags**: posture-management, incidents
+
+Set or change the assignee of a posture incident by specifying the user's ID. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
 - `incident_id` (path, required): 
@@ -292,67 +321,65 @@ Assign an Incident to a user
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Incident not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/issue —  Update Issue
+## PATCH /v1/posture-management/issue — Update status, severity, or triage state of a single posture issue
 
 **Endpoint**: `PATCH /v1/posture-management/issue`
-**Summary**:  Update Issue
+**Summary**: Update status, severity, or triage state of a single posture issue
 **Tags**: posture-management
+
+Modify fields on a single posture finding — such as status, severity, or in-progress flag — scoped to the token's customer. Use this to triage or acknowledge an individual issue. Returns 404 when the issue does not exist or belongs to a different tenant.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/posture-management/posture-management/issue —  Update Issue
-
-**Endpoint**: `PATCH /v1/posture-management/posture-management/issue`
-**Summary**:  Update Issue
-**Tags**: posture-management
-
-**Request Body**: Required
-- Content-Type: `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## PATCH /v1/posture-management/issues —  Update Issues
+## PATCH /v1/posture-management/issues — Bulk-update status or severity on multiple posture issues
 
 **Endpoint**: `PATCH /v1/posture-management/issues`
-**Summary**:  Update Issues
+**Summary**: Bulk-update status or severity on multiple posture issues
 **Tags**: posture-management
 
-Update multiple issues in bulk.
+Apply the same field changes — status, severity, in-progress flag — to a list of posture issue IDs in one request. Scoped to the token's customer; issues that do not belong to the customer are rejected. Useful for bulk triage or acknowledgement workflows.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: One or more issues not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/issue-types —  Get Issue Types
+## GET /v1/posture-management/issue-types — List all posture issue types with display names
 
 **Endpoint**: `GET /v1/posture-management/issue-types`
-**Summary**:  Get Issue Types
+**Summary**: List all posture issue types with display names
 **Tags**: posture-management
 
-Get all issue types and their display names.
+Return the complete catalogue of posture issue type identifiers and their human-readable display names. Use this to populate filter dropdowns or map issue type codes to labels in the UI. This is a static platform-wide reference — the list applies to all tenants equally and does not vary by customer context.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
@@ -373,60 +400,69 @@ Get the status of a job that was initiated to run a discovery scan.
 
 ---
 
-## GET /v1/posture-management/policies —  Get All Policies
+## GET /v1/posture-management/policies — List all available posture management policies
 
 **Endpoint**: `GET /v1/posture-management/policies`
-**Summary**:  Get All Policies
+**Summary**: List all available posture management policies
 **Tags**: posture-management
 
-Get all posture management policies
+Return the full catalog of posture management policies known to the platform, optionally filtered by policy_type (e.g. MODEL_POLICY, CLOUD_CONFIGURATION_POLICY). This endpoint is platform-wide and does not require a customer context — use it to discover which policy names can be activated for a customer via POST /customers/{customer_id}/policies.
 
 **Parameters**:
 - `policy_type` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/policy-groups —  Get All Policy Groups
+## GET /v1/posture-management/policy-groups — List all available posture management policy groups
 
 **Endpoint**: `GET /v1/posture-management/policy-groups`
-**Summary**:  Get All Policy Groups
+**Summary**: List all available posture management policy groups
 **Tags**: posture-management
 
-Get all posture management policy groups
+Return the full catalog of posture management policy groups known to the platform. Policy groups are named bundles of policies (e.g. 'NIST AI RMF', 'OWASP LLM Top 10'). This endpoint is platform-wide with no customer scoping — use it to discover which group names can be activated for a customer via POST /customers/{customer_id}/policy-groups.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## GET /v1/posture-management/policy-groups/{policy_group_name} —  Get Policy Group
+## GET /v1/posture-management/policy-groups/{policy_group_name} — Get a single posture management policy group by name
 
 **Endpoint**: `GET /v1/posture-management/policy-groups/{policy_group_name}`
-**Summary**:  Get Policy Group
+**Summary**: Get a single posture management policy group by name
 **Tags**: posture-management
 
-Get a particular posture management policy group
+Return the full definition of a single posture management policy group, including the list of policies it bundles. This endpoint is platform-wide with no customer scoping. Use to inspect which policies are included in a group before activating it for a customer.
 
 **Parameters**:
 - `policy_group_name` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Policy group not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policies —  Get Customer Policies
+## GET /v1/posture-management/customers/{customer_id}/policies — List active posture management policies for a customer
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policies`
-**Summary**:  Get Customer Policies
+**Summary**: List active posture management policies for a customer
 **Tags**: posture-management
 
-Get all posture management policies for a customer
+Return all posture management policies currently enabled for a customer, including the scope level at which each was activated (customer, organization, or project). Filter by organization_id, project_id, or policy_type to narrow results.
+
+Deprecated: prefer listPosturePolicyConfiguration, which returns the full policy catalog merged with the same enabled_from_* flags in one pre-sorted response and derives the customer from the access token. This endpoint is retained for callers that need only the enabled subset and the activation source (individual vs group).
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -436,6 +472,8 @@ Get all posture management policies for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -446,10 +484,7 @@ Get all posture management policies for a customer
 **Summary**: Add Security Posture Management Policies for a Customer
 **Tags**: posture-management
 
-Add a set of security posture management policies for a customer.
-This operation activates the specified policies for the customer.
-By default, the policies are activated at the customer level, affecting all organizations and projects.
-If organization_id or project_id are provided, the activation will be limited to the specified scope.
+Activate one or more posture management policies for a customer. By default the policies are enabled at the customer level (all organizations and projects). Supply organization_id or project_id to limit activation to a specific scope. Scoped to the token's customer. Use listPosturePolicies to discover valid policy names.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -459,17 +494,40 @@ If organization_id or project_id are provided, the activation will be limited to
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name} —  Delete Individual Customer Policies
+## GET /v1/posture-management/policies/configuration — List posture policies with the customer's enablement state
 
-**Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name}`
-**Summary**:  Delete Individual Customer Policies
+**Endpoint**: `GET /v1/posture-management/policies/configuration`
+**Summary**: List posture policies with the customer's enablement state
 **Tags**: posture-management
 
-Delete individual posture management policies for a customer
+Return the full posture management policy catalog (across all policy types, or a single type via policy_type) merged with the token customer's per-scope enablement state, ordered ascending by the visible policy label (display_name, nulls last). Each item carries enabled_from_global / enabled_from_organization / enabled_from_project flags, resolved inclusive of higher scope levels for the organization and project in scope. Policies with no activation are still returned with all flags false. This is a single pre-sorted read-model — the client renders it as-is, with no merge or sort. Scoped to the token's customer.
+
+**Parameters**:
+- `organization_id` (query, optional): 
+- `project_id` (query, optional): 
+- `policy_type` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name} — Delete a posture management policy activation for a customer
+
+**Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/policies/{policy_name}`
+**Summary**: Delete a posture management policy activation for a customer
+**Tags**: posture-management
+
+Deactivate a posture management policy for a customer. Supply organization_id or project_id to remove the activation only at that scope; omit both to remove the customer-level activation. Returns the remaining active policies after deletion. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -479,17 +537,20 @@ Delete individual posture management policies for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Policy activation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups —  Get Customer Policy Groups
+## GET /v1/posture-management/customers/{customer_id}/policy-groups — List active posture management policy groups for a customer
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups`
-**Summary**:  Get Customer Policy Groups
+**Summary**: List active posture management policy groups for a customer
 **Tags**: posture-management
 
-Get all posture management policy groups for a customer
+Return all posture management policy groups currently activated for a customer, including the scope at which each was enabled. Filter by organization_id or project_id to narrow to a specific organizational unit. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -498,6 +559,8 @@ Get all posture management policy groups for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -508,10 +571,7 @@ Get all posture management policy groups for a customer
 **Summary**: Add Policy Groups for a Customer
 **Tags**: posture-management
 
-Add a set of posture management policy groups for a customer.
-This operation activates the specified policy groups, which in turn enables all policies within those groups.
-By default, the policy groups are activated at the customer level, affecting all organizations and projects.
-If organization_id or project_id are provided, the activation will be limited to the specified scope.
+Activate one or more posture management policy groups for a customer, enabling all policies within each group. By default activated at the customer level. Supply organization_id or project_id to limit the activation scope. Returns the newly activated policy groups. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -523,17 +583,19 @@ If organization_id or project_id are provided, the activation will be limited to
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name} —  Delete Customer Policy Groups
+## DELETE /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name} — Delete a policy group activation for a customer
 
 **Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}`
-**Summary**:  Delete Customer Policy Groups
+**Summary**: Delete a policy group activation for a customer
 **Tags**: posture-management
 
-Delete posture management policy groups for a customer
+Deactivate a posture management policy group for a customer. Supply organization_id or project_id to remove the activation only at that scope; omit both to remove the customer-level activation. Returns the remaining active policy groups after deletion. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -543,27 +605,33 @@ Delete posture management policy groups for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Policy group activation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/component-based-policies/configurable-inputs — List component-based policies + their configurable inputs for a resource type
+## GET /v1/posture-management/customers/{customer_id}/component-based-policies/configurable-inputs — List component-based policies + their configurable inputs by resource type and/or policy
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/component-based-policies/configurable-inputs`
-**Summary**: List component-based policies + their configurable inputs for a resource type
+**Summary**: List component-based policies + their configurable inputs by resource type and/or policy
 **Tags**: posture-management
 
-Pure read from the in-memory ``ComponentPolicyRegistry`` — no DB
-access. Identical across customers because policy definitions live on
-disk; ``customer_id`` participates in the path for RBAC consistency
-with the rest of ``/customers/{customer_id}/...``.
+Return every component-based posture policy matching the supplied selectors, along with the configurable input parameters each policy exposes for customer tuning and an optional human-readable ``summary_template``. Filter by any combination of ``resource_type`` (policies binding that type), ``policy_type``, and ``policy_name`` — at least one selector is required and they AND-compose. Use this to discover which policies can be customized before upserting per-resource or customer-wide policy config overrides.
 
 **Parameters**:
 - `customer_id` (path, required): 
-- `resource_type` (query, required): Resource type to filter on. Returns every component-based policy whose ``bound_resource_types`` includes this value.
+- `resource_type` (query, optional): Optional resource-type selector. When set, returns every component-based policy whose ``bound_resource_types`` includes this value. AND-composed with ``policy_type`` / ``policy_name``.
+- `policy_type` (query, optional): Optional policy-type selector (e.g. ``mcp_configuration_policy``). When set, returns only policies of this type.
+- `policy_name` (query, optional): Optional exact policy_name selector (e.g. ``mcp.tool_overexposure_v1``). When set, returns only that policy.
+- `organization_id` (query, optional): Optional scope: resolve each policy's effective config as a scan scoped to this organization would. Mutually exclusive with ``project_id``; omit both for all-orgs.
+- `project_id` (query, optional): Optional scope: resolve each policy's effective config as a scan scoped to this project would. Mutually exclusive with ``organization_id``; omit both for all-orgs.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -574,6 +642,8 @@ with the rest of ``/customers/{customer_id}/...``.
 **Summary**: List per-resource configurable-input overrides (paginated)
 **Tags**: posture-management
 
+Return a paginated list of per-resource policy configuration overrides for a customer. Each override customizes the configurable inputs of a component-based policy for a specific resource instance. Filter by policy_name to narrow to a single policy, or by resource_type to narrow to resources of that type. Supports page/per_page pagination. Scoped to the token's customer.
+
 **Parameters**:
 - `customer_id` (path, required): 
 - `policy_name` (query, optional): Optional. Filter to a single component-based policy.
@@ -583,6 +653,8 @@ with the rest of ``/customers/{customer_id}/...``.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -593,6 +665,8 @@ with the rest of ``/customers/{customer_id}/...``.
 **Summary**: Get a single per-resource configurable-input override
 **Tags**: posture-management
 
+Return the configurable-input override for a specific resource instance and policy combination. Returns the stored config_overrides dict applied on top of policy defaults for this resource. Returns 404 if no override has been set for this pair. Scoped to the token's customer.
+
 **Parameters**:
 - `customer_id` (path, required): 
 - `resource_instance_id` (path, required): 
@@ -600,6 +674,9 @@ with the rest of ``/customers/{customer_id}/...``.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource policy config not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -609,6 +686,8 @@ with the rest of ``/customers/{customer_id}/...``.
 **Endpoint**: `PUT /v1/posture-management/customers/{customer_id}/component-based-policies/resource-policy-configs/{resource_instance_id}/{policy_name}`
 **Summary**: Upsert a per-resource configurable-input override
 **Tags**: posture-management
+
+Create or replace the configurable-input override for a specific resource instance and component-based policy. The supplied config_overrides are merged on top of policy defaults at scan time, allowing per-resource tuning (e.g. custom thresholds or allow-lists). Use listPostureComponentPolicyInputs to discover which inputs a policy accepts. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -620,6 +699,9 @@ with the rest of ``/customers/{customer_id}/...``.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource instance or policy not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -630,10 +712,108 @@ with the rest of ``/customers/{customer_id}/...``.
 **Summary**: Delete a per-resource configurable-input override (idempotent)
 **Tags**: posture-management
 
+Remove the per-resource configurable-input override for a specific resource instance and policy, reverting to the customer-wide or policy-default configuration at next scan. Idempotent — returns 204 even when no override exists. Scoped to the token's customer.
+
 **Parameters**:
 - `customer_id` (path, required): 
 - `resource_instance_id` (path, required): 
 - `policy_name` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs — List customer-wide configurable-input overrides (paginated)
+
+**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs`
+**Summary**: List customer-wide configurable-input overrides (paginated)
+**Tags**: posture-management
+
+Return a paginated list of customer-wide policy configuration overrides. Unlike per-resource overrides, these apply to all resources of the relevant type unless a more specific per-resource override exists. Filter by policy_name, organization_id, or project_id to narrow results. Supports page/per_page pagination. Scoped to the token's customer.
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `policy_name` (query, optional): Optional. Filter to a single component-based policy.
+- `organization_id` (query, optional): Optional. Filter to overrides scoped to this organization. Mutually exclusive with ``project_id`` — supplying both returns 400 (the underlying table forbids both-set rows). Omit to include every scope.
+- `project_id` (query, optional): Optional. Filter to overrides scoped to this project. Mutually exclusive with ``organization_id`` — supplying both returns 400. Omit to include every scope.
+- `per_page` (query, optional): 
+- `page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs/{policy_name} — Get a single customer-wide configurable-input override
+
+**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs/{policy_name}`
+**Summary**: Get a single customer-wide configurable-input override
+**Tags**: posture-management
+
+Return the customer-wide configurable-input override for a specific component-based policy. Optionally narrow to an organization or project scope via query params. Returns 404 if no override has been set at the requested scope. Scoped to the token's customer.
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `policy_name` (path, required): 
+- `organization_id` (query, optional): Optional. Narrow to the override scoped to this organization. Omit to fetch the tenant-wide row.
+- `project_id` (query, optional): Optional. Narrow to the override scoped to this project. Omit to fetch the tenant-wide row.
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer policy config not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## PUT /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs/{policy_name} — Upsert a customer-wide configurable-input override
+
+**Endpoint**: `PUT /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs/{policy_name}`
+**Summary**: Upsert a customer-wide configurable-input override
+**Tags**: posture-management
+
+Create or replace a customer-wide configurable-input override for a component-based policy. The override applies to all resources (unless a per-resource override takes precedence) at the specified scope (organization_id, project_id, or tenant-wide). Scoped to the token's customer.
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `policy_name` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs/{policy_name} — Delete (revert) a customer-wide configurable-input override at a scope
+
+**Endpoint**: `DELETE /v1/posture-management/customers/{customer_id}/component-based-policies/customer-policy-configs/{policy_name}`
+**Summary**: Delete (revert) a customer-wide configurable-input override at a scope
+**Tags**: posture-management
+
+Delete this scope's override row so the scope re-inherits from its parent
+(or the policy defaults). Idempotent — a no-op (still 204) when no row
+exists at the scope, so a double-clicked revert can't error. Pair with
+``configurable-inputs``'s ``inherited_config`` to refresh the UI in one
+request.
+
+**Parameters**:
+- `customer_id` (path, required): 
+- `policy_name` (path, required): 
+- `organization_id` (query, optional): Optional. Revert the override scoped to this organization. Mutually exclusive with ``project_id`` (400 if both set). Omit both to revert the all-orgs / tenant-wide override.
+- `project_id` (query, optional): Optional. Revert the override scoped to this project. Mutually exclusive with ``organization_id`` (400 if both set). Omit both to revert the all-orgs / tenant-wide override.
 
 **Responses**:
 - `204`: Successful Response
@@ -647,29 +827,87 @@ with the rest of ``/customers/{customer_id}/...``.
 **Summary**: Get the materialized evidence-tree snapshot for an agentic issue
 **Tags**: posture-management
 
-Return the JSON-shaped ``FindingEvidenceTree`` for ``issue_id``.
-
-404 when the issue does not exist, belongs to a different tenant,
-or has a NULL tree (legacy issue or engine issue from before the
-column shipped). The 404 is intentional — the FE branches on it to
-hide the affordance rather than render an empty body.
+Return the JSON evidence-tree for the specified agentic posture issue, representing the chain of findings and sub-checks that contributed to the issue. Returns 404 when the issue does not exist, belongs to a different tenant, or was created before evidence trees were captured.
 
 **Parameters**:
 - `issue_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue or evidence tree not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance — Get Customer Policy Groups Compliance
+## GET /v1/posture-management/issues/{issue_id}/component-engine/info — Get the Info-tab payload for a sensitive-data posture finding
 
-**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance`
-**Summary**: Get Customer Policy Groups Compliance
+**Endpoint**: `GET /v1/posture-management/issues/{issue_id}/component-engine/info`
+**Summary**: Get the Info-tab payload for a sensitive-data posture finding
 **Tags**: posture-management
 
-Get posture management policy groups compliance for a customer
+Return the full Info-tab payload for a sensitive-data posture finding (shown in the sensitive-data issue drawer), including policy identity, severity, AI-generated summary and evidence, impact assessment, bound resource details, contributing resources, matched-condition display names, and sensitive-data blast-radius aggregates. The payload is the sensitive-data projection of a component-engine finding — today every finding routed here is sensitive-data. Returns 404 when the issue is not a component-engine finding or belongs to a different tenant.
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue not found or not a component-engine finding
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/issues/{issue_id}/component-engine/remediation — Get the Remediation-tab payload for a component-engine finding
+
+**Endpoint**: `GET /v1/posture-management/issues/{issue_id}/component-engine/remediation`
+**Summary**: Get the Remediation-tab payload for a component-engine finding
+**Tags**: posture-management
+
+Return the Remediation-tab payload for a component-engine posture finding, including the AI-generated per-finding recommendation and the policy's authored remediation steps. Returns 404 when the issue does not exist, is not a component-engine finding, or belongs to a different tenant.
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue not found or not a component-engine finding
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/agentic/issues/{issue_id} — Get the Info-tab payload for an agentic posture finding
+
+**Endpoint**: `GET /v1/posture-management/agentic/issues/{issue_id}`
+**Summary**: Get the Info-tab payload for an agentic posture finding
+**Tags**: posture-management
+
+Return the full payload for an agentic posture finding — shown in the agentic issue drawer's Info tab. Includes policy identity, severity, status, the AI-generated Summary / Evidence / Impact assessment, the bound resource, contributing resources, and matched-condition display names. Returns 404 if the issue does not exist or belongs to a different tenant.
+
+**Parameters**:
+- `issue_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue not found or belongs to a different tenant.
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance — Get compliance summary for all posture policy groups for a customer
+
+**Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/compliance`
+**Summary**: Get compliance summary for all posture policy groups for a customer
+**Tags**: posture-management
+
+Return a compliance summary for every posture policy group enabled for the customer, keyed by policy group name. Each summary includes pass/fail counts and an overall compliance score. Filter by organization_id or project_id to scope the result to a specific organizational unit.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -678,17 +916,19 @@ Get posture management policy groups compliance for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/posture-overtime — Get Customer Policy Group Posture Overtime
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/posture-overtime — Get daily posture compliance score history for a policy group
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/posture-overtime`
-**Summary**: Get Customer Policy Group Posture Overtime
+**Summary**: Get daily posture compliance score history for a policy group
 **Tags**: posture-management
 
-Get posture management policy group posture overtime for a customer
+Return daily posture compliance scores over time for a specific policy group, enabling trend analysis of the customer's security posture. Use start_date and end_date to bound the date range. Filter by organization_id or project_id to narrow scope.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -700,17 +940,20 @@ Get posture management policy group posture overtime for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Policy group not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/compliance — Get Customer Policy Group Compliance
+## GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/compliance — Get latest scan compliance result for a specific posture policy group
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/policy-groups/{policy_group_name}/compliance`
-**Summary**: Get Customer Policy Group Compliance
+**Summary**: Get latest scan compliance result for a specific posture policy group
 **Tags**: posture-management
 
-Get posture management policy group compliance for a customer
+Return the most recent scan compliance result for a single posture policy group, including per-policy pass/fail values. Use this to inspect the current compliance posture for a specific policy group such as 'NIST AI RMF' or 'OWASP LLM'. Filter by organization_id or project_id to narrow scope.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -720,6 +963,9 @@ Get posture management policy group compliance for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Policy group not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -744,41 +990,48 @@ Get posture management policy group last scan time for a customer
 
 ---
 
-## GET /v1/posture-management/cloud-configuration/policies —  Get Cloud Configuration Policies
+## GET /v1/posture-management/cloud-configuration/policies — List all cloud configuration policies
 
 **Endpoint**: `GET /v1/posture-management/cloud-configuration/policies`
-**Summary**:  Get Cloud Configuration Policies
+**Summary**: List all cloud configuration policies
 **Tags**: posture-management
 
-Get all cloud configuration policies
+Return the full catalog of cloud configuration policies (cloud misconfig checks). This endpoint is platform-wide with no customer scoping — use it to discover which cloud configuration policies exist before triggering a misconfiguration scan.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## GET /v1/posture-management/cloud-configuration/policies/{cloud_provider} —  Get Cloud Configuration Policies For Cloud Provider
+## GET /v1/posture-management/cloud-configuration/policies/{cloud_provider} — List cloud configuration policies for a specific cloud provider
 
 **Endpoint**: `GET /v1/posture-management/cloud-configuration/policies/{cloud_provider}`
-**Summary**:  Get Cloud Configuration Policies For Cloud Provider
+**Summary**: List cloud configuration policies for a specific cloud provider
 **Tags**: posture-management
 
-Get all cloud configuration policies for a specific cloud provider
+Return the cloud configuration policies applicable to a specific cloud provider (e.g. AWS, GCP, Azure). This endpoint is platform-wide with no customer scoping. Use to discover which misconfiguration checks are available for a given cloud provider before triggering a scan.
 
 **Parameters**:
 - `cloud_provider` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Cloud provider not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/cloud-configuration/check-policies — Generate Cloud Misconfiguration Issues For Customer
+## POST /v1/posture-management/customers/{customer_id}/cloud-configuration/check-policies — Trigger a cloud misconfiguration posture scan for a customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/cloud-configuration/check-policies`
-**Summary**: Generate Cloud Misconfiguration Issues For Customer
+**Summary**: Trigger a cloud misconfiguration posture scan for a customer
 **Tags**: posture-management
+
+Enqueue an asynchronous cloud misconfiguration scan for the customer. The scan evaluates cloud configuration policies against the customer's discovered cloud resources and creates posture issues for any violations. Returns a job_id that can be polled for status. Requires a user-bound token (M2M tokens are rejected). Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -788,40 +1041,19 @@ Get all cloud configuration policies for a specific cloud provider
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/check-policies — Scan Customers Jupyter Notebooks For Issues
-
-**Endpoint**: `POST /v1/posture-management/customers/{customer_id}/jupyter-notebook-scanning/check-policies`
-**Summary**: Scan Customers Jupyter Notebooks For Issues
-**Tags**: posture-management
-
-Scan a customer's jupyter notebooks for issues
-
-**Parameters**:
-- `customer_id` (path, required): 
-- `resource_instance_id` (query, optional): 
-- `organization_id` (query, optional): 
-- `project_id` (query, optional): 
-- `allow_partial_success` (query, optional): If true, will create notebook issues even if some notebooks fail to scan. If false (default) - will only create issues if all notebooks are scanned successfully.
-- `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
-
-**Request Body**: Optional
-- Content-Type: `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
-## POST /v1/posture-management/agentic-scanning/check-policies — Scan Customers Agentic For Issues
+## POST /v1/posture-management/agentic-scanning/check-policies — Trigger an agentic posture scan for the authenticated customer
 
 **Endpoint**: `POST /v1/posture-management/agentic-scanning/check-policies`
-**Summary**: Scan Customers Agentic For Issues
+**Summary**: Trigger an agentic posture scan for the authenticated customer
 **Tags**: posture-management
+
+Enqueue an asynchronous agentic posture scan for the token's customer. The scan evaluates agentic policies against customer resources and creates posture issues for violations. Optionally narrow the scan to a specific resource_instance_id, organization, or project. Set allow_partial_success=true to persist findings even if some resources fail. Returns a job_id for status polling. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): 
@@ -834,31 +1066,23 @@ Scan a customer's jupyter notebooks for issues
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/component-based-scanning/check-policies — Trigger an engine-only component-based scan (sibling of /agentic-scanning/check-policies — engine only, no legacy dispatch)
+## POST /v1/posture-management/component-based-scanning/check-policies — Trigger a component-based posture scan for the authenticated customer
 
 **Endpoint**: `POST /v1/posture-management/component-based-scanning/check-policies`
-**Summary**: Trigger an engine-only component-based scan (sibling of /agentic-scanning/check-policies — engine only, no legacy dispatch)
+**Summary**: Trigger a component-based posture scan for the authenticated customer
 **Tags**: posture-management
 
-Engine-only counterpart to ``/agentic-scanning/check-policies``.
-
-Routes to ``start_async_component_based_scan_job_for_customer`` so the
-legacy nine policies are NEVER re-emitted on this path. Customer scope
-comes from the JWT, matching every other trigger endpoint.
-
-The ``allow_partial_success`` flag is forwarded as
-``commit_on_completion=not allow_partial_success`` and threaded
-through ``evaluate_component_based_policies_for_customer`` into
-``dispatch_component_based_policies_for_customer`` where it
-controls the per-policy try/except — see the Query description
-above for precise semantics.
+Enqueue an asynchronous component-based posture scan for the token's customer. Returns a job_id that can be polled for status. Optionally narrow the scan to a single resource_type, a specific resource_instance_id, or a named policy_name. Component-based scans run only the modern engine; the legacy agentic dispatch path is not triggered.
 
 **Parameters**:
 - `resource_type` (query, optional): Optional. Restrict the scan to resources of this `resource_type` (e.g. `CopilotStudioAgent`). When set, only policies whose `bound_resource_types` includes this type run; other enabled component-based policies are skipped for this invocation.
+- `policy_name` (query, optional): Optional. Single-policy convenience knob — fires only this component-based policy. Equivalent to passing ``policy_names=[policy_name]`` in the body. Cannot be combined with ``body.policy_names``; supplying both is rejected with 400 to avoid ambiguity. Useful for the FE's per-row 're-check this policy' affordance.
 - `resource_instance_id` (query, optional): 
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
@@ -869,17 +1093,19 @@ above for precise semantics.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies — Scan Customers Dataset For Issues Synchronous
+## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies — Trigger a dataset posture scan for a customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies`
-**Summary**: Scan Customers Dataset For Issues Synchronous
+**Summary**: Trigger a dataset posture scan for a customer
 **Tags**: posture-management
 
-Scan a customer's dataset for issues
+Enqueue an asynchronous dataset scanning job for the customer. The scan checks dataset resources for policy violations and creates posture issues for findings. Optionally scope to a specific resource_instance_id or org/project. Set skip_unchanged_resources=true to skip unchanged datasets. Returns a job_id for polling. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -894,18 +1120,19 @@ Scan a customer's dataset for issues
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/dataset-scanning/trigger-scan — Trigger Dataset Scanning
+## POST /v1/posture-management/dataset-scanning/trigger-scan — Trigger dataset scanning and return created scan jobs
 
 **Endpoint**: `POST /v1/posture-management/dataset-scanning/trigger-scan`
-**Summary**: Trigger Dataset Scanning
+**Summary**: Trigger dataset scanning and return created scan jobs
 **Tags**: posture-management
 
-Trigger dataset scanning for a customer, creates scan jobs and returns their details.
-The jobs are flushed to posture management scan job queue for processing.
+Create dataset scanning jobs for the token's customer and flush them to the scan processing queue. Unlike the check-policies endpoint, this returns full job queue details for each created scan job. Scope to a specific resource_instance_id, organization, or project as needed. Set skip_unchanged_resources=true to skip unmodified datasets. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): 
@@ -918,6 +1145,8 @@ The jobs are flushed to posture management scan job queue for processing.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -956,13 +1185,13 @@ Mark the dataset scanning job as failed in the database.
 
 ---
 
-## POST /v1/posture-management/resource-hashing/check-policies — Scan Customers Resource Versions For Issues
+## POST /v1/posture-management/resource-hashing/check-policies — Trigger a resource version-hash posture scan
 
 **Endpoint**: `POST /v1/posture-management/resource-hashing/check-policies`
-**Summary**: Scan Customers Resource Versions For Issues
+**Summary**: Trigger a resource version-hash posture scan
 **Tags**: posture-management
 
-Scan a customer's resource versions for issues
+Enqueue an asynchronous resource version-hash scan for the token's customer. The scan computes hashes of resource versions and evaluates them against policy rules, creating posture issues for any violations. Optionally scope to a specific resource_instance_id, organization, or project. Returns a job_id for polling scan status. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): 
@@ -974,32 +1203,38 @@ Scan a customer's resource versions for issues
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/resource-hashing/hashed-versions — Get Customers Resource Versions
+## GET /v1/posture-management/resource-hashing/hashed-versions — List resource instance hash versions for a customer
 
 **Endpoint**: `GET /v1/posture-management/resource-hashing/hashed-versions`
-**Summary**: Get Customers Resource Versions
+**Summary**: List resource instance hash versions for a customer
 **Tags**: posture-management
+
+Return all tracked hash versions for the token's customer's resource instances. Optionally filter to a single resource_instance_id. Each entry records the hash of a resource version, whether it has been marked safe, and who marked it. Use to review version integrity state before triggering a resource-hash scan. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/resource-hashing/mark-safe — Mark Resource Version Safe
+## POST /v1/posture-management/resource-hashing/mark-safe — Mark a resource version hash as safe
 
 **Endpoint**: `POST /v1/posture-management/resource-hashing/mark-safe`
-**Summary**: Mark Resource Version Safe
+**Summary**: Mark a resource version hash as safe
 **Tags**: posture-management
 
-Mark a version of a resource as safe
+Mark a specific version of a resource instance as safe, recording the caller's email as the approver. Once marked safe, the version no longer generates posture issues on subsequent hash scans. Use listResourceHashVersions to find version_id values. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, required): 
@@ -1007,6 +1242,9 @@ Mark a version of a resource as safe
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource version not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1057,14 +1295,13 @@ Scan a customer's models for issues
 
 ---
 
-## POST /v1/posture-management/model-scanning/trigger-scan — Trigger Model Scanning
+## POST /v1/posture-management/model-scanning/trigger-scan — Trigger model scanning and return created scan jobs
 
 **Endpoint**: `POST /v1/posture-management/model-scanning/trigger-scan`
-**Summary**: Trigger Model Scanning
+**Summary**: Trigger model scanning and return created scan jobs
 **Tags**: posture-management
 
-Trigger model scanning for a customer, creates scan jobs and returns their details.
-The jobs are flushed to posture management scan job queue for processing.
+Create model scanning jobs for the token's customer and flush them to the scan processing queue. Returns full job queue details for each created scan job. Optionally scope to a specific resource_instance_id, organization, or project. Set skip_unchanged_resources=true to skip models that have not changed since the last scan. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): 
@@ -1077,19 +1314,19 @@ The jobs are flushed to posture management scan job queue for processing.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/notebook-scanning/trigger-scan — Trigger Notebook Scanning
+## POST /v1/posture-management/notebook-scanning/trigger-scan — Trigger Jupyter notebook scanning and return created scan jobs
 
 **Endpoint**: `POST /v1/posture-management/notebook-scanning/trigger-scan`
-**Summary**: Trigger Notebook Scanning
+**Summary**: Trigger Jupyter notebook scanning and return created scan jobs
 **Tags**: posture-management
 
-Create notebook scanning jobs for a customer, creates scan jobs and returns their details.
-
-The jobs are flushed to posture management notebook scan job queue for processing.
+Create Jupyter notebook scanning jobs for the token's customer and flush them to the scan processing queue. Returns full job queue details for each created scan job. Optionally scope to a specific resource_instance_id, organization, or project. Set skip_unchanged_resources=true to skip notebooks that have not changed since the last scan. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): 
@@ -1102,34 +1339,38 @@ The jobs are flushed to posture management notebook scan job queue for processin
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/cve/populate-cve — Populate Cves For Customer
+## POST /v1/posture-management/customers/{customer_id}/cve/populate-cve — Populate CVE data for a customer's library inventory
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/cve/populate-cve`
-**Summary**: Populate Cves For Customer
+**Summary**: Populate CVE data for a customer's library inventory
 **Tags**: posture-management
 
-Populate CVEs for a customer inventory of libraries
+Fetch and store CVE (Common Vulnerabilities and Exposures) data for all libraries in the customer's AI inventory. Returns the list of CVE records created or updated. Use to refresh vulnerability data before running a CVE posture check. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/customers/{customer_id}/heatmap — Get Heatmap
+## GET /v1/posture-management/customers/{customer_id}/heatmap — Get posture compliance heatmap for a customer
 
 **Endpoint**: `GET /v1/posture-management/customers/{customer_id}/heatmap`
-**Summary**: Get Heatmap
+**Summary**: Get posture compliance heatmap for a customer
 **Tags**: posture-management
 
-Get the heat map.
+Return a two-dimensional compliance heatmap keyed by organization and policy group name. Each cell contains the compliance summary (pass/fail counts and score) for that organization × policy group combination, or null when no scan data exists. Optionally filter to a specific project or organization. Use to surface a quick visual overview of posture compliance across the tenant. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -1138,17 +1379,19 @@ Get the heat map.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/posture-management/hugging-face-model-card/customer/{customer_id}/resource/{resource_instance_id} — Get Hugging Face Model Card
+## GET /v1/posture-management/hugging-face-model-card/customer/{customer_id}/resource/{resource_instance_id} — Get the Hugging Face model card for a resource instance
 
 **Endpoint**: `GET /v1/posture-management/hugging-face-model-card/customer/{customer_id}/resource/{resource_instance_id}`
-**Summary**: Get Hugging Face Model Card
+**Summary**: Get the Hugging Face model card for a resource instance
 **Tags**: posture-management
 
-Get model card from resource instance id
+Return the Hugging Face model card for the specified resource instance, including the model name, license, library name, tags, and the raw model card text. card_exists is false when the model has no card on Hugging Face. Returns 404 when the resource does not exist or is not a Hugging Face model. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -1156,6 +1399,9 @@ Get model card from resource instance id
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource instance or model card not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1176,17 +1422,22 @@ Get model card from resource instance id
 
 ---
 
-## POST /v1/posture-management/scan-executions/bulk-delete — Bulk Delete Posture Management Scans
+## POST /v1/posture-management/scan-executions/bulk-delete — Bulk delete posture management scan execution records
 
 **Endpoint**: `POST /v1/posture-management/scan-executions/bulk-delete`
-**Summary**: Bulk Delete Posture Management Scans
+**Summary**: Bulk delete posture management scan execution records
 **Tags**: posture-management
+
+Permanently delete multiple posture management scan execution records in one call. Returns a response indicating which scans were successfully deleted and which failed. Returns 207 when some deletions fail, 400 when all fail, and 200 when all succeed. Scoped to the token's customer. This is a destructive irreversible operation.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `207`: Partial success — some scans were deleted and some failed
+- `400`: Invalid request parameters or all deletions failed
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1227,63 +1478,66 @@ Get model card from resource instance id
 
 ---
 
-## PATCH /v1/issue-policy — Create or update issue policies for the customer
+## PATCH /v1/issue-policy — Upsert all issue policies for the customer
 
 **Endpoint**: `PATCH /v1/issue-policy`
-**Summary**: Create or update issue policies for the customer
+**Summary**: Upsert all issue policies for the customer
 **Tags**: posture-management
 
-Creates or updates multiple issue policies for a customer. If an IssueType is not sent, it will NOT
-update that resource category.
+Create or update the full set of issue policies for the token's customer in one call. Each policy controls how a posture issue category is handled — for example its severity override, suppression rules, or remediation SLA. Only the issue types included in the request body are written; omitted categories are left unchanged. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/issue-policy — Resets the issue policies for a customer
+## DELETE /v1/issue-policy — Reset all issue policies to platform defaults
 
 **Endpoint**: `DELETE /v1/issue-policy`
-**Summary**: Resets the issue policies for a customer
+**Summary**: Reset all issue policies to platform defaults
 **Tags**: posture-management
 
-Resets the issue policy for a customer on a particular category.
+Delete all customer-defined issue policies for the token's customer, restoring every posture issue category to the platform default behavior. This is a bulk-reset operation — all custom severity overrides, suppression rules, and remediation SLAs are removed. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_type` (query, optional): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/issue-policy — Get the issue policy for the customer
+## GET /v1/issue-policy — Get all issue policies for the customer
 
 **Endpoint**: `GET /v1/issue-policy`
-**Summary**: Get the issue policy for the customer
+**Summary**: Get all issue policies for the customer
 **Tags**: posture-management
 
-Gets all the current customers issue policies.
-If the customer does not have an issue policy for a particular category, it will return the default
-category policy.
+Return all posture issue policies configured for the token's customer, covering every issue category. For categories where the customer has not set a custom policy, the platform default policy is returned. Use this to inspect the full set of severity overrides, suppression rules, and remediation SLAs in effect. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## PATCH /v1/issue-policy/issue-type/{issue_type} — Create or update a issue policy for the customer on a particular category
+## PATCH /v1/issue-policy/issue-type/{issue_type} — Upsert the issue policy for one category
 
 **Endpoint**: `PATCH /v1/issue-policy/issue-type/{issue_type}`
-**Summary**: Create or update a issue policy for the customer on a particular category
+**Summary**: Upsert the issue policy for one category
 **Tags**: posture-management
 
-Creates or updates the issue policy for a customer on a particular category.
+Create or update the issue policy for a single posture issue category (identified by issue_type) for the token's customer. Use this for targeted updates to one category without affecting other categories. Returns the updated policy. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_type` (path, required): 
@@ -1293,42 +1547,49 @@ Creates or updates the issue policy for a customer on a particular category.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue type not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/issue-policy/issue-type/{issue_type} — Resets the issue policy for a customer
+## DELETE /v1/issue-policy/issue-type/{issue_type} — Reset the issue policy for one category to default
 
 **Endpoint**: `DELETE /v1/issue-policy/issue-type/{issue_type}`
-**Summary**: Resets the issue policy for a customer
+**Summary**: Reset the issue policy for one category to default
 **Tags**: posture-management
 
-Resets the issue policy for a customer on a particular category.
+Delete the customer-defined issue policy for the specified posture issue category, restoring that category to the platform default behavior. Use when a previous override is no longer needed and the default policy should apply. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_type` (path, required): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue policy not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/issue-policy/issue-type/{issue_type} — Get the issue policy for the customer on a particular category
+## GET /v1/issue-policy/issue-type/{issue_type} — Get the issue policy for a specific category
 
 **Endpoint**: `GET /v1/issue-policy/issue-type/{issue_type}`
-**Summary**: Get the issue policy for the customer on a particular category
+**Summary**: Get the issue policy for a specific category
 **Tags**: posture-management
 
-Gets the current customer's issue policy for a particular category.
-If the customer does not have an issue policy for a particular category, it will return the default
-category policy.
+Return the posture issue policy for the specified issue category for the token's customer. If the customer has not configured a custom policy for this category, the platform default policy is returned. Use to inspect or compare the policy for a single category before making targeted updates. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_type` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue type not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1450,36 +1711,36 @@ category policy.
 
 ---
 
-## GET /v1/shadow-ai/issue-policy — Get the issue policy for the customer
+## GET /v1/shadow-ai/issue-policy — Get the current shadow AI issue policy
 
 **Endpoint**: `GET /v1/shadow-ai/issue-policy`
-**Summary**: Get the issue policy for the customer
+**Summary**: Get the current shadow AI issue policy
 **Tags**: posture-management
 
-Gets the customers current shadow AI policy.
-If the policy does not exist in the database, gets a default.
+Return the shadow AI issue policy currently active for the token's customer, including the policy scope (ALL_INVENTORY, FUTURE_INVENTORY, AFTER_INITIAL, or NEVER), the list of enabled issue types, and the grace period in days. If no policy has been explicitly configured, the platform default is returned. Use to inspect how the tenant is set up to detect and flag ungoverned AI resources before adjusting thresholds or scope. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## PUT /v1/shadow-ai/issue-policy — Update the shadow ai issue policy for a customer
+## PUT /v1/shadow-ai/issue-policy — Create or update the shadow AI issue policy
 
 **Endpoint**: `PUT /v1/shadow-ai/issue-policy`
-**Summary**: Update the shadow ai issue policy for a customer
+**Summary**: Create or update the shadow AI issue policy
 **Tags**: posture-management
 
-Updates the shadow AI issue policy for a customer.
-
-Issue regeneration runs out-of-band in the periodic ETL — this endpoint
-only persists the policy.
+Persist the shadow AI issue policy for the token's customer, controlling which resources trigger shadow AI issues and when. The policy determines the scope (ALL_INVENTORY, FUTURE_INVENTORY, AFTER_INITIAL, or NEVER), which optional issue types are enabled (e.g. unreviewed, unassigned), and the grace period in days before an issue is raised. Issue generation itself runs asynchronously in a periodic ETL job — this endpoint only saves the configuration. Use to tune how aggressively the platform flags ungoverned AI resources for the tenant. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1547,9 +1808,6 @@ Expire stale model scan jobs in the job queue.
 
 If `scan_id` is provided, only jobs related to scan id will be marked expired.
 
-**Parameters**:
-- `expire_on_commit` (query, optional): 
-
 **Request Body**: Required
 - Content-Type: `application/json`
 
@@ -1568,12 +1826,8 @@ If `scan_id` is provided, only jobs related to scan id will be marked expired.
 Triggers post processing steps for expired model scanning jobs.
 All the jobs in job queue must be in FAILED or SUCCESS state in order for post processing to be triggered.
 
-**Parameters**:
-- `expire_on_commit` (query, optional): 
-
 **Responses**:
 - `204`: Successful Response
-- `422`: Validation Error
 
 ---
 

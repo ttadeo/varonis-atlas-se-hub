@@ -98,7 +98,7 @@ Create a report for vendor TPRM
 **Summary**: Export Data Async
 **Tags**: report
 
-Async export endpoint — returns a job ID to poll via GET /v1/report/job-status/{job_id}.
+Async-export endpoint: enqueues a background job and returns its ID to poll via GET /v1/report/job-status/{job_id}. "Async" refers to the job-based export pattern, not the Python `async def` keyword — this handler is a plain sync route.
 
 **Request Body**: Required
 - Content-Type: `application/json`
@@ -115,7 +115,14 @@ Async export endpoint — returns a job ID to poll via GET /v1/report/job-status
 **Summary**: Create Report For Ai Validation Sandbox
 **Tags**: report
 
-Create a report for AI Validation Sandbox
+Create a report for AI Validation Sandbox.
+
+The report-builder background task runs in ``customer_context(is_internal=True)``
+so its INDIRECT scope helpers short-circuit to unrestricted. Without an explicit
+pre-flight scope check here, any caller in customer C could trigger a report for
+any sandbox in C — including sandboxes outside their assigned project scope.
+Resolve the sandbox under the caller's scope (404 if missing/out-of-scope)
+BEFORE enqueueing.
 
 **Parameters**:
 - `ai_validation_sandbox_id` (path, required): 

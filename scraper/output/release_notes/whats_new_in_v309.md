@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.9
 
-- [](/_docs/)- Release Notes- What's New in V3.0.9# What's New in V3.0.9
+- [](/_docs/)- Release Notes- What's New in V3.0.9Export PDF# What's New in V3.0.9
 Release Date: May 24, 2025
 
 - IBM WatsonX Governance Integration - synchronize use cases to projects and AI models

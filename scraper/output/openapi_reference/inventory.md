@@ -1,5 +1,228 @@
 # inventory API Endpoints
 
+## GET /v1/inventory/resources/agent-manifest/{resource_instance_id} — Get the Agent Manifest for a discovered agent
+
+**Endpoint**: `GET /v1/inventory/resources/agent-manifest/{resource_instance_id}`
+**Summary**: Get the Agent Manifest for a discovered agent
+**Tags**: inventory
+
+Return the governance manifest for an agent in AI Inventory: the customer-approved layer (owners, approved purpose, data boundaries, behavioral constraints, runtime-identity expectations) combined with a live observed summary (connected tool/MCP-server counts and drift indicators) and a completion meter. Observed values are read live from inventory on every call — newly discovered resources appear automatically. An agent that has never been edited returns governance status NOT_STARTED with empty approved sections. Returns 404 if the resource does not exist or is not an agent. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## PATCH /v1/inventory/resources/agent-manifest/{resource_instance_id} — Update an agent's manifest governance fields
+
+**Endpoint**: `PATCH /v1/inventory/resources/agent-manifest/{resource_instance_id}`
+**Summary**: Update an agent's manifest governance fields
+**Tags**: inventory
+
+Apply a partial update to the simple (header) governance fields of an agent's manifest: ownership, approved purpose, free-text data-boundary, governance notes, and runtime-identity expectations. Only fields present in the body are touched; a field sent as `null` clears the stored value, while an omitted field is left unchanged. Saving the first change materialises the manifest and moves its status from NOT_STARTED to DRAFT. Each changed field is recorded in the manifest's change history. The structured governance collections (per-tool reviews, approved-entry allowlists, behavioral constraints) and lifecycle transitions are not edited here. Returns the full recomputed manifest detail. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request (e.g. security reviewer not in tenant)
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/inventory/resources/agent-manifest/{resource_instance_id}/tools — List tools and MCP servers for an agent's manifest review
+
+**Endpoint**: `GET /v1/inventory/resources/agent-manifest/{resource_instance_id}/tools`
+**Summary**: List tools and MCP servers for an agent's manifest review
+**Tags**: inventory
+
+Paginated list of the tools and MCP servers associated with the agent, combining the live observed set with any recorded review decisions. Includes capability classifications where available, per-item drift indicators, and previously approved targets that are no longer observed. `search` matches substrings of the display name and tool name; `archetype` filters to tools or MCP servers. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+- `search` (query, optional): 
+- `archetype` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## PUT /v1/inventory/resources/agent-manifest/{resource_instance_id}/tools/{target_resource_instance_id}/review — Record a tool/MCP-server review decision for an agent
+
+**Endpoint**: `PUT /v1/inventory/resources/agent-manifest/{resource_instance_id}/tools/{target_resource_instance_id}/review`
+**Summary**: Record a tool/MCP-server review decision for an agent
+**Tags**: inventory
+
+Upsert the per-agent governance review for one tool or MCP server: the approval decision (APPROVED / NOT_APPROVED / NEEDS_REVIEW / ...) plus optional notes. The reviewer identity, the tool's capability classification at review time, and the MCP continuity key are captured server-side, so a later change to the tool's definition surfaces as capability drift. The target must be a tool or MCP server currently connected to the agent (400 otherwise). Recording the first review materialises the manifest and moves NOT_STARTED to DRAFT. Returns the updated tool row plus the recomputed governance section (status, version, completion). Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `target_resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Target is not a tool/MCP server connected to the agent
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries — Add an approved-entry allowlist value to an agent's manifest
+
+**Endpoint**: `POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries`
+**Summary**: Add an approved-entry allowlist value to an agent's manifest
+**Tags**: inventory
+
+Add one value to the manifest's data-boundary allowlist — an approved destination / data source, or a DCE-backed (sensitive/prohibited) data category, selected by `entry_type`. The first edit materialises the manifest and moves NOT_STARTED to DRAFT. Returns the full recomputed manifest detail. 409 if the same (entry_type, value) already exists; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent not found
+- `409`: Entry already exists
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries/{entry_id} — Remove an approved-entry allowlist value from an agent's manifest
+
+**Endpoint**: `DELETE /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries/{entry_id}`
+**Summary**: Remove an approved-entry allowlist value from an agent's manifest
+**Tags**: inventory
+
+Remove one allowlist entry by its id. Returns the full recomputed manifest detail. 404 if the entry does not exist on this agent's manifest. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `entry_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent or entry not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## PUT /v1/inventory/resources/agent-manifest/{resource_instance_id}/behavioral-constraints/{capability_label_type}/{capability_value} — Set an agent's policy stance on a capability node
+
+**Endpoint**: `PUT /v1/inventory/resources/agent-manifest/{resource_instance_id}/behavioral-constraints/{capability_label_type}/{capability_value}`
+**Summary**: Set an agent's policy stance on a capability node
+**Tags**: inventory
+
+Upsert the customer's stance (ALLOWED / PROHIBITED / REQUIRES_APPROVAL / UNSPECIFIED) on one capability node, identified by its taxonomy label type (family / subcapability / modifier) and value. The first edit materialises the manifest and moves NOT_STARTED to DRAFT. Returns the full recomputed manifest detail. 400 if the capability value is not in the taxonomy for its label type; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `capability_label_type` (path, required): 
+- `capability_value` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid capability value
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/inventory/resources/agent-manifest/{resource_instance_id}/behavioral-constraints/{capability_label_type}/{capability_value} — Clear an agent's policy stance on a capability node
+
+**Endpoint**: `DELETE /v1/inventory/resources/agent-manifest/{resource_instance_id}/behavioral-constraints/{capability_label_type}/{capability_value}`
+**Summary**: Clear an agent's policy stance on a capability node
+**Tags**: inventory
+
+Remove the stance for one capability node (by taxonomy label type and value). Returns the full recomputed manifest detail. 404 if no constraint exists for that capability. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `capability_label_type` (path, required): 
+- `capability_value` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent or constraint not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/transition — Transition an agent's manifest through its governance lifecycle
+
+**Endpoint**: `POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/transition`
+**Summary**: Transition an agent's manifest through its governance lifecycle
+**Tags**: inventory
+
+Apply a governance lifecycle action: SUBMIT (move a draft — or a rejected / stale / needs-re-review — manifest into review), APPROVE, APPROVE_WITH_EXCEPTIONS, or REJECT (each valid only while in review). APPROVE enforces the approval gate: every required completion item (both owners, a security reviewer, an approved purpose, and all observed tools and MCP servers reviewed) must be satisfied — 422 with the missing items otherwise. APPROVE_WITH_EXCEPTIONS bypasses the gate but requires a documented exception note in `notes` (400 if absent), stored as the manifest's exception notes. Approval stamps the last-reviewed time. Each transition bumps the manifest version and is recorded in the change history. Returns the full recomputed manifest detail. 409 if the action is not valid from the current status; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Exception justification required for approve-with-exceptions
+- `404`: Agent not found
+- `409`: Action not valid from the current status
+- `422`: Manifest incomplete — required items missing for approval
+- `500`: Unexpected server error
+
+---
+
+## GET /v1/inventory/resources/agent-manifest/{resource_instance_id}/history — Get an agent manifest's governance change history
+
+**Endpoint**: `GET /v1/inventory/resources/agent-manifest/{resource_instance_id}/history`
+**Summary**: Get an agent manifest's governance change history
+**Tags**: inventory
+
+Paginated append-only change log for the agent's manifest, newest first. Each entry records one changed governance field — the field path, its previous and new values, who made the change (or the stale-check job for system changes), when, the resulting manifest version, and an optional note. Returns an empty page if the manifest has never been edited. 404 if the resource is missing or not an AGENT archetype. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
 ## POST /v1/inventory/resources/llm-endpoint — Add Llm Endpoint Resources
 
 **Endpoint**: `POST /v1/inventory/resources/llm-endpoint`
@@ -49,17 +272,22 @@
 
 ---
 
-## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl-spec-assignment — Get Llm Endpoint Dsl Spec Assignment For Resource
+## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl-spec-assignment — Get DSL spec assignment for an LLM endpoint resource
 
 **Endpoint**: `GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl-spec-assignment`
-**Summary**: Get Llm Endpoint Dsl Spec Assignment For Resource
+**Summary**: Get DSL spec assignment for an LLM endpoint resource
 **Tags**: inventory
+
+Return the DSL spec version currently assigned to a specific LLM endpoint resource, including the input values in redacted form. Use to inspect which DSL template and version is active for a resource and confirm configuration is correctly applied. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource or assignment not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -80,11 +308,13 @@
 
 ---
 
-## PATCH /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config — Patch Llm Endpoint Resource Additional Config
+## PATCH /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config — Update additional config for an LLM endpoint resource
 
 **Endpoint**: `PATCH /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config`
-**Summary**: Patch Llm Endpoint Resource Additional Config
+**Summary**: Update additional config for an LLM endpoint resource
 **Tags**: inventory
+
+Partially update the additional configuration for a specific LLM endpoint resource, such as system-prompt support flags or other connection-level settings that supplement the DSL spec. Only supplied fields are changed. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -94,45 +324,60 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config — Get Llm Endpoint Resource Additional Config
+## GET /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config — Get additional config for an LLM endpoint resource
 
 **Endpoint**: `GET /v1/inventory/customer/resource/{resource_instance_id}/llm-endpoint-resource-additional-config`
-**Summary**: Get Llm Endpoint Resource Additional Config
+**Summary**: Get additional config for an LLM endpoint resource
 **Tags**: inventory
+
+Return the additional configuration for a specific LLM endpoint resource, including flags such as whether the endpoint supports system prompts. Use to inspect resource-level settings that supplement the assigned DSL spec. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Get Pentest Connection Url
+## GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Get pentest connection URL for an LLM endpoint resource
 
 **Endpoint**: `GET /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url`
-**Summary**: Get Pentest Connection Url
+**Summary**: Get pentest connection URL for an LLM endpoint resource
 **Tags**: inventory
+
+Return the pentest connection URL configured for a specific LLM endpoint resource. This URL is used by the LLM penetration testing module to route test traffic through the endpoint. Use to verify the current pentest target URL before initiating a pentest run. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Patch Pentest Connection Url
+## PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url — Update the pentest connection URL for an LLM endpoint resource
 
 **Endpoint**: `PATCH /v1/inventory/resources/llm-endpoint/{resource_instance_id}/pentest-connection-url`
-**Summary**: Patch Pentest Connection Url
+**Summary**: Update the pentest connection URL for an LLM endpoint resource
 **Tags**: inventory
+
+Set or replace the pentest connection URL for a specific LLM endpoint resource. The new URL will be used as the target for future LLM pentest runs against this resource. Use before starting a pentest to point it at the correct endpoint. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -142,18 +387,25 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs — List Llm Endpoint Dsl Specs
+## GET /v1/inventory/llm-endpoint/dsl/specs — List all LLM endpoint DSL specs for the customer
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs`
-**Summary**: List Llm Endpoint Dsl Specs
+**Summary**: List all LLM endpoint DSL specs for the customer
 **Tags**: inventory
+
+Return all LLM endpoint DSL specs available to the customer. Each spec represents a reusable connection template (e.g., OpenAI, Azure OpenAI, Bedrock) that can be versioned and assigned to LLM endpoint resources. Use to discover available specs before creating versions or assignments. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
@@ -172,43 +424,57 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id} — Get Llm Endpoint Dsl Spec
+## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id} — Get a single LLM endpoint DSL spec by ID
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}`
-**Summary**: Get Llm Endpoint Dsl Spec
+**Summary**: Get a single LLM endpoint DSL spec by ID
 **Tags**: inventory
+
+Return the details of a specific LLM endpoint DSL spec, including its name, description, and metadata. Use to inspect a particular connection template before creating or assigning versions. Scoped to the token's customer.
 
 **Parameters**:
 - `llm_endpoint_dsl_spec_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: DSL spec not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/versions — List Llm Endpoint Dsl Spec Versions
+## GET /v1/inventory/llm-endpoint/dsl/specs/versions — List all LLM endpoint DSL spec versions for the customer
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/versions`
-**Summary**: List Llm Endpoint Dsl Spec Versions
+**Summary**: List all LLM endpoint DSL spec versions for the customer
 **Tags**: inventory
+
+Return all DSL spec versions across all specs for the customer. Each version represents a concrete, immutable snapshot of a DSL connection template that can be assigned to an LLM endpoint resource. Use to audit all available versions or to find a specific version before assigning it. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions — List Llm Endpoint Dsl Spec Versions For Spec
+## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions — List all versions of a specific LLM endpoint DSL spec
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/versions`
-**Summary**: List Llm Endpoint Dsl Spec Versions For Spec
+**Summary**: List all versions of a specific LLM endpoint DSL spec
 **Tags**: inventory
+
+Return all versions belonging to a specific LLM endpoint DSL spec. Use to inspect the version history of a connection template, compare versions, or select a version to assign to an LLM endpoint resource. Scoped to the token's customer.
 
 **Parameters**:
 - `llm_endpoint_dsl_spec_id` (path, required): The ID of the LLM Endpoint DSL Spec to filter versions.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: DSL spec not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -231,62 +497,80 @@
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/versions/{llm_endpoint_dsl_spec_version_id} — Get Llm Endpoint Dsl Spec Version
+## GET /v1/inventory/llm-endpoint/dsl/specs/versions/{llm_endpoint_dsl_spec_version_id} — Get a single LLM endpoint DSL spec version by ID
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/versions/{llm_endpoint_dsl_spec_version_id}`
-**Summary**: Get Llm Endpoint Dsl Spec Version
+**Summary**: Get a single LLM endpoint DSL spec version by ID
 **Tags**: inventory
+
+Return the full details of a specific DSL spec version, including its definition, parameter schema, and status. Use to inspect the exact configuration of a version before assigning it to an LLM endpoint resource or comparing it against another version. Scoped to the token's customer.
 
 **Parameters**:
 - `llm_endpoint_dsl_spec_version_id` (path, required): The ID of the LLM Endpoint DSL Spec Version.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: DSL spec version not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/latest-version — Get Latest Llm Endpoint Dsl Spec Version
+## GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/latest-version — Get the latest version of a specific LLM endpoint DSL spec
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs/{llm_endpoint_dsl_spec_id}/latest-version`
-**Summary**: Get Latest Llm Endpoint Dsl Spec Version
+**Summary**: Get the latest version of a specific LLM endpoint DSL spec
 **Tags**: inventory
+
+Return the most recently created version of a specific LLM endpoint DSL spec. Use as a convenience shortcut when you always want to assign or inspect the newest version without enumerating all versions first. Scoped to the token's customer.
 
 **Parameters**:
 - `llm_endpoint_dsl_spec_id` (path, required): The ID of the LLM Endpoint DSL Spec.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: DSL spec or version not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/llm-endpoint/dsl/specs/validate — Validate Llm Endpoint Dsl Spec
+## POST /v1/inventory/llm-endpoint/dsl/specs/validate — Validate an LLM endpoint DSL spec definition
 
 **Endpoint**: `POST /v1/inventory/llm-endpoint/dsl/specs/validate`
-**Summary**: Validate Llm Endpoint Dsl Spec
+**Summary**: Validate an LLM endpoint DSL spec definition
 **Tags**: inventory
+
+Validate a DSL spec definition (YAML string) without persisting it. Returns the parsed spec on success, or a structured error with failure reason and remediation steps if the definition is invalid. Use before creating a spec or version to catch syntax and schema errors early. Does not require tenant context and does not modify any data.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/llm-endpoint/dsl/specs-with-versions — List Llm Endpoint Dsl Specs With Versions
+## GET /v1/inventory/llm-endpoint/dsl/specs-with-versions — List LLM endpoint DSL specs with their versions
 
 **Endpoint**: `GET /v1/inventory/llm-endpoint/dsl/specs-with-versions`
-**Summary**: List Llm Endpoint Dsl Specs With Versions
+**Summary**: List LLM endpoint DSL specs with their versions
 **Tags**: inventory
+
+Return all LLM endpoint DSL specs together with their nested versions in a single response. Optionally filter to a single spec by passing llm_endpoint_dsl_spec_id. Use when you need both spec metadata and the full version list in one call, for example when populating a DSL spec selector UI or auditing the version inventory. Scoped to the token's customer.
 
 **Parameters**:
 - `llm_endpoint_dsl_spec_id` (query, optional): If provided, return only this spec (404 if not found).
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -325,11 +609,13 @@
 
 ---
 
-## POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl/specs/test-connection — Test Assigned Llm Endpoint Dsl Spec Connection
+## POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl/specs/test-connection — Test the DSL spec connection assigned to an LLM endpoint resource
 
 **Endpoint**: `POST /v1/inventory/resources/llm-endpoint/{resource_instance_id}/dsl/specs/test-connection`
-**Summary**: Test Assigned Llm Endpoint Dsl Spec Connection
+**Summary**: Test the DSL spec connection assigned to an LLM endpoint resource
 **Tags**: inventory
+
+Execute a live connection test using the DSL spec version currently assigned to a specific LLM endpoint resource. Sends a test prompt through the configured connection and records the result back to the resource. Use to verify that an already-assigned DSL spec is functional and the endpoint is reachable before relying on it for firewall or pentest operations. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): The ID of the LLM Endpoint Resource Instance.
@@ -339,97 +625,270 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource or DSL assignment not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/resources/dependencies/types — List all dependency types with display names
+## GET /v1/inventory/resources/dependencies/types — List all supported dependency types
 
 **Endpoint**: `GET /v1/inventory/resources/dependencies/types`
-**Summary**: List all dependency types with display names
+**Summary**: List all supported dependency types
 **Tags**: inventory
+
+Return the full enumeration of supported dependency relationship types between AI resources, each with its machine-readable value and a human-readable display name. Use before calling the add-manual-dependencies endpoint to discover which dependency_type values are valid. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## GET /v1/inventory/resource/{resource_instance_id}/dependency-suggestions — Get dependency suggestions for a resource instance
+## GET /v1/inventory/resource/{resource_instance_id}/dependency-suggestions — Get suggested dependencies for an AI resource
 
 **Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/dependency-suggestions`
-**Summary**: Get dependency suggestions for a resource instance
+**Summary**: Get suggested dependencies for an AI resource
 **Tags**: inventory
+
+Return a list of AI resources that are likely dependencies of the given resource, inferred from shared infrastructure, naming patterns, and existing manual dependency data. Use to discover relationships before calling the manual-dependency add endpoint. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/dependencies/manual — Add manual resource dependencies
+## POST /v1/inventory/resources/dependencies/manual — Add manual dependency edges between AI resources
 
 **Endpoint**: `POST /v1/inventory/resources/dependencies/manual`
-**Summary**: Add manual resource dependencies
+**Summary**: Add manual dependency edges between AI resources
 **Tags**: inventory
+
+Create one or more explicit dependency relationships between AI resource instances, specifying which resource depends on which and the type of dependency. Accepts up to 100 edges per request. Per-edge results indicate success or the reason for failure (e.g. duplicate, resource not found). Use to model discovered or known data-flow relationships in the AI inventory. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/inventory/resources/dependencies/manual — Remove manual resource dependencies
+## DELETE /v1/inventory/resources/dependencies/manual — Remove manual dependency edges between AI resources
 
 **Endpoint**: `DELETE /v1/inventory/resources/dependencies/manual`
-**Summary**: Remove manual resource dependencies
+**Summary**: Remove manual dependency edges between AI resources
 **Tags**: inventory
+
+Delete one or more previously created manual dependency relationships between AI resource instances. Accepts up to 100 edge identifiers per request. Per-edge results indicate success or the reason for failure. Only manually created dependencies can be removed via this endpoint; auto-discovered dependencies are managed by the discovery pipeline. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/tag-definitions — List all tag definitions
+## GET /v1/inventory/resources/tool-capabilities/taxonomy — Get the live tool-capability taxonomy
+
+**Endpoint**: `GET /v1/inventory/resources/tool-capabilities/taxonomy`
+**Summary**: Get the live tool-capability taxonomy
+**Tags**: inventory
+
+Returns every label value the classifier can produce in the current taxonomy version — families, subcapabilities, and modifiers — each list ordered highest-risk first. Use to populate FE dropdowns / filter chips without hard-coding the enum on the client. Pure static read; no DB access, not tenant-scoped. The ``taxonomy_version`` string changes when label values are added / removed / renamed — the FE should treat that as an invalidation signal for any cached schema.
+
+**Responses**:
+- `200`: Successful Response
+- `500`: Unexpected server error
+
+---
+
+## GET /v1/inventory/resources/tool-capabilities/{resource_instance_id} — Get current tool capability classification for a resource
+
+**Endpoint**: `GET /v1/inventory/resources/tool-capabilities/{resource_instance_id}`
+**Summary**: Get current tool capability classification for a resource
+**Tags**: inventory
+
+Return the latest tool-capability classification for an AI resource, including which tool categories it is able to invoke (e.g. file I/O, network, code execution) and the confidence level of the classification. Useful for assessing the blast radius of an agent or MCP service. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/inventory/resources/tool-capabilities/{resource_instance_id}/history — Get tool capability classification history
+
+**Endpoint**: `GET /v1/inventory/resources/tool-capabilities/{resource_instance_id}/history`
+**Summary**: Get tool capability classification history
+**Tags**: inventory
+
+Returns the raw classification snapshots for a tool, newest-first — includes both LLM-produced (`source="llm"`) and operator-curated (`source="human"`) rows. For the merged audit trail with human reviews, auto-approvals, label edits, and override notifications, prefer `/v1/inventory/resources/tool-capabilities/{resource_instance_id}/timeline`. Accepts a `limit` parameter (1-100, default 20). Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `limit` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/inventory/resources/tool-capabilities/{resource_instance_id}/timeline — Get audit timeline for a tool capability classification
+
+**Endpoint**: `GET /v1/inventory/resources/tool-capabilities/{resource_instance_id}/timeline`
+**Summary**: Get audit timeline for a tool capability classification
+**Tags**: inventory
+
+Returns LLM classifications, auto-approvals, LLM reclassifications, human reviews, manual label edits, and human-edit override events merged into one chronological timeline, newest-first. Every human event records `actor_user_id`, the state transition, and any free-form comment. Re-submitting a review or label edit creates a new audit event. Returns `200 {"events": []}` for resources that haven't been classified yet — the endpoint is always callable. Server-side cap: 1000 events per resource — pagination is not supported in v1. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/tool-capabilities/classify — Trigger tool capability classification for one or more resources
+
+**Endpoint**: `POST /v1/inventory/resources/tool-capabilities/classify`
+**Summary**: Trigger tool capability classification for one or more resources
+**Tags**: inventory
+
+Enqueues an LLM-based tool-capability classification for one or more AI resource instances. The classification identifies which tool categories each resource can invoke (e.g. file I/O, network access, code execution) and sets an initial `review_state` of `pending`. Use when a new resource is discovered or when re-classification after a capability change is needed. Results are available via the history or timeline endpoints once processing is complete. Scoped to the token's customer.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/tool-capabilities/{resource_instance_id}/review — Record a human review decision on a tool capability classification
+
+**Endpoint**: `POST /v1/inventory/resources/tool-capabilities/{resource_instance_id}/review`
+**Summary**: Record a human review decision on a tool capability classification
+**Tags**: inventory
+
+Records a human review decision (approve, mark for review, or reject) against a resource's current tool-capability classification, with an optional free-form comment. Every call appends an immutable audit event capturing the actor, the from-to state transition, and the comment. Re-submitting the same state without a comment is rejected as a no-op. Returns the updated classification. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: No change requested
+- `404`: Resource not found
+- `409`: Concurrent reviewer wrote first; refresh and retry
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/tool-capabilities/{resource_instance_id}/labels — Replace tool capability labels with a manual override
+
+**Endpoint**: `POST /v1/inventory/resources/tool-capabilities/{resource_instance_id}/labels`
+**Summary**: Replace tool capability labels with a manual override
+**Tags**: inventory
+
+Replaces the families / subcapabilities / modifiers on a tool's current classification with operator-supplied values. Creates a new ``source=human`` snapshot, defaults `review_state` to `approve`. ``lock`` is required — set ``true`` to prevent the next ETL pass from overwriting the edit, ``false`` to allow re-classification (in which case a ``HUMAN_EDIT_OVERRIDDEN`` event is recorded if it later happens). Locked tools may still be edited via this endpoint. Re-submitting the exact same labels with no comment is rejected as a no-op. Scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: No change requested
+- `404`: Resource not classified yet
+- `409`: Concurrent edit lost the race; refresh and retry
+- `422`: Schema or enum validation failure
+- `500`: Unexpected server error
+
+---
+
+## GET /v1/inventory/tag-definitions — List all tag definitions for the customer
 
 **Endpoint**: `GET /v1/inventory/tag-definitions`
-**Summary**: List all tag definitions
+**Summary**: List all tag definitions for the customer
 **Tags**: inventory
+
+Return all tag definitions (categories and their allowed values or freeform rules) configured for the customer. Use this to discover valid tag categories before calling resource tag endpoints. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## GET /v1/inventory/resource/{resource_instance_id}/tags — Get all tags for a resource
+## GET /v1/inventory/resource/{resource_instance_id}/tags — Get all tags assigned to an AI resource
 
 **Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/tags`
-**Summary**: Get all tags for a resource
+**Summary**: Get all tags assigned to an AI resource
 **Tags**: inventory
+
+Return all key-value tags currently assigned to a specific AI resource. Tags can represent environment, team ownership, sensitivity, or custom classification attributes. Use alongside listInventoryTagDefinitions to interpret tag categories. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/inventory/resource/{resource_instance_id}/tags — Assign or replace tags for a resource
+## PUT /v1/inventory/resource/{resource_instance_id}/tags — Assign or replace tags on a resource
 
 **Endpoint**: `PUT /v1/inventory/resource/{resource_instance_id}/tags`
-**Summary**: Assign or replace tags for a resource
+**Summary**: Assign or replace tags on a resource
 **Tags**: inventory
+
+Assign or fully replace the set of key-value tags on a specific AI resource. Existing tags not included in the request body are removed (full replacement semantics). Use when an agent needs to classify or re-classify a resource with environment, team, sensitivity, or custom taxonomy tags. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -439,6 +898,9 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -449,6 +911,8 @@
 **Summary**: Remove specific tags from a resource
 **Tags**: inventory
 
+Remove a targeted set of key-value tags from a specific AI resource without affecting other tags. The request body specifies exactly which tag keys (or key-value pairs) to remove. Use when an agent needs to delete stale or incorrect classifications from a single resource. Scoped to the token's customer.
+
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
@@ -457,6 +921,9 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -467,11 +934,15 @@
 **Summary**: Bulk assign tags to multiple resources
 **Tags**: inventory
 
+Assign or replace tags on multiple AI resources in a single request. Each operation in the batch specifies a resource and its new tag set (full replacement semantics per resource). Use when an agent needs to classify or re-classify many resources at once, such as after a new taxonomy is defined or following a bulk import. Scoped to the token's customer.
+
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -482,20 +953,26 @@
 **Summary**: Bulk remove tags from multiple resources
 **Tags**: inventory
 
+Remove specific tags from multiple AI resources in a single request. Each operation specifies a resource and the exact tag keys (or key-value pairs) to delete, leaving other tags on the resource intact. Use when an agent needs to purge outdated or incorrect classifications across many resources at once. Scoped to the token's customer.
+
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/tags/typeahead — Typeahead suggestions for tag values
+## GET /v1/inventory/tags/typeahead — Get typeahead suggestions for tag values
 
 **Endpoint**: `GET /v1/inventory/tags/typeahead`
-**Summary**: Typeahead suggestions for tag values
+**Summary**: Get typeahead suggestions for tag values
 **Tags**: inventory
+
+Return a ranked list of existing tag values for a given category that match an optional prefix string, up to the specified limit. Use to power autocomplete or suggest valid values when assigning tags to resources. Supports the `category` filter (required) and `prefix` filter (optional). Scoped to the token's customer.
 
 **Parameters**:
 - `category` (query, required): Tag category to search
@@ -504,6 +981,8 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -531,11 +1010,13 @@ Returns:
 
 ---
 
-## GET /v1/inventory/technologies — Get Technologies
+## GET /v1/inventory/technologies — List supported AI technologies
 
 **Endpoint**: `GET /v1/inventory/technologies`
-**Summary**: Get Technologies
+**Summary**: List supported AI technologies
 **Tags**: inventory
+
+Return the catalogue of supported AI technologies, optionally filtered by cloud provider, technology category, or exact technology type. Use this to discover valid technology values for resource filtering and classification across the inventory. Not tenant-scoped — returns the global technology catalogue.
 
 **Parameters**:
 - `provider` (query, optional): 
@@ -544,15 +1025,19 @@ Returns:
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid provider or category
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/resources-types — Get Resource Types
+## GET /v1/inventory/resources-types — List supported AI resource types
 
 **Endpoint**: `GET /v1/inventory/resources-types`
-**Summary**: Get Resource Types
+**Summary**: List supported AI resource types
 **Tags**: inventory
+
+Return the catalogue of supported AI resource types, optionally filtered by cloud provider, technology type, resource category, capabilities, or archetypes. Use this to discover valid resource_type values for inventory queries and to understand which capabilities (e.g. agentic, generative) each type supports. Not tenant-scoped — returns the global resource-type catalogue.
 
 **Parameters**:
 - `provider` (query, optional): 
@@ -563,6 +1048,8 @@ Returns:
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid filter parameter
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -585,17 +1072,21 @@ Returns:
 
 ---
 
-## PATCH /v1/inventory/resources — Api Patch Resource Instances New
+## PATCH /v1/inventory/resources — Bulk update properties of multiple AI resource instances
 
 **Endpoint**: `PATCH /v1/inventory/resources`
-**Summary**: Api Patch Resource Instances New
+**Summary**: Bulk update properties of multiple AI resource instances
 **Tags**: inventory
+
+Apply field-level patches to multiple AI resource instances in a single request. Each entry in the request body targets one resource by ID and carries the set of properties to update (e.g. display name, status, lifecycle state). Use when batch-editing many resources at once. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -619,16 +1110,13 @@ Returns:
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resources — Api Get Resource Instances
+## GET /v1/inventory/customer/{customer_id}/resources — List AI inventory resources for a customer
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resources`
-**Summary**: Api Get Resource Instances
+**Summary**: List AI inventory resources for a customer
 **Tags**: inventory
 
-Returns in a list format of some basic resource information: does not return the full resource instance.
-
-Pagination is opt-in: if neither ``page`` nor ``per_page`` is provided, every matching resource is returned
-in a single response. When either is provided, the response additionally includes a ``pagination`` block.
+Return discovered AI resources (models, datasets, applications, agents, MCP services, etc.) for the given customer. The response is summary-shaped — use the resource-detail endpoints to fetch full per-resource state. Filter by organization, project, technology, cloud account, resource category/type, AI-only-vs-all, pentest connection state, capability, archetype, or a case-insensitive name substring via ``name_search``. Pagination is opt-in: pass both ``page`` and ``per_page`` to receive a ``pagination`` block.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -651,30 +1139,40 @@ in a single response. When either is provided, the response additionally include
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/resource/{resource_instance_id}/dependency-graph — Get Dependency Graph
+## GET /v1/inventory/resource/{resource_instance_id}/dependency-graph — Get the dependency graph for a single AI resource
 
 **Endpoint**: `GET /v1/inventory/resource/{resource_instance_id}/dependency-graph`
-**Summary**: Get Dependency Graph
+**Summary**: Get the dependency graph for a single AI resource
 **Tags**: inventory
+
+Return the dependency graph (nodes and edges) centred on one resource instance. Useful for understanding how a model, agent, or application connects to other AI assets in the customer's inventory. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/resources/dependency-graph — Get Dependency Graphs Paginated
+## GET /v1/inventory/resources/dependency-graph — List paginated dependency graphs for AI resources
 
 **Endpoint**: `GET /v1/inventory/resources/dependency-graph`
-**Summary**: Get Dependency Graphs Paginated
+**Summary**: List paginated dependency graphs for AI resources
 **Tags**: inventory
+
+Return a paginated set of dependency graphs for the customer's AI resources. Optionally filter by organization, project, or a specific list of resource IDs. Each graph item shows nodes and directional edges so agents can map how AI assets relate to each other. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (query, optional): 
@@ -685,6 +1183,8 @@ in a single response. When either is provided, the response additionally include
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -744,11 +1244,13 @@ in a single response. When either is provided, the response additionally include
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id} — Api Get Resource Instance
+## GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id} — Get full detail for a single AI inventory resource
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resource/{resource_instance_id}`
-**Summary**: Api Get Resource Instance
+**Summary**: Get full detail for a single AI inventory resource
 **Tags**: inventory
+
+Return the complete record for one AI resource in the customer's inventory, including resource properties, technology types, project assignments, lifecycle status, model type, cloud provider account, review state, and an optional data-security summary. Pass ``include=data_security_details`` to add the heavier recursive data-classification aggregates (e.g. when rendering the data-security tab). Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -757,6 +1259,9 @@ in a single response. When either is provided, the response additionally include
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -779,34 +1284,40 @@ Only applicable to resource types that are LlmEndpoints, it will be None if this
 
 ---
 
-## PUT /v1/inventory/resources/projects —  Update Resource Projects
+## PUT /v1/inventory/resources/projects — Update project assignments for multiple resources
 
 **Endpoint**: `PUT /v1/inventory/resources/projects`
-**Summary**:  Update Resource Projects
+**Summary**: Update project assignments for multiple resources
 **Tags**: inventory
 
-Update the project assignments for a list of resources.
+Assign or unassign AI resources to projects in a single call. Each entry specifies a resource and two lists — projects to add and projects to remove. At least one project must remain assigned after the operation. Use to bulk re-organise resource ownership across projects. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/resources/review —  Review Multiple Resources
+## POST /v1/inventory/resources/review — Mark multiple AI resources as reviewed or unreviewed
 
 **Endpoint**: `POST /v1/inventory/resources/review`
-**Summary**:  Review Multiple Resources
+**Summary**: Mark multiple AI resources as reviewed or unreviewed
 **Tags**: inventory
+
+Set the review state (reviewed / unreviewed) for a list of AI resource instances in one call. Use to acknowledge newly discovered resources or to reset review status during audits. Returns 204 on success. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request or resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -828,70 +1339,79 @@ DEPRECATED: Use /inventory/discover-inventory/add-resources instead.
 
 ---
 
-## POST /v1/inventory/discover-inventory/add-resources — Discover And Add Inventory
+## POST /v1/inventory/discover-inventory/add-resources — Trigger cloud AI resource discovery and persist results
 
 **Endpoint**: `POST /v1/inventory/discover-inventory/add-resources`
-**Summary**: Discover And Add Inventory
+**Summary**: Trigger cloud AI resource discovery and persist results
 **Tags**: inventory
 
-Run full discovery for customer - including cloud resources in cloud accounts and models in those cloud accounts.
-Customer can optionally filter the cloud accounts to filter to.
-Then add the resources to the database (one cloud provider account
-at a time). Group all results together in one response showing all the resources that were added.
+Kick off a background discovery job that scans the customer's cloud accounts for AI resources (models, endpoints, notebooks, agents, etc.) and persists them into the inventory. Optionally filter by cloud provider, specific account, or regions. Returns a job_id for polling via the job-status endpoint. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/discover-inventory/start-discovery-job — Start Customer Discovery Job
+## POST /v1/inventory/discover-inventory/start-discovery-job — Start a background cloud AI resource discovery job
 
 **Endpoint**: `POST /v1/inventory/discover-inventory/start-discovery-job`
-**Summary**: Start Customer Discovery Job
+**Summary**: Start a background cloud AI resource discovery job
 **Tags**: inventory
 
-Initiate a job to run in the background to initiate a discovery scan. Will run in the background, and
-return a job_id that a caller can use for polling.
+Enqueue a background discovery job for the customer's cloud accounts and return a job_id immediately for async polling. Optionally scope the scan to a specific cloud provider, account, or set of regions. Use when you want non-blocking discovery and intend to poll the job-status endpoint for results. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/discover/jupyter-notebooks/customer/{customer_id} — Discover Jupyter Notebooks Inventory For Customer
+## POST /v1/inventory/discover/jupyter-notebooks/customer/{customer_id} — Discover Jupyter Notebooks for a customer
 
 **Endpoint**: `POST /v1/inventory/discover/jupyter-notebooks/customer/{customer_id}`
-**Summary**: Discover Jupyter Notebooks Inventory For Customer
+**Summary**: Discover Jupyter Notebooks for a customer
 **Tags**: inventory
+
+Scan the customer's connected infrastructure for Jupyter Notebooks and return the discovery result synchronously. Unlike the async variant, this blocks until discovery completes. Use for real-time notebook inventory checks when the caller can tolerate a longer response time. Scoped to the path customer_id, which must match the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/add-resources/discover/jupyter-notebooks — Discover And Add Jupyter Notebooks Inventory
+## POST /v1/inventory/add-resources/discover/jupyter-notebooks — Discover and persist Jupyter Notebooks asynchronously
 
 **Endpoint**: `POST /v1/inventory/add-resources/discover/jupyter-notebooks`
-**Summary**: Discover And Add Jupyter Notebooks Inventory
+**Summary**: Discover and persist Jupyter Notebooks asynchronously
 **Tags**: inventory
+
+Enqueue a background job that scans the customer's infrastructure for Jupyter Notebooks and persists discovered notebooks into the inventory. Optionally restrict the scan to specific regions. Returns a job_id for polling the job-status endpoint. Use when you need non-blocking notebook discovery. Scoped to the token's customer.
 
 **Request Body**: Optional
 - Content-Type: `application/json`
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -911,45 +1431,53 @@ return a job_id that a caller can use for polling.
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/cloud-discoveries — Get Past Cloud Discovery List
+## GET /v1/inventory/customer/{customer_id}/cloud-discoveries — List past cloud discovery scan records for a customer
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/cloud-discoveries`
-**Summary**: Get Past Cloud Discovery List
+**Summary**: List past cloud discovery scan records for a customer
 **Tags**: inventory, internal
+
+Return the history of cloud discovery scans for the specified customer, including scan IDs, associated cloud provider account, and start timestamps. Use to audit when and which accounts were last scanned for AI resources. Scoped to the path customer_id, which must match the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/project-ai-bom/{project_id}/versions — Get Project Ai Bom Versions
+## GET /v1/inventory/project-ai-bom/{project_id}/versions — List all AI BOM versions for a project
 
 **Endpoint**: `GET /v1/inventory/project-ai-bom/{project_id}/versions`
-**Summary**: Get Project Ai Bom Versions
+**Summary**: List all AI BOM versions for a project
 **Tags**: inventory
 
-Get the AI BOM versions for a project
+Return the list of available AI Bill of Materials versions for a project, with version numbers and metadata. Use this to discover available snapshots before fetching a specific version via getProjectAiBom. Scoped to the token's customer.
 
 **Parameters**:
 - `project_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Project not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/project-ai-bom/{project_id} — Get Project Ai Bom
+## GET /v1/inventory/project-ai-bom/{project_id} — Get the AI Bill of Materials for a project
 
 **Endpoint**: `GET /v1/inventory/project-ai-bom/{project_id}`
-**Summary**: Get Project Ai Bom
+**Summary**: Get the AI Bill of Materials for a project
 **Tags**: inventory
 
-Get the most recent AI BOM for a project
+Return the AI Bill of Materials (AI BOM) for a project, optionally at a specific version number. If no version is specified, the most recent snapshot is returned. The BOM lists all AI resources and their dependencies captured at snapshot time. Scoped to the token's customer.
 
 **Parameters**:
 - `project_id` (path, required): 
@@ -957,17 +1485,20 @@ Get the most recent AI BOM for a project
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Project or BOM version not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/inventory/project-ai-bom/customer/{customer_id}/project/{project_id} — Create Project Ai Bom
+## POST /v1/inventory/project-ai-bom/customer/{customer_id}/project/{project_id} — Generate a new AI BOM snapshot for a project
 
 **Endpoint**: `POST /v1/inventory/project-ai-bom/customer/{customer_id}/project/{project_id}`
-**Summary**: Create Project Ai Bom
+**Summary**: Generate a new AI BOM snapshot for a project
 **Tags**: inventory
 
-Create an AI BOM for a project
+Enqueue a background job to generate a new AI Bill of Materials snapshot for the specified project, capturing all current AI resources and their dependency graph. Returns a job_id for polling. Use after significant inventory changes or on a compliance cadence. Scoped to the path customer_id.
 
 **Parameters**:
 - `project_id` (path, required): 
@@ -975,17 +1506,20 @@ Create an AI BOM for a project
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Project not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/customer/{customer_id}/resources/dependency-files — Get Active Dependency Files
+## GET /v1/inventory/customer/{customer_id}/resources/dependency-files — List active dependency files for a customer
 
 **Endpoint**: `GET /v1/inventory/customer/{customer_id}/resources/dependency-files`
-**Summary**: Get Active Dependency Files
+**Summary**: List active dependency files for a customer
 **Tags**: inventory
 
-Get the active dependency files for a customer
+Return all active dependency files (e.g. requirements.txt, package.json) tracked in the customer's inventory, optionally filtered by project. Use to see which dependency manifests have been uploaded or discovered, and to identify candidates for reassignment or deletion. Scoped to the path customer_id.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -993,76 +1527,67 @@ Get the active dependency files for a customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file — Delete Dependency File
+## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file — Delete a dependency file and its linked resources
 
 **Endpoint**: `DELETE /v1/inventory/customer/{customer_id}/resources/dependency-file`
-**Summary**: Delete Dependency File
+**Summary**: Delete a dependency file and its linked resources
 **Tags**: inventory
 
-Delete a dependency file and update resource instances accordingly.
-
-:param customer_id: The customer ID
-:param project_id: The project ID
-:param dependency_file_identifier: The identifier for the dependency file
-:param session: The SQLAlchemy database session
-
-:return: None
+Permanently delete a dependency file identified by its path/identifier within a project, and cascade-update all AI resource instances that were sourced from it. Optionally scope to a specific repository config. This is a destructive operation — resource associations are removed along with the file. Scoped to the path customer_id.
 
 **Parameters**:
 - `customer_id` (path, required): 
 - `project_id` (query, required): 
 - `dependency_file_identifier` (query, required): 
+- `repository_config_id` (query, optional): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Dependency file not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file — Reassign Dependency File Project
+## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file — Move a dependency file from one project to another
 
 **Endpoint**: `PUT /v1/inventory/customer/{customer_id}/resources/dependency-file`
-**Summary**: Reassign Dependency File Project
+**Summary**: Move a dependency file from one project to another
 **Tags**: inventory
 
-Reassign a dependency file to a new project, along with all resources associated with it.
-
-:param customer_id: The customer ID
-:param current_project_id: The current project ID
-:param reassign_project_id: The project ID to reassign to
-:param dependency_file_identifier: The identifier for the dependency file
-:param session: The SQLAlchemy database session
-
-:return: None
+Reassign a dependency file (and all AI resources sourced from it) from its current project to a different project. Provide the current project, the target project, and the dependency file identifier. Optionally scope to a specific repository config. All resource-to-project links are updated atomically. Scoped to the path customer_id.
 
 **Parameters**:
 - `customer_id` (path, required): 
 - `current_project_id` (query, required): 
 - `reassign_project_id` (query, required): 
 - `dependency_file_identifier` (query, required): 
+- `repository_config_id` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Dependency file or project not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-files-bulk — Bulk Delete Dependency File
+## DELETE /v1/inventory/customer/{customer_id}/resources/dependency-files-bulk — Delete multiple dependency files and their linked resources
 
 **Endpoint**: `DELETE /v1/inventory/customer/{customer_id}/resources/dependency-files-bulk`
-**Summary**: Bulk Delete Dependency File
+**Summary**: Delete multiple dependency files and their linked resources
 **Tags**: inventory
 
-Delete a dependency file and update resource instances accordingly.
-
-:param customer_id: The customer ID
-:param session: The SQLAlchemy database session
-:param requests: List of dependency file actions to delete
-:return: None
+Permanently delete a batch of dependency files in one request. Each entry specifies a project and dependency file identifier. All AI resource instances sourced from the specified files are updated accordingly. The entire batch is rolled back on any failure. This is a destructive bulk operation. Scoped to the path customer_id.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -1072,23 +1597,20 @@ Delete a dependency file and update resource instances accordingly.
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Dependency file not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file/bulk-unlink-from-project — Bulk Unlink Dependency File Project
+## PUT /v1/inventory/customer/{customer_id}/resources/dependency-file/bulk-unlink-from-project — Unlink multiple dependency files from their projects
 
 **Endpoint**: `PUT /v1/inventory/customer/{customer_id}/resources/dependency-file/bulk-unlink-from-project`
-**Summary**: Bulk Unlink Dependency File Project
+**Summary**: Unlink multiple dependency files from their projects
 **Tags**: inventory
 
-Unlink dependency files from their current project, along with all resources associated with it.
-
-:param customer_id: The customer ID
-:param requests: Project id and dependency file identifiers for unlinking
-:param session: The SQLAlchemy database session
-
-:return: None
+Move a batch of dependency files (and all resources associated with them) away from their current projects and into the customer's default project. Use to reset project assignments in bulk, for example when restructuring project boundaries. Each entry specifies a project and dependency file identifier. Scoped to the path customer_id.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -1098,15 +1620,20 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Dependency file or project not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/inventory-filter-options — Get Inventory Filter Options
+## GET /v1/inventory/inventory-filter-options — Get available filter options for the AI inventory list
 
 **Endpoint**: `GET /v1/inventory/inventory-filter-options`
-**Summary**: Get Inventory Filter Options
+**Summary**: Get available filter options for the AI inventory list
 **Tags**: inventory
+
+Return the set of filter values currently applicable to the customer's AI inventory — cloud providers, resource categories, statuses, and other facets. Optionally scope by organization or project. Use this to populate filter dropdowns and to discover which values are valid before calling listAiInventoryResources. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (query, optional): 
@@ -1115,15 +1642,19 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid filter parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/technology-filter-options — Get Technology Filter Options
+## GET /v1/inventory/technology-filter-options — Get technology filter options for the inventory
 
 **Endpoint**: `GET /v1/inventory/technology-filter-options`
-**Summary**: Get Technology Filter Options
+**Summary**: Get technology filter options for the inventory
 **Tags**: inventory
+
+Return the distinct technology types and related facets that are present in the customer's current AI inventory, optionally scoped by organization, project, or resource active status. Use to populate technology filter dropdowns before calling listAiInventoryResources. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (query, optional): 
@@ -1132,19 +1663,24 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/repository-search-results — Get Repository Search Results
+## GET /v1/inventory/repository-search-results — Search and list repositories in the customer inventory
 
 **Endpoint**: `GET /v1/inventory/repository-search-results`
-**Summary**: Get Repository Search Results
+**Summary**: Search and list repositories in the customer inventory
 **Tags**: inventory
+
+Search and paginate through repositories (code repos, data repos) tracked in the customer's inventory. Filter by organization, project, discovery config, active/deleted state, or a name substring. Results are sortable by field and direction. Use limit/offset for pagination. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
+- `organization_discovery_config_id` (query, optional): 
 - `exclude_deleted` (query, optional): 
 - `search_repo_name` (query, optional): 
 - `order_field` (query, optional): 
@@ -1154,30 +1690,39 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory/repository-configs/{repository_config_id}/resource-instances-by-type — Get Repo Resource Instances By Type
+## GET /v1/inventory/repository-configs/{repository_config_id}/resource-instances-by-type — Get AI resources grouped by type for a repository config
 
 **Endpoint**: `GET /v1/inventory/repository-configs/{repository_config_id}/resource-instances-by-type`
-**Summary**: Get Repo Resource Instances By Type
+**Summary**: Get AI resources grouped by type for a repository config
 **Tags**: inventory
+
+Return all AI resource instances discovered from a specific repository configuration, grouped by resource type (e.g. model, dataset, application). Use to inspect what AI assets a given repository contributed to the inventory. Scoped to the token's customer.
 
 **Parameters**:
 - `repository_config_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Repository config not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory-policy/resource_types — Gets all the resource types seperated by resource category
+## GET /v1/inventory-policy/resource_types — List all resource types grouped by category
 
 **Endpoint**: `GET /v1/inventory-policy/resource_types`
-**Summary**: Gets all the resource types seperated by resource category
+**Summary**: List all resource types grouped by category
 **Tags**: inventory
+
+Return every supported AI resource type, grouped by resource category. Optionally filter by category name, one or more capability flags, or one or more archetype flags. Use this to discover valid resource types before configuring inventory policies. This endpoint is not tenant-scoped — it reflects the platform-wide resource type registry and is safe to call without a customer context.
 
 **Parameters**:
 - `resource_category` (query, optional): 
@@ -1186,56 +1731,72 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory-policy — Create or update inventory policies for the customer
+## PATCH /v1/inventory-policy — Upsert all inventory policies for the customer
 
 **Endpoint**: `PATCH /v1/inventory-policy`
-**Summary**: Create or update inventory policies for the customer
+**Summary**: Upsert all inventory policies for the customer
 **Tags**: inventory
+
+Create or replace the full set of inventory policies for the token's customer. Each entry in the request specifies a resource category with its discovery policy, review policies, and allowed cloud storage sources. Existing policies not present in the payload will be left unchanged; entries in the payload are upserted atomically. Scoped to the token's customer. Use when you want to configure or bulk-update how discovered AI resources are inventoried and reviewed.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory-policy — Get the inventory policy for the customer
+## GET /v1/inventory-policy — Get all inventory policies for the customer
 
 **Endpoint**: `GET /v1/inventory-policy`
-**Summary**: Get the inventory policy for the customer
+**Summary**: Get all inventory policies for the customer
 **Tags**: inventory
+
+Return the complete set of inventory policies for the token's customer, one entry per configured resource category. Each entry includes the discovery policy, initial and ongoing review policies, per-type overrides, and allowed cloud storage sources. Scoped to the token's customer. Use to read the current inventory configuration before deciding whether an update is needed.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---
 
-## DELETE /v1/inventory-policy — Resets the inventory policies for a customer
+## DELETE /v1/inventory-policy — Reset all inventory policies for the customer
 
 **Endpoint**: `DELETE /v1/inventory-policy`
-**Summary**: Resets the inventory policies for a customer
+**Summary**: Reset all inventory policies for the customer
 **Tags**: inventory
+
+Delete all stored inventory policies for the token's customer, reverting every resource category to the platform default. This is a destructive, non-reversible operation — all customized discovery policies, review policies, cloud storage allow-lists, and per-type overrides across all categories are permanently removed. Scoped to the token's customer. Use only when a full policy reset is intentional.
 
 **Parameters**:
 - `resource_category` (query, optional): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory-policy/resource_category/{resource_category} — Create or update a inventory policy for the customer on a particular category
+## PATCH /v1/inventory-policy/resource_category/{resource_category} — Upsert inventory policy for one resource category
 
 **Endpoint**: `PATCH /v1/inventory-policy/resource_category/{resource_category}`
-**Summary**: Create or update a inventory policy for the customer on a particular category
+**Summary**: Upsert inventory policy for one resource category
 **Tags**: inventory
+
+Create or replace the inventory policy for a single resource category for the token's customer. The policy controls discovery behavior (scan vs ignore), initial and ongoing review policies, per-type overrides, and allowed cloud storage sources for that category. Scoped to the token's customer. Use when you need to update the policy for one category without touching the rest.
 
 **Parameters**:
 - `resource_category` (path, required): 
@@ -1245,45 +1806,60 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/inventory-policy/resource_category/{resource_category} — Get the inventory policy for the customer on a particular category
+## GET /v1/inventory-policy/resource_category/{resource_category} — Get inventory policy for one resource category
 
 **Endpoint**: `GET /v1/inventory-policy/resource_category/{resource_category}`
-**Summary**: Get the inventory policy for the customer on a particular category
+**Summary**: Get inventory policy for one resource category
 **Tags**: inventory
+
+Return the inventory policy for a single resource category for the token's customer. Includes the discovery policy, initial and ongoing review policies, per-resource-type overrides, and the list of allowed cloud storage sources. Scoped to the token's customer. Use to inspect the policy for a specific category before making targeted updates.
 
 **Parameters**:
 - `resource_category` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v1/inventory-policy/resource_category/{resource_category} — Resets the inventory policy for a customer
+## DELETE /v1/inventory-policy/resource_category/{resource_category} — Reset inventory policy for one resource category
 
 **Endpoint**: `DELETE /v1/inventory-policy/resource_category/{resource_category}`
-**Summary**: Resets the inventory policy for a customer
+**Summary**: Reset inventory policy for one resource category
 **Tags**: inventory
+
+Delete the stored inventory policy for the specified resource category, reverting it to the platform default for the token's customer. This is a destructive operation — all customizations for that category (discovery policy, review policies, cloud storage allow-list, and per-type overrides) are permanently removed. Scoped to the token's customer. Use with caution; prefer upsert if you want to change rather than erase the policy.
 
 **Parameters**:
 - `resource_category` (path, required): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/inventory-policy/resource_category/{resource_category}/toggle_cloud_storage/{cloud_storage_type} — Toggle a cloud storage type for the customer
+## PATCH /v1/inventory-policy/resource_category/{resource_category}/toggle_cloud_storage/{cloud_storage_type} — Toggle a cloud storage source for a resource category
 
 **Endpoint**: `PATCH /v1/inventory-policy/resource_category/{resource_category}/toggle_cloud_storage/{cloud_storage_type}`
-**Summary**: Toggle a cloud storage type for the customer
+**Summary**: Toggle a cloud storage source for a resource category
 **Tags**: inventory
+
+Add or remove a cloud storage type from the allowed sources list in the inventory policy for the specified resource category. If the storage type is currently allowed it is removed; if it is not present it is added. Returns the updated inventory policy for the category. Scoped to the token's customer. Use when you want to quickly enable or disable a single cloud storage source without rewriting the entire policy.
 
 **Parameters**:
 - `resource_category` (path, required): 
@@ -1291,6 +1867,9 @@ Unlink dependency files from their current project, along with all resources ass
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Resource category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1547,6 +2126,23 @@ Updates hosted services by unlinking them from their current project
 **Tags**: inventory
 
 Synchronously runs discovery for a hosted service
+
+**Parameters**:
+- `hosted_service_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/hosted-service/{hosted_service_id}/test-connection —  Test Hosted Service Connection
+
+**Endpoint**: `POST /v1/hosted-service/{hosted_service_id}/test-connection`
+**Summary**:  Test Hosted Service Connection
+**Tags**: inventory
+
+Synchronously tests the stored credential against the provider's health endpoint. Persists the sanitized outcome on the row's ``last_test_*`` columns and returns it. Per WB-eaac #5.
 
 **Parameters**:
 - `hosted_service_id` (path, required): 

@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.0
 
-- [](/_docs/)- Release Notes- What's New in V3.1.0On this page# What's New in V3.1.0
+- [](/_docs/)- Release Notes- What's New in V3.1.0Export PDFOn this page# What's New in V3.1.0
 Release Date: Oct 16, 2025
 
 ### NextGen Pentests[​](#nextgen-pentests)

@@ -6,15 +6,15 @@ section: integration_examples
 
 # Using Quarantining APIs from Kong Konnect
 
-- [](/_docs/)- Integration Examples- Using Quarantining APIs from Kong KonnectOn this page# Using Quarantining APIs from Kong Konnect
+- [](/_docs/)- Integration Examples- Using Quarantining APIs from Kong KonnectExport PDFOn this page# Using Quarantining APIs from Kong Konnect
 The system provides a facility for managing access to LLMs through sanctioning/unsanctioning resources ([see Quarantining Policy for LLMs](/_docs/docs/applications/ai_usage#quarantine-policy-for-llm-endpoints) ).
 
 This can be done using the built-in [AI Runtime Protection](/_docs/docs/applications/ai_gateway) or by integrating with third-party API gateways. This integration note describes how to provide this quarantining functionality when using Kong Konnect Enterprise Edition.
 
-When you use Kong as your AI Runtime Protection, all access to LLMs goes through the Kong proxy. The integration with the TRiSM system uses a Kong plugin to call the quarantining API to determine whether an LLM is sanctioned or unsanctioned, and accordingly allows or denies access. Requests to access the LLM go through Kong and are passed to the [Request Callout plugin](https://docs.konghq.com/hub/kong-inc/request-callout/configuration/). At that point, an API call is made to the TRiSM Hub. The API call receives the LLM endpoint or the API key from the request. These are compared with LLM inventories by the TRiSM Hub. If the LLM is unsanctioned, the API call returns an unsanctioned status and the plugin prevents the request from reaching the LLM. If the LLM is sanctioned, the request is allowed through to the LLM. Caching is configured at the plugin level with a TTL that can be chosen (typically 300 seconds) so that the additional latency does not affect operation. Note that when you update the sanctioned/unsanctioned attribute on the TRiSM Hub, the change may take up to 300 seconds to take effect (or whatever TTL you selected).
+When you use Kong as your AI Runtime Protection, all access to LLMs goes through the Kong proxy. The integration with Atlas uses a Kong plugin to call the quarantining API to determine whether an LLM is sanctioned or unsanctioned, and accordingly allows or denies access. Requests to access the LLM go through Kong and are passed to the [Request Callout plugin](https://docs.konghq.com/hub/kong-inc/request-callout/configuration/). At that point, an API call is made to Atlas. The API call receives the LLM endpoint or the API key from the request. These are compared with LLM inventories by Atlas. If the LLM is unsanctioned, the API call returns an unsanctioned status and the plugin prevents the request from reaching the LLM. If the LLM is sanctioned, the request is allowed through to the LLM. Caching is configured at the plugin level with a TTL that can be chosen (typically 300 seconds) so that the additional latency does not affect operation. Note that when you update the sanctioned/unsanctioned attribute on Atlas, the change may take up to 300 seconds to take effect (or whatever TTL you selected).
 
 ## Sample Configuration of the Request Callout Plugin[​](#sample-configuration-of-the-request-callout-plugin)
-First you need to generate an API key for the TRiSM Hub in the [Admin Console](/_docs/docs/integration_examples/admin_console.md).
+First you need to generate an API key for Atlas in the [Admin Console](/_docs/docs/admin_console/general#api-keys).
 
 Then enable the Request Callout plugin (see Kong Konnect documentation). Typically there will be two callouts -- the first to obtain a JWT token using an API key, and the second to make the API call for evaluating whether the LLM is sanctioned or unsanctioned.
 

@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.1
 
-- [](/_docs/)- Release Notes- What's New in V3.1.1On this page# What's New in V3.1.1
+- [](/_docs/)- Release Notes- What's New in V3.1.1Export PDFOn this page# What's New in V3.1.1
 Release Date: Dec 4, 2025
 
 ### New Runtime Policies[​](#new-runtime-policies)

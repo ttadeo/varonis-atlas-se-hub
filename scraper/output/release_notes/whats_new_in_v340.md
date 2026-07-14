@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.4.0
 
-- [](/_docs/)- Release Notes- What's New in V3.4.0On this page# What's New in V3.4.0
+- [](/_docs/)- Release Notes- What's New in V3.4.0Export PDFOn this page# What's New in V3.4.0
 **Release Date: June 8, 2026**
 
 ### VS Code Runtime Hooks[​](#vs-code-runtime-hooks)
@@ -77,4 +77,4 @@ New MCP policies include:
 - Detect Virtual MCP Gateways Exposing Tools Beyond Actual Usage
 - Detect MCP Servers with Unknown or Low-Confidence Capability Tools
 - Detect MCP Servers Backed by a Vulnerable OSS Package
-[PreviousGraphQL API Reference](/_docs/docs/)[NextWhat's New in V3.3.0](/_docs/docs/release_notes/330)- [VS Code Runtime Hooks](#vs-code-runtime-hooks)- [GitHub Copilot CLI Runtime Hooks](#github-copilot-cli-runtime-hooks)- [Anthropic Compliance API Log Ingestion](#anthropic-compliance-api-log-ingestion)- [Multi-Turn Pentests](#multi-turn-pentests)- [Trigger Quarantine Action](#trigger-quarantine-action)- [AI Investigation Quarantines](#ai-investigation-quarantines)- [AI Investigation Sessions Page Redesign](#ai-investigation-sessions-page-redesign)- [AI Investigation Events Page Redesign](#ai-investigation-events-page-redesign)- [AI Investigation Session Policies and Issues](#ai-investigation-session-policies-and-issues)- [Azure Databricks Discovery](#azure-databricks-discovery)- [Skill Discovery from Repository Code Scanning](#skill-discovery-from-repository-code-scanning)- [Claude Code Artifact Discovery from Repository Code Scanning](#claude-code-artifact-discovery-from-repository-code-scanning)- [Sensitive Data AI SPM Policies](#sensitive-data-ai-spm-policies)- [AI MCP Policies](#ai-mcp-policies)
+[PreviousWhat's New in V3.5.0](/_docs/docs/release_notes/350)[NextWhat's New in V3.3.0](/_docs/docs/release_notes/330)- [VS Code Runtime Hooks](#vs-code-runtime-hooks)- [GitHub Copilot CLI Runtime Hooks](#github-copilot-cli-runtime-hooks)- [Anthropic Compliance API Log Ingestion](#anthropic-compliance-api-log-ingestion)- [Multi-Turn Pentests](#multi-turn-pentests)- [Trigger Quarantine Action](#trigger-quarantine-action)- [AI Investigation Quarantines](#ai-investigation-quarantines)- [AI Investigation Sessions Page Redesign](#ai-investigation-sessions-page-redesign)- [AI Investigation Events Page Redesign](#ai-investigation-events-page-redesign)- [AI Investigation Session Policies and Issues](#ai-investigation-session-policies-and-issues)- [Azure Databricks Discovery](#azure-databricks-discovery)- [Skill Discovery from Repository Code Scanning](#skill-discovery-from-repository-code-scanning)- [Claude Code Artifact Discovery from Repository Code Scanning](#claude-code-artifact-discovery-from-repository-code-scanning)- [Sensitive Data AI SPM Policies](#sensitive-data-ai-spm-policies)- [AI MCP Policies](#ai-mcp-policies)

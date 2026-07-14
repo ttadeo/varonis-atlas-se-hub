@@ -6,7 +6,7 @@ section: platform_services
 
 # Getting Started with API Calls
 
-- [](/_docs/)- Platform Services- Getting Started with API CallsOn this page# Getting Started with API Calls
+- [](/_docs/)- Platform Services- Getting Started with API CallsExport PDFOn this page# Getting Started with API Calls
 Use APIs for programmatic access and control over nearly every aspect of the platform. Below are the high-level steps to effectively use the API:
 
 - 

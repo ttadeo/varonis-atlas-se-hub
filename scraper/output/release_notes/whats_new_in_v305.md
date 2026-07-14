@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.5
 
-- [](/_docs/)- Release Notes- What's New in V3.0.5On this page# What's New in V3.0.5
+- [](/_docs/)- Release Notes- What's New in V3.0.5Export PDFOn this page# What's New in V3.0.5
 The major new features in v3.0.5 are:
 
 ## Inventory[​](#inventory)

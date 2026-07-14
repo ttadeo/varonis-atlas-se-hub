@@ -1,66 +1,12 @@
 # capture-replay API Endpoints
 
-## GET /v2/capture-replay/customer/{customer_id}/requests/search — Search Llm Firewall Requests Route
+## GET /v2/capture-replay/customer/{customer_id}/requests/search — Search and filter LLM firewall requests
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/requests/search`
-**Summary**: Search Llm Firewall Requests Route
+**Summary**: Search and filter LLM firewall requests
 **Tags**: capture-replay
 
-Search and filter LLM firewall input requests for dataset compilation.
-
-Enhanced implementation with comprehensive filtering including AI governance filters.
-Supports both standard firewall filters and governance-based filtering by tag labels.
-Uses Pydantic model validation for robust input handling.
-
-**Multi-Select Filter Support (v7.0):**
-All filter parameters support multi-select with OR logic. Use repeated query parameters
-to filter by multiple values. Empty arrays or omitted parameters return all matching requests.
-
-**Multi-Select Filter Parameters:**
-- `llm_provider_name`: Filter by LLM provider(s). Example: `?llm_provider_name=openai&llm_provider_name=bedrock`
-- `llm_model_name`: Filter by LLM model(s). Example: `?llm_model_name=gpt-4o&llm_model_name=claude-3-opus`
-- `resource_instance_id`: Filter by endpoint resource(s). Example: `?resource_instance_id=uuid1&resource_instance_id=uuid2`
-- `rule_type`: Filter by rule type(s). Example: `?rule_type=SatisfactoryAnswerRule&rule_type=SentimentRule`
-- `action_type`: Filter by action type(s). Example: `?action_type=BLOCK&action_type=ALERT`
-- `governance_tag`: Filter by governance tag(s). Example: `?governance_tag=refusal&governance_tag=incoherent`
-
-**Filter Behavior:**
-- **OR Logic**: Multiple values use OR logic (e.g., `llm_provider_name=openai&llm_provider_name=bedrock` returns requests from OpenAI OR Bedrock)
-- **Case-Insensitive**: Provider and model names are matched case-insensitively (e.g., `BEDROCK` matches `bedrock`)
-- **Empty Arrays**: Omitted parameters or empty arrays return all matching requests
-- **Combined Filters**: Multiple filter types use AND logic (e.g., provider AND model AND rule_type)
-
-**Rule Type & Action Type Filtering:**
-- Use `rule_type` parameter to filter by rule types (e.g., 'LlmJudgeGovernanceRule', 'SentimentRule')
-- Use `action_type` parameter to filter by action types (e.g., BLOCK, ALERT, LOG)
-- Both support multiple values with OR logic: `?rule_type=FIREWALL&rule_type=GOVERNANCE`
-- Query syntax: `?rule_type=value1&rule_type=value2` (repeat parameter for multiple values)
-
-**Governance Tag Filtering:**
-- Use `governance_tag` parameter to filter by computed tag labels
-- Supports multiple tag labels: `?governance_tag=refusal&governance_tag=incoherent`
-- Common tag labels: "Positive", "Negative", "Neutral",
-  "Incoherent", "Refusal", "PII", "Toxicity", "Prompt Injection", etc.
-- Combine with `governance_target` to specify input/output/both filtering
-- When `governance_target=both` without `governance_tag`, returns requests with tags in input OR output (OR logic)
-
-**Response Tags (v7.1):**
-Each request returns directional governance tags:
-- `input_tags`: Array of objects like `{ "tag_label": "..." }` from input evaluations
-- `output_tags`: Array of objects like `{ "tag_label": "..." }` from output evaluations
-- `ATTRIBUTE` actions are excluded from `input_actions` and `output_actions`
-
-**Examples:**
-- Single provider: `?llm_provider_name=openai`
-- Multiple providers: `?llm_provider_name=openai&llm_provider_name=bedrock`
-- Single resource: `?resource_instance_id=uuid1`
-- Multiple resources: `?resource_instance_id=uuid1&resource_instance_id=uuid2`
-- Combined filters: `?llm_provider_name=openai&llm_model_name=gpt-4o&rule_type=SatisfactoryAnswerRule`
-- Filter by rule type: `?rule_type=FIREWALL`
-- Filter by multiple rule types: `?rule_type=FIREWALL&rule_type=GOVERNANCE`
-- Filter by action type: `?action_type=BLOCK&action_type=ALERT`
-- Governance filtering: `?governance_target=both&governance_tag=refusal`
-- Filter by multiple tags: `?governance_tag=incoherent&governance_tag=refusal&governance_target=input`
+Search LLM firewall requests captured by the tenant's firewall, with rich multi-select filtering by provider, model, endpoint, rule type, action type, and AI governance tags. Use this to browse the raw request log before curating a dataset, or to investigate specific incidents. All filters combine with AND logic across filter types and OR logic within a single multi-value filter. Results are paginated. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -77,6 +23,7 @@ Each request returns directional governance tags:
 - `user_session_user_ip` (query, optional): 
 - `user_session_user_role` (query, optional): 
 - `user_session_user_email` (query, optional): 
+- `user_search` (query, optional): 
 - `user_session_user_privileges` (query, optional): 
 - `user_session_application_id` (query, optional): 
 - `user_session_application_name` (query, optional): 
@@ -96,6 +43,8 @@ Each request returns directional governance tags:
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -106,74 +55,7 @@ Each request returns directional governance tags:
 **Summary**: Get dynamic filter options for LLM firewall requests
 **Tags**: capture-replay
 
-Get comprehensive filter options based on actual data in LLM Firewall Requests table.
-
-    This endpoint provides dynamic lists of available filter values with request counts
-    to enable smart filtering UIs that prevent "no results" scenarios. It supports
-    hierarchy filtering through resource assignments and can filter options based on
-    existing filter selections.
-
-    The response includes both dynamic filters (based on actual data) and static
-    filters (fixed options like governance targets). Each filter option includes
-    a count of matching requests to help users make informed filtering decisions.
-
-    **Multi-Select Filter Support (v7.0):**
-    All filter parameters support multi-select with OR logic. Use repeated query parameters
-    to filter by multiple values. Empty arrays or omitted parameters return all available options.
-
-    **Multi-Select Filter Parameters:**
-    - `llm_provider_name`: Filter by LLM provider(s). Example: `?llm_provider_name=openai&llm_provider_name=bedrock`
-    - `llm_model_name`: Filter by LLM model(s). Example: `?llm_model_name=gpt-4o&llm_model_name=claude-3-opus`
-    - `resource_instance_id`: Filter by endpoint resource(s). Example: `?resource_instance_id=uuid1&resource_instance_id=uuid2`
-    - `rule_type`: Filter by rule type(s). Example: `?rule_type=LlmJudgeGovernanceRule&rule_type=SentimentRule`
-    - `action_type`: Filter by action type(s). Example: `?action_type=BLOCK&action_type=ALERT`
-    - `governance_tag`: Filter by governance tag(s). Example: `?governance_tag=refusal&governance_tag=incoherent`
-
-    **User Session Filter Parameters (via filter_params):**
-    - `user_session_id`: Filter by user session ID (partial match)
-    - `user_session_user_id`: Filter by user ID (partial match)
-    - `user_session_user_ip`: Filter by user IP address (partial match)
-    - `user_session_user_role`: Filter by user role (partial match)
-    - `user_session_user_email`: Filter by user email (partial match)
-    - `user_session_user_privileges`: Filter by user privileges (partial match)
-    - `user_session_application_id`: Filter by application ID (partial match)
-    - `user_session_application_name`: Filter by application name (partial match)
-    - `user_session_application_version`: Filter by application version (partial match)
-
-    **Date Range Filter Parameters (via filter_params):**
-    - `created_at_start`: Filter by request event start time (`request_start_at`, falling back to `created_at` for legacy rows)
-    - `created_at_end`: Filter by request event end time (`request_start_at`, falling back to `created_at` for legacy rows, inclusive)
-
-    **Message & Token Filter Parameters (via filter_params):**
-    - `min_input_prompt_messages`: Minimum input prompt messages (integer >= 0)
-    - `max_input_prompt_messages`: Maximum input prompt messages (integer >= 0)
-    - `min_input_prompt_tokens`: Minimum input prompt tokens (integer >= 0)
-    - `max_input_prompt_tokens`: Maximum input prompt tokens (integer >= 0)
-
-    **Filter Behavior:**
-    - **OR Logic**: Multiple values use OR logic (e.g., `llm_provider_name=openai&llm_provider_name=bedrock` returns requests from OpenAI OR Bedrock)
-    - **Case-Insensitive**: Provider and model names are matched case-insensitively (e.g., `BEDROCK` matches `bedrock`)
-    - **Partial Matching**: User session string filters use ILIKE for partial matching
-    - **Empty Arrays**: Omitted parameters or empty arrays return all available options
-    - **Combined Filters**: Multiple filter types use AND logic (e.g., provider AND model AND rule_type)
-
-    **Governance Filtering:**
-    - `governance_tags`: Available governance tag labels with counts (e.g., "Negative", "Incoherent")
-    - `governance_targets`: Static options for input/output/both filtering
-    - `governance_target`: Filter by tag location (`input`, `output`, or `both`). Works independently of `governance_tag`
-    - When `governance_target=both` without `governance_tag`, returns requests with tags in input OR output (OR logic)
-
-    **Hierarchy Filtering:**
-    - `org_id`: Filter options by organization ID
-    - `project_id`: Filter options by project ID
-    - Hierarchy filters can be combined with multi-select filters
-
-    **Examples:**
-    - Single provider: `?llm_provider_name=openai`
-    - Multiple providers: `?llm_provider_name=openai&llm_provider_name=bedrock`
-    - Combined filters: `?llm_provider_name=openai&llm_model_name=gpt-4o&rule_type=SatisfactoryAnswerRule`
-    - Governance filtering: `?governance_target=both&governance_tag=refusal`
-    - Hierarchy + multi-select: `?org_id=uuid&project_id=uuid&llm_provider_name=openai`
+Return available filter values with request counts for the LLM firewall request log, computed from actual data so the UI can avoid presenting options that yield zero results. Supports the same multi-select, date range, user-session, token-count, governance, and hierarchy filters as the search endpoint — pre-applying any active filters causes the returned option lists to reflect only the subset of data still in view. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): Customer UUID
@@ -190,6 +72,7 @@ Get comprehensive filter options based on actual data in LLM Firewall Requests t
 - `user_session_user_ip` (query, optional): 
 - `user_session_user_role` (query, optional): 
 - `user_session_user_email` (query, optional): 
+- `user_search` (query, optional): 
 - `user_session_user_privileges` (query, optional): 
 - `user_session_application_id` (query, optional): 
 - `user_session_application_name` (query, optional): 
@@ -207,20 +90,19 @@ Get comprehensive filter options based on actual data in LLM Firewall Requests t
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/requests/{request_id} — Get Firewall Request Details Route
+## GET /v2/capture-replay/customer/{customer_id}/requests/{request_id} — Get full details for a single firewall request
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/requests/{request_id}`
-**Summary**: Get Firewall Request Details Route
+**Summary**: Get full details for a single firewall request
 **Tags**: capture-replay
 
-Get detailed information about a specific LLM firewall input request.
-
-Returns the full request details including prompt content, metadata, input_actions,
-output_actions, and related session info.
+Retrieve the complete record for one LLM firewall request, including the prompt content, conversation messages, session metadata, and the full set of firewall and governance actions (input and output). Use this after finding a request of interest via the search endpoint to inspect its exact content and evaluation results. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -228,20 +110,20 @@ output_actions, and related session info.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Firewall request not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/capture-replay/customer/{customer_id}/datasets — Create Dataset Route
+## POST /v2/capture-replay/customer/{customer_id}/datasets — Create a capture replay dataset from firewall requests
 
 **Endpoint**: `POST /v2/capture-replay/customer/{customer_id}/datasets`
-**Summary**: Create Dataset Route
+**Summary**: Create a capture replay dataset from firewall requests
 **Tags**: capture-replay
 
-Create a new capture replay dataset.
-
-Groups LLM firewall input requests under a single dataset identifier for reuse
-in AI validation, pentest, and evaluation workflows.
+Create a named dataset by grouping one or more LLM firewall request IDs under a single identifier. Datasets are the unit of work for AI validation, pentest, and evaluation workflows — create one here, then reference it in those features. Optionally scope the dataset to a specific organization or project within the tenant. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -251,39 +133,19 @@ in AI validation, pentest, and evaluation workflows.
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets — List Datasets Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets — List capture replay datasets with filtering and pagination
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets`
-**Summary**: List Datasets Route
+**Summary**: List capture replay datasets with filtering and pagination
 **Tags**: capture-replay
 
-List all capture replay datasets for a customer with optional filtering and pagination.
-
-Returns paginated list of datasets with basic metadata including request counts.
-Uses Pydantic model validation for robust input handling.
-
-**Query Parameters:**
-- `org_id`: Filter by organization ID (optional)
-- `project_id`: Filter by project ID (optional)
-- `search_text`: Free-text search across dataset name and description (optional)
-- `project`: Filter by project display name (optional)
-- `page`: Page number for pagination (default: 1)
-- `per_page`: Number of results per page (default: 50, max: 500)
-
-**Filtering:**
-- Multiple filters use AND logic (all specified filters must match)
-- Search is case-insensitive and supports partial matches
-- Empty/whitespace-only search terms are ignored
-- Project filtering requires exact display name matches
-
-**Examples:**
-- `GET /v2/capture-replay/customer/{customer_id}/datasets?page=1&per_page=20`
-- `GET /v2/capture-replay/customer/{customer_id}/datasets?search_text=machine`
-- `GET /v2/capture-replay/customer/{customer_id}/datasets?project=MyProject&search_text=test`
+Return a paginated list of capture replay datasets for the customer. Supports optional filtering by organization, project, and free-text search across dataset name and description. Each result includes basic metadata and the count of associated firewall requests. Use this to discover existing datasets before referencing them in AI validation or pentest workflows. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -296,36 +158,38 @@ Uses Pydantic model validation for robust input handling.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/capture-replay/datasets/bulk-delete — Bulk Delete Datasets
+## POST /v2/capture-replay/datasets/bulk-delete — Bulk delete multiple capture replay datasets
 
 **Endpoint**: `POST /v2/capture-replay/datasets/bulk-delete`
-**Summary**: Bulk Delete Datasets
+**Summary**: Bulk delete multiple capture replay datasets
 **Tags**: capture-replay
 
-Delete multiple capture replay datasets in a single operation
+Permanently delete up to 500 capture replay datasets in a single request. Each dataset is validated for ownership before deletion; the response reports per-dataset success or failure so the caller knows exactly which IDs were removed. Underlying firewall requests are not affected. Use this to clean up stale or unwanted datasets in bulk. Scoped to the token's customer via the JWT — no customer_id path param needed.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Get Dataset Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Get details of a specific capture replay dataset
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}`
-**Summary**: Get Dataset Route
+**Summary**: Get details of a specific capture replay dataset
 **Tags**: capture-replay
 
-Get detailed information about a specific capture replay dataset.
-
-Returns the full dataset details including all request IDs and metadata.
+Retrieve the full record for one capture replay dataset, including its name, description, the list of associated firewall request IDs, and project/organization scope. Use this to inspect a dataset's contents or verify its request membership before using it in evaluation or pentest runs. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -333,21 +197,20 @@ Returns the full dataset details including all request IDs and metadata.
 
 **Responses**:
 - `200`: Successful Response
-- `404`: Not Found
-- `500`: Internal Server Error
+- `400`: Invalid request parameters
+- `404`: Dataset not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Update Dataset Route
+## PATCH /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Partially update a capture replay dataset
 
 **Endpoint**: `PATCH /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}`
-**Summary**: Update Dataset Route
+**Summary**: Partially update a capture replay dataset
 **Tags**: capture-replay
 
-Update an existing capture replay dataset.
-
-Supports partial updates (only specified fields will be updated).
+Update one or more fields of an existing capture replay dataset. Only fields included in the request body are changed; omitted fields retain their current values. Updatable fields include name, description, organization scope, project scope, and the list of associated firewall request IDs. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -358,21 +221,20 @@ Supports partial updates (only specified fields will be updated).
 
 **Responses**:
 - `200`: Successful Response
-- `404`: Not Found
-- `500`: Internal Server Error
+- `400`: Invalid request parameters
+- `404`: Dataset not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Delete Dataset Route
+## DELETE /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id} — Delete a single capture replay dataset
 
 **Endpoint**: `DELETE /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}`
-**Summary**: Delete Dataset Route
+**Summary**: Delete a single capture replay dataset
 **Tags**: capture-replay
 
-Delete a capture replay dataset.
-
-Permanently removes the dataset and its metadata (does not affect the underlying firewall requests).
+Permanently delete a capture replay dataset by ID. The underlying firewall requests are not deleted — only the dataset grouping is removed. Returns 204 on success. Use bulk-delete to remove multiple datasets in one call. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -380,25 +242,20 @@ Permanently removes the dataset and its metadata (does not affect the underlying
 
 **Responses**:
 - `204`: Successful Response
-- `404`: Not Found
-- `500`: Internal Server Error
+- `400`: Invalid request parameters
+- `404`: Dataset not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/requests — Get Dataset Requests Route
+## GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/requests — List firewall requests belonging to a dataset
 
 **Endpoint**: `GET /v2/capture-replay/customer/{customer_id}/datasets/{dataset_id}/requests`
-**Summary**: Get Dataset Requests Route
+**Summary**: List firewall requests belonging to a dataset
 **Tags**: capture-replay
 
-Get paginated firewall requests associated with a capture replay dataset.
-
-Response shape aligns with `GET /v2/capture-replay/customer/{customer_id}/requests/search`:
-returns compact request rows with `input_actions`/`output_actions` and directional
-governance tags (`input_tags` and `output_tags`).
-
-Legacy governance summary fields are omitted from this list endpoint.
+Return a paginated list of LLM firewall requests that are members of the specified capture replay dataset. Each item includes the same compact request shape as the search endpoint — firewall actions, directional governance tags (input/output), and session metadata. Use this to review the exact requests in a dataset before running it through AI validation or pentest. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
@@ -408,8 +265,9 @@ Legacy governance summary fields are omitted from this list endpoint.
 
 **Responses**:
 - `200`: Successful Response
-- `404`: Not Found
-- `500`: Internal Server Error
+- `400`: Invalid request parameters
+- `404`: Dataset not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---

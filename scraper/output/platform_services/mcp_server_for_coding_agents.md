@@ -6,8 +6,8 @@ section: platform_services
 
 # MCP Server for Coding Agents
 
-- [](/_docs/)- Platform Services- MCP Server for Coding AgentsOn this page# MCP Server for Coding Agents
-The Atlas MCP server lets a coding agent — Claude Code, OpenAI Codex CLI, Cursor, or any other [Model Context Protocol](https://modelcontextprotocol.io/) client — read and act on your AI-security posture from inside its normal chat or terminal session. Instead of switching to the TRiSM Hub UI to look up compliance percentages, open governance issues, or kick off a pentest run, you can ask your coding agent in natural language and it calls the platform through a single authenticated endpoint.
+- [](/_docs/)- Platform Services- MCP Server for Coding AgentsExport PDFOn this page# MCP Server for Coding Agents
+The Atlas MCP server lets a coding agent — Claude Code, OpenAI Codex CLI, Cursor, or any other [Model Context Protocol](https://modelcontextprotocol.io/) client — read and act on your AI-security posture from inside its normal chat or terminal session. Instead of switching to the Atlas UI to look up compliance percentages, open governance issues, or kick off a pentest run, you can ask your coding agent in natural language and it calls the platform through a single authenticated endpoint.
 
 The server is a hosted, remote MCP endpoint operated by Atlas. There is nothing to install on your laptop beyond the one-time MCP entry in your coding agent's config, and the agent never sees your platform JWT — only the API key you provide stays with the agent.
 
@@ -21,7 +21,7 @@ Use the MCP server when you want to:
 - Drive multi-step actions (create policies, configure VMCPs, run pentest comparisons) from a coding agent loop.
 - Give a coding agent enough Atlas context to make recommendations that account for your tenant's actual state, not generic best-practice text.
 
-The MCP server **does not** evaluate prompts, intercept tool calls, or sit in the runtime data path of any LLM application. Runtime guardrails for coding agents are configured separately through the [Coding Agent Integrations](/_docs/docs/integration_examples/coding_agents) hooks system.
+The MCP server **does not** evaluate prompts, intercept tool calls, or sit in the runtime data path of any LLM application. Runtime guardrails for coding agents are configured separately through the [Coding Agent Integrations](/_docs/docs/coding_agent_protection/runtime_protection) hooks system.
 
 ## How it works[​](#how-it-works)
 The MCP server is a remote HTTP endpoint that speaks the MCP streamable-HTTP protocol. When your coding agent connects:
@@ -41,17 +41,17 @@ The catalogue is opt-in per operation:
 - **Never exposed** — routes that handle credentials, OAuth tokens, secrets, webhook ingest, or internal platform plumbing.
 
 ## Region endpoints[​](#region-endpoints)
-Use the URL that matches the TRiSM Hub region your tenant is hosted in.
+Use the URL that matches the Atlas region your tenant is hosted in.
 
-RegionTRiSM Hub URLMCP server URLUS West (Oregon) — `us-west-2``https://prod.alltrue-be.com/``https://mcp.prod.alltrue-be.com/mcp`US East (N. Virginia) — `us-east-1``https://na-east.alltrue-be.com/``https://mcp.na-east.alltrue-be.com/mcp`EU Central (Frankfurt) — `eu-central-1``https://eu-central.alltrue-be.com/``https://mcp.eu-central.alltrue-be.com/mcp`
-The MCP URL is always the TRiSM Hub URL with `mcp.` prepended and `/mcp` appended. Use the same region URL on every device that connects.
+RegionAtlas URLMCP server URLUS West (Oregon) — `us-west-2``https://prod.alltrue-be.com/``https://mcp.prod.alltrue-be.com/mcp`US East (N. Virginia) — `us-east-1``https://na-east.alltrue-be.com/``https://mcp.na-east.alltrue-be.com/mcp`EU Central (Frankfurt) — `eu-central-1``https://eu-central.alltrue-be.com/``https://mcp.eu-central.alltrue-be.com/mcp`
+The MCP URL is always the Atlas URL with `mcp.` prepended and `/mcp` appended. Use the same region URL on every device that connects.
 
 The remainder of this guide uses `https://mcp.prod.alltrue-be.com/mcp` in examples. Substitute your region's URL when you set things up.
 
 ## Prerequisites[​](#prerequisites)
 Before you connect a coding agent, make sure you have:
 
-- A TRiSM Hub user account with the **Admin** or **Security Admin** role, so you can issue API keys.
+- An Atlas user account with the **Admin** or **Security Admin** role, so you can issue API keys.
 - An Atlas API key associated with a role that grants the permissions your coding agent needs to use. For day-to-day inventory, posture, compliance, and issues read access, a role with the read permissions across those products is sufficient. For agents that should also create policies, configure VMCPs, or run pentests, add the corresponding write permissions to the role.
 - A coding agent that supports MCP — Claude Code, OpenAI Codex CLI, Cursor, or another MCP-compatible client.
 
@@ -121,7 +121,7 @@ The server does not expose an SSE or STDIO transport. Use streamable-HTTP only.
 Once connected, you can interact with the Atlas platform in **free text** through your coding agent. Anything the underlying REST or GraphQL API exposes is reachable, and the agent figures out which operations to call from your prompt — there is no fixed set of supported commands. The MCP server exposes nine tools (five for discovery, three for execution, and one for plain-language error explanation) and the agent picks the right ones for the request without you prompting it.
 
 ### Some usage examples[​](#some-usage-examples)
-The workflows below give you a sense of the kinds of prompts that work well in practice. They are **illustrative**, not an exhaustive list — in general, anything you can do through the TRiSM Hub UI or the API is also reachable from the MCP server.
+The workflows below give you a sense of the kinds of prompts that work well in practice. They are **illustrative**, not an exhaustive list — in general, anything you can do through the Atlas UI or the API is also reachable from the MCP server. For a visual tour of complete, real-world conversations — triaging risk, investigating a finding, mapping your estate, checking audit readiness — see [What Your Coding Agent Can Do with Atlas](/_docs/docs/handbooks/mcp_server_runbooks).
 
 #### Inventory and shadow AI[​](#inventory-and-shadow-ai)
 Ask the agent to enumerate the AI resources discovered in your tenant — models, ML artifacts, LLM endpoints, AI services, AI applications, Jupyter notebooks, software packages, log sources, guardrail integrations — and to filter by project, organization, cloud provider, technology category, review status, or severity of open issues. Common uses:
@@ -223,8 +223,9 @@ For unrecognized error codes, the agent can call `explain_api_error` with the co
 
 ## Related documentation[​](#related-documentation)
 
+- [What Your Coding Agent Can Do with Atlas](/_docs/docs/handbooks/mcp_server_runbooks) — a visual tour of real workflows you can run from your coding agent.
 - [Getting Started with API Calls](/_docs/docs/platform_services/api) — creating API roles and keys.
-- [Admin Console](/_docs/docs/platform_services/admin_console) — managing roles, keys, and user permissions.
-- [Coding Agent Integrations](/_docs/docs/integration_examples/coding_agents) — runtime hook-based guardrails for coding agents (separate from this MCP server).
+- [Admin Console](/_docs/docs/admin_console/) — managing roles, keys, and user permissions.
+- [Coding Agent Integrations](/_docs/docs/coding_agent_protection/runtime_protection) — runtime hook-based guardrails for coding agents (separate from this MCP server).
 - [MCP Security](/_docs/docs/applications/ai_mcp) — discovery, governance, and runtime allowlisting of the MCP servers used by your applications and agents.
-[PreviousGetting Started with API Calls](/_docs/docs/platform_services/api)[NextAWS Bedrock](/_docs/docs/providers/aws_bedrock)- [Why use the MCP server](#why-use-the-mcp-server)- [How it works](#how-it-works)[What the agent can reach](#what-the-agent-can-reach)- [Region endpoints](#region-endpoints)- [Prerequisites](#prerequisites)- [Connect from your coding environment](#connect-from-your-coding-environment)- [What you can do with it](#what-you-can-do-with-it)[Some usage examples](#some-usage-examples)- [Behind the scenes](#behind-the-scenes)- [Walkthrough: triaging governance posture from Claude Code](#walkthrough-triaging-governance-posture-from-claude-code)[The prompt](#the-prompt)- [What the agent does](#what-the-agent-does)- [The result](#the-result)- [Other prompts that follow the same pattern](#other-prompts-that-follow-the-same-pattern)- [Sessions and active scope](#sessions-and-active-scope)- [Security and audit](#security-and-audit)- [Troubleshooting](#troubleshooting)- [Related documentation](#related-documentation)
+[PreviousGetting Started with API Calls](/_docs/docs/platform_services/api)[NextProviders](/_docs/docs/providers)- [Why use the MCP server](#why-use-the-mcp-server)- [How it works](#how-it-works)[What the agent can reach](#what-the-agent-can-reach)- [Region endpoints](#region-endpoints)- [Prerequisites](#prerequisites)- [Connect from your coding environment](#connect-from-your-coding-environment)- [What you can do with it](#what-you-can-do-with-it)[Some usage examples](#some-usage-examples)- [Behind the scenes](#behind-the-scenes)- [Walkthrough: triaging governance posture from Claude Code](#walkthrough-triaging-governance-posture-from-claude-code)[The prompt](#the-prompt)- [What the agent does](#what-the-agent-does)- [The result](#the-result)- [Other prompts that follow the same pattern](#other-prompts-that-follow-the-same-pattern)- [Sessions and active scope](#sessions-and-active-scope)- [Security and audit](#security-and-audit)- [Troubleshooting](#troubleshooting)- [Related documentation](#related-documentation)

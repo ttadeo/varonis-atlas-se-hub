@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.4
 
-- [](/_docs/)- Release Notes- What's New in V3.1.4On this page# What's New in V3.1.4
+- [](/_docs/)- Release Notes- What's New in V3.1.4Export PDFOn this page# What's New in V3.1.4
 Release Date: February 20, 2026
 
 ### Agentic Guardrail – Prevent Tool Poisoning[​](#agentic-guardrail--prevent-tool-poisoning)

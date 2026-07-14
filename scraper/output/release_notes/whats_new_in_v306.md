@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.6
 
-- [](/_docs/)- Release Notes- What's New in V3.0.6On this page# What's New in V3.0.6
+- [](/_docs/)- Release Notes- What's New in V3.0.6Export PDFOn this page# What's New in V3.0.6
 Release Date: April 5, 2025
 
 ## Compliance Knowledge Hub[​](#compliance-knowledge-hub)
@@ -19,7 +19,7 @@ The Knowledge Hub stores documents and policies required for compliance and gove
 Centrally manage sanctioned and unsanctioned access to LLMs. Features include:
 
 - Quarantine Policy - Under AI Usage you can turn on the quarantine policy. At that point any access to the LLM through the AI Runtime Protection will be blocked.
-- Quarantine API - Call the quarantine API from third-party systems, using the TRiSM hub as your central control point for LLM access.
+- Quarantine API - Call the quarantine API from third-party systems, using Atlas as your central control point for LLM access.
 - Integration with Kong Konnect - The quarantine API can be called from a plugin for the Kong Konnect AI Gateway.
 
 ## Pentest Customization[​](#pentest-customization)

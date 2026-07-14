@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.0.12
 
-- [](/_docs/)- Release Notes- What's New in V3.0.12# What's New in V3.0.12
+- [](/_docs/)- Release Notes- What's New in V3.0.12Export PDF# What's New in V3.0.12
 Release Date: July 18, 2025
 
 Model Scan – Expanded support for scanning model packages and artifacts.

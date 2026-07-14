@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.3.0
 
-- [](/_docs/)- Release Notes- What's New in V3.3.0On this page# What's New in V3.3.0
+- [](/_docs/)- Release Notes- What's New in V3.3.0Export PDFOn this page# What's New in V3.3.0
 **Release Date: May 8, 2026**
 
 ### Claude Code Runtime Enforcement[​](#claude-code-runtime-enforcement)

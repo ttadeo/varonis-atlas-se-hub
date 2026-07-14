@@ -6,7 +6,7 @@ section: release_notes
 
 # What's New in V3.1.2
 
-- [](/_docs/)- Release Notes- What's New in V3.1.2On this page# What's New in V3.1.2
+- [](/_docs/)- Release Notes- What's New in V3.1.2Export PDFOn this page# What's New in V3.1.2
 Release Date: Dec 17, 2025
 
 ### Compliance UI Redesign[​](#compliance-ui-redesign)

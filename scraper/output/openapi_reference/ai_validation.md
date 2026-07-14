@@ -1,10 +1,12 @@
 # ai-validation API Endpoints
 
-## GET /v2/ai-validation/categories — Get Categories
+## GET /v2/ai-validation/categories — List global AI validation categories
 
 **Endpoint**: `GET /v2/ai-validation/categories`
-**Summary**: Get Categories
+**Summary**: List global AI validation categories
 **Tags**: ai-validation
+
+Returns the platform-wide catalogue of AI validation categories (e.g. safety, robustness, fairness). These are shared across all customers and are not tenant-specific. Filter by active status or by a specific category ID. Use to discover available categories before creating customer-specific category instances or scan templates.
 
 **Parameters**:
 - `ai_validation_category_id` (query, optional): 
@@ -12,30 +14,39 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/categories/{ai_validation_category_id} — Get Category
+## GET /v2/ai-validation/categories/{ai_validation_category_id} — Get a global AI validation category by ID
 
 **Endpoint**: `GET /v2/ai-validation/categories/{ai_validation_category_id}`
-**Summary**: Get Category
+**Summary**: Get a global AI validation category by ID
 **Tags**: ai-validation
+
+Returns detail for a single platform-wide AI validation category identified by its ID. These categories are shared across all customers and define the test dimensions (e.g. safety, robustness) available for use in scan templates. Use this to inspect a category's metadata before referencing it in a customer category.
 
 **Parameters**:
 - `ai_validation_category_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/categories — Get Customer Categories
+## GET /v2/ai-validation/customer/{customer_id}/categories — List customer AI validation categories
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/categories`
-**Summary**: Get Customer Categories
+**Summary**: List customer AI validation categories
 **Tags**: ai-validation
+
+Returns all AI validation customer categories for the specified customer, which are tenant-specific instantiations of the global categories containing the customer's own test cases. Filter by active status, a specific category ID, or by scan template ID to retrieve only the categories linked to a particular template. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -45,15 +56,19 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/categories — Create Ai Validation Customer Category
+## POST /v2/ai-validation/customer/{customer_id}/categories — Create a customer AI validation category
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/categories`
-**Summary**: Create Ai Validation Customer Category
+**Summary**: Create a customer AI validation category
 **Tags**: ai-validation
+
+Creates a new customer-specific AI validation category, optionally linking it to an existing scan template. Customer categories are the containers that hold test cases for a particular validation dimension. Optionally pass a template ID via query parameter to associate the new category with that template immediately. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -64,15 +79,19 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} — Get Customer Category
+## GET /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} — Get a customer AI validation category by ID
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id}`
-**Summary**: Get Customer Category
+**Summary**: Get a customer AI validation category by ID
 **Tags**: ai-validation
+
+Returns full detail for a single customer-specific AI validation category, including its name, description, active status, and association to a global category. Scoped to the customer identified by the path parameter. Use to inspect a category before updating it or viewing its test cases.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -80,15 +99,20 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} — Update Customer Category
+## PATCH /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id} — Update a customer AI validation category
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/categories/{ai_validation_customer_category_id}`
-**Summary**: Update Customer Category
+**Summary**: Update a customer AI validation category
 **Tags**: ai-validation
+
+Partially updates a customer-specific AI validation category — for example to rename it, change its description, or toggle its active status. Only the fields supplied in the request body are modified; omitted fields are left unchanged. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -99,17 +123,20 @@
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/categories-with-test-cases — Get Customer Categories With Test Cases
+## GET /v2/ai-validation/categories-with-test-cases — List customer categories with their test cases
 
 **Endpoint**: `GET /v2/ai-validation/categories-with-test-cases`
-**Summary**: Get Customer Categories With Test Cases
+**Summary**: List customer categories with their test cases
 **Tags**: ai-validation
 
-Get all customer categories with test cases, filterable by template and category id
+Returns all customer AI validation categories together with their associated test cases in a single response. Filterable by active status, a specific category ID, or by scan template ID (when a template ID is supplied, returns test cases scoped to that template; otherwise returns the category's own test cases, excluding any created or edited via a template). Scoped to the token's customer.
 
 **Parameters**:
 - `filter_active` (query, optional): Whether to filter to a particular status (active or inactive). Defaults to True.
@@ -118,17 +145,19 @@ Get all customer categories with test cases, filterable by template and category
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/templates/{ai_validation_scan_template_id}/categories-with-test-cases — Get Template With Customer Categories With Test Cases
+## GET /v2/ai-validation/templates/{ai_validation_scan_template_id}/categories-with-test-cases — Get a scan template with categories and test cases
 
 **Endpoint**: `GET /v2/ai-validation/templates/{ai_validation_scan_template_id}/categories-with-test-cases`
-**Summary**: Get Template With Customer Categories With Test Cases
+**Summary**: Get a scan template with categories and test cases
 **Tags**: ai-validation
 
-Get all template information along with customer categories and their test cases.
+Returns full detail for a specific AI validation scan template, including all its associated customer categories and their test cases. Useful when an agent needs to inspect the complete test plan defined by a template before configuring a use case or starting a scan. Filterable by active status. Scoped to the token's customer.
 
 **Parameters**:
 - `ai_validation_scan_template_id` (path, required): 
@@ -136,15 +165,20 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Template not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/templates — Create Ai Validation Customer Scan Template
+## POST /v2/ai-validation/customer/{customer_id}/templates — Create an AI validation scan template
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/templates`
-**Summary**: Create Ai Validation Customer Scan Template
+**Summary**: Create an AI validation scan template
 **Tags**: ai-validation
+
+Creates a new AI validation scan template for the customer, specifying which customer categories (and optionally project/organization scope) are included. Templates define the test plan that is applied when a validation scan is started against a use case. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -154,15 +188,19 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/templates — Get Ai Validation Customer Scan Templates
+## GET /v2/ai-validation/customer/{customer_id}/templates — List AI validation scan templates for the customer
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/templates`
-**Summary**: Get Ai Validation Customer Scan Templates
+**Summary**: List AI validation scan templates for the customer
 **Tags**: ai-validation
+
+Returns all scan templates available to the authenticated customer, optionally filtered by project or organization. Templates define the categories and test cases used when starting a validation scan. Use this to discover template IDs before configuring a use case or launching a scan.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -173,15 +211,19 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/templates/create-with-category-testcase — Create Ai Validation Customer Scan Template With Customer Category Testcase
+## POST /v2/ai-validation/customer/{customer_id}/templates/create-with-category-testcase — Create a scan template with new categories and test cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/templates/create-with-category-testcase`
-**Summary**: Create Ai Validation Customer Scan Template With Customer Category Testcase
+**Summary**: Create a scan template with new categories and test cases
 **Tags**: ai-validation
+
+Creates an AI validation scan template together with its customer categories and test cases in a single atomic operation. Use this instead of the basic template-create endpoint when the categories and test cases do not yet exist and need to be provisioned at the same time as the template. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -191,15 +233,19 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PUT /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}/update-with-category-testcase — Update Ai Validation Customer Scan Template With Customer Category Testcase
+## PUT /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}/update-with-category-testcase — Update a scan template with categories and test cases
 
 **Endpoint**: `PUT /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}/update-with-category-testcase`
-**Summary**: Update Ai Validation Customer Scan Template With Customer Category Testcase
+**Summary**: Update a scan template with categories and test cases
 **Tags**: ai-validation
+
+Replaces the categories and test cases associated with an existing AI validation scan template in a single operation. Supports adding new categories, updating existing ones, and updating their test cases simultaneously. If the template is linked to benchmark use cases, a confirmation flag may be required to proceed. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -210,15 +256,20 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters or benchmark confirmation required
+- `404`: Template not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} — Get Ai Validation Customer Scan Template
+## GET /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} — Get a specific AI validation scan template by ID
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}`
-**Summary**: Get Ai Validation Customer Scan Template
+**Summary**: Get a specific AI validation scan template by ID
 **Tags**: ai-validation
+
+Retrieves full detail for a single AI validation scan template scoped to the authenticated customer. Returns template metadata, associated category IDs, and project/organization context. Use this to inspect a template's structure before creating a use case config or starting a validation scan.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -226,15 +277,20 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Template not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} — Update Ai Validation Template
+## PATCH /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id} — Update an AI validation scan template
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/templates/{ai_validation_scan_template_id}`
-**Summary**: Update Ai Validation Template
+**Summary**: Update an AI validation scan template
 **Tags**: ai-validation
+
+Partially updates an existing AI validation scan template — for example to rename it, change its description, or modify its category associations. Only the fields supplied in the request body are modified; omitted fields are left unchanged. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -245,17 +301,20 @@ Get all template information along with customer categories and their test cases
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Template not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/start-ai-validation-scan — Start Ai Validation Scan
+## POST /v2/ai-validation/customer/{customer_id}/start-ai-validation-scan — Start an AI validation scan for a use case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/start-ai-validation-scan`
-**Summary**: Start Ai Validation Scan
+**Summary**: Start an AI validation scan for a use case
 **Tags**: ai-validation, internal
 
-Start an AI Validation scan
+Initiates an AI validation scan for the specified use case, running all configured test cases against the target AI model. Returns a scan execution ID and job reference that can be used to poll progress. Scoped to the authenticated customer; requires a valid use case with a template and resource instance already configured.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -265,17 +324,20 @@ Start an AI Validation scan
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters or use case misconfigured
+- `404`: Use case or resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/use-cases — Create Use Case
+## POST /v2/ai-validation/customer/{customer_id}/use-cases — Create an AI validation use case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/use-cases`
-**Summary**: Create Use Case
+**Summary**: Create an AI validation use case
 **Tags**: ai-validation
 
-Create a use case
+Creates a new AI validation use case for the customer. A use case represents an AI system under validation and acts as the container that binds a scan template and a resource instance together. After creation, configure the use case with a template and resource using the use-case-config endpoint before starting validation scans. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -285,34 +347,38 @@ Create a use case
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases — Get Use Cases
+## GET /v2/ai-validation/customer/{customer_id}/use-cases — List AI validation use cases for the customer
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases`
-**Summary**: Get Use Cases
+**Summary**: List AI validation use cases for the customer
 **Tags**: ai-validation
 
-Get all use cases for a customer
+Returns all AI validation use cases belonging to the authenticated customer tenant. Each use case represents an AI system under validation with its associated configuration, template assignment, and resource bindings. Call this to discover which use cases exist before retrieving per-use-case configs or starting a scan.
 
 **Parameters**:
 - `customer_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/use-cases/{use_case_id} — Update Use Case
+## PATCH /v2/ai-validation/use-cases/{use_case_id} — Update an AI validation use case
 
 **Endpoint**: `PATCH /v2/ai-validation/use-cases/{use_case_id}`
-**Summary**: Update Use Case
+**Summary**: Update an AI validation use case
 **Tags**: ai-validation
 
-Update a use case
+Partially updates an existing AI validation use case — for example to rename it or change its description. Only the fields supplied in the request body are modified; omitted fields are left unchanged. The customer is identified from the JWT token. Scoped to the token's customer.
 
 **Parameters**:
 - `use_case_id` (path, required): 
@@ -322,17 +388,20 @@ Update a use case
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Create Or Update Ai Validation Use Case Config
+## POST /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Create or update the AI validation config for a use case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config`
-**Summary**: Create Or Update Ai Validation Use Case Config
+**Summary**: Create or update the AI validation config for a use case
 **Tags**: ai-validation
 
-Create an AI validation use case config by its usecase id, updates if one already exists
+Creates the AI validation configuration for a use case if it does not yet exist, or replaces it if one already exists (upsert semantics). The config links the use case to a specific scan template and resource instance. Both the template and resource instance must already exist. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -343,17 +412,20 @@ Create an AI validation use case config by its usecase id, updates if one alread
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case, template, or resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Get Ai Validation Use Case Config
+## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Get the AI validation configuration for a use case
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config`
-**Summary**: Get Ai Validation Use Case Config
+**Summary**: Get the AI validation configuration for a use case
 **Tags**: ai-validation
 
-Get an AI validation use case config by its usecase id
+Returns the validation configuration for a specific use case, including the assigned scan template ID and resource instance ID. Scoped to the authenticated customer tenant. Use this to verify what template and resource are configured before starting a validation scan or checking if a config needs to be created.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -361,17 +433,20 @@ Get an AI validation use case config by its usecase id
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case config not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Update Ai Validation Use Case Config By Use Case
+## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config — Update the AI validation config for a use case
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/use-case-config`
-**Summary**: Update Ai Validation Use Case Config By Use Case
+**Summary**: Update the AI validation config for a use case
 **Tags**: ai-validation
 
-Update an AI validation use case config
+Partially updates the AI validation configuration for a specific use case, allowing the assigned scan template or resource instance to be changed independently. Unlike the POST upsert endpoint, this only updates an existing config. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -382,23 +457,29 @@ Update an AI validation use case config
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case config not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Get Schedule For Ai Validation Use Case Config
+## GET /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Get the scheduled scan job for a use case
 
 **Endpoint**: `GET /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
-**Summary**: Get Schedule For Ai Validation Use Case Config
+**Summary**: Get the scheduled scan job for a use case
 **Tags**: ai-validation
 
-Get a scheduled job for an AI validation use case config by its usecase id
+Returns the scheduled job and its recurrence configuration for a specific AI validation use case. Use this to check whether a recurring scan schedule is active, inspect its cron expression or frequency, and retrieve the job status. Scoped to the token's customer.
 
 **Parameters**:
 - `use_case_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case or schedule not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -423,30 +504,33 @@ Create a scheduled job for an AI validation use case config by its usecase id
 
 ---
 
-## DELETE /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Delete Schedule For Ai Validation Use Case Config
+## DELETE /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Delete the scheduled scan job for a use case
 
 **Endpoint**: `DELETE /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
-**Summary**: Delete Schedule For Ai Validation Use Case Config
+**Summary**: Delete the scheduled scan job for a use case
 **Tags**: ai-validation
 
-Delete a scheduled job for an AI validation use case config by its usecase id
+Removes the recurring scan schedule from an AI validation use case, stopping future automatic scan runs. The use case and its configuration remain intact; only the schedule is deleted. Returns the updated use case config after deletion. Scoped to the token's customer. This action cannot be undone — the schedule must be recreated to resume automatic scans.
 
 **Parameters**:
 - `use_case_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case or schedule not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Update Schedule For Ai Validation Use Case Config
+## PATCH /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job — Update the scheduled scan job for a use case
 
 **Endpoint**: `PATCH /v2/ai-validation/use-cases/{use_case_id}/use-case-config/scheduled-job`
-**Summary**: Update Schedule For Ai Validation Use Case Config
+**Summary**: Update the scheduled scan job for a use case
 **Tags**: ai-validation
 
-Update a scheduled job for an AI validation use case config by its usecase id
+Modifies the recurring scan schedule for an AI validation use case — for example to change the cron expression, frequency, enabled state, or start/end window. Only the fields provided in the request body are updated. Returns the updated job and schedule detail. Scoped to the token's customer.
 
 **Parameters**:
 - `use_case_id` (path, required): 
@@ -456,17 +540,20 @@ Update a scheduled job for an AI validation use case config by its usecase id
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case or schedule not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/use-case-configs/{ai_validation_use_case_config_id} — Update Ai Validation Use Case Config
+## PATCH /v2/ai-validation/customer/{customer_id}/use-case-configs/{ai_validation_use_case_config_id} — Update an AI validation use case config by config ID
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/use-case-configs/{ai_validation_use_case_config_id}`
-**Summary**: Update Ai Validation Use Case Config
+**Summary**: Update an AI validation use case config by config ID
 **Tags**: ai-validation
 
-Update an AI validation use case config
+Partially updates an AI validation use case configuration identified directly by its config ID rather than by use case ID. Use this when you have the config ID and want to update the assigned scan template or resource instance. Only the fields provided are modified. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -477,17 +564,20 @@ Update an AI validation use case config
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case config not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id} — Get Use Case
+## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id} — Get a specific AI validation use case by ID
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}`
-**Summary**: Get Use Case
+**Summary**: Get a specific AI validation use case by ID
 **Tags**: ai-validation
 
-Get a specific use case
+Retrieves full detail for a single AI validation use case scoped to the authenticated customer. Returns the use case name, status, associated template, resource configuration, and project/organization context. Use this after listing use cases to inspect a specific use case before starting a scan or reading its config.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -495,17 +585,20 @@ Get a specific use case
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution — Get Baseline Execution
+## GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution — Get the baseline execution for a use case
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution`
-**Summary**: Get Baseline Execution
+**Summary**: Get the baseline execution for a use case
 **Tags**: ai-validation
 
-Get a use case's baseline execution
+Returns the baseline execution ID pinned to a use case, which is used as the reference point for regression comparisons in subsequent validation scans. Scoped to the authenticated customer tenant. Returns null for the execution ID if no baseline has been set yet.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -513,17 +606,20 @@ Get a use case's baseline execution
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution — Update Baseline Execution
+## PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution — Set the baseline execution for a use case
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/use-cases/{use_case_id}/baseline-execution`
-**Summary**: Update Baseline Execution
+**Summary**: Set the baseline execution for a use case
 **Tags**: ai-validation
 
-Update a use case's baseline execution
+Pins a specific scan execution as the baseline for a use case. The baseline execution acts as the reference point for regression comparisons in future validation scans. Supply the execution ID to pin; subsequent scans will compare their results against this baseline. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -534,6 +630,9 @@ Update a use case's baseline execution
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Use case or execution not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -560,45 +659,13 @@ Update a use case's baseline execution
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/importable-datasets — List Importable Datasets For Customer Category
+## GET /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/importable-datasets — List importable datasets for a customer category
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/importable-datasets`
-**Summary**: List Importable Datasets For Customer Category
+**Summary**: List importable datasets for a customer category
 **Tags**: ai-validation
 
-List capture replay datasets available for import to customer category with importable content analysis.
-
-**Dataset Discovery Workflow:**
-Discovers all capture replay datasets accessible to the customer and analyzes their importability for test case creation in AI validation customer categories.
-
-**Filtering Options:**
-- **Organization Filter**: Scope datasets to specific organization context when `org_id` is provided
-- **Project Filter**: Narrow datasets to project-specific captures when `project_id` is provided
-- **Combined Filtering**: Apply both organization and project filters for precise dataset targeting
-
-**Importable Content Analysis:**
-- Analyzes firewall requests within each dataset for prompt extraction capability
-- Counts requests with valid conversational structure (messages array with user content)
-- Identifies requests with extractable prompts suitable for test case transformation
-- Excludes malformed requests that cannot be converted to meaningful test cases
-
-**Response Structure:**
-- Complete dataset metadata (name, description, creation details)
-- Total request count vs. importable request count for import planning
-- Organization and project context for dataset source identification
-- Pagination support for large dataset collections
-
-**Content Validation:**
-- Validates message array structure in firewall requests
-- Ensures user messages contain extractable prompt content
-- Filters out system-internal or malformed conversation data
-- Provides accurate import feasibility assessment per dataset
-
-**Example Use Cases:**
-- Browse available datasets before initiating test case import workflows
-- Assess dataset quality and importable content volume for planning
-- Filter datasets by organizational scope for relevant content discovery
-- Evaluate import potential across multiple capture replay sources
+Lists all capture replay datasets available to the customer that can be imported as test cases into the specified customer category. Each result includes the dataset's metadata and a count of how many requests within it contain extractable prompts suitable for test case creation. Supports filtering by organization or project and paginated results (page, per_page). Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -610,17 +677,20 @@ Discovers all capture replay datasets accessible to the customer and analyzes th
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer category not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-from-dataset — Import Dataset as Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-from-dataset — Import a capture replay dataset as test cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/categories/{customer_category_id}/import-from-dataset`
-**Summary**: Import Dataset as Test Cases
+**Summary**: Import a capture replay dataset as test cases
 **Tags**: ai-validation
 
-Transform capture replay dataset into test cases with optional expected outputs and auto-evaluation
+Transforms firewall requests from a capture replay dataset into AI validation test cases and imports them into the specified customer category. Supports filtering to only requests with extractable expected outputs, and optionally includes full conversation context in prompts. Returns a summary of successful and failed transformations plus the generated test cases ready for review. Scoped to the customer identified by the path parameter.
 
 **Parameters**:
 - `customer_id` (path, required): Customer identifier
@@ -631,6 +701,9 @@ Transform capture replay dataset into test cases with optional expected outputs 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Customer category or dataset not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -652,13 +725,13 @@ Transform capture replay dataset into test cases with optional expected outputs 
 
 ---
 
-## GET /v2/ai-validation/importable-datasets — Get Importable Datasets for AI Validation
+## GET /v2/ai-validation/importable-datasets — List importable datasets for AI validation
 
 **Endpoint**: `GET /v2/ai-validation/importable-datasets`
-**Summary**: Get Importable Datasets for AI Validation
+**Summary**: List importable datasets for AI validation
 **Tags**: ai-validation
 
-**Get list of datasets available for import to AI validation test case creation.**
+Returns all capture replay datasets available to the token's customer that can be imported as test cases for AI validation scans. Each result includes dataset metadata and the count of importable requests. Optionally filter by organization ID or project ID to narrow results to a specific scope. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (query, optional): Optional organization ID filter
@@ -666,6 +739,8 @@ Transform capture replay dataset into test cases with optional expected outputs 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -693,13 +768,15 @@ Get the status of a job that was initiated to run a discovery scan.
 **Summary**: Create AI Validation Sandbox
 **Tags**: ai-validation
 
-Create a new AI validation sandbox for testing AI models and services with comprehensive configuration options
+Creates a new AI validation sandbox for testing AI models and services against configured test cases and evaluations. The sandbox acts as a container for resources (AI models), test cases, evaluations, and execution history. Scoped to the authenticated customer tenant; optionally assignable to a project or organization.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -710,7 +787,7 @@ Create a new AI validation sandbox for testing AI models and services with compr
 **Summary**: List AI Validation Sandboxes
 **Tags**: ai-validation
 
-Retrieve AI validation sandboxes with optional filtering and pagination
+Returns paginated AI validation sandboxes for the authenticated customer, with optional filtering by project, organization, active status, and name search. Each sandbox contains its configuration, current execution status, and resource assignments. Use this to discover sandbox IDs before listing test cases, executions, or results.
 
 **Parameters**:
 - `organization_id` (query, optional): Filter sandboxes by organization ID (optional)
@@ -724,17 +801,19 @@ Retrieve AI validation sandboxes with optional filtering and pagination
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/resource-instances — Get Resource Instances Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/resource-instances — List AI model resource instances available for sandboxes
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/resource-instances`
-**Summary**: Get Resource Instances Route
+**Summary**: List AI model resource instances available for sandboxes
 **Tags**: ai-validation
 
-Get all resource instances that could be added to a sandbox.
+Returns all AI model and service resource instances that can be added to a sandbox, with optional filtering by specific instance ID, availability status, and active state. Also returns available pentest models grouped by type. Use this to discover resources before calling the add-resource endpoint. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (query, optional): Optional filter for a specific resource instance
@@ -743,6 +822,8 @@ Get all resource instances that could be added to a sandbox.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -753,24 +834,27 @@ Get all resource instances that could be added to a sandbox.
 **Summary**: Get AI Validation Sandbox Details
 **Tags**: ai-validation
 
-Retrieve detailed information about a specific AI validation sandbox
+Retrieves full detail for a single AI validation sandbox scoped to the authenticated customer. Returns sandbox configuration, current execution status, resource assignments, evaluation definitions, and project/organization context. Use this after listing sandboxes to inspect a specific sandbox before running executions or reading results.
 
 **Parameters**:
 - `sandbox_id` (path, required): Unique sandbox identifier
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Update AI Validation Sandbox
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Update AI validation sandbox configuration
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}`
-**Summary**: Update AI Validation Sandbox
+**Summary**: Update AI validation sandbox configuration
 **Tags**: ai-validation
 
-Modify configuration and settings of an existing AI validation sandbox
+Partially updates an existing AI validation sandbox — rename it, change its goal, toggle active status, or reassign its project/organization. Only provided fields are changed; omitted fields are left as-is. Returns the updated sandbox. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Unique sandbox identifier
@@ -780,68 +864,80 @@ Modify configuration and settings of an existing AI validation sandbox
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Delete AI Validation Sandbox
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id} — Permanently delete an AI validation sandbox
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}`
-**Summary**: Delete AI Validation Sandbox
+**Summary**: Permanently delete an AI validation sandbox
 **Tags**: ai-validation
 
-Permanently remove an AI validation sandbox and all associated data including test cases, executions, and results
+Irreversibly deletes a sandbox and all associated data including test cases, resources, evaluations, execution records, and results. Deletion triggers background cleanup tasks. Confirm the sandbox ID before calling — this action cannot be undone. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Unique sandbox identifier to delete
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/clone — Clone AI Validation Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/clone — Clone an AI validation sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/clone`
-**Summary**: Clone AI Validation Sandbox
+**Summary**: Clone an AI validation sandbox
 **Tags**: ai-validation
 
-Create an identical copy of an existing sandbox with all configurations, test data, and evaluation settings
+Creates a full copy of an existing sandbox including its configuration, test cases, evaluations, and resource assignments. The cloned sandbox is independent — changes to one do not affect the other. Use this to fork a sandbox for parallel experimentation without affecting production evaluations. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Unique identifier of sandbox to clone
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/abort — Abort Sandbox Executions
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/abort — Abort all active executions for a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/abort`
-**Summary**: Abort Sandbox Executions
+**Summary**: Abort all active executions for a sandbox
 **Tags**: ai-validation
 
-Initiate abort of all active executions for a sandbox. Returns immediately; cleanup runs in the background.
+Initiates an abort of all currently running or pending executions for the specified sandbox. Returns HTTP 202 immediately; actual teardown continues in the background. Use this to stop a running evaluation before it completes. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
 
 **Responses**:
 - `202`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — Add AI Model/Service to Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — Add an AI model or service to a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources`
-**Summary**: Add AI Model/Service to Sandbox
+**Summary**: Add an AI model or service to a sandbox
 **Tags**: ai-validation
 
-Assign an existing AI model or service to a sandbox for testing and evaluation with execution ordering
+Assigns an existing AI model/service resource instance to the sandbox for inclusion in evaluation executions. Configure display name, model name, system prompt, execution order, and whether guardrails are applied. Use listAiValidationSandboxResourceInstances first to find available resource IDs. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Target sandbox identifier
@@ -851,34 +947,40 @@ Assign an existing AI model or service to a sandbox for testing and evaluation w
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox or resource instance not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — List Sandbox AI Models/Services
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — List AI model resources assigned to a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources`
-**Summary**: List Sandbox AI Models/Services
+**Summary**: List AI model resources assigned to a sandbox
 **Tags**: ai-validation
 
-Retrieve all AI models and services assigned to a specific sandbox with execution configuration and status
+Returns all AI model and service resources currently assigned to a sandbox, including their display names, model configuration, execution order, and guardrail settings. Use this to inspect which models will be evaluated during execution. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier to query
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — Remove AI Model/Service from Sandbox
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources — Remove an AI model or service from a sandbox
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources`
-**Summary**: Remove AI Model/Service from Sandbox
+**Summary**: Remove an AI model or service from a sandbox
 **Tags**: ai-validation
 
-Remove one or more AI models/services from a sandbox environment by instance ID or resource ID
+Removes an AI model/service resource assignment from the sandbox. Provide either sandbox_resource_id to remove a specific assignment, or resource_instance_id to remove all assignments of that instance from this sandbox. Exactly one must be supplied. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing resources to remove
@@ -887,17 +989,20 @@ Remove one or more AI models/services from a sandbox environment by instance ID 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox or resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id} — Update Sandbox AI Model/Service Configuration
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id} — Update an AI model resource configuration in a sandbox
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}`
-**Summary**: Update Sandbox AI Model/Service Configuration
+**Summary**: Update an AI model resource configuration in a sandbox
 **Tags**: ai-validation
 
-Modify the configuration of an AI model or service within a sandbox including execution order and settings
+Partially updates the configuration for a specific AI model resource assigned to a sandbox — change display name, model name, system prompt, execution order, or guardrail settings. Only provided fields are changed. Returns the updated resource. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing the resource
@@ -908,17 +1013,20 @@ Modify the configuration of an AI model or service within a sandbox including ex
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox or resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases — Add Test Cases to Sandbox
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases — Add one or more test cases to a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases`
-**Summary**: Add Test Cases to Sandbox
+**Summary**: Add one or more test cases to a sandbox
 **Tags**: ai-validation
 
-**Add one or more test cases to an AI validation sandbox with optional expected outputs and automatic correctness evaluation creation.**
+Adds a single test case or a batch of test cases to a sandbox. Bulk mode accepts an array of test cases with optional expected outputs and actual labels; individual mode accepts a single test case schema for backward compatibility. Supports auto-creation of correctness or binary-classification evaluations when expected outputs are provided. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -928,17 +1036,20 @@ Modify the configuration of an AI model or service within a sandbox including ex
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases — List Sandbox Test Cases
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases — List test cases in a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases`
-**Summary**: List Sandbox Test Cases
+**Summary**: List test cases in a sandbox
 **Tags**: ai-validation
 
-Retrieve paginated list of test cases configured for sandbox execution and validation
+Returns paginated test cases for a sandbox, with optional filtering by evaluation type, pass/fail outcome, evaluation ID, and resource IDs. Omitting page/per_page returns all test cases. Use this to inspect, search, or export test case configurations and results. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier to query
@@ -951,17 +1062,20 @@ Retrieve paginated list of test cases configured for sandbox execution and valid
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} — Remove Test Case from Sandbox
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} — Remove a test case from a sandbox
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}`
-**Summary**: Remove Test Case from Sandbox
+**Summary**: Remove a test case from a sandbox
 **Tags**: ai-validation
 
-Permanently delete a test case and its configuration from the sandbox
+Permanently deletes a test case and all its associated data from the sandbox. This does not delete execution results for completed executions that included this test case. Confirm the test case ID before calling. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -969,17 +1083,20 @@ Permanently delete a test case and its configuration from the sandbox
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} — Update Sandbox Test Case
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id} — Update a sandbox test case
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}`
-**Summary**: Update Sandbox Test Case
+**Summary**: Update a sandbox test case
 **Tags**: ai-validation
 
-Modify test case configuration including prompts and template variables
+Partially updates a test case configuration — change the prompt, display name, or template variable values. Only provided fields are changed. Returns the updated test case. Use this to refine a test case without recreating it. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -990,6 +1107,9 @@ Modify test case configuration including prompts and template variables
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1014,13 +1134,13 @@ Deprecated: Use POST /{sandbox_id}/generate-testcases instead.
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/clone — Clone Sandbox Test Case
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/clone — Clone a sandbox test case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/clone`
-**Summary**: Clone Sandbox Test Case
+**Summary**: Clone a sandbox test case
 **Tags**: ai-validation
 
-Create an exact duplicate of an existing test case with new unique identifier
+Creates an exact duplicate of an existing test case with a new unique identifier, preserving the prompt, display name, and template variables. Use this to create variations of a test case for comparative evaluation. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing the test case
@@ -1028,17 +1148,20 @@ Create an exact duplicate of an existing test case with new unique identifier
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/bulk-delete — Bulk Delete Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/bulk-delete — Bulk delete test cases from a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/bulk-delete`
-**Summary**: Bulk Delete Test Cases
+**Summary**: Bulk delete test cases from a sandbox
 **Tags**: ai-validation
 
-Delete multiple test cases from an AI validation sandbox in a single operation
+Deletes multiple test cases from a sandbox in a single operation. Optionally also clears associated execution results. Returns per-test-case success/failure details. Use this to remove a set of test cases identified by IDs without deleting the sandbox. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing test cases to delete
@@ -1048,17 +1171,20 @@ Delete multiple test cases from an AI validation sandbox in a single operation
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-testcases — Generate AI-Powered Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-testcases — Generate test cases using AI for a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-testcases`
-**Summary**: Generate AI-Powered Test Cases
+**Summary**: Generate test cases using AI for a sandbox
 **Tags**: ai-validation
 
-Create comprehensive test cases using advanced AI models based on user requirements and specifications
+Uses an AI model to generate test cases for a sandbox based on a user-provided description of the intended model behavior and the desired number of cases. Generated test cases are automatically added to the sandbox. Use this to rapidly populate a new sandbox with representative test cases. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier for test case generation
@@ -1068,6 +1194,9 @@ Create comprehensive test cases using advanced AI models based on user requireme
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1094,13 +1223,13 @@ Create comprehensive test cases using advanced AI models based on user requireme
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/importable-datasets — List Available Datasets for Import
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/importable-datasets — List capture replay datasets available for import
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/importable-datasets`
-**Summary**: List Available Datasets for Import
+**Summary**: List capture replay datasets available for import
 **Tags**: ai-validation
 
-**Retrieve capture replay datasets available for import into a sandbox for test case generation and validation.**
+Returns capture replay datasets that can be imported as test cases into the specified sandbox, with optional filtering by organization and project. Supports pagination. Use this before calling importDatasetToSandbox to discover available dataset IDs. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Target sandbox identifier for import validation
@@ -1111,17 +1240,20 @@ Create comprehensive test cases using advanced AI models based on user requireme
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-from-dataset — Import Dataset as Test Cases
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-from-dataset — Import a capture replay dataset as sandbox test cases
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/import-from-dataset`
-**Summary**: Import Dataset as Test Cases
+**Summary**: Import a capture replay dataset as sandbox test cases
 **Tags**: ai-validation
 
-Transform capture replay dataset into test cases with optional expected outputs and auto-evaluation
+Transforms a capture replay dataset into test cases and adds them to the sandbox. Optionally includes conversation context and filters to only test cases that have expected outputs for automatic evaluation creation. Use listSandboxImportableDatasets first to discover available dataset IDs. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Target sandbox identifier for test case creation
@@ -1131,17 +1263,20 @@ Transform capture replay dataset into test cases with optional expected outputs 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox or dataset not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/execute — Execute Sandbox (Async)
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/execute — Start an asynchronous sandbox execution
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/execute`
-**Summary**: Execute Sandbox (Async)
+**Summary**: Start an asynchronous sandbox execution
 **Tags**: ai-validation
 
-Start asynchronous execution of AI models against test cases with background processing
+Triggers an asynchronous evaluation run that sends each test case to every assigned AI model resource and scores results against the sandbox's evaluations. Returns HTTP 202 immediately with an execution record; actual test-case processing continues in the background. Use listSandboxExecutions or getAiValidationSandboxActiveJobs to track progress. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier to execute
@@ -1151,6 +1286,9 @@ Start asynchronous execution of AI models against test cases with background pro
 
 **Responses**:
 - `202`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1161,7 +1299,7 @@ Start asynchronous execution of AI models against test cases with background pro
 **Summary**: List Sandbox Executions
 **Tags**: ai-validation
 
-Retrieve all execution records for a sandbox with optional status filtering
+Returns all execution records for an AI validation sandbox, optionally filtered by status. Each record includes the execution ID, start/end timestamps, overall status, and test-case pass/fail counts. Scoped to the authenticated customer tenant. Use this to find an execution ID before fetching detailed results.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier to query
@@ -1169,6 +1307,9 @@ Retrieve all execution records for a sandbox with optional status filtering
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1179,7 +1320,7 @@ Retrieve all execution records for a sandbox with optional status filtering
 **Summary**: Get Execution Summary
 **Tags**: ai-validation
 
-Retrieve detailed summary of execution status, progress, and result statistics
+Returns an execution summary including overall status, progress percentage, total/passed/failed test-case counts, and per-resource breakdown. Scoped to the authenticated customer tenant. Use this to poll a running execution for progress or to get a high-level outcome before fetching the individual test-case results.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1187,17 +1328,20 @@ Retrieve detailed summary of execution status, progress, and result statistics
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Execution not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id} — Delete Sandbox Execution
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id} — Delete a sandbox execution record
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}`
-**Summary**: Delete Sandbox Execution
+**Summary**: Delete a sandbox execution record
 **Tags**: ai-validation
 
-Permanently remove execution record and all associated test results
+Permanently removes a sandbox execution record and all associated test-case results. Background cleanup is triggered for large result sets. This action cannot be undone — verify the execution ID before calling. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1205,6 +1349,9 @@ Permanently remove execution record and all associated test results
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Execution not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1215,7 +1362,7 @@ Permanently remove execution record and all associated test results
 **Summary**: List Execution Results
 **Tags**: ai-validation
 
-Retrieve all test case results for a specific execution with detailed outcomes
+Returns all test-case results for a specific sandbox execution. Each result includes the test case prompt, the AI model response, pass/fail outcome, evaluation scores, and latency. Scoped to the authenticated customer tenant. Use this after an execution completes to inspect per-test-case outcomes, or to identify which test cases failed.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1223,6 +1370,9 @@ Retrieve all test case results for a specific execution with detailed outcomes
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Execution not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1233,7 +1383,7 @@ Retrieve all test case results for a specific execution with detailed outcomes
 **Summary**: Get Specific Execution Result
 **Tags**: ai-validation
 
-Retrieve detailed information for a single test case execution result
+Retrieves the full detail for a single test-case execution result including the prompt sent, the AI model's response, pass/fail outcome, per-evaluation scores, latency, and any error details. Scoped to the authenticated customer tenant. Use this when you need the complete response text or evaluation breakdown for a specific failing test case.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1242,17 +1392,20 @@ Retrieve detailed information for a single test case execution result
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Result not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id} — Update Execution Result
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id} — Update a specific test-case execution result
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/results/{result_id}`
-**Summary**: Update Execution Result
+**Summary**: Update a specific test-case execution result
 **Tags**: ai-validation
 
-Modify execution result details and outcomes for manual corrections
+Partially updates an execution result — useful for manually correcting an AI response outcome, overriding a pass/fail verdict, or adding human-reviewed scores. Only provided fields are changed. Returns the updated result. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1264,17 +1417,20 @@ Modify execution result details and outcomes for manual corrections
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Result not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-results — Clear Execution Results
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-results — Clear all results for a sandbox execution
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-results`
-**Summary**: Clear Execution Results
+**Summary**: Clear all results for a sandbox execution
 **Tags**: ai-validation
 
-Reset execution results while preserving execution history for re-execution
+Deletes all test-case results for an execution while preserving the execution record itself. Optionally clears only failed results to preserve passing ones. Returns the count of cleared results. Use this before re-running an execution to get a clean slate. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1283,17 +1439,20 @@ Reset execution results while preserving execution history for re-execution
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Execution not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/testcases/{testcase_id}/clear-results — Clear Test Case Results
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/testcases/{testcase_id}/clear-results — Clear results for a single test case
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/testcases/{testcase_id}/clear-results`
-**Summary**: Clear Test Case Results
+**Summary**: Clear results for a single test case
 **Tags**: ai-validation
 
-Reset execution results for a specific test case while preserving other results
+Deletes all execution results for a specific test case within an execution while leaving results for all other test cases intact. Use this to selectively re-run a single failing test case without disturbing the rest of the execution. Returns the count of cleared results. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1302,17 +1461,20 @@ Reset execution results for a specific test case while preserving other results
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Execution or test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-multiple-testcases — Clear Multiple Test Case Results
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-multiple-testcases — Clear results for multiple test cases in bulk
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/executions/{execution_id}/clear-multiple-testcases`
-**Summary**: Clear Multiple Test Case Results
+**Summary**: Clear results for multiple test cases in bulk
 **Tags**: ai-validation
 
-Reset execution results for multiple test cases in batch operation
+Deletes execution results for a batch of test cases within a specific execution, allowing them to be re-run without deleting the entire execution record. Returns the count of cleared results. Use this to selectively reset a subset of test case results before re-executing. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
@@ -1323,17 +1485,20 @@ Reset execution results for multiple test cases in batch operation
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Execution not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latest-results — Get Latest Execution Results with Filtering and Pagination
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latest-results — Get latest execution results for all test cases in a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latest-results`
-**Summary**: Get Latest Execution Results with Filtering and Pagination
+**Summary**: Get latest execution results for all test cases in a sandbox
 **Tags**: ai-validation
 
-Retrieve slim latest results with optional filtering and pagination. Supports filtering by testcase IDs, resource IDs, status, and evaluation ID. No aggregations included; statuses are normalized to strings; tri-state 'passed' preserved; optional 'score' included when available. Backward compatible: omit pagination params to get all results.
+Returns the most recent result for every test case in the sandbox, with optional filtering by test case IDs, resource IDs, execution status, evaluation type, and pass/fail outcome. Results include a slim shape with status, pass/fail flag, and score where available. Scoped to the authenticated customer tenant. Use this for a current health snapshot without selecting a specific execution.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier for latest results
@@ -1348,17 +1513,20 @@ Retrieve slim latest results with optional filtering and pagination. Supports fi
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations — Create Sandbox Evaluation
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations — Create an evaluation for a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations`
-**Summary**: Create Sandbox Evaluation
+**Summary**: Create an evaluation for a sandbox
 **Tags**: ai-validation
 
-Define evaluation criteria and configuration for AI model output assessment and validation
+Creates a new evaluation definition that specifies how AI model outputs are assessed during sandbox execution. Evaluation types include response similarity, binary classification, and custom criteria. Use this before executing the sandbox so results are automatically scored. Returns the created evaluation. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier for evaluation configuration
@@ -1368,17 +1536,20 @@ Define evaluation criteria and configuration for AI model output assessment and 
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations — List Sandbox Evaluations
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations — List evaluations for a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations`
-**Summary**: List Sandbox Evaluations
+**Summary**: List evaluations for a sandbox
 **Tags**: ai-validation
 
-Retrieve all evaluation configurations and criteria defined for the sandbox
+Returns all evaluation definitions for a sandbox, with optional filtering by evaluation type, pass/fail outcome, or specific test case IDs. Pagination is over test cases (not evaluations), so per_page controls how many test cases' data is included in the nested evaluation results. Use this to inspect scoring criteria and per-test-case outcomes. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier to query evaluations
@@ -1392,17 +1563,20 @@ Retrieve all evaluation configurations and criteria defined for the sandbox
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Get Evaluation Configuration
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Get a specific sandbox evaluation
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id}`
-**Summary**: Get Evaluation Configuration
+**Summary**: Get a specific sandbox evaluation
 **Tags**: ai-validation
 
-Retrieve detailed configuration and parameters for a specific evaluation
+Returns the full configuration for a specific evaluation definition within a sandbox, including evaluation type, scoring criteria, and expected outputs. Use this to inspect a single evaluation before modifying it or to verify its configuration. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing the evaluation
@@ -1410,17 +1584,20 @@ Retrieve detailed configuration and parameters for a specific evaluation
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Evaluation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Update Evaluation Configuration
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Update a sandbox evaluation configuration
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id}`
-**Summary**: Update Evaluation Configuration
+**Summary**: Update a sandbox evaluation configuration
 **Tags**: ai-validation
 
-Modify evaluation parameters, criteria, and configuration settings
+Partially updates an existing evaluation definition — change scoring thresholds, criteria, expected outputs, or display name. Only provided fields are changed. Returns the updated evaluation. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing the evaluation
@@ -1431,17 +1608,20 @@ Modify evaluation parameters, criteria, and configuration settings
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Evaluation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Delete Evaluation Configuration
+## DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id} — Delete a sandbox evaluation
 
 **Endpoint**: `DELETE /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/evaluations/{evaluation_id}`
-**Summary**: Delete Evaluation Configuration
+**Summary**: Delete a sandbox evaluation
 **Tags**: ai-validation
 
-Permanently remove evaluation configuration and all associated settings
+Permanently deletes an evaluation definition and all its associated settings from the sandbox. Existing execution results that referenced this evaluation will lose their scoring data. Confirm the evaluation ID before calling — this cannot be undone. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier containing the evaluation
@@ -1449,68 +1629,79 @@ Permanently remove evaluation configuration and all associated settings
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Evaluation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-commentary — Generate Sandbox Commentary Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-commentary — Generate AI commentary on sandbox evaluation results
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/generate-commentary`
-**Summary**: Generate Sandbox Commentary Route
+**Summary**: Generate AI commentary on sandbox evaluation results
 **Tags**: ai-validation
 
-Generate AI commentary for a sandbox to help understand which resource performed best
+Triggers AI-generated commentary that analyzes the sandbox evaluation results and identifies which resource performed best. Stores the commentary on the sandbox and returns commentary text, the best resource ID, generation timestamp, and the source execution ID. Use this after an execution completes to get an interpretive summary. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/all/active-jobs — Check for Global Active Jobs
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/all/active-jobs — List active evaluation jobs across all sandboxes
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/all/active-jobs`
-**Summary**: Check for Global Active Jobs
+**Summary**: List active evaluation jobs across all sandboxes
 **Tags**: ai-validation
 
-Check for all active evaluation jobs across all sandboxes for the customer
+Returns information about all active evaluation jobs running across every sandbox for the authenticated customer. Use this to poll for overall execution activity or restore client state after reconnecting. The path customer_id must match the authenticated token's customer; mismatches are rejected. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): The customer ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/active-jobs — Check for Active Jobs
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/active-jobs — Get active evaluation jobs for a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/active-jobs`
-**Summary**: Check for Active Jobs
+**Summary**: Get active evaluation jobs for a sandbox
 **Tags**: ai-validation
 
-Check if sandbox has active evaluation jobs for polling state restoration
+Returns active evaluation job information for a specific sandbox, indicating whether any executions are currently running or queued. Use this to poll for running execution state or restore UI state after reconnecting. Returns immediately with current status. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}/clone — Clone Sandbox Resource Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}/clone — Clone a sandbox resource within the same sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/{resource_id}/clone`
-**Summary**: Clone Sandbox Resource Route
+**Summary**: Clone a sandbox resource within the same sandbox
 **Tags**: ai-validation
 
-Clone an existing AI Validation Sandbox resource within the same sandbox.
+Creates an identical copy of an existing AI model resource within the same sandbox, preserving all configuration including model name, system prompt, and guardrail settings. Use this to create model variants for A/B comparison without recreating configuration from scratch. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1518,51 +1709,60 @@ Clone an existing AI Validation Sandbox resource within the same sandbox.
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox or resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/validate — Validate All LLM Endpoint Resources
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/validate — Validate LLM endpoint resources in a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/resources/validate`
-**Summary**: Validate All LLM Endpoint Resources
+**Summary**: Validate LLM endpoint resources in a sandbox
 **Tags**: ai-validation
 
-Checks all LLM Endpoint resources in the specified sandbox for secret existence and live provider API key validity
+Checks all LLM endpoint resources assigned to the sandbox, verifying that required API key secrets exist and that the provider API key is live and valid. Use this before executing a sandbox to surface misconfigured or expired credentials. Returns per-resource validation results. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/template-variables — Get Sandbox Template Variables Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/template-variables — Get all template variable names for a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/template-variables`
-**Summary**: Get Sandbox Template Variables Route
+**Summary**: Get all template variable names for a sandbox
 **Tags**: ai-validation
 
-Get all unique template variable names for a sandbox.
+Returns the unique set of template variable names defined across all test cases in the sandbox. Use this to discover which variable names are available before setting or updating variable values on individual test cases. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PUT /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Update Testcase Variables Route Put
+## PUT /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Replace all template variables for a test case
 
 **Endpoint**: `PUT /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables`
-**Summary**: Update Testcase Variables Route Put
+**Summary**: Replace all template variables for a test case
 **Tags**: ai-validation
 
-Replace all variable values for a specific test case (PUT - full replacement).
+Replaces the complete set of template variable values for a test case with the provided values (full replacement — any existing variables not in the request are deleted). Set allow_new=true to permit variables not yet defined in sandbox templates. Use PATCH instead to merge/update without replacing all variables. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1574,17 +1774,20 @@ Replace all variable values for a specific test case (PUT - full replacement).
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Update Testcase Variables Route Patch
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Partially update template variables for a test case
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables`
-**Summary**: Update Testcase Variables Route Patch
+**Summary**: Partially update template variables for a test case
 **Tags**: ai-validation
 
-Partially update variable values for a specific test case (PATCH - merge).
+Merges the provided template variable values into a test case's existing variables — only listed variables are updated, others are preserved. Set allow_new=true to add variables not yet defined in sandbox templates. Use PUT instead for full replacement. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1596,17 +1799,20 @@ Partially update variable values for a specific test case (PATCH - merge).
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Get Testcase Variables Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables — Get template variable values for a test case
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/testcases/{testcase_id}/variables`
-**Summary**: Get Testcase Variables Route
+**Summary**: Get template variable values for a test case
 **Tags**: ai-validation
 
-Get current variable values for a specific test case.
+Returns the current template variable values for a specific test case. Variables are named placeholders used in VUP (Variable User Prompt) mode to inject different inputs per test run. Use this to inspect variable state before updating. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1614,17 +1820,20 @@ Get current variable values for a specific test case.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test case not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation — Create Commentary Conversation Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation — Create a commentary conversation for a sandbox
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation`
-**Summary**: Create Commentary Conversation Route
+**Summary**: Create a commentary conversation for a sandbox
 **Tags**: ai-validation
 
-Create a new commentary conversation for an AI validation sandbox.
+Creates a new commentary conversation thread for an AI validation sandbox, optionally seeded with an initial message. Only one conversation per sandbox is expected — use this to start commentary discussions on evaluation results. Returns the created conversation with its ID for subsequent message operations. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1634,34 +1843,40 @@ Create a new commentary conversation for an AI validation sandbox.
 
 **Responses**:
 - `201`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation — Get Commentary Conversation Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation — Get the commentary conversation for a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation`
-**Summary**: Get Commentary Conversation Route
+**Summary**: Get the commentary conversation for a sandbox
 **Tags**: ai-validation
 
-Get the commentary conversation for an AI validation sandbox.
+Returns the commentary conversation associated with a specific sandbox, including its status and metadata. Use this to retrieve the conversation ID before fetching messages or adding new ones. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox or conversation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages — Add Message To Conversation Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages — Add a message to a sandbox commentary conversation
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages`
-**Summary**: Add Message To Conversation Route
+**Summary**: Add a message to a sandbox commentary conversation
 **Tags**: ai-validation
 
-Add a new message to an existing commentary conversation.
+Appends a new message (from a user or AI) to an existing commentary conversation. Use this to record manual annotations or AI-generated commentary on evaluation results. Returns the updated conversation with all messages. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1672,17 +1887,20 @@ Add a new message to an existing commentary conversation.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Conversation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages — Get Conversation Messages Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages — List messages from a sandbox commentary conversation
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/messages`
-**Summary**: Get Conversation Messages Route
+**Summary**: List messages from a sandbox commentary conversation
 **Tags**: ai-validation
 
-Get messages from a commentary conversation with pagination.
+Returns a paginated list of messages from a commentary conversation, ordered by creation time. Supports limit/offset pagination. Use this to read or display the message history for a sandbox discussion thread. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1692,17 +1910,20 @@ Get messages from a commentary conversation with pagination.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Conversation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/status — Update Conversation Status Route
+## PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/status — Update the status of a commentary conversation
 
 **Endpoint**: `PATCH /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/conversation/{conversation_id}/status`
-**Summary**: Update Conversation Status Route
+**Summary**: Update the status of a commentary conversation
 **Tags**: ai-validation
 
-Update the status of a commentary conversation.
+Changes the status of a sandbox commentary conversation (e.g., from active to resolved or archived). Use this to mark a discussion as complete after reviewing evaluation results. Returns the updated conversation. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1713,17 +1934,20 @@ Update the status of a commentary conversation.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Conversation not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/commentary/conversations — List Conversations Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/commentary/conversations — List commentary conversations for the customer
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/commentary/conversations`
-**Summary**: List Conversations Route
+**Summary**: List commentary conversations for the customer
 **Tags**: ai-validation
 
-List all commentary conversations for a customer.
+Returns all AI commentary conversations across sandboxes for the authenticated customer, with optional status filtering and offset-based pagination. Use this to browse or resume previous commentary sessions. Supports limit/offset pagination. Scoped to the token's customer.
 
 **Parameters**:
 - `limit` (query, optional): Number of conversations to return
@@ -1732,17 +1956,19 @@ List all commentary conversations for a customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat/send — Send Message And Get Ai Response Route
+## POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat/send — Send a message and get an AI response in commentary chat
 
 **Endpoint**: `POST /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat/send`
-**Summary**: Send Message And Get Ai Response Route
+**Summary**: Send a message and get an AI response in commentary chat
 **Tags**: ai-validation
 
-Send a user message and receive an AI response in commentary chat.
+Sends a user message to the sandbox commentary chat and returns an AI-generated response. The AI has context of the sandbox evaluation results to answer questions about model performance. Use this to interactively explore evaluation outcomes. Returns both the user message ID and AI response message ID for threading. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
@@ -1752,23 +1978,29 @@ Send a user message and receive an AI response in commentary chat.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat — Get Commentary Chat With Suggestions Route
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat — Get sandbox commentary chat with AI suggestions
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/commentary/chat`
-**Summary**: Get Commentary Chat With Suggestions Route
+**Summary**: Get sandbox commentary chat with AI suggestions
 **Tags**: ai-validation
 
-Get commentary conversation with AI-generated discussion suggestions.
+Returns the commentary conversation for a sandbox along with AI-generated discussion suggestions and sandbox context. Use this to initialize or resume an AI commentary chat session — the suggestions guide the user towards meaningful questions about evaluation results. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): The sandbox ID
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1790,30 +2022,33 @@ Generate CSV report of sandbox evaluation results with all resources and evaluat
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/summary — Get Sandbox Summary
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/summary — Get summary statistics for a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/summary`
-**Summary**: Get Sandbox Summary
+**Summary**: Get summary statistics for a sandbox
 **Tags**: ai-validation
 
-Retrieve comprehensive summary statistics for a sandbox including test case counts, execution metrics, resource health, and evaluation scores
+Returns aggregated statistics for a sandbox: test case counts, last execution status, overall pass rate, per-resource health, and per-evaluation scores. Use this for a quick health check of a sandbox without fetching full execution results. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): Sandbox identifier
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latency-distribution — Get Latency Distribution
+## GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latency-distribution — Get latency distribution for a sandbox
 
 **Endpoint**: `GET /v2/ai-validation/customer/{customer_id}/sandbox/{sandbox_id}/latency-distribution`
-**Summary**: Get Latency Distribution
+**Summary**: Get latency distribution for a sandbox
 **Tags**: ai-validation
 
-Returns bucketed latency distribution with summary statistics for charting
+Returns bucketed latency data and summary statistics (p50, p90, p99, mean) for AI model response times across all test cases in the sandbox. Configure the bucket width in milliseconds and optionally filter to a specific resource. Use this to build latency histograms and identify performance outliers. Scoped to the token's customer.
 
 **Parameters**:
 - `sandbox_id` (path, required): 
@@ -1822,6 +2057,9 @@ Returns bucketed latency distribution with summary statistics for charting
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Sandbox not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -1860,15 +2098,17 @@ Mark a sandbox batch as complete.
 
 ---
 
-## GET /v2/ai-validation-sandbox/active-sandboxes — List Active Sandboxes
+## GET /v2/ai-validation-sandbox/active-sandboxes — List active AI validation sandboxes
 
 **Endpoint**: `GET /v2/ai-validation-sandbox/active-sandboxes`
-**Summary**: List Active Sandboxes
+**Summary**: List active AI validation sandboxes
 **Tags**: ai-validation
 
-Get all active sandboxes for the evaluations dashboard table
+Returns all sandboxes that currently have active evaluation jobs running for the authenticated customer. Use this to populate the evaluations dashboard table and quickly identify which sandboxes are actively executing test cases. Scoped to the token's customer.
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 
 ---

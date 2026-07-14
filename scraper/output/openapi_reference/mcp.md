@@ -17,13 +17,13 @@ Register a new MCP server for discovery
 
 ---
 
-## GET /v1/mcp/servers —  Get Mcp Server Configs
+## GET /v1/mcp/servers — List MCP server configurations for the customer
 
 **Endpoint**: `GET /v1/mcp/servers`
-**Summary**:  Get Mcp Server Configs
+**Summary**: List MCP server configurations for the customer
 **Tags**: mcp, inventory
 
-List all MCP server configurations for the customer
+Return a paginated list of registered MCP server configurations for the token's customer. Supports filtering by status, classification, and category, as well as filtering by project or organization scope, and a text search on display name. Use to enumerate the AI agent tools that have been registered for discovery and monitoring. Scoped to the token's customer.
 
 **Parameters**:
 - `status` (query, optional): 
@@ -37,17 +37,19 @@ List all MCP server configurations for the customer
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/mcp/servers/issues —  Get Mcp Issues
+## GET /v1/mcp/servers/issues — List MCP security issues for the customer
 
 **Endpoint**: `GET /v1/mcp/servers/issues`
-**Summary**:  Get Mcp Issues
+**Summary**: List MCP security issues for the customer
 **Tags**: mcp, inventory
 
-List all MCP related security issues (Drift, Shadow Servers, etc.)
+Return a paginated list of MCP-related security issues (e.g. configuration drift, shadow servers, unauthorized tool exposure) for the token's customer. Supports filtering by status, severity, project, organization, and issue display name, as well as text search. Use to surface actionable security findings across MCP servers in the customer's AI inventory. Scoped to the token's customer.
 
 **Parameters**:
 - `page` (query, optional): 
@@ -63,40 +65,48 @@ List all MCP related security issues (Drift, Shadow Servers, etc.)
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/mcp/servers/issues/{issue_id} —  Get Mcp Issue Detail
+## GET /v1/mcp/servers/issues/{issue_id} — Get full detail for a single MCP security issue
 
 **Endpoint**: `GET /v1/mcp/servers/issues/{issue_id}`
-**Summary**:  Get Mcp Issue Detail
+**Summary**: Get full detail for a single MCP security issue
 **Tags**: mcp, inventory
 
-Get specific details for a given MCP issue
+Return the full detail for a specific MCP security issue, including the component-engine finding information (excluding sensitive blast-radius data) and the list of currently-published vMCP gateways that expose the affected MCP server. Use to investigate a specific security finding before deciding whether to remediate or accept the risk. Remediation guidance is fetched separately via ``GET /v1/posture-management/issues/{issue_id}/component-engine/remediation``. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Issue not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/mcp/servers/{mcp_server_config_id} —  Get Mcp Server Config
+## GET /v1/mcp/servers/{mcp_server_config_id} — Get detail for a single MCP server configuration
 
 **Endpoint**: `GET /v1/mcp/servers/{mcp_server_config_id}`
-**Summary**:  Get Mcp Server Config
+**Summary**: Get detail for a single MCP server configuration
 **Tags**: mcp, inventory
 
-Get MCP server configuration details
+Return the full configuration detail for a specific registered MCP server, including transport settings, discovery status, OAuth configuration state, and classification metadata. Use to inspect the current state of an MCP server before updating its configuration or diagnosing connectivity issues. Scoped to the token's customer.
 
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: MCP server configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -121,47 +131,53 @@ Update MCP server configuration or rotate credentials
 
 ---
 
-## DELETE /v1/mcp/servers/{mcp_server_config_id} —  Delete Mcp Server Config
+## DELETE /v1/mcp/servers/{mcp_server_config_id} — Permanently delete an MCP server configuration
 
 **Endpoint**: `DELETE /v1/mcp/servers/{mcp_server_config_id}`
-**Summary**:  Delete Mcp Server Config
+**Summary**: Permanently delete an MCP server configuration
 **Tags**: mcp, inventory
 
-Delete MCP server configuration
+Permanently remove a registered MCP server configuration and all associated discovery data from the customer's inventory. This action is irreversible — the server will no longer be scanned, and any security issues tied to it will be removed. Use only when decommissioning an MCP server or correcting a mistaken registration. Scoped to the token's customer.
 
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 
 **Responses**:
 - `204`: Successful Response
+- `400`: Invalid request parameters
+- `404`: MCP server configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/mcp/servers/{mcp_server_config_id}/test-connection —  Test Mcp Connection
+## POST /v1/mcp/servers/{mcp_server_config_id}/test-connection — Test connectivity to a registered MCP server
 
 **Endpoint**: `POST /v1/mcp/servers/{mcp_server_config_id}/test-connection`
-**Summary**:  Test Mcp Connection
+**Summary**: Test connectivity to a registered MCP server
 **Tags**: mcp, inventory
 
-Test connection to the configured MCP server. HTTP / SSE transports return ``MCPServerTestConnectionResponse`` inline; stdio transports return ``MCPServerStdioJobAck`` with a ``job_id`` — poll ``GET /v1/mcp/servers/{mcp_server_config_id}/test-connection/{job_id}`` for the result.
+Initiate a live connectivity test against the saved MCP server configuration. HTTP and SSE transports respond inline with a success flag and optional error message. Stdio transports respond with a job_id — poll GET /{mcp_server_config_id}/test-connection/{job_id} to retrieve the result once the background job completes. Use to verify reachability and credentials after registering or updating a server configuration. Scoped to the token's customer.
 
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: MCP server configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/mcp/servers/{mcp_server_config_id}/test-connection/{job_id} —  Test Mcp Connection Status
+## GET /v1/mcp/servers/{mcp_server_config_id}/test-connection/{job_id} — Poll the status of an async stdio test-connection job
 
 **Endpoint**: `GET /v1/mcp/servers/{mcp_server_config_id}/test-connection/{job_id}`
-**Summary**:  Test Mcp Connection Status
+**Summary**: Poll the status of an async stdio test-connection job
 **Tags**: mcp, inventory
 
-Poll the result of an async stdio test-connection job. Returns ``state=running`` while in flight, ``state=succeeded`` with ``success=true`` once the connection test passes, or ``state=failed`` with an ``error`` string once it fails. Clients should gate on ``state``, not the truthiness of ``success`` / ``error`` (both can be ``null`` while running).
+Retrieve the current status of a stdio MCP server test-connection job initiated by POST /{mcp_server_config_id}/test-connection. Returns state=running while the job is in flight, state=succeeded with success=true once the connection test passes, or state=failed with an error string if it fails. Gate on the state field — success and error may both be null while the job is running. Scoped to the token's customer.
 
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
@@ -169,6 +185,9 @@ Poll the result of an async stdio test-connection job. Returns ``state=running``
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Test connection job not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
@@ -190,85 +209,97 @@ Test connection using provided parameters without saving. HTTP / SSE transports 
 
 ---
 
-## GET /v1/mcp/servers/probe/{job_id} —  Probe Mcp Connection Status
+## GET /v1/mcp/servers/probe/{job_id} — Poll the status of an async stdio probe job
 
 **Endpoint**: `GET /v1/mcp/servers/probe/{job_id}`
-**Summary**:  Probe Mcp Connection Status
+**Summary**: Poll the status of an async stdio probe job
 **Tags**: mcp, inventory
 
-Poll the result of an async stdio probe job. Returns ``state=running`` while the job is in flight, ``state=succeeded`` with the typed ``MCPServerConnectionProbeResponse`` once complete, or ``state=failed`` with the taxonomy step + message.
+Retrieve the current status of a stdio MCP server probe job initiated by POST /probe. Returns state=running while in flight, state=succeeded with the full MCPServerConnectionProbeResponse once complete, or state=failed with the taxonomy step and error message if the probe fails. Use to asynchronously await the result of an unsaved connection test against custom parameters. Scoped to the token's customer.
 
 **Parameters**:
 - `job_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Probe job not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/mcp/servers/connection-dependency —  Create Mcp Server Access Dependency
+## POST /v1/mcp/servers/connection-dependency — Link an MCP connection resource to an MCP server
 
 **Endpoint**: `POST /v1/mcp/servers/connection-dependency`
-**Summary**:  Create Mcp Server Access Dependency
+**Summary**: Link an MCP connection resource to an MCP server
 **Tags**: mcp, inventory
 
-Create an ACCESSES dependency between an MCP connection and MCP server
+Create an ACCESSES dependency edge in the AI inventory graph between an MCP connection resource and an MCP server resource. Use this to explicitly declare that a given MCP connection has access to a specific MCP server, enabling accurate blast-radius and access-path analysis in the security posture. Both resource IDs must belong to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `application/json`
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## POST /v1/mcp/servers/{mcp_server_config_id}/discover —  Run Mcp Discovery
+## POST /v1/mcp/servers/{mcp_server_config_id}/discover — Trigger manual discovery scan for an MCP server
 
 **Endpoint**: `POST /v1/mcp/servers/{mcp_server_config_id}/discover`
-**Summary**:  Run Mcp Discovery
+**Summary**: Trigger manual discovery scan for an MCP server
 **Tags**: mcp, inventory
 
-Trigger manual discovery for this MCP server
+Manually trigger a discovery scan for a specific MCP server configuration, causing the platform to enumerate the server's tools, resources, and prompts and refresh the AI inventory. Normally discovery runs on a scheduled cadence; use this endpoint to force an immediate refresh after registering a new server or updating its capabilities. Returns immediately — discovery runs asynchronously. Scoped to the token's customer.
 
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: MCP server configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## GET /v1/mcp/servers/{mcp_server_config_id}/discovered-resources —  Get Mcp Server Discovered Resources
+## GET /v1/mcp/servers/{mcp_server_config_id}/discovered-resources — List resources discovered by an MCP server
 
 **Endpoint**: `GET /v1/mcp/servers/{mcp_server_config_id}/discovered-resources`
-**Summary**:  Get Mcp Server Discovered Resources
+**Summary**: List resources discovered by an MCP server
 **Tags**: mcp, inventory
 
-Get a paginated list of resources discovered by this MCP server
+Return a paginated list of AI resources (tools, data sources, prompts) discovered from a specific MCP server during the most recent discovery scan. Supports filtering by resource type and text search by resource name. Optionally narrow to the resources a specific credential would see via `credential_id` (per-(server, credential) discovery): when supplied, the result is the effective set for that credential — resources discovered with it OR via the shared/default scan (no credential). Use to inspect what capabilities an MCP server exposes and to assess its attack surface before applying security policies. Scoped to the token's customer.
 
 **Parameters**:
 - `mcp_server_config_id` (path, required): 
 - `resource_type` (query, optional): Filter by resource type
 - `search` (query, optional): Search by resource name
+- `credential_id` (query, optional): Filter to the effective resource set for this credential: resources surfaced by per-(server, credential) discovery for it, plus the shared/default-scan baseline (no credential).
 - `page` (query, optional): 
 - `per_page` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: MCP server configuration not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/mcp/servers/resources/{resource_instance_id} —  Update Mcp Resource
+## PATCH /v1/mcp/servers/resources/{resource_instance_id} — Update user-defined metadata on an MCP resource
 
 **Endpoint**: `PATCH /v1/mcp/servers/resources/{resource_instance_id}`
-**Summary**:  Update Mcp Resource
+**Summary**: Update user-defined metadata on an MCP resource
 **Tags**: mcp, inventory
 
-Update user-defined fields for an MCP resource
+Partially update the user-editable fields on a specific MCP-discovered resource (e.g. display name overrides, classification tags, or risk annotations). Only the fields supplied in the request body are modified; platform-managed fields from discovery are not overwritten. Use to enrich or correct metadata on an MCP tool or data source in the AI inventory. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -278,6 +309,9 @@ Update user-defined fields for an MCP resource
 
 **Responses**:
 - `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: MCP resource not found
+- `500`: Unexpected server error
 - `422`: Validation Error
 
 ---

@@ -46,17 +46,20 @@ async def login_and_get_spec(page):
     # Handle login if redirected
     current_url = page.url
     if "auth0" in current_url or "login" in current_url:
-        print("Login required — please log in manually...")
+        print("Login required — please log in manually with credentials + MFA...")
         await page.wait_for_url(
             lambda url: "prod.alltrue-be.com" in url,
-            timeout=120000
+            timeout=300000
         )
         await page.wait_for_load_state("load", timeout=30000)
         await page.wait_for_timeout(3000)
-        # Navigate back to OpenAPI page after login so SPA loads the spec
         print("Navigating back to OpenAPI page after login...")
         await page.goto(OPENAPI_URL)
         await page.wait_for_load_state("load", timeout=30000)
+
+    # Always pause for manual confirmation
+    print("\nBrowser is open. Make sure you can see the OpenAPI Reference page.")
+    input("Press ENTER when ready to capture the spec... ")
 
     # Wait for SPA to hydrate and fetch the spec
     print("Waiting for SPA to load spec...")
@@ -201,7 +204,7 @@ async def main():
     print("=" * 50)
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)
+        browser = await p.chromium.launch(headless=False, executable_path="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
         context = await browser.new_context()
         page = await context.new_page()
 
