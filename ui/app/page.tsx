@@ -66,7 +66,7 @@ export default function Home() {
                     <div className="text-xs text-gray-500 mt-1">System retrieves the right knowledge to answer</div>
                   </div>
                   <div className="rounded-lg border border-amber-800/60 bg-amber-900/10 px-4 py-3 text-center">
-                    <div className="text-2xl font-bold text-amber-400">0.689</div>
+                    <div className="text-2xl font-bold text-amber-400">0.732</div>
                     <div className="text-xs font-semibold text-gray-300 mt-1">Groundedness</div>
                     <div className="text-xs text-gray-500 mt-1">Answers stay within retrieved content</div>
                   </div>
