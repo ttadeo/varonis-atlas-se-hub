@@ -52,7 +52,7 @@ export default function Home() {
                 <button onClick={() => setTruelensOpen(false)} className="text-gray-500 hover:text-gray-300 text-xs">✕</button>
               </div>
               <div className="px-5 py-4 space-y-4">
-                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.4.0 docs, June 2026.</span></p>
+                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.5.0 docs, July 2026.</span></p>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="rounded-lg border border-emerald-800/60 bg-emerald-900/15 px-4 py-3 text-center">
