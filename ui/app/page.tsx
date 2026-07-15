@@ -154,10 +154,33 @@ export default function Home() {
 
       <main className="flex-1 flex items-center justify-center px-6">
         <div className="max-w-2xl w-full">
-          <div className="text-center mb-10">
+          <div className="text-center mb-8">
             <div className="text-5xl mb-4">🛡️</div>
             <h2 className="text-2xl font-semibold text-white">Welcome to Atlas Learning Platform</h2>
             <p className="text-gray-400 mt-2">Your AI-powered guide to Varonis Atlas AI Security</p>
+          </div>
+
+          {/* What's New banner */}
+          <div className="rounded-xl border border-emerald-700/50 bg-emerald-900/10 px-5 py-4 mb-6">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">What&apos;s New</span>
+              <span className="text-xs text-gray-600">—</span>
+              <span className="text-xs text-gray-500">July 2026</span>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
+                <p className="text-xs font-semibold text-white mb-1">📄 Atlas v3.5.0 Docs</p>
+                <p className="text-xs text-gray-400">Knowledge base updated — Coding Agent Protection, IBAC, Atlas MCP Server, Log Sources, Shadow AI.</p>
+              </div>
+              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
+                <p className="text-xs font-semibold text-white mb-1">📚 5 New Lessons</p>
+                <p className="text-xs text-gray-400">Coding Agents tier added — hook architecture, fleet deployment, log sources, intent drift, and Atlas MCP Server.</p>
+              </div>
+              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
+                <p className="text-xs font-semibold text-white mb-1">🎯 Agentic Demo Expanded</p>
+                <p className="text-xs text-gray-400">Three live sub-demos: AI Deal Research, Red Team Attack Agent, and MCP Quarantine — all fire through Atlas Gateway.</p>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -168,13 +191,13 @@ export default function Home() {
               <div className="flex items-center gap-4">
                 <div className="text-3xl">🎯</div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-white mb-1">Demo Provisioning</h3>
+                  <h3 className="font-semibold text-white mb-1">Demo Center</h3>
                   <p className="text-sm text-gray-400">
-                    Describe the customer use case → Claude matches Atlas templates → provision the demo environment in one click.
+                    Provision Atlas demo environments in one click. Run live agentic demos through Atlas Gateway — AI Deal Research, Red Team Attack Agent, and MCP Quarantine.
                   </p>
                 </div>
                 <p className="text-xs text-emerald-400 group-hover:text-emerald-300 shrink-0">
-                  AI-matched · One-click provision →
+                  3 live demos · Live Gateway →
                 </p>
               </div>
             </Link>
@@ -184,12 +207,15 @@ export default function Home() {
               className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-blue-500 rounded-2xl p-6 transition-all group"
             >
               <div className="text-3xl mb-3">📚</div>
-              <h3 className="font-semibold text-white mb-1">Learn Atlas</h3>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="font-semibold text-white">Learn Atlas</h3>
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-900/40 border border-emerald-700/50 rounded px-1.5 py-0.5">NEW: Coding Agents</span>
+              </div>
               <p className="text-sm text-gray-400">
-                Structured course covering Atlas fundamentals across Beginner, Intermediate, and Advanced tiers.
+                Structured course covering Atlas fundamentals — Beginner, Intermediate, and Advanced tiers. Now includes a Coding Agents tier covering hooks, fleet deployment, IBAC, and Atlas MCP Server.
               </p>
               <p className="text-xs text-blue-400 mt-4 group-hover:text-blue-300">
-                22 lessons · 3 tiers →
+                28 lessons · 3 tiers →
               </p>
             </Link>
 
@@ -286,7 +312,7 @@ export default function Home() {
                   </p>
                 </div>
                 <p className="text-xs text-teal-400 group-hover:text-teal-300 shrink-0">
-                  69 entries · SME-first chat →
+                  102 entries · SME-first chat →
                 </p>
               </div>
             </Link>
