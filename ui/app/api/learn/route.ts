@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       "Content-Type": "application/json",
       "x-atlas-secret": process.env.N8N_WEBHOOK_SECRET ?? "",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ ...body, mode: "learn" }),
   });
 
   const data = await upstream.json();
