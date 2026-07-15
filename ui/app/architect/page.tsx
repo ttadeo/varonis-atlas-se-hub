@@ -69,6 +69,13 @@ export default function ArchitectPage() {
   const [helpOpen, setHelpOpen] = useState(false);
   const printRef = useRef<HTMLDivElement>(null);
 
+  // File attachment
+  const [fileContext, setFileContext] = useState<string>("");
+  const [fileName, setFileName] = useState<string>("");
+  const [extracting, setExtracting] = useState(false);
+  const [fileError, setFileError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
   function toggleConcern(id: string) {
@@ -81,6 +88,32 @@ export default function ArchitectPage() {
   }
 
   const formReady = form.industry && form.useCase.trim() && form.techStack.trim();
+
+  // ── File attachment ───────────────────────────────────────────────────────────
+
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!fileInputRef.current) fileInputRef.current = e.target;
+    e.target.value = "";
+    if (!file) return;
+    setExtracting(true);
+    setFileError(null);
+    setFileContext("");
+    setFileName("");
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await fetch("/api/extract-context", { method: "POST", body: fd });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Extraction failed");
+      setFileContext(data.text);
+      setFileName(data.filename);
+    } catch (err) {
+      setFileError(String(err));
+    } finally {
+      setExtracting(false);
+    }
+  }
 
   // ── Generate ─────────────────────────────────────────────────────────────────
 
@@ -104,6 +137,7 @@ export default function ArchitectPage() {
           useCase: form.useCase,
           techStack: form.techStack,
           concerns: concernLabels,
+          fileContext: fileContext || undefined,
         }),
       });
 
@@ -259,6 +293,34 @@ export default function ArchitectPage() {
               onChange={(e) => setForm((f) => ({ ...f, techStack: e.target.value }))}
               className="w-full bg-gray-800 text-sm text-gray-100 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-blue-600 placeholder-gray-500"
             />
+          </div>
+
+          {/* File attachment */}
+          <div>
+            <label className="text-xs text-gray-400 mb-1 block">Attach File <span className="text-gray-600">(optional)</span></label>
+            <p className="text-xs text-gray-600 mb-2">PDF, Word, Excel, image, or text — content is included in the architecture prompt.</p>
+            <input ref={fileInputRef} type="file" className="hidden" accept=".pdf,.doc,.docx,.xlsx,.xls,.txt,.csv,.md,.png,.jpg,.jpeg,.webp" onChange={handleFileSelect} />
+            {!fileName && !extracting && (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full text-xs border border-dashed border-gray-600 hover:border-gray-400 rounded-lg py-2 text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                + Attach file
+              </button>
+            )}
+            {extracting && (
+              <div className="flex items-center gap-2 text-xs text-gray-400 py-2">
+                <div className="w-3 h-3 border border-blue-500 border-t-transparent rounded-full animate-spin" />
+                Extracting…
+              </div>
+            )}
+            {fileName && !extracting && (
+              <div className="flex items-center gap-2 rounded-lg bg-blue-900/20 border border-blue-700/50 px-3 py-2">
+                <span className="text-xs text-blue-300 flex-1 truncate">📄 {fileName}</span>
+                <button onClick={() => { setFileContext(""); setFileName(""); setFileError(null); }} className="text-gray-500 hover:text-gray-300 text-xs shrink-0">✕</button>
+              </div>
+            )}
+            {fileError && <p className="text-xs text-red-400 mt-1">{fileError}</p>}
           </div>
 
           {/* Concerns */}

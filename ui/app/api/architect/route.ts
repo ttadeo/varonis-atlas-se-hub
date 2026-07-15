@@ -13,18 +13,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  let raw: { audience?: string; industry?: string; useCase?: string; techStack?: string; concerns?: string[] };
+  let raw: { audience?: string; industry?: string; useCase?: string; techStack?: string; concerns?: string[]; fileContext?: string };
   try {
     raw = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  // Merge file context into useCase so the n8n prompt picks it up
+  const fileContext = (raw.fileContext ?? "").slice(0, 8000);
+  const useCaseBase = (raw.useCase ?? "").slice(0, 400);
+  const useCase = fileContext
+    ? `${useCaseBase}\n\n--- Attached File Content ---\n${fileContext}`
+    : useCaseBase;
+
   // Truncate free-text fields to prevent runaway Claude output / timeouts
   const body = {
     audience: raw.audience ?? "customer",
     industry: raw.industry ?? "",
-    useCase: (raw.useCase ?? "").slice(0, 400),
+    useCase,
     techStack: (raw.techStack ?? "").slice(0, 300),
     concerns: raw.concerns ?? [],
   };
