@@ -1,7 +1,7 @@
 # Atlas Learning Platform — Architecture & Security Documentation
 
 **Audience:** Internal (Varonis SEs and technical staff)  
-**Last Updated:** 2026-07-01 (rev 6 — SMEKnowledge 92→102 (scraped 2026-06-30); Agentic Demo endpoint identifier now dynamic dropdown (all endpoints fetched on mount, wired through n8n headers); Demo cleanup safety: LLM endpoint types excluded from Delete All; owner-matching complete (orgId propagated through buildProjectMap); SME Knowledge Base open to all varonis.com users; Teams SME scraper fixed Chrome→Chromium; n8n atlas-mcp-research endpoint identifier dynamic)  
+**Last Updated:** 2026-07-15 (rev 7 — v3.5.0 knowledge base (2,609 DocChunk + 1,028 OpenAPI chunks, scraped 2026-07-14); 28-lesson course with new Coding Agents tier (lessons 24-28); mode-aware RAG (learn vs ask system prompts); groundedness fix (context in system prompt → 0.732); file attachments on architect, guides, meeting; chat refinement on architect and guides (/api/generate/chat direct Claude); Red Team Attack Agent (atlas-redteam-attack n8n workflow + /api/demo/redteam/fire); MCP Quarantine Demo; landing page What's New banner)  
 **Purpose:** Comprehensive reference covering system architecture, authentication/security, software stack, and data stores.
 
 ---
@@ -10,15 +10,18 @@
 
 The Atlas Learning Platform is an internal AI-powered tool for Varonis SEs. It provides:
 
-- **Interactive learning** — 3-tier course on the Atlas AI Security Platform
-- **Architecture Builder** — generates reference architectures grounded in Atlas documentation
-- **Technical Guide Producer** — generates deployment guides grounded in Atlas docs + SME field knowledge
-- **Meeting Co-Pilot** — real-time Q&A support during customer calls
+- **Interactive learning** — 28-lesson course across 4 tiers: Beginner, Intermediate, Advanced, and Coding Agents (lessons 24-28 cover hook architecture, fleet deployment, log sources, shadow AI & IBAC intent drift, Atlas MCP Server); grounded in Atlas v3.5.0 docs; mode-aware RAG (curriculum-first in learn mode, strict grounding in ask mode)
+- **Architecture Builder** — generates reference architectures grounded in Atlas documentation; supports file attachments (PDF, Word, Excel, images); sticky chat bar for iterative refinement after generation
+- **Technical Guide Producer** — generates deployment guides grounded in Atlas docs + SME field knowledge; async fire-and-poll (2-5 min); supports file attachments; sticky chat bar for iterative refinement; exports to PDF and .md
+- **Meeting Co-Pilot** — real-time Q&A support during customer calls; supports file attachments (PDF, Word, Excel, images)
 - **Demo Provisioning** — describe a customer use case → Claude matches and auto-deploys Atlas policy templates
-- **AI Runtime Demo** — fires live traffic through the Atlas Gateway across three simulation types: prompt traffic, MCP tool call chains, and multi-agent workflows; demonstrates real-time policy enforcement with per-scenario talking points and Atlas AI Investigation deep-links
+- **AI Runtime Demo** — fires live traffic through the Atlas Gateway across four simulation types: prompt traffic, MCP tool call chains, multi-agent workflows, custom scenarios; demonstrates real-time policy enforcement with per-scenario talking points and Atlas AI Investigation deep-links
 - **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 102 field-validated entries across 12 topics; SME-first chat powered by a dedicated n8n workflow; visible to all authenticated varonis.com users
-- **Agentic Demo** — AI Deal Research Agent: SE enters a company name → 5-agent n8n workflow fires (Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent), all LLM calls routed through Atlas Gateway using the SE's selected endpoint identifier → populates the selected Atlas project with real AI activity; blocked requests surface Atlas guardrail message in the UI within seconds
-- **Agentic RAG** — all responses grounded in official Atlas documentation + SME field knowledge (92 nodes) via vector + semantic search
+- **Agentic Demo (3 sub-demos):**
+  - *AI Deal Research Agent* — SE enters a company name → 5-agent n8n workflow (Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent), all LLM calls routed through Atlas Gateway → populates selected Atlas project; blocked requests surface Atlas guardrail message within seconds
+  - *Red Team Attack Agent* — SE enters a seed prompt → 5 obfuscation variants generated (base64, unicode, ROT13, leetspeak, reversed) → each fired through Atlas Gateway → live BLOCKED/PASSED attack log with summary (X/5 blocked)
+  - *MCP Quarantine Demo* — simulates a malicious MCP tool returning credential-harvesting instructions; Atlas intercepts and quarantines; shows real OpenRouter tool names and phase-by-phase audit trail
+- **Agentic RAG** — all responses grounded in official Atlas v3.5.0 documentation (2,609 chunks) + SME field knowledge (102 nodes) + LearnedQA (grows from /ask interactions) via vector + semantic search
 
 ---
 
@@ -45,8 +48,10 @@ Browser (SE / Internal User)
       ▼
   Neo4j (Local Linux Server)
   ┌─────────────────────────────────────┐
-  │  ~2,070 DocChunk nodes               │
+  │  2,609 DocChunk nodes (v3.5.0)      │
+  │  1,028 OpenAPI endpoint chunks      │
   │  102 SMEKnowledge nodes             │
+  │  LearnedQA nodes (grows from /ask)  │
   │  Vector indexes (OpenAI embeddings) │
   │  Graph relationships                │
   │  User + Session nodes               │
@@ -76,13 +81,13 @@ Browser (SE / Internal User)
 |---|---|---|
 | Home | `/` | Navigation hub |
 | Login | `/login` | OTP email auth + superuser bypass |
-| Learn | `/learn` | 3-tier interactive course (22 lessons) |
+| Learn | `/learn` | 4-tier interactive course (28 lessons — Beginner, Intermediate, Advanced, Coding Agents) |
 | Ask | `/ask` | Agentic RAG Q&A — direct Atlas knowledge queries |
 | Meeting | `/meeting` | Meeting Co-Pilot — live customer Q&A with context |
-| Demo | `/demo` | Three tabs: (1) **Chain of Custody** — use case → Atlas template match → auto-deploy; (2) **Agentic Demo** — AI Deal Research Agent (5-agent workflow via Atlas Gateway, fire-and-poll, blocked-state UI); (3) **Mock Scenario Builder** |
+| Demo | `/demo` | Three tabs: (1) **Chain of Custody** — use case → Atlas template match → auto-deploy; (2) **Agentic Demo** — three sub-demos: AI Deal Research Agent (5-agent workflow via Atlas Gateway), Red Team Attack Agent (5 obfuscation variants, live BLOCKED/PASSED log), MCP Quarantine Demo; (3) **Mock Scenario Builder** |
 | Runtime | `/runtime` | AI Runtime Demo — prompt traffic, MCP tool call simulation, multi-agent workflow simulation, custom scenario builder; all through Atlas Gateway with live policy enforcement |
-| Architect | `/architect` | Architecture Builder — Mermaid diagram + narrative |
-| Guides | `/guides` | Technical Guide Producer — grounded in Atlas docs + SME field knowledge |
+| Architect | `/architect` | Architecture Builder — Mermaid diagram + narrative; file attachments (PDF, Word, Excel, images); chat refinement bar |
+| Guides | `/guides` | Technical Guide Producer — grounded in Atlas docs + SME field knowledge; file attachments; chat refinement bar; async fire-and-poll (2-5 min) |
 | Analytics | `/analytics` | Interaction analytics dashboard |
 | Resources | `/resources` | Competitive resource library |
 | Knowledge | `/knowledge` | SME Knowledge Base — topic browser (11 categories), Q&A cards with confidence badges, SME-first chat |
@@ -96,7 +101,8 @@ Browser (SE / Internal User)
 | `/api/auth/verify-code` | POST | Verify OTP, issue JWT session cookie |
 | `/api/auth/superuser` | POST | Superuser password login (no OTP) |
 | `/api/me` | GET | Return current session user |
-| `/api/learn` | POST | Proxy to n8n RAG workflow for lesson Q&A |
+| `/api/learn` | POST | Proxy to n8n RAG workflow for lesson Q&A — injects `mode: "learn"` so n8n uses curriculum-first system prompt |
+| `/api/generate/chat` | POST | Direct Claude call for iterative refinement of generated guides and architectures — `{ type: "guide"\|"architect", currentContent, formContext, messages[] }` |
 | `/api/judge` | POST | AI grading of student answers |
 | `/api/ask` | POST | Direct RAG (vector + full-text + graph) → Claude |
 | `/api/meeting` | POST | Agentic RAG with multi-turn conversation + attachments |
@@ -114,7 +120,9 @@ Browser (SE / Internal User)
 | `/api/demo/chain/search` | POST | AI-powered resource search (Claude) |
 | `/api/demo/runtime/simulate` | POST | Fires prompt traffic, MCP tool call chains, or multi-agent workflows through Atlas Gateway; handles custom scenarios; returns per-step blocked/sent/error results |
 | `/api/demo/mcp/research` | POST | Fires atlas-mcp-research n8n webhook (AI Deal Research Agent); returns `{jobId, status: "pending"}` |
-| `/api/demo/mcp/status` | GET | Polls Upstash KV key `mcp:{jobId}`; returns `done` (report) or `blocked` (Atlas guardrail message) |
+| `/api/demo/mcp/status` | GET | Polls Upstash KV key `mcp:{jobId}`; returns `done` (report) or `blocked` (Atlas guardrail message) — shared by all Agentic Demo fire-and-poll flows |
+| `/api/demo/redteam/fire` | POST | Fires atlas-redteam-attack n8n webhook; returns `{jobId, status: "pending"}`; result polled via `/api/demo/mcp/status` |
+| `/api/demo/mcp/quarantine` | POST | Fires atlas-mcp-quarantine n8n workflow; returns `{jobId, status: "pending"}` |
 | `/api/demo/chain/endpoints` | GET | Atlas API — fetches all LLM endpoint identifiers for the account (org-level, no project filter); used to populate Agentic Demo endpoint dropdown |
 | `/api/demo/cleanup` | GET / DELETE | GET: count scenario resources in project; DELETE: remove all non-LLM resources from project (LLM endpoint types are excluded by blocklist) |
 | `/api/resources/[slug]` | GET | Serve competitive resource files |
@@ -296,7 +304,7 @@ These tools were used during development and are not part of the production runt
 | **webhook.site** | Used during n8n workflow development to inspect raw webhook payloads |
 | **n8n webhook-test URLs** | n8n provides `-test` variants of every webhook URL — used during active workflow editing; production uses `/webhook/...` |
 | **Neo4j Browser** (localhost:7474) | GUI for running Cypher queries directly against the local Neo4j instance |
-| **TrueLens** | RAG evaluation framework — runs 52 golden questions against the live system, scores Answer Relevance, Context Relevance, and Groundedness. Baseline: AR 1.000, CR 1.000, G 0.696 (2026-05-14) |
+| **TrueLens** | RAG evaluation framework — runs 52 golden questions against the live system, scores Answer Relevance, Context Relevance, and Groundedness. Latest baseline (v3.5.0, 2026-07-14): AR 1.000, CR 0.994, G 0.732. Groundedness improved from 0.689 via system-prompt context placement fix. |
 
 ---
 
@@ -366,8 +374,10 @@ These tools were used during development and are not part of the production runt
 
 | Label | Count | Purpose |
 |---|---|---|
-| `DocChunk` / `Chunk` | ~2,070 | Atlas documentation chunks (knowledge base, v3.4.0, 54 pages) |
+| `DocChunk` / `Chunk` | 2,609 | Atlas documentation chunks (knowledge base, v3.5.0, scraped 2026-07-14) |
+| `OpenAPI` | 1,028 | Atlas OpenAPI endpoint chunks (v3.5.0, scraped 2026-07-14) |
 | `SMEKnowledge` | 102 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
+| `LearnedQA` | grows | Community Q&A from /ask interactions (quality-gated, embeddings indexed) |
 | `UIPage` | ~486 (readCount) | Atlas UI navigation pages |
 | `User` | 1 per SE | Tracks SE identity for session + analytics |
 | `Session` | 1 per meeting | Meeting Co-Pilot session metadata |
@@ -427,8 +437,10 @@ These tools were used during development and are not part of the production runt
 
 | Source | Nodes | Description |
 |---|---|---|
-| Atlas Docs (Playwright scraper, v3.4.0) | ~2,070 DocChunk | 54 documentation pages, scraped 2026-06-10 |
+| Atlas Docs (Playwright scraper, v3.5.0) | 2,609 DocChunk | Documentation pages scraped 2026-07-14; includes Coding Agent Protection, Log Sources, Shadow AI, IBAC, Providers, Admin Console |
+| Atlas OpenAPI spec (v3.5.0) | 1,028 OpenAPI chunks | Full API reference, scraped 2026-07-14 |
 | Teams AI Security SME Channel | 102 SMEKnowledge | Field-validated Q&A, 12 topics, last scraped 2026-06-30 |
+| /ask interactions (quality-gated) | LearnedQA (grows) | Community Q&A pairs stored automatically when high-quality answers are generated |
 
 #### RAG Retrieval Strategy (`/api/ask`, `/api/meeting`)
 - **Vector search** — top-K cosine similarity via `atlas_chunk_embeddings`
@@ -457,7 +469,7 @@ These tools were used during development and are not part of the production runt
 | `otp:{email}` | 10 minutes | 6-digit OTP code (deleted on use) |
 | `ratelimit:{email}` | 10 minutes | OTP request counter (max 3) |
 | `guide:{jobId}` | 24 hours | Async guide generation result (Guide Producer fire-and-poll) |
-| `mcp:{jobId}` | 24 hours | Async AI Deal Research Agent result — `{status: "done"\|"blocked", company, report, risk_analysis, sources, atlas_audit}` or `{status: "blocked", blocked_at, atlas_message, atlas_audit}` |
+| `mcp:{jobId}` | 24 hours | Shared async result key for all Agentic Demo fire-and-poll flows: AI Deal Research Agent (`{status, company, report, risk_analysis, sources, atlas_audit}`), Red Team Attack Agent (`{status, attacks[], summary:{blocked, passed, total}}`), MCP Quarantine Demo (`{status, phases[], audit_trail}`) |
 
 ### Vercel (No persistent storage)
 
@@ -471,13 +483,15 @@ All agentic pipelines run in **n8n Cloud** (`ttadeo.app.n8n.cloud`). The Next.js
 
 | Workflow | Webhook Path | Purpose |
 |---|---|---|
-| Atlas RAG - Knowledge Retrieval | `atlas-rag-query` | Powers /learn and proxied Q&A — embed → vector search → Claude |
+| Atlas RAG - Knowledge Retrieval | `atlas-rag-query` | Powers /learn and proxied Q&A — embed → vector search → Claude; mode-aware: `mode=learn` uses curriculum-first system prompt, `mode=ask` uses strict grounding rules (context in system prompt inside `<retrieved_documentation>` XML tags — groundedness fix) |
 | Atlas Architecture Builder | `atlas-architect` | RAG-grounded Mermaid diagram + narrative generation |
 | Atlas Guide Producer | `atlas-guide-producer` | Queries DocChunks (top 10) + SMEKnowledge (top 6 via RELATED_TO) → Claude; generates guides with SME field notes |
 | Atlas Demo Provisioning - Discover | `atlas-demo-discover` | Webhook → Claude (Basic LLM Chain) → Code node → scored template matches |
 | Atlas Demo Provisioning - Apply | `atlas-demo-apply` | Webhook → Atlas API apply call → result JSON |
 | Atlas SME Query | `atlas-sme-query` | SME-first chat for /knowledge page — embed → SMEKnowledge search (top 5) → DocChunk search (top 3) → Claude |
 | Atlas MCP Multi-Agent Research | `atlas-mcp-research` | AI Deal Research Agent — Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent; all LLM calls through Atlas Gateway; writes result to Upstash KV; handles blocked state via error output |
+| Atlas Red Team Attack | `atlas-redteam-attack` | Receives `{seedPrompt, jobId, endpointId, projectId}` → Code node generates 5 obfuscation variants (base64, unicode, ROT13, leetspeak, reversed) → 5 parallel Atlas Gateway LLM calls → each has error pin for block handling → Merge → Aggregate → Write `{status, attacks[], summary}` to Upstash `mcp:{jobId}` |
+| Atlas MCP Quarantine | `atlas-mcp-quarantine` | MCP Quarantine Demo — simulates malicious MCP tool response with credential-harvesting payload; Atlas intercepts; phase-by-phase audit trail written to Upstash |
 
 ### Atlas SME Query Workflow (n8n)
 
