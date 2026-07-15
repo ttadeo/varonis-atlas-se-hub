@@ -63,6 +63,11 @@ interface FormState {
   customerContext: string;
 }
 
+interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 export default function GuidesPage() {
@@ -78,6 +83,7 @@ export default function GuidesPage() {
   const [generating, setGenerating] = useState(false);
   const [elapsed, setElapsed] = useState(0);
   const [result, setResult] = useState<string | null>(null);
+  const [originalResult, setOriginalResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
   const [exportingPdf, setExportingPdf] = useState(false);
@@ -89,6 +95,13 @@ export default function GuidesPage() {
   const [extracting, setExtracting] = useState(false);
   const [fileError, setFileError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Chat refinement
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [chatInput, setChatInput] = useState("");
+  const [chatting, setChatting] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const chatThreadRef = useRef<HTMLDivElement>(null);
 
   // ── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -136,6 +149,9 @@ export default function GuidesPage() {
     setElapsed(0);
     setError(null);
     setResult(null);
+    setOriginalResult(null);
+    setChatMessages([]);
+    setChatError(null);
 
     const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
 
@@ -177,6 +193,7 @@ export default function GuidesPage() {
         const pollData = await pollRes.json();
         if (pollData.status === "done" && pollData.guide) {
           setResult(pollData.guide);
+          setOriginalResult(pollData.guide);
           return;
         }
         if (pollData.status === "error") {
@@ -190,6 +207,47 @@ export default function GuidesPage() {
     } finally {
       clearInterval(ticker);
       setGenerating(false);
+    }
+  }
+
+  // ── Chat refinement ───────────────────────────────────────────────────────────
+
+  async function handleChat() {
+    if (!chatInput.trim() || chatting || !result) return;
+    const userMessage: ChatMessage = { role: "user", content: chatInput.trim() };
+    const newMessages = [...chatMessages, userMessage];
+    setChatMessages(newMessages);
+    setChatInput("");
+    setChatting(true);
+    setChatError(null);
+    try {
+      const selectedType = GUIDE_TYPES.find((g) => g.id === form.guideType);
+      const res = await fetch("/api/generate/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "guide",
+          currentContent: result,
+          formContext: {
+            guideType: selectedType?.label ?? form.guideType,
+            topic: form.topic,
+            industry: form.industry,
+            audience: form.audience,
+          },
+          messages: newMessages,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Chat failed");
+      setResult(data.guide);
+      setChatMessages([...newMessages, { role: "assistant", content: "Guide updated." }]);
+      setTimeout(() => {
+        chatThreadRef.current?.scrollTo({ top: chatThreadRef.current.scrollHeight, behavior: "smooth" });
+      }, 50);
+    } catch (err) {
+      setChatError(String(err));
+    } finally {
+      setChatting(false);
     }
   }
 
@@ -466,7 +524,8 @@ export default function GuidesPage() {
         </div>
       </div>
 
-      {/* Main — result */}
+      {/* Main — result + chat */}
+      <div className="flex-1 flex flex-col min-h-0">
       <div className="flex-1 overflow-y-auto">
 
         {/* Export toolbar */}
@@ -562,6 +621,71 @@ export default function GuidesPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Chat refinement bar — only visible when a guide has been generated */}
+      {result && !generating && (
+        <div className="shrink-0 border-t border-gray-800 bg-gray-900/98 print:hidden">
+          {/* Conversation thread */}
+          {chatMessages.length > 0 && (
+            <div
+              ref={chatThreadRef}
+              className="max-h-44 overflow-y-auto px-6 py-3 space-y-2 border-b border-gray-800"
+            >
+              {chatMessages.map((msg, i) => (
+                <div
+                  key={i}
+                  className={`text-xs rounded-lg px-3 py-2 max-w-[80%] ${
+                    msg.role === "user"
+                      ? "bg-blue-900/40 text-blue-200 ml-auto text-right"
+                      : "bg-gray-800 text-gray-400"
+                  }`}
+                >
+                  {msg.content}
+                </div>
+              ))}
+              {chatting && (
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <div className="w-3 h-3 border border-blue-500 border-t-transparent rounded-full animate-spin" />
+                  Revising guide…
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Input row */}
+          <div className="px-6 py-3 flex gap-2 items-center">
+            {originalResult && originalResult !== result && (
+              <button
+                onClick={() => { setResult(originalResult); setChatMessages([]); setChatError(null); }}
+                className="text-xs text-gray-500 hover:text-gray-300 shrink-0 transition-colors"
+                title="Undo all chat changes"
+              >
+                Reset
+              </button>
+            )}
+            <input
+              type="text"
+              placeholder="Ask Claude to refine this guide… (Enter to send)"
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleChat(); } }}
+              disabled={chatting}
+              className="flex-1 bg-gray-800 text-sm text-gray-100 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-600 placeholder-gray-500 disabled:opacity-50"
+            />
+            <button
+              onClick={handleChat}
+              disabled={!chatInput.trim() || chatting}
+              className="text-xs px-3 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed text-white shrink-0 transition-colors"
+            >
+              {chatting ? "Updating…" : "Send"}
+            </button>
+          </div>
+          {chatError && (
+            <p className="text-xs text-red-400 px-6 pb-3">{chatError}</p>
+          )}
+        </div>
+      )}
       </div>
     </div>
   );
