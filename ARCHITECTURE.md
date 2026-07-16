@@ -16,12 +16,12 @@ The Atlas Learning Platform is an internal AI-powered tool for Varonis SEs. It p
 - **Meeting Co-Pilot** — real-time Q&A support during customer calls; supports file attachments (PDF, Word, Excel, images)
 - **Demo Provisioning** — describe a customer use case → Claude matches and auto-deploys Atlas policy templates
 - **AI Runtime Demo** — fires live traffic through the Atlas Gateway across four simulation types: prompt traffic, MCP tool call chains, multi-agent workflows, custom scenarios; demonstrates real-time policy enforcement with per-scenario talking points and Atlas AI Investigation deep-links
-- **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 102 field-validated entries across 12 topics; SME-first chat powered by a dedicated n8n workflow; visible to all authenticated varonis.com users
+- **SME Knowledge Base** — browsable Q&A extracted from the Varonis AI Security SME Teams channel; 118 field-validated entries across 12 topics; SME-first chat powered by a dedicated n8n workflow; visible to all authenticated varonis.com users
 - **Agentic Demo (3 sub-demos):**
   - *AI Deal Research Agent* — SE enters a company name → 5-agent n8n workflow (Orchestrator → Exa Research → Exa News → Risk Analyst → Report Agent), all LLM calls routed through Atlas Gateway → populates selected Atlas project; blocked requests surface Atlas guardrail message within seconds
   - *Red Team Attack Agent* — SE enters a seed prompt → 5 obfuscation variants generated (base64, unicode, ROT13, leetspeak, reversed) → each fired through Atlas Gateway → live BLOCKED/PASSED attack log with summary (X/5 blocked)
   - *MCP Quarantine Demo* — simulates a malicious MCP tool returning credential-harvesting instructions; Atlas intercepts and quarantines; shows real OpenRouter tool names and phase-by-phase audit trail
-- **Agentic RAG** — all responses grounded in official Atlas v3.5.0 documentation (2,609 chunks) + SME field knowledge (102 nodes) + LearnedQA (grows from /ask interactions) via vector + semantic search
+- **Agentic RAG** — all responses grounded in official Atlas v3.5.0 documentation (2,609 chunks) + SME field knowledge (118 nodes) + LearnedQA (grows from /ask interactions) via vector + semantic search
 
 ---
 
@@ -50,7 +50,7 @@ Browser (SE / Internal User)
   ┌─────────────────────────────────────┐
   │  2,609 DocChunk nodes (v3.5.0)      │
   │  1,028 OpenAPI endpoint chunks      │
-  │  102 SMEKnowledge nodes             │
+  │  118 SMEKnowledge nodes             │
   │  LearnedQA nodes (grows from /ask)  │
   │  Vector indexes (OpenAI embeddings) │
   │  Graph relationships                │
@@ -376,7 +376,7 @@ These tools were used during development and are not part of the production runt
 |---|---|---|
 | `DocChunk` / `Chunk` | 2,609 | Atlas documentation chunks (knowledge base, v3.5.0, scraped 2026-07-14) |
 | `OpenAPI` | 1,028 | Atlas OpenAPI endpoint chunks (v3.5.0, scraped 2026-07-14) |
-| `SMEKnowledge` | 102 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
+| `SMEKnowledge` | 118 | Field-validated Q&A extracted from Varonis AI Security SME Teams channel |
 | `LearnedQA` | grows | Community Q&A from /ask interactions (quality-gated, embeddings indexed) |
 | `UIPage` | ~486 (readCount) | Atlas UI navigation pages |
 | `User` | 1 per SE | Tracks SE identity for session + analytics |
@@ -406,21 +406,21 @@ These tools were used during development and are not part of the production runt
 
 #### SMEKnowledge Topic Distribution
 
-102 nodes total (last scraped 2026-06-30). Distribution from last run:
+118 nodes total (last scraped 2026-07-15). Distribution from last run:
 
 | Topic | Count |
 |---|---|
-| gateway_architecture | 14 |
-| deployment | 14 |
-| guardrails | 12 |
-| discovery | 12 |
+| gateway_architecture | 22 |
+| deployment | 18 |
+| guardrails | 16 |
+| discovery | 17 |
+| compliance | 7 |
+| shadow_ai | 5 |
+| licensing | 5 |
 | roadmap | 5 |
+| other | 5 |
+| ide_support | 4 |
 | competitive | 4 |
-| other | 4 |
-| shadow_ai | 3 |
-| licensing | 3 |
-| compliance | 3 |
-| ide_support | 2 |
 | pii_detection | 1 |
 
 #### Vector Indexes
@@ -439,7 +439,7 @@ These tools were used during development and are not part of the production runt
 |---|---|---|
 | Atlas Docs (Playwright scraper, v3.5.0) | 2,609 DocChunk | Documentation pages scraped 2026-07-14; includes Coding Agent Protection, Log Sources, Shadow AI, IBAC, Providers, Admin Console |
 | Atlas OpenAPI spec (v3.5.0) | 1,028 OpenAPI chunks | Full API reference, scraped 2026-07-14 |
-| Teams AI Security SME Channel | 102 SMEKnowledge | Field-validated Q&A, 12 topics, last scraped 2026-06-30 |
+| Teams AI Security SME Channel | 118 SMEKnowledge | Field-validated Q&A, 12 topics, last scraped 2026-07-15 |
 | /ask interactions (quality-gated) | LearnedQA (grows) | Community Q&A pairs stored automatically when high-quality answers are generated |
 
 #### RAG Retrieval Strategy (`/api/ask`, `/api/meeting`)

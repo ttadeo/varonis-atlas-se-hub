@@ -38,7 +38,7 @@ n8n Cloud Workflows                      Upstash Redis (KV)
         ├─→ Claude Sonnet 4.6 (generation)
         └─→ Neo4j via ngrok HTTP
                ├── DocChunk nodes (Atlas v3.4.0 docs — 2,070 chunks)
-               ├── SMEKnowledge nodes (Teams Q&A — 102 nodes)
+               ├── SMEKnowledge nodes (Teams Q&A — 118 nodes)
                │         └── RELATED_TO → DocChunk
                └── LearnedQA nodes (community knowledge — grows with usage)
                          └── learned_qa_embeddings vector index
@@ -84,7 +84,7 @@ UI polls GET /api/guides/status?jobId=xxx every 3s → renders when done
 | Source | Count | Node Type |
 |---|---|---|
 | Atlas docs v3.4.0 (54 pages, scraped 2026-06-10) | 2,070 | DocChunk |
-| Teams AI Security SME channel (scraped 2026-06-30) | 102 | SMEKnowledge |
+| Teams AI Security SME channel (scraped 2026-07-15) | 118 | SMEKnowledge |
 | Community Q&A from /ask interactions (quality-gated) | grows | LearnedQA |
 
 - Vector indexes: `atlas_chunk_embeddings`, `learned_qa_embeddings` (both text-embedding-3-small, 1536 dims)
@@ -244,7 +244,7 @@ evals/golden_questions.json              — 52 golden questions for RAG eval
 
 ## What's Next
 
-1. Re-add LLM endpoints in Atlas UI (OpenAIKey-Tadeo-Demo, tadeo-demo-env) — deleted by cleanup incident 2026-06-30
+1. Re-add LLM endpoints in Atlas UI (OpenAIKey-Tadeo-Demo, tadeo-demo-env) — deleted by cleanup incident 2026-07-15
 2. Delete temp diagnostic route `ui/app/api/demo/chain/test-users/route.ts`
 3. Add "Simulate Traffic" button to Demo Provisioning — fires scenario-matched prompts through Atlas Gateway post-provisioning so Observability is populated (Option A from architecture discussion)
 4. Neo4j backup — dump and scp to Mac

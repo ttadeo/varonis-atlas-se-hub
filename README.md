@@ -15,7 +15,7 @@ Ten tools in one platform:
 | **Meeting Co-Pilot** `/meeting` | Live customer Q&A support during calls. Attach customer docs (PDF, Word, Excel, images), get grounded answers in real time. |
 | **Architecture Builder** `/architect` | Describe a customer environment → get a Mermaid reference architecture + narrative, grounded in Atlas documentation. Attach files (PDF, Word, Excel, images) for context. Sticky chat bar to refine the architecture iteratively after generation. |
 | **Guide Producer** `/guides` | Describe a deployment scenario → get a full technical guide grounded in Atlas docs + SME field knowledge. Async generation (2-5 min), exports to PDF and .md. Attach files for customer context. Sticky chat bar to refine the guide iteratively after generation. |
-| **SME Knowledge Base** `/knowledge` | 102 field-validated Q&A entries from the Varonis AI Security SME Teams channel. Browse by topic or ask the SME chat. |
+| **SME Knowledge Base** `/knowledge` | 118 field-validated Q&A entries from the Varonis AI Security SME Teams channel. Browse by topic or ask the SME chat. |
 | **AI Runtime Demo** `/runtime` | Fire live AI traffic through the Atlas Gateway. Four simulation types: prompt traffic, MCP tool call chains, multi-agent workflows, custom scenarios. Shows real-time policy enforcement with per-scenario SE talking points. |
 | **Demo Provisioning** `/demo` | Three tabs: (1) **Chain of Custody** — describe a customer use case → Claude matches Atlas policy templates → auto-deploy to Atlas; (2) **Agentic Demo** — three sub-demos: AI Deal Research Agent (5-agent workflow via Atlas Gateway), Red Team Attack Agent (5 obfuscation variants fired at Atlas Gateway with BLOCKED/PASSED live log), MCP Quarantine Demo; (3) **Mock Scenario Builder**. |
 | **Analytics** `/analytics` | Interaction analytics dashboard across all platform usage. |
@@ -60,7 +60,7 @@ n8n Cloud Workflows                   Upstash Redis (KV)    Claude API (direct)
         └─→ Neo4j via ngrok HTTP
                ├── DocChunk nodes (Atlas v3.5.0 docs — 2,609 chunks)
                ├── OpenAPI endpoint chunks (1,028 nodes)
-               ├── SMEKnowledge nodes (Teams Q&A — 102 nodes)
+               ├── SMEKnowledge nodes (Teams Q&A — 118 nodes)
                └── LearnedQA nodes (grows from /ask interactions)
 
                                   Atlas Gateway
@@ -107,7 +107,7 @@ n8n workflow → Atlas Gateway proxy → OpenAI gpt-4o
 |---|---|---|
 | Atlas documentation (v3.5.0, scraped 2026-07-14) | 2,609 | DocChunk |
 | Atlas OpenAPI spec (v3.5.0, scraped 2026-07-14) | 1,028 | OpenAPI chunks |
-| Varonis AI Security SME Teams channel | 102 | SMEKnowledge |
+| Varonis AI Security SME Teams channel | 118 | SMEKnowledge |
 | Community Q&A from /ask interactions (quality-gated) | grows | LearnedQA |
 
 SMEKnowledge nodes are linked to related DocChunks via `RELATED_TO` edges and used by the Guide Producer and SME Knowledge Base chat.

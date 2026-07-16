@@ -312,7 +312,7 @@ export default function Home() {
                   </p>
                 </div>
                 <p className="text-xs text-teal-400 group-hover:text-teal-300 shrink-0">
-                  102 entries · SME-first chat →
+                  118 entries · SME-first chat →
                 </p>
               </div>
             </Link>

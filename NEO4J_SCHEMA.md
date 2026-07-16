@@ -15,7 +15,7 @@
 | `Chunk` | 1,028 | `ingestion/ingest_openapi.py` | Atlas OpenAPI endpoint chunks (same label, distinguished by `section = "openapi_reference"`) |
 | `Section` | ~10 | both ingest scripts | Top-level grouping by doc section |
 | `Page` | ~60 | both ingest scripts | Individual doc pages |
-| `SMEKnowledge` | 102 | `scraper/ingest_teams_sme.py` | Field-validated Q&A from Varonis AI Security SME Teams channel |
+| `SMEKnowledge` | 118 | `scraper/ingest_teams_sme.py` | Field-validated Q&A from Varonis AI Security SME Teams channel |
 | `LearnedQA` | grows | `ui/app/api/ask/route.ts` | High-quality Q&A pairs auto-stored from `/ask` interactions |
 | `UIPage` | ~486 | separate ingestion | Atlas UI navigation pages (used for "how do I navigate to…" queries) |
 
@@ -116,17 +116,17 @@ Created/updated by `scraper/ingest_teams_sme.py`. MERGE key: `thread_id`.
 
 | Topic | Count |
 |---|---|
-| `gateway_architecture` | 14 |
-| `deployment` | 14 |
-| `guardrails` | 12 |
-| `discovery` | 12 |
+| `gateway_architecture` | 22 |
+| `discovery` | 17 |
+| `deployment` | 18 |
+| `guardrails` | 16 |
+| `compliance` | 7 |
+| `shadow_ai` | 5 |
+| `licensing` | 5 |
 | `roadmap` | 5 |
+| `other` | 5 |
+| `ide_support` | 4 |
 | `competitive` | 4 |
-| `other` | 4 |
-| `shadow_ai` | 3 |
-| `licensing` | 3 |
-| `compliance` | 3 |
-| `ide_support` | 2 |
 | `pii_detection` | 1 |
 
 ---
