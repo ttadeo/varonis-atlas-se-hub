@@ -42,8 +42,8 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Strip down each endpoint to what Claude needs — avoid sending huge raw configs
-    const simplified = all.map((ep) => ({
+    // Strip down each endpoint to what Claude needs — cap at 30 to keep output size predictable
+    const simplified = all.slice(0, 30).map((ep) => ({
       identifier: ep.endpoint_identifier ?? "unnamed",
       project_id: ep.project_id ?? null,
       model: ep.model ?? null,
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: `You are auditing LLM endpoint configurations in an Atlas AI Security tenant.
 
 For each endpoint, assess risk based on: identifier naming conventions (generic names = higher risk), whether a project is assigned, the model being used, and available configuration keys. Common Atlas policy keys include: pii_detection, prompt_injection, content_policy, data_loss_prevention, toxicity, guardrails, logging.
