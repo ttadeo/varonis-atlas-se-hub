@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -470,6 +470,169 @@ function ShadowAiCard() {
   );
 }
 
+// ─── AI Posture Advisor Chat ──────────────────────────────────────────────────
+
+interface AdvisorMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+const STARTER_QUESTIONS = [
+  "Which of my endpoints are highest risk?",
+  "Am I ready for an ISO 42001 audit?",
+  "What would an attacker target first in my tenant?",
+  "Which projects have no AI monitoring?",
+  "What should I fix first today?",
+];
+
+function PostureAdvisorChat() {
+  const [messages, setMessages] = useState<AdvisorMessage[]>([]);
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
+
+  const hasMessages = messages.length > 0;
+
+  async function sendMessage(text: string) {
+    const trimmed = text.trim();
+    if (!trimmed || loading) return;
+
+    const userMessage: AdvisorMessage = { role: "user", content: trimmed };
+    const nextMessages = [...messages, userMessage];
+    setMessages(nextMessages);
+    setInput("");
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch("/api/atlas-mcp/posture-advisor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: nextMessages.slice(-10) }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setMessages((prev) => [...prev, { role: "assistant", content: data.response as string }]);
+    } catch (e) {
+      setError(String(e));
+    } finally {
+      setLoading(false);
+      textareaRef.current?.focus();
+    }
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-indigo-800/50 bg-gray-900 overflow-hidden">
+      {/* Header */}
+      <div className="px-6 py-5 border-b border-gray-800 flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg bg-indigo-600/20 border border-indigo-700/50 flex items-center justify-center text-lg">
+          🛡️
+        </div>
+        <div>
+          <h2 className="font-semibold text-white">AI Posture Advisor</h2>
+          <p className="text-xs text-gray-400">Ask anything about your Atlas tenant — live data fetched on every query</p>
+        </div>
+      </div>
+
+      {/* Message thread */}
+      <div className="px-6 py-4 min-h-[280px] max-h-[480px] overflow-y-auto flex flex-col gap-4">
+        {!hasMessages && (
+          <div className="flex flex-col items-center justify-center h-32">
+            <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Try asking</p>
+          </div>
+        )}
+
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex flex-col gap-1 ${msg.role === "user" ? "items-end" : "items-start"}`}>
+            {msg.role === "assistant" && (
+              <span className="text-xs text-indigo-400 font-medium px-1">Atlas Posture Advisor</span>
+            )}
+            <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed max-w-[85%] whitespace-pre-wrap ${
+              msg.role === "user"
+                ? "bg-indigo-600 text-white rounded-tr-sm"
+                : "bg-gray-800 text-gray-100 border border-gray-700/60 rounded-tl-sm"
+            }`}>
+              {msg.content}
+            </div>
+          </div>
+        ))}
+
+        {loading && (
+          <div className="flex flex-col items-start gap-1">
+            <span className="text-xs text-indigo-400 font-medium px-1">Atlas Posture Advisor</span>
+            <div className="rounded-2xl rounded-tl-sm px-4 py-3 bg-gray-800 border border-gray-700/60">
+              <span className="flex items-center gap-2 text-sm text-gray-400">
+                <span className="w-3.5 h-3.5 border-2 border-gray-600 border-t-indigo-400 rounded-full animate-spin" />
+                Fetching live Atlas data &amp; analyzing...
+              </span>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <div className="rounded-lg border border-red-800/50 bg-red-900/20 px-4 py-3 text-sm text-red-400">{error}</div>
+        )}
+
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Starter question pills */}
+      {!hasMessages && (
+        <div className="px-6 pb-4 flex flex-wrap gap-2 justify-center">
+          {STARTER_QUESTIONS.map((q) => (
+            <button
+              key={q}
+              onClick={() => sendMessage(q)}
+              disabled={loading}
+              className="text-xs rounded-full border border-indigo-700/60 bg-indigo-900/20 hover:bg-indigo-900/40 hover:border-indigo-600/70 text-indigo-300 px-3 py-1.5 transition-colors disabled:opacity-50"
+            >
+              {q}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Input */}
+      <div className="px-4 pb-4 pt-2 border-t border-gray-800">
+        <div className="flex items-end gap-2 rounded-xl border border-gray-700 bg-gray-800/60 px-3 py-2 focus-within:border-indigo-600/60 transition-colors">
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about your AI security posture..."
+            disabled={loading}
+            className="flex-1 resize-none bg-transparent text-sm text-gray-100 placeholder-gray-500 outline-none disabled:opacity-50 leading-relaxed"
+            style={{ minHeight: "1.5rem", maxHeight: "6rem", overflowY: "auto" }}
+          />
+          <button
+            onClick={() => sendMessage(input)}
+            disabled={loading || !input.trim()}
+            className="shrink-0 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 disabled:cursor-not-allowed px-3 py-1.5 text-xs font-semibold text-white transition-colors"
+          >
+            Send
+          </button>
+        </div>
+        <p className="text-xs text-gray-600 mt-1.5 px-1">Enter to send · Shift+Enter for new line</p>
+      </div>
+    </div>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export default function AtlasMcpPage() {
@@ -519,6 +682,9 @@ export default function AtlasMcpPage() {
           <EndpointAuditCard />
           <ShadowAiCard />
         </div>
+
+        {/* AI Posture Advisor */}
+        <PostureAdvisorChat />
 
         {/* Footer */}
         <div className="mt-8 rounded-xl border border-gray-800 bg-gray-900/50 px-5 py-4">
