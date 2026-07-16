@@ -203,6 +203,27 @@ export default function Home() {
             </Link>
 
             <Link
+              href="/atlas-mcp"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 rounded-2xl p-6 transition-all group col-span-2"
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-3xl">⚡</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-white">Atlas MCP App Gallery</h3>
+                    <span className="text-xs font-bold text-indigo-400 bg-indigo-900/40 border border-indigo-700/50 rounded px-1.5 py-0.5">LIVE ATLAS DATA</span>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    3 working apps built on the Atlas REST API — AI Risk Briefing, LLM Endpoint Audit, and Shadow AI Report. Real tenant data, real AI insights.
+                  </p>
+                </div>
+                <p className="text-xs text-indigo-400 group-hover:text-indigo-300 shrink-0">
+                  Live Atlas data · 3 apps →
+                </p>
+              </div>
+            </Link>
+
+            <Link
               href="/learn"
               className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-blue-500 rounded-2xl p-6 transition-all group"
             >
