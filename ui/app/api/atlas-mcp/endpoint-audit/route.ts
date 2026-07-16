@@ -42,12 +42,12 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Strip down each endpoint to what Claude needs — cap at 30 to keep output size predictable
-    const simplified = all.slice(0, 30).map((ep) => ({
-      identifier: ep.endpoint_identifier ?? "unnamed",
-      project_id: ep.project_id ?? null,
+    // Cap at 15 endpoints — keeps Claude output well within token limits
+    const simplified = all.slice(0, 15).map((ep) => ({
+      id: ep.endpoint_identifier ?? "unnamed",
+      proj: ep.project_id ?? null,
       model: ep.model ?? null,
-      raw_keys: Object.keys(ep),
+      keys: Object.keys(ep).length,
     }));
 
     const message = await anthropic.messages.create({
@@ -55,21 +55,21 @@ export async function POST(req: NextRequest) {
       max_tokens: 4096,
       system: `You are auditing LLM endpoint configurations in an Atlas AI Security tenant.
 
-For each endpoint, assess risk based on: identifier naming conventions (generic names = higher risk), whether a project is assigned, the model being used, and available configuration keys. Common Atlas policy keys include: pii_detection, prompt_injection, content_policy, data_loss_prevention, toxicity, guardrails, logging.
+IMPORTANT: Be extremely concise. Each string field must be under 12 words. missing_policies max 3 items.
 
-Respond with ONLY valid JSON (no markdown) in this shape:
+Respond with ONLY valid JSON (no markdown, no explanation):
 {
   "audited_endpoints": [
     {
       "identifier": "<string>",
       "project_id": "<string or null>",
       "risk_level": "<low|medium|high>",
-      "risk_reason": "<one sentence>",
-      "missing_policies": ["<policy 1>", ...],
-      "recommendation": "<one actionable sentence>"
+      "risk_reason": "<max 10 words>",
+      "missing_policies": ["<1-3 short policy names>"],
+      "recommendation": "<max 10 words>"
     }
   ],
-  "overall_posture": "<one sentence summary of the fleet's security posture>",
+  "overall_posture": "<max 15 words>",
   "high_risk_count": <integer>,
   "medium_risk_count": <integer>,
   "low_risk_count": <integer>
@@ -77,7 +77,7 @@ Respond with ONLY valid JSON (no markdown) in this shape:
       messages: [
         {
           role: "user",
-          content: `Audit these ${simplified.length} LLM endpoints from the Atlas tenant:\n\n${JSON.stringify(simplified, null, 2)}`,
+          content: `Audit these ${simplified.length} endpoints (${all.length} total in tenant, showing first ${simplified.length}):\n${JSON.stringify(simplified)}`,
         },
       ],
     });
