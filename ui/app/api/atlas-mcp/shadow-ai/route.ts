@@ -53,27 +53,34 @@ export async function POST(req: NextRequest) {
       coverage_ratio: projects.length > 0 ? coveredProjects.length / projects.length : 0,
     };
 
+    // Cap project lists to avoid token bloat
+    const cappedAnalysis = {
+      ...analysis,
+      covered_projects: analysis.covered_projects.slice(0, 10),
+      uncovered_projects: analysis.uncovered_projects.slice(0, 10),
+    };
+
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      system: `You are an AI security analyst detecting Shadow AI — unmonitored AI usage — inside an organization's Atlas tenant.
+      max_tokens: 2048,
+      system: `You are an AI security analyst detecting Shadow AI in an Atlas tenant.
 
-Shadow AI means AI activity that bypasses policy enforcement. Signs: projects with no registered LLM endpoints (potential unmonitored apps), endpoints with no project assignment (orphaned monitoring), low coverage ratio.
+IMPORTANT: Be extremely concise. Every string field must be under 12 words. findings: exactly 3 items, max 12 words each.
 
-Respond with ONLY valid JSON (no markdown) in this shape:
+Respond with ONLY valid JSON (no markdown):
 {
-  "shadow_risk_score": <integer 0-100, higher = more shadow AI risk>,
+  "shadow_risk_score": <integer 0-100>,
   "shadow_risk_level": "<low|medium|high|critical>",
-  "headline": "<one sentence assessment>",
-  "at_risk_projects": [{"name": "<string>", "reason": "<why it's at risk>"}],
+  "headline": "<max 12 words>",
+  "at_risk_projects": [{"name": "<string>", "reason": "<max 8 words>"}],
   "covered_projects": [{"name": "<string>", "status": "monitored"}],
-  "findings": ["<finding 1>", "<finding 2>", "<finding 3>"],
-  "cta": "<one sentence: what the security team should do next>"
+  "findings": ["<max 12 words>", "<max 12 words>", "<max 12 words>"],
+  "cta": "<max 12 words>"
 }`,
       messages: [
         {
           role: "user",
-          content: `Analyze this Atlas tenant for Shadow AI exposure:\n\n${JSON.stringify(analysis, null, 2)}`,
+          content: `Shadow AI analysis for Atlas tenant:\n${JSON.stringify(cappedAnalysis)}`,
         },
       ],
     });

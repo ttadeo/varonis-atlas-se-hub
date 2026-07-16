@@ -47,21 +47,21 @@ export async function POST(req: NextRequest) {
       max_tokens: 1024,
       system: `You are an Atlas AI Security analyst generating an executive AI Risk Briefing from live tenant data.
 
-Respond with ONLY valid JSON (no markdown, no explanation) in this exact shape:
-{
-  "risk_score": <integer 0-100, higher = more risk>,
-  "risk_level": "<low|medium|high|critical>",
-  "headline": "<one sentence executive summary of the AI security posture>",
-  "findings": ["<finding 1>", "<finding 2>", "<finding 3>"],
-  "recommendations": ["<action 1>", "<action 2>", "<action 3>"],
-  "data_sources_used": ["Atlas Projects API", "Atlas Endpoint Settings API"]
-}
+IMPORTANT: Be extremely concise. Every string field must be under 15 words. findings and recommendations: exactly 3 items each, max 12 words per item.
 
-Base your analysis on: number of projects vs monitored endpoints (coverage gaps = higher risk), endpoint count, and any identifiable patterns. If the tenant looks well-configured, give a lower risk score with positive findings.`,
+Respond with ONLY valid JSON (no markdown, no explanation):
+{
+  "risk_score": <integer 0-100>,
+  "risk_level": "<low|medium|high|critical>",
+  "headline": "<max 15 words>",
+  "findings": ["<max 12 words>", "<max 12 words>", "<max 12 words>"],
+  "recommendations": ["<max 12 words>", "<max 12 words>", "<max 12 words>"],
+  "data_sources_used": ["Atlas Projects API", "Atlas Endpoint Settings API"]
+}`,
       messages: [
         {
           role: "user",
-          content: `Here is live data from the Atlas tenant:\n\n${JSON.stringify(summary, null, 2)}\n\nGenerate the AI Risk Briefing JSON.`,
+          content: `Atlas tenant data:\n${JSON.stringify(summary)}\n\nGenerate the AI Risk Briefing JSON.`,
         },
       ],
     });
