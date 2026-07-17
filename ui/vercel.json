@@ -4,6 +4,7 @@
     "app/api/guides/route.ts": { "maxDuration": 800 },
     "app/api/demo/chain/scenario/route.ts": { "maxDuration": 60 },
     "app/api/demo/cleanup/route.ts": { "maxDuration": 60 },
-    "app/api/demo/mcp/research/route.ts": { "maxDuration": 30 }
+    "app/api/demo/mcp/research/route.ts": { "maxDuration": 30 },
+    "app/api/atlas-mcp/posture-advisor/route.ts": { "maxDuration": 60 }
   }
 }

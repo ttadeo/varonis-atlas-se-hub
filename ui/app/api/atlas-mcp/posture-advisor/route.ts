@@ -1,21 +1,65 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireAuth } from "@/lib/auth";
-import { getAtlasJWT, atlasGet } from "@/lib/atlas-api";
+import { getAtlasJWT, atlasGet, ATLAS_API_URL } from "@/lib/atlas-api";
 
 const anthropic = new Anthropic();
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
 }
 
-interface EndpointRecord {
-  endpoint_identifier?: string;
-  project_id?: string;
-  model?: string;
-  [key: string]: unknown;
-}
+// ─── Tool definitions (Claude tool_use — mirrors the Atlas MCP Server tool surface) ──
+
+const ATLAS_TOOLS: Anthropic.Tool[] = [
+  {
+    name: "get_tenant_overview",
+    description:
+      "Get a high-level overview of the Atlas tenant: total projects, total LLM endpoints, monitoring coverage ratio, and orphaned endpoints. Use this first for general posture or risk questions.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
+    name: "get_projects",
+    description:
+      "Get the full list of projects in the Atlas tenant with their names, IDs, and organization structure. Use this when the user asks about specific projects, project ownership, or project-level risk.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
+    name: "get_endpoints",
+    description:
+      "Get all registered LLM endpoint configurations including identifiers, assigned project, model, and available policy configuration keys. Use this for questions about endpoint risk, misconfiguration, or policy gaps.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        limit: { type: "number", description: "Max endpoints to return (default 50, max 100)" },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "get_firewall_rules",
+    description:
+      "Get the available LLM firewall policy rule types that can be applied to endpoints in this tenant. Use this for questions about what policies are available, compliance readiness, or what guardrails can be enabled.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
+    name: "get_asset_inventory",
+    description:
+      "Get discovered AI assets and resources across the org — includes shadow AI tools, Copilot usage, AI agents, models, and other AI systems detected by Atlas. Use this for questions about specific AI tools in use, user counts, shadow AI discovery, or the full AI estate.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        limit: { type: "number", description: "Max assets to return (default 50, max 200)" },
+      },
+      required: [],
+    },
+  },
+];
+
+// ─── Atlas tool executor ──────────────────────────────────────────────────────
 
 function extractProjects(data: unknown): Record<string, unknown>[] {
   if (!data || typeof data !== "object") return [];
@@ -31,6 +75,105 @@ function extractProjects(data: unknown): Record<string, unknown>[] {
   return [];
 }
 
+async function executeTool(
+  toolName: string,
+  toolInput: Record<string, unknown>,
+  token: string,
+  customerId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case "get_tenant_overview": {
+        const [projectsData, endpointsRaw] = await Promise.all([
+          atlasGet<unknown>(`/v1/admin/customers/${customerId}/organizations/projects`, token),
+          atlasGet<Record<string, unknown>[]>(
+            `/v1/llm-firewall/all-endpoint-settings?limit=100&offset=0`,
+            token
+          ),
+        ]);
+        const projects = extractProjects(projectsData);
+        const endpoints = Array.isArray(endpointsRaw) ? endpointsRaw : [];
+        const coveredIds = new Set(
+          endpoints.filter((e) => e.project_id).map((e) => String(e.project_id))
+        );
+        const covered = projects.filter((p) =>
+          coveredIds.has(String(p.id ?? p.project_id ?? ""))
+        ).length;
+        const orphaned = endpoints.filter((e) => !e.project_id).length;
+        return JSON.stringify({
+          total_projects: projects.length,
+          total_endpoints: endpoints.length,
+          monitored_projects: covered,
+          unmonitored_projects: projects.length - covered,
+          coverage_percent: projects.length > 0 ? Math.round((covered / projects.length) * 100) : 0,
+          orphaned_endpoints: orphaned,
+        });
+      }
+
+      case "get_projects": {
+        const data = await atlasGet<unknown>(
+          `/v1/admin/customers/${customerId}/organizations/projects`,
+          token
+        );
+        const projects = extractProjects(data);
+        return JSON.stringify(
+          projects.slice(0, 50).map((p) => ({
+            name: p.name ?? p.project_name ?? "unnamed",
+            id: p.id ?? p.project_id,
+            org: p.org_name ?? p.organization_name ?? null,
+          }))
+        );
+      }
+
+      case "get_endpoints": {
+        const limit = Math.min(Number(toolInput.limit ?? 50), 100);
+        const data = await atlasGet<Record<string, unknown>[]>(
+          `/v1/llm-firewall/all-endpoint-settings?limit=${limit}&offset=0`,
+          token
+        );
+        const endpoints = Array.isArray(data) ? data : [];
+        return JSON.stringify(
+          endpoints.map((ep) => ({
+            identifier: ep.endpoint_identifier ?? "unnamed",
+            project_id: ep.project_id ?? null,
+            model: ep.model ?? null,
+            config_keys: Object.keys(ep),
+          }))
+        );
+      }
+
+      case "get_firewall_rules": {
+        const data = await atlasGet<unknown>(`/v1/llm-firewall/rules`, token);
+        return JSON.stringify(data);
+      }
+
+      case "get_asset_inventory": {
+        const limit = Math.min(Number(toolInput.limit ?? 50), 200);
+        // Inventory API — returns discovered AI resources (Copilot, shadow AI, agents, models)
+        const res = await fetch(
+          `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?limit=${limit}&offset=0`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }
+        );
+        if (!res.ok) {
+          return JSON.stringify({ error: `Inventory API returned ${res.status}`, items: [] });
+        }
+        const data = await res.json();
+        return JSON.stringify(data);
+      }
+
+      default:
+        return JSON.stringify({ error: `Unknown tool: ${toolName}` });
+    }
+  } catch (err) {
+    return JSON.stringify({ error: String(err) });
+  }
+}
+
+// ─── Route ────────────────────────────────────────────────────────────────────
+
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
@@ -40,13 +183,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "ATLAS_CUSTOMER_ID not configured" }, { status: 503 });
   }
 
-  let messages: ChatMessage[];
+  let incomingMessages: ChatMessage[];
   try {
     const body = await req.json();
     if (!Array.isArray(body.messages) || body.messages.length === 0) {
       return NextResponse.json({ error: "messages array is required" }, { status: 400 });
     }
-    messages = (body.messages as ChatMessage[]).slice(-10);
+    incomingMessages = (body.messages as ChatMessage[]).slice(-10);
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
@@ -54,72 +197,90 @@ export async function POST(req: NextRequest) {
   try {
     const token = await getAtlasJWT();
 
-    const [projectsData, endpointsRaw] = await Promise.all([
-      atlasGet<unknown>(`/v1/admin/customers/${customerId}/organizations/projects`, token),
-      atlasGet<EndpointRecord[]>(`/v1/llm-firewall/all-endpoint-settings?limit=100&offset=0`, token),
-    ]);
+    const systemPrompt = `You are the Atlas AI Security Posture Advisor — an AI assistant connected to a live Atlas AI Governance tenant via the Atlas MCP Server. You have tools to query real tenant data.
 
-    const endpoints = Array.isArray(endpointsRaw) ? endpointsRaw : [];
-    const projects = extractProjects(projectsData);
+Always call at least one tool before answering — never guess or make up data. Use the tools that are most relevant to the user's question. You may call multiple tools if needed.
 
-    const coveredProjectIds = new Set<string>();
-    for (const ep of endpoints) {
-      if (ep.project_id && typeof ep.project_id === "string") {
-        coveredProjectIds.add(ep.project_id);
+Be concise: 3-5 sentences in your final answer. Reference actual names and numbers from the tool results. Frame answers from a security advisor perspective — what's the risk, what should be fixed first.`;
+
+    // Build message history in Anthropic format
+    // For the agentic loop, we maintain an internal messages array that may include
+    // tool_use and tool_result turns that the client never sees
+    const claudeMessages: Anthropic.MessageParam[] = incomingMessages.map((m) => ({
+      role: m.role,
+      content: m.content,
+    }));
+
+    const toolsCalled: string[] = [];
+    let finalText = "";
+    const MAX_ITERATIONS = 5;
+
+    // ── Agentic tool_use loop ──────────────────────────────────────────────────
+    for (let i = 0; i < MAX_ITERATIONS; i++) {
+      const response = await anthropic.messages.create({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1024,
+        system: systemPrompt,
+        tools: ATLAS_TOOLS,
+        messages: claudeMessages,
+      });
+
+      if (response.stop_reason === "end_turn") {
+        // Claude is done — extract final text
+        for (const block of response.content) {
+          if (block.type === "text") {
+            finalText = block.text;
+            break;
+          }
+        }
+        break;
       }
+
+      if (response.stop_reason === "tool_use") {
+        // Collect all tool_use blocks Claude wants to call
+        const toolUseBlocks = response.content.filter(
+          (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
+        );
+
+        if (toolUseBlocks.length === 0) break;
+
+        // Append Claude's assistant turn (including tool_use blocks) to history
+        claudeMessages.push({ role: "assistant", content: response.content });
+
+        // Execute all tool calls (sequentially — Atlas API is rate-limit safe)
+        const toolResults: Anthropic.ToolResultBlockParam[] = [];
+        for (const toolUse of toolUseBlocks) {
+          toolsCalled.push(toolUse.name);
+          const result = await executeTool(
+            toolUse.name,
+            (toolUse.input as Record<string, unknown>) ?? {},
+            token,
+            customerId
+          );
+          toolResults.push({
+            type: "tool_result",
+            tool_use_id: toolUse.id,
+            content: result,
+          });
+        }
+
+        // Append tool results as a user turn
+        claudeMessages.push({ role: "user", content: toolResults });
+        continue;
+      }
+
+      // Unexpected stop reason — break
+      break;
     }
 
-    const coveredProjectCount = projects.filter(
-      (p) => coveredProjectIds.has(String(p.id ?? p.project_id ?? ""))
-    ).length;
-    const uncoveredProjectCount = projects.length - coveredProjectCount;
-    const coverageRatio = projects.length > 0
-      ? Math.round((coveredProjectCount / projects.length) * 100)
-      : 0;
-    const orphanedEndpoints = endpoints.filter((ep) => !ep.project_id);
+    if (!finalText) {
+      finalText = "I was unable to complete the analysis. Please try again.";
+    }
 
-    const projectNames = projects
-      .slice(0, 20)
-      .map((p) => String(p.name ?? p.project_name ?? p.id ?? "unnamed"));
-
-    const endpointIdentifiers = endpoints
-      .slice(0, 20)
-      .map((ep) => String(ep.endpoint_identifier ?? "unnamed"));
-
-    const systemPrompt = `You are the Atlas AI Security Posture Advisor — an AI assistant with live access to this Atlas tenant via the Atlas API. You query Atlas directly on every turn to get up-to-date data.
-
-## Current Tenant Data (queried live just now)
-
-- Total projects: ${projects.length}
-- Projects: ${projectNames.length > 0 ? projectNames.join(", ") : "none found"}
-- Total LLM endpoints registered: ${endpoints.length}
-- Endpoint identifiers: ${endpointIdentifiers.length > 0 ? endpointIdentifiers.join(", ") : "none found"}
-- Projects with registered endpoints (monitored): ${coveredProjectCount}
-- Projects with no registered endpoints (unmonitored / shadow AI risk): ${uncoveredProjectCount}
-- Monitoring coverage: ${coverageRatio}%
-- Orphaned endpoints (no project assigned): ${orphanedEndpoints.length}
-
-## Instructions
-
-- You have live Atlas data. Speak with confidence — use real project names and endpoint identifiers from the data above.
-- Never mention "system prompt", "pre-loaded", "context window", or how you technically receive data. You query Atlas. That's all the user needs to know.
-- If asked "are you connected via MCP?" or similar: say yes, you're connected to this Atlas tenant and querying it live on every turn via the Atlas API (which is what the Atlas MCP Server also uses under the hood).
-- Be a direct, concise security advisor. 3–5 sentences per answer maximum.
-- Prioritize actionability: what to fix first, what an attacker would target, what a compliance auditor would flag.
-- If asked about data not yet available (alert history, policy violation logs, individual user behavior), explain that the current integration covers projects and endpoint configuration — and that connecting additional Atlas data sources would unlock those insights.
-- Do not repeat all the tenant data back unless the user asks for a full summary.`;
-
-    const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 512,
-      system: systemPrompt,
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    return NextResponse.json({
+      response: finalText,
+      tools_called: [...new Set(toolsCalled)], // deduplicate
     });
-
-    const responseText =
-      response.content[0].type === "text" ? response.content[0].text : "";
-
-    return NextResponse.json({ response: responseText });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

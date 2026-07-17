@@ -475,6 +475,7 @@ function ShadowAiCard() {
 interface AdvisorMessage {
   role: "user" | "assistant";
   content: string;
+  tools_called?: string[];
 }
 
 const STARTER_QUESTIONS = [
@@ -518,7 +519,11 @@ function PostureAdvisorChat() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
-      setMessages((prev) => [...prev, { role: "assistant", content: data.response as string }]);
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: data.response as string,
+        tools_called: data.tools_called as string[] | undefined,
+      }]);
     } catch (e) {
       setError(String(e));
     } finally {
@@ -543,7 +548,7 @@ function PostureAdvisorChat() {
         </div>
         <div>
           <h2 className="font-semibold text-white">AI Posture Advisor</h2>
-          <p className="text-xs text-gray-400">Ask anything about your Atlas tenant — live data fetched on every query</p>
+          <p className="text-xs text-gray-400">Connected to Atlas via MCP tools — Claude decides what to query, Atlas returns live data</p>
         </div>
       </div>
 
@@ -567,6 +572,17 @@ function PostureAdvisorChat() {
             }`}>
               {msg.content}
             </div>
+            {msg.role === "assistant" && msg.tools_called && msg.tools_called.length > 0 && (
+              <div className="flex items-center gap-1.5 px-1">
+                <span className="text-xs text-gray-600">🔧</span>
+                <span className="text-xs text-gray-600">Atlas tools called:</span>
+                {msg.tools_called.map((t) => (
+                  <span key={t} className="text-xs font-mono text-indigo-500 bg-indigo-950/50 border border-indigo-900/60 rounded px-1.5 py-0.5">
+                    {t}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         ))}
 
@@ -576,7 +592,7 @@ function PostureAdvisorChat() {
             <div className="rounded-2xl rounded-tl-sm px-4 py-3 bg-gray-800 border border-gray-700/60">
               <span className="flex items-center gap-2 text-sm text-gray-400">
                 <span className="w-3.5 h-3.5 border-2 border-gray-600 border-t-indigo-400 rounded-full animate-spin" />
-                Fetching live Atlas data &amp; analyzing...
+                Querying Atlas tools &amp; analyzing...
               </span>
             </div>
           </div>
