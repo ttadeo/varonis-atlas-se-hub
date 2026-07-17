@@ -4,7 +4,7 @@ import { requireAuth } from "@/lib/auth";
 
 const anthropic = new Anthropic();
 
-const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp";
+const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp/";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
