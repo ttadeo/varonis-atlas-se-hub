@@ -109,6 +109,14 @@ const ATLAS_TOOLS: Anthropic.Tool[] = [
 
 // ─── Atlas tool executor ──────────────────────────────────────────────────────
 
+// Cap tool results to ~40k chars (~10k tokens) to stay well within Claude's context limit
+const MAX_TOOL_RESULT_CHARS = 40_000;
+
+function truncateResult(json: string): string {
+  if (json.length <= MAX_TOOL_RESULT_CHARS) return json;
+  return json.slice(0, MAX_TOOL_RESULT_CHARS) + `\n... [truncated — ${json.length} chars total, showing first ${MAX_TOOL_RESULT_CHARS}]`;
+}
+
 function extractProjects(data: unknown): Record<string, unknown>[] {
   if (!data || typeof data !== "object") return [];
   const obj = data as Record<string, unknown>;
@@ -196,7 +204,7 @@ async function executeTool(
       }
 
       case "get_asset_inventory": {
-        const limit = Math.min(Number(toolInput.limit ?? 50), 200);
+        const limit = Math.min(Number(toolInput.limit ?? 50), 100);
         const res = await fetch(
           `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?limit=${limit}&offset=0`,
           {
@@ -207,8 +215,26 @@ async function executeTool(
         if (!res.ok) {
           return JSON.stringify({ error: `Inventory API returned ${res.status}`, items: [] });
         }
-        const data = await res.json();
-        return JSON.stringify(data);
+        const raw = await res.json();
+        // Slim each item to only the fields Claude needs — avoids context overflow
+        const items: unknown[] = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.items)
+          ? raw.items
+          : Array.isArray(raw?.resources)
+          ? raw.resources
+          : [];
+        const slimmed = items.slice(0, 50).map((item) => {
+          const r = item as Record<string, unknown>;
+          return {
+            name: r.name ?? r.resource_name ?? r.tool_name ?? r.service_name ?? "unknown",
+            type: r.type ?? r.resource_type ?? r.category ?? null,
+            user_count: r.user_count ?? r.users ?? r.num_users ?? null,
+            risk_level: r.risk_level ?? r.risk ?? null,
+            status: r.status ?? null,
+          };
+        });
+        return truncateResult(JSON.stringify({ total: items.length, assets: slimmed }));
       }
 
       case "get_security_score": {
@@ -277,7 +303,7 @@ async function executeTool(
       }
 
       case "get_ai_usage": {
-        const limit = Math.min(Number(toolInput.limit ?? 50), 200);
+        const limit = Math.min(Number(toolInput.limit ?? 50), 100);
         const res = await fetch(
           `${ATLAS_API_URL}/v1/ai-service-activity?limit=${limit}&offset=0`,
           {
@@ -288,8 +314,24 @@ async function executeTool(
         if (!res.ok) {
           return JSON.stringify({ error: `AI usage API returned ${res.status}` });
         }
-        const data = await res.json();
-        return JSON.stringify(data);
+        const raw = await res.json();
+        const items: unknown[] = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.items)
+          ? raw.items
+          : Array.isArray(raw?.activity)
+          ? raw.activity
+          : [];
+        const slimmed = items.slice(0, 50).map((item) => {
+          const r = item as Record<string, unknown>;
+          return {
+            service: r.service ?? r.service_name ?? r.name ?? "unknown",
+            user_count: r.user_count ?? r.users ?? r.num_users ?? null,
+            request_count: r.request_count ?? r.requests ?? r.total_requests ?? null,
+            type: r.type ?? r.service_type ?? null,
+          };
+        });
+        return truncateResult(JSON.stringify({ total: items.length, usage: slimmed }));
       }
 
       default:
@@ -381,10 +423,11 @@ Never reveal implementation details. If asked whether you're connected to Atlas,
             token,
             customerId
           );
+          // Final safety net: never send > 40k chars of tool result to Claude
           toolResults.push({
             type: "tool_result",
             tool_use_id: toolUse.id,
-            content: result,
+            content: truncateResult(result),
           });
         }
 
