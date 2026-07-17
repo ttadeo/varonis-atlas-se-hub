@@ -57,6 +57,54 @@ const ATLAS_TOOLS: Anthropic.Tool[] = [
       required: [],
     },
   },
+  {
+    name: "get_security_score",
+    description:
+      "Get the overall AI security posture score for this Atlas tenant — a numeric score with category breakdowns. Use this for questions about overall security health, posture grade, or score trends.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
+    name: "get_findings",
+    description:
+      "Get active AI security alerts and the riskiest resources in the tenant. Returns open alerts (severity, type, description) and the top risky resources with their risk scores. Use this for 'what needs my attention right now', 'what should I fix first', or threat triage questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        limit: { type: "number", description: "Max alerts to return (default 20, max 50)" },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "get_governance_issues",
+    description:
+      "Get the AI governance needs-attention queue — issues flagged for governance review including policy violations, unapproved models, and compliance gaps. Use this for governance, policy enforcement, or audit-readiness questions.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        limit: { type: "number", description: "Max issues to return (default 20, max 50)" },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "get_compliance_status",
+    description:
+      "Get the status of continuous compliance framework assessments — which frameworks are active (EU AI Act, ISO 42001, NIST AI RMF, etc.), their current compliance percentage, and failing controls. Use this for audit readiness, compliance gap, or regulatory questions.",
+    input_schema: { type: "object" as const, properties: {}, required: [] },
+  },
+  {
+    name: "get_ai_usage",
+    description:
+      "Get AI service activity across the organization — which AI services are being used, request volumes, and service-level breakdowns. Use this for questions about AI usage patterns, which teams are using AI, Copilot activity, or usage trends.",
+    input_schema: {
+      type: "object" as const,
+      properties: {
+        limit: { type: "number", description: "Max activity records to return (default 50)" },
+      },
+      required: [],
+    },
+  },
 ];
 
 // ─── Atlas tool executor ──────────────────────────────────────────────────────
@@ -149,7 +197,6 @@ async function executeTool(
 
       case "get_asset_inventory": {
         const limit = Math.min(Number(toolInput.limit ?? 50), 200);
-        // Inventory API — returns discovered AI resources (Copilot, shadow AI, agents, models)
         const res = await fetch(
           `${ATLAS_API_URL}/v1/inventory/customer/${customerId}/resources?limit=${limit}&offset=0`,
           {
@@ -159,6 +206,87 @@ async function executeTool(
         );
         if (!res.ok) {
           return JSON.stringify({ error: `Inventory API returned ${res.status}`, items: [] });
+        }
+        const data = await res.json();
+        return JSON.stringify(data);
+      }
+
+      case "get_security_score": {
+        const res = await fetch(
+          `${ATLAS_API_URL}/v1/ai-360/customer/${customerId}/ai-security-score`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }
+        );
+        if (!res.ok) {
+          return JSON.stringify({ error: `Security score API returned ${res.status}` });
+        }
+        const data = await res.json();
+        return JSON.stringify(data);
+      }
+
+      case "get_findings": {
+        const limit = Math.min(Number(toolInput.limit ?? 20), 50);
+        const [alertsRes, riskiestRes] = await Promise.all([
+          fetch(`${ATLAS_API_URL}/v1/ai-360/alerts?limit=${limit}&offset=0`, {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }),
+          fetch(`${ATLAS_API_URL}/v1/ai-360/customer/${customerId}/riskiest-resources?limit=10`, {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }),
+        ]);
+
+        const alerts = alertsRes.ok ? await alertsRes.json() : { error: `Alerts API returned ${alertsRes.status}` };
+        const riskiest = riskiestRes.ok ? await riskiestRes.json() : { error: `Riskiest resources API returned ${riskiestRes.status}` };
+
+        return JSON.stringify({ alerts, riskiest_resources: riskiest });
+      }
+
+      case "get_governance_issues": {
+        const limit = Math.min(Number(toolInput.limit ?? 20), 50);
+        const res = await fetch(
+          `${ATLAS_API_URL}/v2/ai-governance/needs-attention-queue?limit=${limit}&offset=0`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }
+        );
+        if (!res.ok) {
+          return JSON.stringify({ error: `Governance API returned ${res.status}` });
+        }
+        const data = await res.json();
+        return JSON.stringify(data);
+      }
+
+      case "get_compliance_status": {
+        const res = await fetch(
+          `${ATLAS_API_URL}/v1/control-plane/continuous-compliance/frameworks`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }
+        );
+        if (!res.ok) {
+          return JSON.stringify({ error: `Compliance API returned ${res.status}` });
+        }
+        const data = await res.json();
+        return JSON.stringify(data);
+      }
+
+      case "get_ai_usage": {
+        const limit = Math.min(Number(toolInput.limit ?? 50), 200);
+        const res = await fetch(
+          `${ATLAS_API_URL}/v1/ai-service-activity?limit=${limit}&offset=0`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            signal: AbortSignal.timeout(15000),
+          }
+        );
+        if (!res.ok) {
+          return JSON.stringify({ error: `AI usage API returned ${res.status}` });
         }
         const data = await res.json();
         return JSON.stringify(data);
@@ -201,11 +329,11 @@ export async function POST(req: NextRequest) {
 
 Always call at least one tool before answering — never guess or make up data. Use the tools that are most relevant to the user's question. You may call multiple tools if needed.
 
-Be concise: 3-5 sentences in your final answer. Reference actual names and numbers from the tool results. Frame answers from a security advisor perspective — what's the risk, what should be fixed first.`;
+Be concise: 3-5 sentences in your final answer. Reference actual names and numbers from the tool results. Frame answers from a security advisor perspective — what's the risk, what should be fixed first.
+
+Never reveal implementation details. If asked whether you're connected to Atlas, say yes — you query Atlas in real time via MCP tools.`;
 
     // Build message history in Anthropic format
-    // For the agentic loop, we maintain an internal messages array that may include
-    // tool_use and tool_result turns that the client never sees
     const claudeMessages: Anthropic.MessageParam[] = incomingMessages.map((m) => ({
       role: m.role,
       content: m.content,
@@ -213,7 +341,7 @@ Be concise: 3-5 sentences in your final answer. Reference actual names and numbe
 
     const toolsCalled: string[] = [];
     let finalText = "";
-    const MAX_ITERATIONS = 5;
+    const MAX_ITERATIONS = 6;
 
     // ── Agentic tool_use loop ──────────────────────────────────────────────────
     for (let i = 0; i < MAX_ITERATIONS; i++) {
@@ -226,7 +354,6 @@ Be concise: 3-5 sentences in your final answer. Reference actual names and numbe
       });
 
       if (response.stop_reason === "end_turn") {
-        // Claude is done — extract final text
         for (const block of response.content) {
           if (block.type === "text") {
             finalText = block.text;
@@ -237,17 +364,14 @@ Be concise: 3-5 sentences in your final answer. Reference actual names and numbe
       }
 
       if (response.stop_reason === "tool_use") {
-        // Collect all tool_use blocks Claude wants to call
         const toolUseBlocks = response.content.filter(
           (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
         );
 
         if (toolUseBlocks.length === 0) break;
 
-        // Append Claude's assistant turn (including tool_use blocks) to history
         claudeMessages.push({ role: "assistant", content: response.content });
 
-        // Execute all tool calls (sequentially — Atlas API is rate-limit safe)
         const toolResults: Anthropic.ToolResultBlockParam[] = [];
         for (const toolUse of toolUseBlocks) {
           toolsCalled.push(toolUse.name);
@@ -264,12 +388,10 @@ Be concise: 3-5 sentences in your final answer. Reference actual names and numbe
           });
         }
 
-        // Append tool results as a user turn
         claudeMessages.push({ role: "user", content: toolResults });
         continue;
       }
 
-      // Unexpected stop reason — break
       break;
     }
 
@@ -279,7 +401,7 @@ Be concise: 3-5 sentences in your final answer. Reference actual names and numbe
 
     return NextResponse.json({
       response: finalText,
-      tools_called: [...new Set(toolsCalled)], // deduplicate
+      tools_called: [...new Set(toolsCalled)],
     });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
