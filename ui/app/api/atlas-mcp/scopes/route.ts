@@ -38,9 +38,23 @@ export async function GET(req: NextRequest) {
             });
           }
         }
+        // Try every known Atlas API field name for org name, then fall back to
+        // the first project's org_name (projects reliably carry their parent org name)
+        const firstProject = (org.projects as Record<string, unknown>[] | undefined)?.[0];
+        const orgName =
+          org.name ??
+          org.org_name ??
+          org.organization_name ??
+          org.display_name ??
+          org.org_display_name ??
+          org.title ??
+          firstProject?.org_name ??
+          firstProject?.organization_name ??
+          null;
+
         orgs.push({
           id: String(org.id ?? org.org_id ?? ""),
-          name: String(org.name ?? org.org_name ?? "Unnamed Org"),
+          name: orgName ? String(orgName) : `Org ${orgs.length + 1}`,
           projects,
         });
       }
