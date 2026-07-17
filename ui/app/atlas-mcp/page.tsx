@@ -376,18 +376,26 @@ function RiskBriefingCard({ scope }: { scope: ScopeSelection }) {
     setLoading(true);
     setError(null);
     setResult(null);
+    const abort = new AbortController();
+    const timeoutId = setTimeout(() => abort.abort(), 90_000);
     try {
       const res = await fetch("/api/atlas-mcp/risk-briefing", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope }),
+        signal: abort.signal,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setResult(data as RiskBriefingResult);
     } catch (e) {
-      setError(String(e));
+      if ((e as Error)?.name === "AbortError") {
+        setError("Request timed out — the Atlas MCP Server is under load. Please try again.");
+      } else {
+        setError(String(e));
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   }
@@ -483,18 +491,26 @@ function EndpointAuditCard({ scope }: { scope: ScopeSelection }) {
     setLoading(true);
     setError(null);
     setResult(null);
+    const abort = new AbortController();
+    const timeoutId = setTimeout(() => abort.abort(), 90_000);
     try {
       const res = await fetch("/api/atlas-mcp/endpoint-audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope }),
+        signal: abort.signal,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setResult(data as EndpointAuditResult);
     } catch (e) {
-      setError(String(e));
+      if ((e as Error)?.name === "AbortError") {
+        setError("Request timed out — the Atlas MCP Server is under load. Please try again.");
+      } else {
+        setError(String(e));
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   }
@@ -580,18 +596,26 @@ function ShadowAiCard({ scope }: { scope: ScopeSelection }) {
     setLoading(true);
     setError(null);
     setResult(null);
+    const abort = new AbortController();
+    const timeoutId = setTimeout(() => abort.abort(), 90_000);
     try {
       const res = await fetch("/api/atlas-mcp/shadow-ai", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scope }),
+        signal: abort.signal,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
       setResult(data as ShadowAiResult);
     } catch (e) {
-      setError(String(e));
+      if ((e as Error)?.name === "AbortError") {
+        setError("Request timed out — the Atlas MCP Server is under load. Please try again.");
+      } else {
+        setError(String(e));
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
     }
   }
@@ -749,6 +773,9 @@ function PostureAdvisorChat({ scope }: { scope: ScopeSelection }) {
     setLoading(true);
     setError(null);
 
+    const abort = new AbortController();
+    const timeoutId = setTimeout(() => abort.abort(), 130_000);
+
     try {
       const res = await fetch("/api/atlas-mcp/posture-advisor", {
         method: "POST",
@@ -757,6 +784,7 @@ function PostureAdvisorChat({ scope }: { scope: ScopeSelection }) {
           messages: nextMessages.slice(-10),
           scope,
         }),
+        signal: abort.signal,
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
@@ -766,8 +794,13 @@ function PostureAdvisorChat({ scope }: { scope: ScopeSelection }) {
         tools_called: data.tools_called as string[] | undefined,
       }]);
     } catch (e) {
-      setError(String(e));
+      if ((e as Error)?.name === "AbortError") {
+        setError("Request timed out — the Atlas MCP Server is under load. Please try again.");
+      } else {
+        setError(String(e));
+      }
     } finally {
+      clearTimeout(timeoutId);
       setLoading(false);
       textareaRef.current?.focus();
     }

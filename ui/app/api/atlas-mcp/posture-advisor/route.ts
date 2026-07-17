@@ -60,49 +60,62 @@ You are connected to Atlas in real time via the Atlas MCP Server. Never discuss 
       content: m.content,
     }));
 
-    const response = await anthropic.beta.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 1024,
-      system: systemPrompt,
-      betas: ["mcp-client-2025-04-04"],
-      mcp_servers: [
+    // 120s internal timeout — gives a clean error instead of Vercel hard-killing at 300s
+    const abort = new AbortController();
+    const timeoutHandle = setTimeout(() => abort.abort(), 120_000);
+
+    try {
+      const response = await anthropic.beta.messages.create(
         {
-          type: "url",
-          name: "atlas",
-          url: ATLAS_MCP_URL,
-          authorization_token: atlasApiKey,
+          model: "claude-sonnet-4-6",
+          max_tokens: 1024,
+          system: systemPrompt,
+          betas: ["mcp-client-2025-04-04"],
+          mcp_servers: [
+            {
+              type: "url",
+              name: "atlas",
+              url: ATLAS_MCP_URL,
+              authorization_token: atlasApiKey,
+            },
+          ],
+          messages: claudeMessages,
         },
-      ],
-      messages: claudeMessages,
-    });
+        { signal: abort.signal }
+      );
 
-    // Extract final text + which MCP tools were called
-    let finalText = "";
-    const toolsCalled: string[] = [];
+      // Extract final text + which MCP tools were called
+      let finalText = "";
+      const toolsCalled: string[] = [];
 
-    for (const block of response.content) {
-      if (block.type === "text") {
-        finalText = block.text;
-      } else if (block.type === "mcp_tool_use") {
-        const b = block as { type: "mcp_tool_use"; name: string; input?: Record<string, unknown> };
-        // Show operation name when Claude uses call_api_operation — more informative in the UI
-        const opName =
-          b.input?.operation_id ??
-          b.input?.operation_name ??
-          b.input?.name ??
-          null;
-        toolsCalled.push(opName ? `${b.name}(${String(opName)})` : b.name);
+      for (const block of response.content) {
+        if (block.type === "text") {
+          finalText = block.text;
+        } else if (block.type === "mcp_tool_use") {
+          const b = block as { type: "mcp_tool_use"; name: string; input?: Record<string, unknown> };
+          const opName = b.input?.operation_id ?? b.input?.operation_name ?? b.input?.name ?? null;
+          toolsCalled.push(opName ? `${b.name}(${String(opName)})` : b.name);
+        }
       }
-    }
 
-    if (!finalText) {
-      finalText = "I was unable to complete the analysis. Please try again.";
-    }
+      if (!finalText) finalText = "I was unable to complete the analysis. Please try again.";
 
-    return NextResponse.json({
-      response: finalText,
-      tools_called: [...new Set(toolsCalled)],
-    });
+      return NextResponse.json({
+        response: finalText,
+        tools_called: [...new Set(toolsCalled)],
+      });
+    } catch (err) {
+      const isTimeout = (err as Error)?.name === "AbortError" || String(err).includes("aborted");
+      if (isTimeout) {
+        return NextResponse.json(
+          { error: "The Atlas MCP Server is taking too long to respond. Please try again in a moment." },
+          { status: 504 }
+        );
+      }
+      return NextResponse.json({ error: String(err) }, { status: 500 });
+    } finally {
+      clearTimeout(timeoutHandle);
+    }
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

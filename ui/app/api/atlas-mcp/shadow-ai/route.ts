@@ -31,20 +31,25 @@ export async function POST(req: NextRequest) {
     ? `Analyze ONLY the following scope for shadow AI risk: ${scope.label}.${scope.project_ids?.length ? ` Project IDs: ${scope.project_ids.join(", ")}.` : ""} Limit your analysis to projects in this scope.`
     : "Analyze the entire tenant for shadow AI risk.";
 
+  // 75s internal timeout — clean exit before Vercel's 120s maxDuration
+  const abort = new AbortController();
+  const timeoutHandle = setTimeout(() => abort.abort(), 75_000);
+
   try {
-    const response = await anthropic.beta.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2048,
-      betas: ["mcp-client-2025-04-04"],
-      mcp_servers: [
-        {
-          type: "url",
-          name: "atlas",
-          url: ATLAS_MCP_URL,
-          authorization_token: atlasApiKey,
-        },
-      ],
-      system: `You are detecting Shadow AI risk in an Atlas AI Governance tenant via the Atlas MCP Server.
+    const response = await anthropic.beta.messages.create(
+      {
+        model: "claude-sonnet-4-6",
+        max_tokens: 2048,
+        betas: ["mcp-client-2025-04-04"],
+        mcp_servers: [
+          {
+            type: "url",
+            name: "atlas",
+            url: ATLAS_MCP_URL,
+            authorization_token: atlasApiKey,
+          },
+        ],
+        system: `You are detecting Shadow AI risk in an Atlas AI Governance tenant via the Atlas MCP Server.
 
 ${scopeInstruction}
 
@@ -69,13 +74,15 @@ Steps:
     "coverage_ratio": <float 0.0-1.0>
   }
 }`,
-      messages: [
-        {
-          role: "user",
-          content: "Generate the Shadow AI Report now using live Atlas data.",
-        },
-      ],
-    });
+        messages: [
+          {
+            role: "user",
+            content: "Generate the Shadow AI Report now using live Atlas data.",
+          },
+        ],
+      },
+      { signal: abort.signal }
+    );
 
     const textBlock = response.content.find((b) => b.type === "text");
     const raw = textBlock?.type === "text" ? textBlock.text : "";
@@ -86,6 +93,15 @@ Steps:
     const result = JSON.parse(jsonMatch[0]);
     return NextResponse.json(result);
   } catch (err) {
+    const isTimeout = (err as Error)?.name === "AbortError" || String(err).includes("aborted");
+    if (isTimeout) {
+      return NextResponse.json(
+        { error: "The Atlas MCP Server is taking too long. Please try again in a moment." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: String(err) }, { status: 500 });
+  } finally {
+    clearTimeout(timeoutHandle);
   }
 }

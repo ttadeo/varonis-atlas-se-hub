@@ -31,20 +31,25 @@ export async function POST(req: NextRequest) {
     ? `Audit ONLY endpoints belonging to this scope: ${scope.label}.${scope.project_ids?.length ? ` Project IDs: ${scope.project_ids.join(", ")}.` : ""} Skip endpoints outside this scope.`
     : "Audit all LLM endpoints in the entire tenant.";
 
+  // 75s internal timeout — clean exit before Vercel's 120s maxDuration
+  const abort = new AbortController();
+  const timeoutHandle = setTimeout(() => abort.abort(), 75_000);
+
   try {
-    const response = await anthropic.beta.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2048,
-      betas: ["mcp-client-2025-04-04"],
-      mcp_servers: [
-        {
-          type: "url",
-          name: "atlas",
-          url: ATLAS_MCP_URL,
-          authorization_token: atlasApiKey,
-        },
-      ],
-      system: `You are auditing LLM endpoint configurations in an Atlas AI Security tenant via the Atlas MCP Server.
+    const response = await anthropic.beta.messages.create(
+      {
+        model: "claude-sonnet-4-6",
+        max_tokens: 2048,
+        betas: ["mcp-client-2025-04-04"],
+        mcp_servers: [
+          {
+            type: "url",
+            name: "atlas",
+            url: ATLAS_MCP_URL,
+            authorization_token: atlasApiKey,
+          },
+        ],
+        system: `You are auditing LLM endpoint configurations in an Atlas AI Security tenant via the Atlas MCP Server.
 
 ${scopeInstruction}
 
@@ -71,13 +76,15 @@ Steps:
 }
 
 Keep each string field under 12 words. missing_policies: max 3 items per endpoint.`,
-      messages: [
-        {
-          role: "user",
-          content: "Run the LLM endpoint audit now using live Atlas data.",
-        },
-      ],
-    });
+        messages: [
+          {
+            role: "user",
+            content: "Run the LLM endpoint audit now using live Atlas data.",
+          },
+        ],
+      },
+      { signal: abort.signal }
+    );
 
     const textBlock = response.content.find((b) => b.type === "text");
     const raw = textBlock?.type === "text" ? textBlock.text : "";
@@ -88,6 +95,15 @@ Keep each string field under 12 words. missing_policies: max 3 items per endpoin
     const result = JSON.parse(jsonMatch[0]);
     return NextResponse.json(result);
   } catch (err) {
+    const isTimeout = (err as Error)?.name === "AbortError" || String(err).includes("aborted");
+    if (isTimeout) {
+      return NextResponse.json(
+        { error: "The Atlas MCP Server is taking too long. Please try again in a moment." },
+        { status: 504 }
+      );
+    }
     return NextResponse.json({ error: String(err) }, { status: 500 });
+  } finally {
+    clearTimeout(timeoutHandle);
   }
 }
