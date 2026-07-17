@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
+import HelpPanel from "@/components/HelpPanel";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -905,6 +906,7 @@ function PostureAdvisorChat({ scope }: { scope: ScopeSelection }) {
 
 export default function AtlasMcpPage() {
   const [scope, setScope] = useState<ScopeSelection>(ENTIRE_TENANT);
+  const [helpOpen, setHelpOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -913,7 +915,7 @@ export default function AtlasMcpPage() {
         <Link href="/" className="text-gray-500 hover:text-gray-300 text-sm transition-colors">
           ← Back
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-1">
           <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center font-bold text-sm">
             ⚡
           </div>
@@ -922,7 +924,15 @@ export default function AtlasMcpPage() {
             <p className="text-xs text-gray-400">Live apps built on the Atlas MCP Server — real tenant data, real AI insights</p>
           </div>
         </div>
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="shrink-0 flex items-center gap-1.5 rounded-lg border border-gray-700 bg-gray-800/60 hover:bg-gray-700 hover:border-gray-600 px-3 py-1.5 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+        >
+          <span>?</span>
+          <span>How it works</span>
+        </button>
       </header>
+      <HelpPanel page="atlas-mcp" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <main className="max-w-6xl mx-auto px-6 py-10">
         {/* Explainer */}

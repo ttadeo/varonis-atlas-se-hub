@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export type HelpPage = "learn" | "ask" | "meeting" | "demo" | "architect" | "runtime" | "guides" | "analytics" | "knowledge";
+export type HelpPage = "learn" | "ask" | "meeting" | "demo" | "architect" | "runtime" | "guides" | "analytics" | "knowledge" | "atlas-mcp";
 
 interface Step {
   title: string;
@@ -360,6 +360,46 @@ const HELP_CONTENT: Record<HelpPage, HelpContent> = {
       },
     ],
     proTip: "The knowledge base is updated regularly from the Teams AI Security channel. If you see a gap — a question that isn't answered here — post it in the channel. It will be scraped and added in the next update.",
+  },
+
+  // ─── Atlas MCP App Gallery ────────────────────────────────────────────────────
+  "atlas-mcp": {
+    heading: "Atlas MCP App Gallery — How It Works",
+    intro: "This page demonstrates what customers can build using the Atlas MCP Server — a cloud-hosted endpoint that gives any AI assistant (Claude, Copilot, Cursor) structured access to live Atlas tenant data. Every app here connects to the real Atlas MCP Server at mcp.prod.alltrue-be.com and fetches live data from the Varonis demo tenant.",
+    steps: [
+      {
+        title: "What Is the Atlas MCP Server?",
+        body: "MCP (Model Context Protocol) is an open standard that lets AI assistants call external tools and APIs. The Atlas MCP Server is a hosted endpoint operated by Varonis — customers add it to their AI assistant config with a single command, and Claude (or any MCP-compatible assistant) can instantly query their Atlas tenant in natural language.\n\nNo dashboards, no exports, no SQL — the AI figures out what to query and returns a direct answer.",
+        tip: "The Atlas MCP Server is cloud-hosted — there's nothing to install. Customers register it in Claude Code with one command: claude mcp add atlas https://mcp.prod.alltrue-be.com/mcp",
+      },
+      {
+        title: "Scope Selector — Focus on an Org or Project",
+        body: "By default all apps analyze the entire tenant. Use the Scope Filter dropdown to narrow the analysis to a specific organization or set of projects.\n\n• Click 'Entire Tenant ▾' to open the scope picker\n• Click an org name to expand its projects\n• Check the org checkbox to select all projects in it, or check individual projects\n• Click 'Apply Scope' to apply — all apps reset and will use the new scope on their next run\n\nThe AI Posture Advisor chat also resets when scope changes.",
+        tip: "Use scope filtering to show a prospect what their specific team or business unit looks like — more relevant than a full-tenant view during a first demo.",
+      },
+      {
+        title: "AI Risk Briefing",
+        body: "Generates an executive security summary: overall risk score (0-100), risk level (low/medium/high/critical), 3 key findings, and 3 prioritized recommendations — all from live Atlas data.\n\nClaude calls the Atlas MCP Server autonomously, fetches projects and LLM endpoint configurations, and synthesizes the briefing. Generation takes 20-60 seconds.\n\nUse case: 'This is what a CISO could get as a Monday morning Slack message — no manual work, always current.'",
+      },
+      {
+        title: "LLM Endpoint Audit",
+        body: "Per-endpoint risk assessment across the tenant. For each registered LLM endpoint, Claude evaluates:\n• Whether the endpoint is assigned to a project (orphaned = higher risk)\n• Which security policies are missing (PII detection, prompt injection, guardrails, etc.)\n• Overall risk level: low / medium / high\n\nThe summary counts (High / Medium / Low) at the top give instant posture visibility. Each endpoint card shows the specific gap and recommendation.\n\nUse case: 'This is what your compliance team needs for an AI vendor audit — Atlas exposes it via API so it can feed directly into your GRC tool.'",
+      },
+      {
+        title: "Shadow AI Report",
+        body: "Identifies AI projects with no registered LLM endpoints — unmonitored blind spots where shadow AI can operate without governance.\n\nClaude cross-references all projects against all registered endpoints. Projects with zero endpoints = potential shadow AI. The coverage bar shows what percentage of projects are monitored.\n\nUse case: 'Shadow AI isn't just about rogue tools — it's also about your own teams using AI models that aren't registered in Atlas. This report finds those gaps automatically.'",
+      },
+      {
+        title: "AI Posture Advisor — Conversational Chat",
+        body: "A conversational interface to your Atlas tenant. Ask any security posture question in natural language — Claude connects to the Atlas MCP Server, decides which Atlas operations to call, and reasons over the live results.\n\nGood starter questions:\n• 'Which of my endpoints are highest risk?'\n• 'Am I ready for an ISO 42001 audit?'\n• 'What would an attacker target first in my tenant?'\n• 'Which projects have no AI monitoring?'\n\nThe tool badge below each answer shows which Atlas MCP tools Claude called — making the agentic behavior visible and explainable.",
+        tip: "Ask follow-up questions referencing the previous answer — the Posture Advisor maintains conversation history across turns, so Claude won't re-fetch data it already has.",
+      },
+      {
+        title: "Understanding the MCP Tool Badge",
+        body: "Below each Posture Advisor response you'll see: '🔧 Atlas MCP tools called: search_api_operations, call_api_operation'\n\nThis shows exactly which Atlas MCP Server tools Claude called to answer your question. It makes the agentic loop transparent — customers can see that Claude is not hallucinating, it's querying real Atlas data.\n\nThis is the exact same behavior your customer gets when they add the Atlas MCP Server to Claude Code in their terminal.",
+      },
+    ],
+    proTip: "The strongest demo moment: ask the Posture Advisor 'what should I fix first today?' — Claude calls multiple Atlas MCP tools, cross-references findings, and gives a prioritized recommendation with real project names. Then point to the tool badge and say 'this is exactly what happens when your security team connects Claude Code to the Atlas MCP Server.'",
   },
 };
 
