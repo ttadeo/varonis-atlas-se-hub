@@ -1,121 +1,86 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireAuth } from "@/lib/auth";
-import { getAtlasJWT, atlasGet } from "@/lib/atlas-api";
 
 const anthropic = new Anthropic();
+const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp";
+
+interface ScopeSelection {
+  label: string;
+  project_ids?: string[];
+}
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
 
-  const customerId = process.env.ATLAS_CUSTOMER_ID;
-  if (!customerId) {
-    return NextResponse.json({ error: "ATLAS_CUSTOMER_ID not configured" }, { status: 503 });
+  const atlasApiKey = process.env.ATLAS_API_KEY;
+  if (!atlasApiKey) {
+    return NextResponse.json({ error: "ATLAS_API_KEY not configured" }, { status: 503 });
   }
 
+  let scope: ScopeSelection | undefined;
   try {
-    const token = await getAtlasJWT();
+    const body = await req.json().catch(() => ({}));
+    scope = body.scope as ScopeSelection | undefined;
+  } catch {
+    // scope is optional — proceed without it
+  }
 
-    const [projectsData, endpointsRaw] = await Promise.all([
-      atlasGet<unknown>(`/v1/admin/customers/${customerId}/organizations/projects`, token),
-      atlasGet<unknown[]>(`/v1/llm-firewall/all-endpoint-settings?limit=100&offset=0`, token),
-    ]);
+  const scopeInstruction = scope?.label && scope.label !== "Entire Tenant"
+    ? `Focus your analysis ONLY on this scope: ${scope.label}.${scope.project_ids?.length ? ` Project IDs: ${scope.project_ids.join(", ")}.` : ""} Ignore data from projects outside this scope.`
+    : "Analyze the entire tenant.";
 
-    // Summarize what we fetched for Claude — avoid sending full raw payload
-    const endpoints = Array.isArray(endpointsRaw) ? endpointsRaw : [];
-    const projects = extractProjects(projectsData);
-
-    const summary = {
-      total_projects: projects.length,
-      projects: projects.map((p) => ({
-        name: p.name ?? p.project_name ?? p.id ?? "unknown",
-        id: p.id ?? p.project_id ?? null,
-        org: p.org_name ?? p.organization_name ?? null,
-      })),
-      total_endpoints: endpoints.length,
-      endpoints: endpoints.map((e) => ({
-        identifier: (e as Record<string, unknown>).endpoint_identifier ?? "unknown",
-        project_id: (e as Record<string, unknown>).project_id ?? null,
-        model: (e as Record<string, unknown>).model ?? null,
-        policies_enabled: extractPolicies(e as Record<string, unknown>),
-      })),
-    };
-
-    const message = await anthropic.messages.create({
+  try {
+    const response = await anthropic.beta.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
-      system: `You are an Atlas AI Security analyst generating an executive AI Risk Briefing from live tenant data.
+      betas: ["mcp-client-2025-04-04"],
+      mcp_servers: [
+        {
+          type: "url",
+          name: "atlas",
+          url: ATLAS_MCP_URL,
+          authorization_token: atlasApiKey,
+        },
+      ],
+      system: `You are generating an executive AI Risk Briefing from live Atlas tenant data via the Atlas MCP Server.
 
-IMPORTANT: Be extremely concise. Every string field must be under 15 words. findings and recommendations: exactly 3 items each, max 12 words per item.
+${scopeInstruction}
 
-Respond with ONLY valid JSON (no markdown, no explanation):
+Steps:
+1. Use Atlas MCP tools to fetch projects, LLM endpoint configurations, and any available security score or findings data.
+2. Analyze the data from a security perspective.
+3. Respond with ONLY this exact JSON (no markdown, no explanation, no surrounding text):
 {
-  "risk_score": <integer 0-100>,
+  "risk_score": <integer 0-100, based on coverage gaps and misconfigurations>,
   "risk_level": "<low|medium|high|critical>",
-  "headline": "<max 15 words>",
+  "headline": "<max 15 words summarizing the posture>",
   "findings": ["<max 12 words>", "<max 12 words>", "<max 12 words>"],
   "recommendations": ["<max 12 words>", "<max 12 words>", "<max 12 words>"],
-  "data_sources_used": ["Atlas Projects API", "Atlas Endpoint Settings API"]
+  "data_sources_used": ["<list the Atlas API operations you called>"],
+  "tenant_snapshot": {
+    "total_projects": <integer>,
+    "total_endpoints": <integer>
+  }
 }`,
       messages: [
         {
           role: "user",
-          content: `Atlas tenant data:\n${JSON.stringify(summary)}\n\nGenerate the AI Risk Briefing JSON.`,
+          content: "Generate the AI Risk Briefing now using live Atlas data.",
         },
       ],
     });
 
-    const raw = message.content[0].type === "text" ? message.content[0].text : "";
+    const textBlock = response.content.find((b) => b.type === "text");
+    const raw = textBlock?.type === "text" ? textBlock.text : "";
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: "Claude did not return valid JSON", raw }, { status: 502 });
     }
     const result = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ ...result, tenant_snapshot: summary });
+    return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
-}
-
-function extractProjects(data: unknown): Record<string, unknown>[] {
-  if (!data || typeof data !== "object") return [];
-  const obj = data as Record<string, unknown>;
-  // Shape: { organizations: [ { projects: [...] } ] }
-  if (Array.isArray(obj.organizations)) {
-    const all: Record<string, unknown>[] = [];
-    for (const org of obj.organizations as Record<string, unknown>[]) {
-      if (Array.isArray(org.projects)) all.push(...(org.projects as Record<string, unknown>[]));
-    }
-    return all;
-  }
-  if (Array.isArray(data)) return data as Record<string, unknown>[];
-  return [];
-}
-
-function extractPolicies(endpoint: Record<string, unknown>): string[] {
-  const policies: string[] = [];
-  const check = (key: string, label: string) => {
-    const val = endpoint[key];
-    if (val === true || val === "enabled" || (typeof val === "object" && val !== null)) {
-      policies.push(label);
-    }
-  };
-  check("pii_detection", "PII Detection");
-  check("prompt_injection", "Prompt Injection");
-  check("content_policy", "Content Policy");
-  check("data_loss_prevention", "DLP");
-  check("toxicity", "Toxicity Filter");
-  check("guardrails", "Guardrails");
-  // Generic fallback — any key that looks like a policy
-  for (const [k, v] of Object.entries(endpoint)) {
-    if (
-      (k.includes("policy") || k.includes("detection") || k.includes("filter") || k.includes("guard")) &&
-      !policies.some((p) => p.toLowerCase().includes(k.toLowerCase())) &&
-      (v === true || v === "enabled")
-    ) {
-      policies.push(k);
-    }
-  }
-  return policies;
 }

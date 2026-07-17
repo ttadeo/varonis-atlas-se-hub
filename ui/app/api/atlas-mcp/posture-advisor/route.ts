@@ -25,18 +25,26 @@ export async function POST(req: NextRequest) {
   }
 
   let incomingMessages: ChatMessage[];
+  let scope: { label: string; project_ids?: string[] } | undefined;
   try {
     const body = await req.json();
     if (!Array.isArray(body.messages) || body.messages.length === 0) {
       return NextResponse.json({ error: "messages array is required" }, { status: 400 });
     }
     incomingMessages = (body.messages as ChatMessage[]).slice(-10);
+    scope = body.scope as typeof scope;
   } catch {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  const scopeInstruction = scope?.label && scope.label !== "Entire Tenant"
+    ? `You are focused on a specific scope: ${scope.label}.${scope.project_ids?.length ? ` Project IDs in scope: ${scope.project_ids.join(", ")}.` : ""} Only analyze data within this scope — ignore projects or endpoints outside it.`
+    : "You have access to the entire tenant.";
+
   try {
     const systemPrompt = `You are the Atlas AI Security Posture Advisor — connected live to an Atlas AI Governance tenant via the Atlas MCP Server.
+
+${scopeInstruction}
 
 Use the Atlas MCP tools to answer security posture questions with real tenant data. Typical workflow:
 1. Use search_api_operations to discover the right Atlas API operation for the question (e.g. search "projects", "endpoints", "security score", "compliance", "inventory", "findings", "activity")

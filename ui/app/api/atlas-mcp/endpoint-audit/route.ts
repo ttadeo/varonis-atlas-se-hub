@@ -1,94 +1,92 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireAuth } from "@/lib/auth";
-import { getAtlasJWT, atlasGet } from "@/lib/atlas-api";
 
 const anthropic = new Anthropic();
+const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp";
 
-interface EndpointRecord {
-  endpoint_identifier?: string;
-  project_id?: string;
-  model?: string;
-  [key: string]: unknown;
+interface ScopeSelection {
+  label: string;
+  project_ids?: string[];
 }
 
 export async function POST(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
 
+  const atlasApiKey = process.env.ATLAS_API_KEY;
+  if (!atlasApiKey) {
+    return NextResponse.json({ error: "ATLAS_API_KEY not configured" }, { status: 503 });
+  }
+
+  let scope: ScopeSelection | undefined;
   try {
-    const token = await getAtlasJWT();
+    const body = await req.json().catch(() => ({}));
+    scope = body.scope as ScopeSelection | undefined;
+  } catch {
+    // scope is optional
+  }
 
-    // Paginate through all endpoint settings
-    const PAGE_SIZE = 100;
-    const all: EndpointRecord[] = [];
-    let offset = 0;
-    while (true) {
-      const page = await atlasGet<EndpointRecord[]>(
-        `/v1/llm-firewall/all-endpoint-settings?limit=${PAGE_SIZE}&offset=${offset}`,
-        token
-      );
-      if (!Array.isArray(page) || page.length === 0) break;
-      all.push(...page);
-      if (page.length < PAGE_SIZE) break;
-      offset += PAGE_SIZE;
-    }
+  const scopeInstruction = scope?.label && scope.label !== "Entire Tenant"
+    ? `Audit ONLY endpoints belonging to this scope: ${scope.label}.${scope.project_ids?.length ? ` Project IDs: ${scope.project_ids.join(", ")}.` : ""} Skip endpoints outside this scope.`
+    : "Audit all LLM endpoints in the entire tenant.";
 
-    if (all.length === 0) {
-      return NextResponse.json({
-        endpoints: [],
-        summary: "No LLM endpoints found in this Atlas tenant.",
-        total: 0,
-      });
-    }
-
-    // Cap at 15 endpoints — keeps Claude output well within token limits
-    const simplified = all.slice(0, 15).map((ep) => ({
-      id: ep.endpoint_identifier ?? "unnamed",
-      proj: ep.project_id ?? null,
-      model: ep.model ?? null,
-      keys: Object.keys(ep).length,
-    }));
-
-    const message = await anthropic.messages.create({
+  try {
+    const response = await anthropic.beta.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
-      system: `You are auditing LLM endpoint configurations in an Atlas AI Security tenant.
+      max_tokens: 2048,
+      betas: ["mcp-client-2025-04-04"],
+      mcp_servers: [
+        {
+          type: "url",
+          name: "atlas",
+          url: ATLAS_MCP_URL,
+          authorization_token: atlasApiKey,
+        },
+      ],
+      system: `You are auditing LLM endpoint configurations in an Atlas AI Security tenant via the Atlas MCP Server.
 
-IMPORTANT: Be extremely concise. Each string field must be under 12 words. missing_policies max 3 items.
+${scopeInstruction}
 
-Respond with ONLY valid JSON (no markdown, no explanation):
+Steps:
+1. Use Atlas MCP tools to fetch all LLM endpoint configurations and their policy settings.
+2. For each endpoint, assess risk based on missing policies, no project assignment, or misconfiguration.
+3. Respond with ONLY this exact JSON (no markdown, no explanation):
 {
   "audited_endpoints": [
     {
-      "identifier": "<string>",
-      "project_id": "<string or null>",
+      "identifier": "<endpoint identifier string>",
+      "project_id": "<project id or null>",
       "risk_level": "<low|medium|high>",
       "risk_reason": "<max 10 words>",
-      "missing_policies": ["<1-3 short policy names>"],
+      "missing_policies": ["<policy name>"],
       "recommendation": "<max 10 words>"
     }
   ],
   "overall_posture": "<max 15 words>",
   "high_risk_count": <integer>,
   "medium_risk_count": <integer>,
-  "low_risk_count": <integer>
-}`,
+  "low_risk_count": <integer>,
+  "total": <total endpoints found>
+}
+
+Keep each string field under 12 words. missing_policies: max 3 items per endpoint.`,
       messages: [
         {
           role: "user",
-          content: `Audit these ${simplified.length} endpoints (${all.length} total in tenant, showing first ${simplified.length}):\n${JSON.stringify(simplified)}`,
+          content: "Run the LLM endpoint audit now using live Atlas data.",
         },
       ],
     });
 
-    const raw = message.content[0].type === "text" ? message.content[0].text : "";
+    const textBlock = response.content.find((b) => b.type === "text");
+    const raw = textBlock?.type === "text" ? textBlock.text : "";
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: "Claude did not return valid JSON", raw }, { status: 502 });
     }
     const result = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ ...result, total: all.length });
+    return NextResponse.json(result);
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
