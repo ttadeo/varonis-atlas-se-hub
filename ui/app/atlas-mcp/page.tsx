@@ -386,7 +386,7 @@ function RiskBriefingCard({ scope }: { scope: ScopeSelection }) {
         signal: abort.signal,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.raw ? `${data.error} | Claude said: ${data.raw}` : (data.error ?? `HTTP ${res.status}`));
       setResult(data as RiskBriefingResult);
     } catch (e) {
       if ((e as Error)?.name === "AbortError") {
@@ -501,7 +501,7 @@ function EndpointAuditCard({ scope }: { scope: ScopeSelection }) {
         signal: abort.signal,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.raw ? `${data.error} | Claude said: ${data.raw}` : (data.error ?? `HTTP ${res.status}`));
       setResult(data as EndpointAuditResult);
     } catch (e) {
       if ((e as Error)?.name === "AbortError") {
@@ -606,7 +606,7 @@ function ShadowAiCard({ scope }: { scope: ScopeSelection }) {
         signal: abort.signal,
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.raw ? `${data.error} | Claude said: ${data.raw}` : (data.error ?? `HTTP ${res.status}`));
       setResult(data as ShadowAiResult);
     } catch (e) {
       if ((e as Error)?.name === "AbortError") {
