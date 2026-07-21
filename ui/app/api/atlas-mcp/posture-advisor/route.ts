@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireAuth } from "@/lib/auth";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({ timeout: 240_000 }); // 4 min — MCP beta needs long connection
 
 const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp/";
 

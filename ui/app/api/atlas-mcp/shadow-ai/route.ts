@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireAuth } from "@/lib/auth";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({ timeout: 180_000 }); // 3 min — MCP beta needs long connection
 const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp/";
 
 interface ScopeSelection {
@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
     ? `Analyze ONLY the following scope for shadow AI risk: ${scope.label}.${scope.project_ids?.length ? ` Project IDs: ${scope.project_ids.join(", ")}.` : ""} Limit your analysis to projects in this scope.`
     : "Analyze the entire tenant for shadow AI risk.";
 
-  // 75s internal timeout — clean exit before Vercel's 120s maxDuration
+  // 100s internal timeout — clean exit before Vercel's 150s maxDuration
   const abort = new AbortController();
-  const timeoutHandle = setTimeout(() => abort.abort(), 75_000);
+  const timeoutHandle = setTimeout(() => abort.abort(), 100_000);
 
   try {
     const response = await anthropic.beta.messages.create(
@@ -55,11 +55,11 @@ ${scopeInstruction}
 
 Shadow AI = AI projects or usage with no registered LLM endpoints in Atlas (unmonitored blind spots).
 
-Steps:
-1. Use Atlas MCP tools to fetch all projects and all registered LLM endpoints.
-2. Cross-reference: projects WITH endpoints are monitored (covered). Projects WITHOUT endpoints are potential shadow AI.
-3. Also check asset inventory if available for discovered AI tools outside Atlas control.
-4. Respond with ONLY this exact JSON (no markdown, no explanation):
+Call Atlas MCP tools directly — do NOT search or explore first. Use call_api_operation to fetch:
+- All projects
+- All registered LLM endpoints
+
+Cross-reference: projects WITH endpoints are monitored. Projects WITHOUT endpoints are shadow AI. Then respond with ONLY this exact JSON (no markdown, no explanation):
 {
   "shadow_risk_score": <integer 0-100, higher = more unmonitored AI>,
   "shadow_risk_level": "<low|medium|high|critical>",

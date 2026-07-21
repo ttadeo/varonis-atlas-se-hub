@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireAuth } from "@/lib/auth";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({ timeout: 180_000 }); // 3 min — MCP beta needs long connection
 const ATLAS_MCP_URL = "https://mcp.prod.alltrue-be.com/mcp/";
 
 interface ScopeSelection {
@@ -31,9 +31,9 @@ export async function POST(req: NextRequest) {
     ? `Audit ONLY endpoints belonging to this scope: ${scope.label}.${scope.project_ids?.length ? ` Project IDs: ${scope.project_ids.join(", ")}.` : ""} Skip endpoints outside this scope.`
     : "Audit all LLM endpoints in the entire tenant.";
 
-  // 75s internal timeout — clean exit before Vercel's 120s maxDuration
+  // 100s internal timeout — clean exit before Vercel's 150s maxDuration
   const abort = new AbortController();
-  const timeoutHandle = setTimeout(() => abort.abort(), 75_000);
+  const timeoutHandle = setTimeout(() => abort.abort(), 100_000);
 
   try {
     const response = await anthropic.beta.messages.create(
@@ -53,10 +53,10 @@ export async function POST(req: NextRequest) {
 
 ${scopeInstruction}
 
-Steps:
-1. Use Atlas MCP tools to fetch all LLM endpoint configurations and their policy settings.
-2. For each endpoint, assess risk based on missing policies, no project assignment, or misconfiguration.
-3. Respond with ONLY this exact JSON (no markdown, no explanation):
+Call Atlas MCP tools directly — do NOT search or explore first. Use call_api_operation to fetch:
+- LLM endpoint configurations and their policy settings
+
+Assess each endpoint's risk based on missing policies, no project assignment, or misconfiguration. Then respond with ONLY this exact JSON (no markdown, no explanation):
 {
   "audited_endpoints": [
     {
