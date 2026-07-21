@@ -68,7 +68,7 @@ You are connected to Atlas in real time via the Atlas MCP Server. Never discuss 
       const response = await anthropic.beta.messages.create(
         {
           model: "claude-sonnet-4-6",
-          max_tokens: 1024,
+          max_tokens: 2048,
           system: systemPrompt,
           betas: ["mcp-client-2025-04-04"],
           mcp_servers: [
@@ -85,12 +85,14 @@ You are connected to Atlas in real time via the Atlas MCP Server. Never discuss 
       );
 
       // Extract final text + which MCP tools were called
+      // Use last text block — earlier text blocks are Claude's intermediate "planning" messages
+      console.log(`[posture-advisor] stop_reason: ${response.stop_reason}, content blocks: ${response.content.length}`);
       let finalText = "";
       const toolsCalled: string[] = [];
 
       for (const block of response.content) {
         if (block.type === "text") {
-          finalText = block.text;
+          finalText = block.text; // intentionally overwrites — last text block is the final answer
         } else if (block.type === "mcp_tool_use") {
           const b = block as { type: "mcp_tool_use"; name: string; input?: Record<string, unknown> };
           const opName = b.input?.operation_id ?? b.input?.operation_name ?? b.input?.name ?? null;
