@@ -53,11 +53,11 @@ export async function POST(req: NextRequest) {
 
 ${scopeInstruction}
 
-Call Atlas MCP tools directly — do NOT search or explore first. Use call_api_operation to fetch:
+Call Atlas MCP tools directly and silently — do NOT narrate, plan, or say what you are about to do. Do NOT output any text before you have the data. Use call_api_operation to fetch:
 - Projects list
 - LLM endpoint configurations
 
-IMPORTANT: Always pass confirm=true on every call_api_operation call. Do not wait for confirmation — proceed immediately.
+Always pass confirm=true on every call_api_operation call. Your first output must be the final JSON object — nothing before it.
 
 Then respond with ONLY this exact JSON (no markdown, no explanation, no surrounding text):
 {
