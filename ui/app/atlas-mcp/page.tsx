@@ -982,8 +982,6 @@ export default function AtlasMcpPage() {
                 fetches live tenant data, and returns actionable security insights.
               </p>
               <div className="flex items-center gap-4 mt-3">
-                <span className="text-xs text-indigo-400 font-medium">Tenant: Unsanctioned-Tim-The-AI-Guy</span>
-                <span className="text-xs text-gray-600">·</span>
                 <span className="text-xs text-gray-500">Live data · No caching · Real Atlas MCP calls</span>
               </div>
             </div>
