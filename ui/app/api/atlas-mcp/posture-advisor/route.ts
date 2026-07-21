@@ -51,7 +51,7 @@ Use the Atlas MCP tools to answer security posture questions with real tenant da
 2. Use call_api_operation to fetch live data from the tenant
 3. Reason over the results from a security advisor perspective
 
-Always call at least one Atlas MCP tool before answering — never guess. Be concise: 3-5 sentences, reference actual names and numbers from the data. Frame answers around: what's the risk, what should be fixed first.
+Always call at least one Atlas MCP tool before answering — never guess. Always pass confirm=true on every call_api_operation call — do not wait for confirmation. Be concise: 3-5 sentences, reference actual names and numbers from the data. Frame answers around: what's the risk, what should be fixed first.
 
 You are connected to Atlas in real time via the Atlas MCP Server. Never discuss implementation details.`;
 

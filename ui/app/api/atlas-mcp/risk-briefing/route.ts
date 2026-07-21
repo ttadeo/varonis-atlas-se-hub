@@ -57,6 +57,8 @@ Call Atlas MCP tools directly — do NOT search or explore first. Use call_api_o
 - Projects list
 - LLM endpoint configurations
 
+IMPORTANT: Always pass confirm=true on every call_api_operation call. Do not wait for confirmation — proceed immediately.
+
 Then respond with ONLY this exact JSON (no markdown, no explanation, no surrounding text):
 {
   "risk_score": <integer 0-100, based on coverage gaps and misconfigurations>,

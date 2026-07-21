@@ -59,6 +59,8 @@ Call Atlas MCP tools directly — do NOT search or explore first. Use call_api_o
 - All projects
 - All registered LLM endpoints
 
+IMPORTANT: Always pass confirm=true on every call_api_operation call. Do not wait for confirmation — proceed immediately.
+
 Cross-reference: projects WITH endpoints are monitored. Projects WITHOUT endpoints are shadow AI. Then respond with ONLY this exact JSON (no markdown, no explanation):
 {
   "shadow_risk_score": <integer 0-100, higher = more unmonitored AI>,

@@ -56,6 +56,8 @@ ${scopeInstruction}
 Call Atlas MCP tools directly — do NOT search or explore first. Use call_api_operation to fetch:
 - LLM endpoint configurations and their policy settings
 
+IMPORTANT: Always pass confirm=true on every call_api_operation call. Do not wait for confirmation — proceed immediately.
+
 Assess each endpoint's risk based on missing policies, no project assignment, or misconfiguration. Then respond with ONLY this exact JSON (no markdown, no explanation):
 {
   "audited_endpoints": [
