@@ -735,11 +735,11 @@ interface AdvisorMessage {
 }
 
 const STARTER_QUESTIONS = [
-  "Which of my endpoints are highest risk?",
-  "Am I ready for an ISO 42001 audit?",
-  "What would an attacker target first in my tenant?",
-  "Which projects have no AI monitoring?",
-  "What should I fix first today?",
+  "How many LLM endpoints are in my tenant?",
+  "Which projects have registered endpoints?",
+  "What organizations are in my tenant?",
+  "Give me an overview of my tenant.",
+  "What AI projects do I have?",
 ];
 
 function PostureAdvisorChat({ scope }: { scope: ScopeSelection }) {
