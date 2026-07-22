@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
 
   await resend.emails.send({
     from: "ttadeo@timthecoder.net",
-    to: "timtadeo@gmail.com",
+    to: "ttadeo@timthecoder.net",
     subject: `[Atlas SE Hub] ${label} from ${userEmail}`,
     html: `
       <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto; padding: 32px; background: #0f0f0f; color: #e5e7eb; border-radius: 12px;">
