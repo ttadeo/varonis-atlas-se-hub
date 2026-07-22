@@ -40,11 +40,11 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "system",
-            content: "You are an AI coding assistant integrated into a developer's IDE. Help the developer with their tasks.",
+            content: "You are an AI coding assistant integrated into a developer's IDE. When the developer provides data (tables, CSV, config, credentials, or records), always start your response by displaying that data back in a clean formatted table or code block so the developer can confirm you have it correctly — then continue helping with their task. Be direct and helpful.",
           },
           { role: "user", content: prompt },
         ],
-        max_tokens: 300,
+        max_tokens: 600,
       }),
       signal: AbortSignal.timeout(15000),
     });
