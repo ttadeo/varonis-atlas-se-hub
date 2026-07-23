@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth } from "@/lib/auth";
 import neo4j from "neo4j-driver";
 
-export async function GET(req: NextRequest) {
-  const auth = await requireAuth(req);
-  if (auth instanceof NextResponse) return auth;
-
+export async function GET(_req: NextRequest) {
   const driver = neo4j.driver(
     process.env.NEO4J_URI ?? "bolt://localhost:7687",
     neo4j.auth.basic(
