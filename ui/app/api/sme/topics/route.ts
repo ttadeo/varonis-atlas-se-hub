@@ -3,7 +3,7 @@ import { requireAuth } from "@/lib/auth";
 
 const NEO4J_URL = process.env.NEO4J_HTTP_URL ?? "https://uncompendious-unpurchased-shanita.ngrok-free.dev";
 const NEO4J_USER = process.env.NEO4J_USER ?? "neo4j";
-const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD ?? "ttadeo123";
+const NEO4J_PASSWORD = process.env.NEO4J_PASSWORD ?? "";
 
 const QUERY = `
 MATCH (n:SMEKnowledge)
