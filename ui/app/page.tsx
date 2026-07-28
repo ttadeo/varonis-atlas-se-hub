@@ -169,12 +169,12 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
-                <p className="text-xs font-semibold text-white mb-1">📄 Atlas v3.5.0 Docs</p>
-                <p className="text-xs text-gray-400">Knowledge base updated — Coding Agent Protection, IBAC, Atlas MCP Server, Log Sources, Shadow AI.</p>
+                <p className="text-xs font-semibold text-white mb-1">📄 Atlas v3.6.0 Docs</p>
+                <p className="text-xs text-gray-400">Knowledge base updated — Require Approval, Agent Manifest, Salesforce Agentforce, MCP credentials, AI SPM Sensitive Data policies.</p>
               </div>
               <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
-                <p className="text-xs font-semibold text-white mb-1">📚 5 New Lessons</p>
-                <p className="text-xs text-gray-400">Coding Agents tier added — hook architecture, fleet deployment, log sources, intent drift, and Atlas MCP Server.</p>
+                <p className="text-xs font-semibold text-white mb-1">📚 L23 Updated</p>
+                <p className="text-xs text-gray-400">What's New lesson rewritten for v3.6.0 — human-in-the-loop enforcement, Agent Manifest, OTel export, and sensitive data governance.</p>
               </div>
               <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
                 <p className="text-xs font-semibold text-white mb-1">🎯 Agentic Demo Expanded</p>
