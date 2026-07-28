@@ -52,21 +52,21 @@ export default function Home() {
                 <button onClick={() => setTruelensOpen(false)} className="text-gray-500 hover:text-gray-300 text-xs">✕</button>
               </div>
               <div className="px-5 py-4 space-y-4">
-                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.5.0 docs, July 2026.</span></p>
+                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.6.0 docs, July 2026.</span></p>
 
                 <div className="grid grid-cols-3 gap-3">
                   <div className="rounded-lg border border-emerald-800/60 bg-emerald-900/15 px-4 py-3 text-center">
-                    <div className="text-2xl font-bold text-emerald-400">1.000</div>
+                    <div className="text-2xl font-bold text-emerald-400">0.987</div>
                     <div className="text-xs font-semibold text-gray-300 mt-1">Answer Relevance</div>
                     <div className="text-xs text-gray-500 mt-1">Answers directly address what was asked</div>
                   </div>
                   <div className="rounded-lg border border-emerald-800/60 bg-emerald-900/15 px-4 py-3 text-center">
-                    <div className="text-2xl font-bold text-emerald-400">0.994</div>
+                    <div className="text-2xl font-bold text-emerald-400">1.000</div>
                     <div className="text-xs font-semibold text-gray-300 mt-1">Context Relevance</div>
                     <div className="text-xs text-gray-500 mt-1">System retrieves the right knowledge to answer</div>
                   </div>
                   <div className="rounded-lg border border-amber-800/60 bg-amber-900/10 px-4 py-3 text-center">
-                    <div className="text-2xl font-bold text-amber-400">0.732</div>
+                    <div className="text-2xl font-bold text-amber-400">0.777</div>
                     <div className="text-xs font-semibold text-gray-300 mt-1">Groundedness</div>
                     <div className="text-xs text-gray-500 mt-1">Answers stay within retrieved content</div>
                   </div>
@@ -74,7 +74,7 @@ export default function Home() {
 
                 <div className="rounded-lg border border-amber-800/50 bg-amber-900/10 px-4 py-3 space-y-1">
                   <p className="text-xs font-semibold text-amber-400">Groundedness — Active Optimization Target</p>
-                  <p className="text-xs text-gray-400">The system occasionally adds context beyond what the retrieved chunks strictly support — drawing on general LLM knowledge rather than staying purely within the Atlas documentation. We are actively tightening the RAG system prompt and context framing to constrain answers to retrieved content only.</p>
+                  <p className="text-xs text-gray-400">The system occasionally adds context beyond what the retrieved chunks strictly support — drawing on general LLM knowledge rather than staying purely within the Atlas documentation. Groundedness has improved from 0.732 → 0.777 with the v3.6.0 knowledge base update.</p>
                 </div>
 
                 <div className="rounded-lg bg-gray-800/60 border border-gray-700 px-4 py-3">
