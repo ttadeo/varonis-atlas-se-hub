@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import HelpPanel from "@/components/HelpPanel";
 
@@ -92,11 +92,41 @@ function BarRow({ label, count, max, color }: { label: string; count: number; ma
   );
 }
 
+interface OptimizeProgress {
+  run_id: string;
+  status: "running" | "complete";
+  iteration: number;
+  total_iterations: number;
+  baseline_score: number;
+  current_best: number;
+  improvements: number;
+  started_at: string;
+  log: string[];
+}
+
+interface OptimizeResult {
+  run_id: string;
+  baseline_score: number;
+  final_score: number;
+  improvement: number;
+  iterations_run: number;
+  improvements_found: number;
+  change_log: { iteration: number; score: number; delta: number }[];
+  completed_at: string;
+}
+
 export default function AnalyticsPage() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [helpOpen, setHelpOpen] = useState(false);
+
+  // Optimize RAG state
+  const [optProgress, setOptProgress]   = useState<OptimizeProgress | null>(null);
+  const [optResult, setOptResult]       = useState<OptimizeResult | null>(null);
+  const [optPending, setOptPending]     = useState(false);
+  const [optTriggering, setOptTriggering] = useState(false);
+  const [optError, setOptError]         = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/analytics")
@@ -108,6 +138,45 @@ export default function AnalyticsPage() {
       .catch((e) => setError(String(e)))
       .finally(() => setLoading(false));
   }, []);
+
+  const fetchOptStatus = useCallback(async () => {
+    try {
+      const r = await fetch("/api/optimize/status");
+      const d = await r.json();
+      setOptProgress(d.progress);
+      setOptResult(d.result);
+      setOptPending(d.pending);
+    } catch {
+      // silently ignore
+    }
+  }, []);
+
+  // Poll status every 5s when running or pending
+  useEffect(() => {
+    fetchOptStatus();
+    const interval = setInterval(() => {
+      if (optProgress?.status === "running" || optPending) {
+        fetchOptStatus();
+      }
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [fetchOptStatus, optProgress?.status, optPending]);
+
+  async function triggerOptimize() {
+    setOptTriggering(true);
+    setOptError(null);
+    try {
+      const r = await fetch("/api/optimize/trigger", { method: "POST" });
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.error || "Failed to trigger");
+      setOptPending(true);
+      await fetchOptStatus();
+    } catch (e) {
+      setOptError(String(e));
+    } finally {
+      setOptTriggering(false);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
@@ -285,6 +354,120 @@ export default function AnalyticsPage() {
             </div>
           </>
         )}
+
+        {/* ── Optimize RAG ─────────────────────────────────────────── */}
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-5">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">RAG Prompt Optimizer</h2>
+              <p className="text-xs text-gray-600 mt-1">
+                Autoresearch-inspired loop — iteratively edits the system prompt, scores groundedness with Haiku,
+                keeps improvements. ~$4–6 per run.
+              </p>
+            </div>
+            <button
+              onClick={triggerOptimize}
+              disabled={optTriggering || optProgress?.status === "running" || optPending}
+              className="text-xs font-semibold px-4 py-2 rounded-lg bg-purple-700 hover:bg-purple-600 disabled:bg-gray-700 disabled:text-gray-500 text-white transition-colors shrink-0 ml-4"
+            >
+              {optTriggering ? "Requesting..." : optPending ? "Pending..." : optProgress?.status === "running" ? "Running..." : "Optimize RAG"}
+            </button>
+          </div>
+
+          {/* TrueLens baseline scores */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { label: "Answer Relevance", score: 0.987 },
+              { label: "Context Relevance", score: 1.000 },
+              { label: "Groundedness", score: 0.777 },
+            ].map(({ label, score }) => (
+              <div key={label} className="bg-gray-800/60 border border-gray-700 rounded-lg px-3 py-2.5 text-center">
+                <div className={`text-lg font-bold ${score >= 0.95 ? "text-emerald-400" : "text-amber-400"}`}>
+                  {score.toFixed(3)}
+                </div>
+                <div className="text-xs text-gray-500 mt-0.5">{label}</div>
+                <div className="text-xs text-gray-700 mt-0.5">v3.6.0 baseline</div>
+              </div>
+            ))}
+          </div>
+
+          {optError && (
+            <div className="text-xs text-red-400 bg-red-900/20 border border-red-800 rounded-lg px-3 py-2">
+              {optError}
+            </div>
+          )}
+
+          {optPending && !optProgress && (
+            <div className="text-xs text-amber-400 bg-amber-900/10 border border-amber-800/40 rounded-lg px-3 py-2">
+              Trigger sent — run <span className="font-mono">python evals/optimize_rag_prompt.py --watch</span> on your Mac to start.
+            </div>
+          )}
+
+          {/* Live progress */}
+          {optProgress && (
+            <div className="bg-gray-800/50 border border-gray-700 rounded-lg p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-gray-300">
+                  {optProgress.status === "running" ? (
+                    <span className="text-purple-400">Running — iteration {optProgress.iteration}/{optProgress.total_iterations}</span>
+                  ) : (
+                    <span className="text-emerald-400">Complete</span>
+                  )}
+                </span>
+                <span className="text-xs text-gray-500">
+                  {optProgress.improvements} improvement{optProgress.improvements !== 1 ? "s" : ""} found
+                </span>
+              </div>
+
+              {/* Score bars */}
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500 w-20 shrink-0">Baseline</span>
+                <div className="flex-1 bg-gray-700 rounded-full h-1.5">
+                  <div className="bg-amber-500 h-1.5 rounded-full" style={{ width: `${optProgress.baseline_score * 100}%` }} />
+                </div>
+                <span className="text-xs text-gray-400 w-10 text-right">{optProgress.baseline_score.toFixed(3)}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-gray-500 w-20 shrink-0">Best so far</span>
+                <div className="flex-1 bg-gray-700 rounded-full h-1.5">
+                  <div className="bg-emerald-500 h-1.5 rounded-full" style={{ width: `${optProgress.current_best * 100}%` }} />
+                </div>
+                <span className="text-xs text-gray-400 w-10 text-right">{optProgress.current_best.toFixed(3)}</span>
+              </div>
+
+              {/* Log */}
+              {optProgress.log.length > 0 && (
+                <div className="font-mono text-xs text-gray-500 space-y-0.5 max-h-32 overflow-y-auto">
+                  {optProgress.log.slice(-10).map((line, i) => (
+                    <div key={i}>{line}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Final result */}
+          {optResult && optProgress?.status === "complete" && (
+            <div className={`rounded-lg border px-4 py-3 space-y-1 ${
+              optResult.improvement > 0
+                ? "border-emerald-800/50 bg-emerald-900/10"
+                : "border-gray-700 bg-gray-800/40"
+            }`}>
+              <p className={`text-xs font-semibold ${optResult.improvement > 0 ? "text-emerald-400" : "text-gray-400"}`}>
+                {optResult.improvement > 0
+                  ? `Groundedness improved: ${optResult.baseline_score.toFixed(3)} → ${optResult.final_score.toFixed(3)} (+${optResult.improvement.toFixed(3)})`
+                  : `No improvement found — baseline prompt unchanged (${optResult.baseline_score.toFixed(3)})`}
+              </p>
+              <p className="text-xs text-gray-500">
+                {optResult.iterations_run} iterations · {optResult.improvements_found} improvements · completed {new Date(optResult.completed_at).toLocaleString()}
+              </p>
+              {optResult.improvement > 0 && (
+                <p className="text-xs text-emerald-600">Winning prompt is live in KV — n8n uses it for all production requests.</p>
+              )}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
