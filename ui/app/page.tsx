@@ -173,8 +173,8 @@ export default function Home() {
                 <p className="text-xs text-gray-400">Knowledge base updated — Require Approval, Agent Manifest, Salesforce Agentforce, MCP credentials, AI SPM Sensitive Data policies.</p>
               </div>
               <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
-                <p className="text-xs font-semibold text-white mb-1">📚 L23 Updated</p>
-                <p className="text-xs text-gray-400">What's New lesson rewritten for v3.6.0 — human-in-the-loop enforcement, Agent Manifest, OTel export, and sensitive data governance.</p>
+                <p className="text-xs font-semibold text-white mb-1">📚 3 New Lessons</p>
+                <p className="text-xs text-gray-400">Agent Manifest & Governance, AI TPRM, and AI SPM Sensitive Data Policies — plus L23 rewritten for v3.6.0.</p>
               </div>
               <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
                 <p className="text-xs font-semibold text-white mb-1">🎯 Agentic Demo Expanded</p>
@@ -236,7 +236,7 @@ export default function Home() {
                 Structured course covering Atlas fundamentals — Beginner, Intermediate, and Advanced tiers. Now includes a Coding Agents tier covering hooks, fleet deployment, IBAC, and Atlas MCP Server.
               </p>
               <p className="text-xs text-blue-400 mt-4 group-hover:text-blue-300">
-                28 lessons · 3 tiers →
+                31 lessons · 3 tiers →
               </p>
             </Link>
 
