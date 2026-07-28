@@ -94,8 +94,8 @@
     "lesson_id": 6,
     "lesson_title": "Guardrails & Built-in Rules",
     "question_type": "follow_up",
-    "question": "What is the OWASP LLM Top 10 policy template in Atlas?",
-    "expected_topics": ["OWASP", "LLM Top 10", "template", "quick start", "prompt injection", "policy"]
+    "question": "What are policy templates in Atlas, and which security frameworks do the built-in templates align with?",
+    "expected_topics": ["policy template", "OWASP LLM Top 10", "recommended guardrails", "one click", "predefined", "runtime protection"]
   },
   {
     "lesson_id": 7,
@@ -311,7 +311,7 @@
     "lesson_id": 100,
     "lesson_title": "V3.3.0 — Claude Code & Cursor Runtime Enforcement",
     "question_type": "version_check",
-    "question": "A customer's developers are using Claude Code and Cursor as AI coding assistants. What does Atlas V3.3.0 now provide for these tools?",
+    "question": "A customer's developers are using Claude Code and Cursor as AI coding assistants. How does Atlas enforce runtime policies on these tools, and what are the two integration mechanisms used?",
     "expected_topics": ["Claude Code", "Cursor", "runtime enforcement", "plugin", "hooks", "governance", "visibility", "policy"]
   },
   {
@@ -325,8 +325,8 @@
     "lesson_id": 100,
     "lesson_title": "V3.3.0 — MCP Enhancements",
     "question_type": "version_check",
-    "question": "What new MCP server registration capabilities were added in Atlas V3.3.0?",
-    "expected_topics": ["STDIO", "MCP server", "OAuth", "registration", "credentials", "VMCP", "governance"]
+    "question": "What are STDIO and OAuth MCP server registration in Atlas, and in which version were these capabilities introduced?",
+    "expected_topics": ["STDIO", "MCP server", "OAuth", "registration", "credentials", "V3.3.0", "authentication"]
   },
   {
     "lesson_id": 100,
@@ -346,8 +346,8 @@
     "lesson_id": 101,
     "lesson_title": "AI MCP Security",
     "question_type": "check_question",
-    "question": "What is a Virtual MCP in Atlas and why would an SE recommend it to a customer deploying AI agents?",
-    "expected_topics": ["Virtual MCP", "VMCP", "governed", "proxy", "tool access", "policy", "MCP server", "agents"]
+    "question": "What is a Virtual MCP (VMCP) in Atlas and how does it help control which tools are available to AI agents at runtime?",
+    "expected_topics": ["Virtual MCP", "VMCP", "allowlist", "curated", "tool sprawl", "MCP Quarantine", "approved tools", "runtime"]
   },
   {
     "lesson_id": 101,
