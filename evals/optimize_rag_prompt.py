@@ -3,12 +3,16 @@ Atlas RAG Prompt Optimizer
 ===========================
 Inspired by Karpathy's autoresearch pattern:
   - One modifiable thing:  the RAG system prompt
-  - One metric:            TrueLens groundedness (scored by Haiku — fast + cheap)
+  - One metric:            TrueLens groundedness (GPT-4o-mini — same judge as full eval)
   - Loop:                  suggest edit → test → keep if better → discard if worse
+
+Why TrueLens instead of a simple judge prompt?
+  TrueLens decomposes answers into individual claims and scores each claim separately.
+  Simple "score this 0-1" prompts score everything ~1.0 — proven useless as a proxy.
 
 Connects to the existing Atlas infrastructure:
   - n8n atlas-rag-query webhook  → generates answers with candidate prompt
-  - Neo4j (direct bolt)          → retrieves context for groundedness scoring
+  - Neo4j (direct bolt)          → retrieves context for TrueLens scoring
   - Upstash KV                   → stores best prompt, live progress, trigger requests
   - Vercel /analytics            → trigger button + live progress UI
 
@@ -16,7 +20,7 @@ Usage:
   python evals/optimize_rag_prompt.py           # run immediately
   python evals/optimize_rag_prompt.py --watch   # poll KV for trigger from Vercel UI
 
-Cost: ~$4–6 per full run (Haiku scoring + Sonnet suggestions + n8n calls)
+Cost: ~$10–15 per full run (TrueLens GPT-4o-mini scoring + Sonnet suggestions)
 """
 
 import os, json, time, argparse, requests, csv
@@ -26,6 +30,7 @@ from anthropic import Anthropic
 from openai import OpenAI
 from neo4j import GraphDatabase
 from dotenv import load_dotenv
+from trulens.providers.openai import OpenAI as TruOpenAI
 
 _DIR = Path(__file__).parent
 load_dotenv(_DIR / ".env")
@@ -50,7 +55,6 @@ WATCH_INTERVAL  = 30   # seconds between KV polls in --watch mode
 NO_IMPROVE_STOP = 5    # early-stop after this many consecutive non-improving iterations
 
 SUGGEST_MODEL = "claude-sonnet-4-6"
-SCORE_MODEL   = "claude-haiku-4-5-20251001"
 
 # Upstash KV keys
 KV_SYSTEM_PROMPT = "rag:system_prompt_ask"   # production prompt (used by n8n for all real users)
@@ -164,37 +168,22 @@ def retrieve_context(question: str, openai_client: OpenAI) -> str:
     return "\n\n---\n\n".join(chunks) if chunks else "(no context retrieved)"
 
 
-# ── Haiku groundedness scoring ────────────────────────────────────────────────
+# ── TrueLens groundedness scoring (GPT-4o-mini — same judge as full eval) ─────
 
-GROUNDEDNESS_PROMPT = """\
-You are an objective evaluator assessing whether an AI-generated answer is grounded \
-in the provided source context.
-
-Score 0.0 to 1.0:
-- 1.0: Every factual claim in the answer is explicitly supported by the source context
-- 0.7: Most claims supported; minor inferences or bridging statements present
-- 0.5: Some claims supported, others drawn from general knowledge
-- 0.3: Significant claims not in the source context
-- 0.0: Substantial information not present in the source context
-
-Source context:
-{context}
-
-Answer:
-{answer}
-
-Respond with ONLY a single float between 0.0 and 1.0. No explanation."""
-
-
-def score_groundedness(context: str, answer: str, client: Anthropic) -> float:
-    prompt = GROUNDEDNESS_PROMPT.format(context=context[:3000], answer=answer[:2000])
+def score_groundedness(context: str, answer: str, provider: TruOpenAI) -> float:
+    """
+    Score groundedness using TrueLens claim decomposition.
+    Same method as run_evals.py — decomposes answer into individual claims,
+    scores each against context, averages. Far more accurate than a holistic prompt.
+    """
     try:
-        msg = client.messages.create(
-            model=SCORE_MODEL,
-            max_tokens=10,
-            messages=[{"role": "user", "content": prompt}],
+        score = provider.groundedness_measure_with_cot_reasons(
+            source=context, statement=answer
         )
-        return float(msg.content[0].text.strip())
+        # Returns (score, reasons_dict) or just score depending on TrueLens version
+        if isinstance(score, tuple):
+            score = score[0]
+        return float(score)
     except Exception:
         return 0.5  # neutral on scoring error
 
@@ -308,10 +297,11 @@ def run_mini_eval(
     questions: list,
     prompt_template: str,
     openai_client: OpenAI,
-    anthropic_client: Anthropic,
+    provider: TruOpenAI,
 ) -> tuple[float, list]:
     """
     Run eval on questions with a candidate prompt template.
+    Uses TrueLens GPT-4o-mini claim decomposition — same judge as full eval.
     Returns (avg_groundedness, per_question_results).
     """
     results = []
@@ -319,17 +309,17 @@ def run_mini_eval(
         question = q["question"]
         print(f"    [{i}/{len(questions)}] {question[:55]}...", end=" ", flush=True)
 
-        # Retrieve context (for groundedness scoring — same query as n8n uses)
+        # Retrieve context (same vector search as n8n uses)
         context = retrieve_context(question, openai_client)
 
         # Get answer from n8n using candidate prompt
         answer = get_answer_with_prompt(question, prompt_template)
         if answer.startswith("[ERROR"):
-            print(f"ERROR → skipping")
+            print("ERROR → skipping")
             continue
 
-        # Score groundedness with Haiku
-        score = score_groundedness(context, answer, anthropic_client)
+        # Score groundedness with TrueLens (GPT-4o-mini claim decomposition)
+        score = score_groundedness(context, answer, provider)
         print(f"GR={score:.2f}")
         results.append({"question": question, "groundedness": score, "answer": answer, "context": context})
 
@@ -352,6 +342,7 @@ def run_optimizer():
 
     openai_client    = OpenAI(api_key=OPENAI_API_KEY)
     anthropic_client = Anthropic(api_key=ANTHROPIC_API_KEY)
+    provider         = TruOpenAI(api_key=OPENAI_API_KEY)
 
     # 1. Load worst questions
     print("\n[1/4] Loading worst-performing questions from latest eval...")
@@ -371,8 +362,9 @@ def run_optimizer():
 
     # 3. Baseline score
     print(f"\n[3/4] Scoring baseline on {len(worst_questions)} worst questions...")
+    print(f"  (Using TrueLens GPT-4o-mini claim decomposition — same judge as full eval)")
     baseline_score, baseline_results = run_mini_eval(
-        worst_questions, current_prompt, openai_client, anthropic_client
+        worst_questions, current_prompt, openai_client, provider
     )
     print(f"\n  Baseline groundedness: {baseline_score:.3f}")
 
@@ -415,7 +407,7 @@ def run_optimizer():
             # Test candidate
             print(f"  → Testing candidate ({len(candidate_prompt)} chars)...")
             candidate_score, candidate_results = run_mini_eval(
-                worst_questions, candidate_prompt, openai_client, anthropic_client
+                worst_questions, candidate_prompt, openai_client, provider
             )
             delta = candidate_score - best_score
 
