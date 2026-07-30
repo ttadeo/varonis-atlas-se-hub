@@ -48,6 +48,94 @@
     "file": "overview/gui_navigation.md"
   },
   {
+    "title": "AI 360",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_360",
+    "section": "applications",
+    "path": "applications/ai_360",
+    "status": "success",
+    "file": "applications/ai_360.md"
+  },
+  {
+    "title": "AI Inventory",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_inventory",
+    "section": "applications",
+    "path": "applications/ai_inventory",
+    "status": "success",
+    "file": "applications/ai_inventory.md"
+  },
+  {
+    "title": "AI Usage",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_usage",
+    "section": "applications",
+    "path": "applications/ai_usage",
+    "status": "success",
+    "file": "applications/ai_usage.md"
+  },
+  {
+    "title": "AI SPM",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_spm",
+    "section": "applications",
+    "path": "applications/ai_spm",
+    "status": "success",
+    "file": "applications/ai_spm.md"
+  },
+  {
+    "title": "AI Runtime",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_gateway",
+    "section": "applications",
+    "path": "applications/ai_gateway",
+    "status": "success",
+    "file": "applications/ai_runtime.md"
+  },
+  {
+    "title": "AI MCP",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_mcp",
+    "section": "applications",
+    "path": "applications/ai_mcp",
+    "status": "success",
+    "file": "applications/ai_mcp.md"
+  },
+  {
+    "title": "AI Investigation",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_monitor",
+    "section": "applications",
+    "path": "applications/ai_monitor",
+    "status": "success",
+    "file": "applications/ai_investigation.md"
+  },
+  {
+    "title": "Compliance Compass",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_compliance",
+    "section": "applications",
+    "path": "applications/ai_compliance",
+    "status": "success",
+    "file": "applications/compliance_compass.md"
+  },
+  {
+    "title": "AI Red Team",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_red_team",
+    "section": "applications",
+    "path": "applications/ai_red_team",
+    "status": "success",
+    "file": "applications/ai_red_team.md"
+  },
+  {
+    "title": "AI Incidents",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_incidents",
+    "section": "applications",
+    "path": "applications/ai_incidents",
+    "status": "success",
+    "file": "applications/ai_incidents.md"
+  },
+  {
+    "title": "AI Third-Party Risk Management",
+    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_tprm",
+    "section": "applications",
+    "path": "applications/ai_tprm",
+    "status": "success",
+    "file": "applications/ai_third_party_risk_management.md"
+  },
+  {
     "title": "Admin Console",
     "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/",
     "section": "admin_console",
@@ -118,6 +206,38 @@
     "path": "admin_console/data_plane",
     "status": "success",
     "file": "admin_console/data_plane.md"
+  },
+  {
+    "title": "Azure \u2014 Direct Deploy (Portal)",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/data_plane/azure_direct_deploy_portal",
+    "section": "admin_console",
+    "path": "admin_console/data_plane/azure_direct_deploy_portal",
+    "status": "success",
+    "file": "admin_console/azure_direct_deploy_portal.md"
+  },
+  {
+    "title": "Azure \u2014 Deploy by Command (CLI)",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/data_plane/azure_deploy_by_command_cli",
+    "section": "admin_console",
+    "path": "admin_console/data_plane/azure_deploy_by_command_cli",
+    "status": "success",
+    "file": "admin_console/azure_deploy_by_command_cli.md"
+  },
+  {
+    "title": "AWS \u2014 Direct Deploy (Console)",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/data_plane/aws_direct_deploy_console",
+    "section": "admin_console",
+    "path": "admin_console/data_plane/aws_direct_deploy_console",
+    "status": "success",
+    "file": "admin_console/aws_direct_deploy_console.md"
+  },
+  {
+    "title": "AWS \u2014 Deploy by Command (CLI)",
+    "url": "https://prod.alltrue-be.com/_docs/docs/admin_console/data_plane/aws_deploy_by_command_cli",
+    "section": "admin_console",
+    "path": "admin_console/data_plane/aws_deploy_by_command_cli",
+    "status": "success",
+    "file": "admin_console/aws_deploy_by_command_cli.md"
   },
   {
     "title": "Runtime Evaluator LLM",
@@ -360,6 +480,14 @@
     "file": "log_sources/aws_bedrock.md"
   },
   {
+    "title": "Salesforce Agentforce",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/salesforce_agentforce",
+    "section": "log_sources",
+    "path": "log_sources/salesforce_agentforce",
+    "status": "success",
+    "file": "log_sources/salesforce_agentforce.md"
+  },
+  {
     "title": "Shadow AI Usage Monitoring",
     "url": "https://prod.alltrue-be.com/_docs/docs/shadow_ai_usage_monitoring/overview",
     "section": "shadow_ai_usage_monitoring",
@@ -446,6 +574,14 @@
     "path": "",
     "status": "success",
     "file": "/graphql_api_reference.md"
+  },
+  {
+    "title": "What's New in V3.6.0",
+    "url": "https://prod.alltrue-be.com/_docs/docs/release_notes/360",
+    "section": "release_notes",
+    "path": "release_notes/360",
+    "status": "success",
+    "file": "release_notes/whats_new_in_v360.md"
   },
   {
     "title": "What's New in V3.5.0",
@@ -646,94 +782,6 @@
     "path": "overview/platform_and_applications#applications",
     "status": "success",
     "file": "overview/platform_and_applications_overview.md"
-  },
-  {
-    "title": "AI 360",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_360",
-    "section": "applications",
-    "path": "applications/ai_360",
-    "status": "success",
-    "file": "applications/ai_360.md"
-  },
-  {
-    "title": "AI Inventory",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_inventory",
-    "section": "applications",
-    "path": "applications/ai_inventory",
-    "status": "success",
-    "file": "applications/ai_inventory.md"
-  },
-  {
-    "title": "AI Usage",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_usage",
-    "section": "applications",
-    "path": "applications/ai_usage",
-    "status": "success",
-    "file": "applications/ai_usage.md"
-  },
-  {
-    "title": "AI Red Team",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_red_team",
-    "section": "applications",
-    "path": "applications/ai_red_team",
-    "status": "success",
-    "file": "applications/ai_red_team.md"
-  },
-  {
-    "title": "AI SPM",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_spm",
-    "section": "applications",
-    "path": "applications/ai_spm",
-    "status": "success",
-    "file": "applications/ai_spm.md"
-  },
-  {
-    "title": "AI Runtime",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_gateway",
-    "section": "applications",
-    "path": "applications/ai_gateway",
-    "status": "success",
-    "file": "applications/ai_runtime.md"
-  },
-  {
-    "title": "AI MCP",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_mcp",
-    "section": "applications",
-    "path": "applications/ai_mcp",
-    "status": "success",
-    "file": "applications/ai_mcp.md"
-  },
-  {
-    "title": "AI Investigation",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_monitor",
-    "section": "applications",
-    "path": "applications/ai_monitor",
-    "status": "success",
-    "file": "applications/ai_investigation.md"
-  },
-  {
-    "title": "Compliance Compass",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_compliance",
-    "section": "applications",
-    "path": "applications/ai_compliance",
-    "status": "success",
-    "file": "applications/compliance_compass.md"
-  },
-  {
-    "title": "AI Third-Party Risk Management",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_tprm",
-    "section": "applications",
-    "path": "applications/ai_tprm",
-    "status": "success",
-    "file": "applications/ai_third_party_risk_management.md"
-  },
-  {
-    "title": "AI Incidents",
-    "url": "https://prod.alltrue-be.com/_docs/docs/applications/ai_incidents",
-    "section": "applications",
-    "path": "applications/ai_incidents",
-    "status": "success",
-    "file": "applications/ai_incidents.md"
   },
   {
     "title": "Platform and Applications Overview",

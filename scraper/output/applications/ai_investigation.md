@@ -44,11 +44,12 @@ AI Investigation uses aggregated data for dashboard-style views and supports dri
 **Data freshness.** Aggregated dashboard charts lag real time by approximately five minutes. Alerts are evaluated only after the relevant interval window completes, so the platform can assess the full bucket accurately before raising a signal. A brief gap at the leading edge of a chart is expected and does not indicate missing data.
 
 ## AI Investigation at a glance[​](#ai-investigation-at-a-glance)
-AI Investigation is organized into five main areas:
+AI Investigation is organized into six main areas:
 
 - **Dashboard** — Monitor quality and performance over time, configure alerts, and drill into suspicious intervals.
 - **Sessions** — Reconstruct end-to-end AI interactions to understand prompts, tool activity, responses, and policy actions in context.
 - **Events** — Inspect individual runtime events, including Prompt Events and Access Events.
+- **Quarantines** — Review and manage quarantines created when a policy fires, and see what each one blocked.
 - **Issues** — Review alert-driven issues, prioritize investigation, and track resolution.
 - **Reports** — Export AI Investigation issue history for review and follow-up.
 
@@ -192,10 +193,100 @@ Opening an issue shows the alert instances associated with it. This helps you un
 - how many alert instances are attached to the issue
 - where to click to investigate the exact interval that triggered it.
 
-From here, you can jump directly into the detailed event data for the exact time bucket and continue the investigation.
+From here, you can jump directly into the detailed event data for the exact time bucket to continue the investigation.
+
+### Assess tab: why an issue triggered[​](#assess-tab-why-an-issue-triggered)
+The **Assess** tab explains why an issue was created. It is part of the **AI Runtime → Issues** view (see [AI Runtime](/_docs/docs/applications/ai_gateway#issues)) and appears when the issue has a trigger reason or supporting evidence to show. The AI Investigation per-event Assess view (below) presents the same reason-and-evidence model, described here.
+
+The Assess tab presents:
+
+- **A human-readable reason** the policy fired, explaining what condition was detected.
+- **Supporting context** — the specific detected values that matched, such as a PII pattern, a banned substring, or a regex match.
+- **Detected values** are capped at 100 characters for display purposes.
+
+The tab automatically chooses which combination to show based on what the runtime policy provided — reason and evidence, reason only, or evidence only.
+
+#### Intent-misalignment issues[​](#intent-misalignment-issues)
+Issues from Intent-Based Access Control policies render a different panel on the Assess tab. Instead of the generic trigger reason and evidence model, these issues show a side-by-side comparison of:
+
+- **Request Scope** — the declared or intended scope of the request
+- **Observed Action Scope** — the scope of actions actually observed at runtime. This column is hidden when the issue has no observed-action tags.
+- **Reason for Mismatch** — an explanation of why the observed actions did not align with the declared intent. It appears only when a reason is available.
+
+This variant helps teams understand when runtime tool usage, data access, or other actions diverged from what the request originally declared or intended.
 
 ### Issue lifecycle[​](#issue-lifecycle)
 After review, an issue can be closed and marked according to your investigation outcome. If a new related alert fires later, the issue is reopened so you can review the new activity. This keeps issue history continuous while still making it clear that something new occurred.
+
+## Quarantines[​](#quarantines)
+The Quarantines page lets you review and manage quarantines created when Session or Monitoring policies fire. A quarantine is an investigation action that blocks subsequent requests matching a quarantined identity or session attribute for a defined period. Unlike the inline AI Runtime guardrails that evaluate individual request content, a quarantine targets requests based on who or what initiated them — such as a specific user email, user IP, session, or application.
+
+### What a quarantine is and how it is created[​](#what-a-quarantine-is-and-how-it-is-created)
+Quarantines are created automatically by the system when a Session or Monitoring policy fires. The policy evaluates runtime behavior according to configured conditions, and when a threshold is crossed, the system creates a time-boxed quarantine targeting the identity or session attribute configured in that policy. The quarantine remains active for the specified duration unless you make it permanent or lift it manually.
+
+The quarantine detail shows **Created by: System (triggered by runtime policy)** to reflect this automatic origin.
+
+### Quarantines list[​](#quarantines-list)
+The Quarantines page displays all active and historical quarantines for the selected AI System.
+
+The list includes the following columns:
+
+- **Resource** — the AI System affected by the quarantine.
+- **Status** — **Active** (currently blocking), **Inactive** (expired or lifted), or **Permanent** (no expiration; blocks until manually removed).
+- **Scope** — **Resource-wide** (affects all requests to the resource), or a specific attribute type and value (such as User Email + a specific address). A quarantine scoped to an identity attribute blocks only requests where that attribute matches the quarantined value.
+- **Trigger** — the detection that caused the quarantine to be created. Trigger types include **PII**, **Prompt Injection Detection**, **Prevent Leakage**, **Prevent Jailbreak**, **Prohibit Topics**, **Prevent Toxicity Rule**, **Prevent Obfuscated Content**, and **Prevent Encoded Attribute Exfiltration**.
+- **Started** — when the quarantine began.
+- **Ends** — when the quarantine expires, or **No Expiration** for permanent quarantines. Quarantines approaching expiration show a visual indicator.
+- **Blocked** — the count of requests blocked by the quarantine.
+
+By default, the list shows only **Active** and **Permanent** quarantines. Use the **Show Inactive Quarantines** toggle to include expired and lifted quarantines in the view.
+
+You can search quarantines by resource, attribute value, or trigger, and apply filters by **Resource**, **Attribute Type**, or **Attribute Value**. The list supports paginated export so you can download quarantine history for operational review or external follow-up.
+
+### Quarantine detail[​](#quarantine-detail)
+Opening a quarantine shows a detail drawer with two tabs: **Info** and **Blocked Requests**.
+
+#### Info tab[​](#info-tab)
+The Info tab provides context about the quarantine:
+
+- **Trigger Event** — the policy and event that caused the quarantine to be created.
+- **Related Issue** — the AI Investigation issue associated with the triggering alert, including rule, date, severity, and status. You can navigate directly to the issue for further investigation.
+- **Lifecycle** — quarantine metadata:
+
+**Started** — when the quarantine began blocking requests.
+- **Ends** — the expiration time for time-boxed quarantines, or **No Expiration** for permanent ones.
+- **Duration / TTL** — the original duration configured by the policy (for time-boxed quarantines) or an indication that the quarantine is permanent.
+- **Created by** — **System (triggered by runtime policy)**.
+
+#### Blocked Requests tab[​](#blocked-requests-tab)
+The Blocked Requests tab shows the requests that were blocked by this quarantine. The summary displays the request count, session count, and unique user count affected by the quarantine:
+
+**N requests across M sessions · K users identified**
+
+Each request is shown with its timestamp, user, and a **View Request** link that opens the full session view for that request. This makes it easy to review exactly what was blocked and understand the session context that led to each blocked request.
+
+### Quarantine actions[​](#quarantine-actions)
+You can take two actions on a quarantine from the list or detail drawer:
+
+- **Make Permanent** — removes the time-box (TTL) so the quarantine continues blocking matching requests indefinitely until you manually remove it. This action is available for active time-boxed quarantines but is disabled for resource-wide quarantines, quarantines that are already permanent, and inactive quarantines.
+- **Lift Quarantine** — revokes the quarantine, making it inactive. Matching requests will no longer be blocked. This change can take up to 10 minutes to fully propagate, so subsequent requests may still be blocked during that window. This action is disabled for resource-wide quarantines and quarantines that are already inactive.
+
+These actions give you fine-grained control over how long a quarantine remains in effect based on your investigation findings.
+
+### Quarantine scope and identity attributes[​](#quarantine-scope-and-identity-attributes)
+A quarantine can be scoped to a specific identity or session attribute, or applied resource-wide. When scoped to an attribute, only requests where that attribute matches the quarantined value are blocked. The available attribute types are:
+
+- **User IP**
+- **User Email**
+- **User Role**
+- **User ID**
+- **Session ID**
+- **Application Name**
+- **Application ID**
+- **Application Version**
+- **User Privileges**
+
+For Session policies, the **Session ID** attribute is not available because the quarantine action targets identities that can be tracked across sessions.
 
 ## Sessions[​](#sessions)
 The Sessions page reconstructs runtime activity into a full session or conversation view. This is one of the richest investigation surfaces in AI Investigation because it shows how individual runtime events connect to each other over time.
@@ -237,6 +328,8 @@ Depending on the event, this can include:
 
 When a runtime policy changes a field, AI Investigation can show the raw and modified values side by side so you can understand exactly how the platform intervened.
 
+**Assess tab (per-event).** Each event's detail includes an Assess tab when policy violations are present. The tab shows one collapsible section per policy that fired, labeled **Triggered by [policy name]**. Each section presents the same trigger reason and supporting evidence described in [Assess tab: why an issue triggered](#assess-tab-why-an-issue-triggered). All sections are expanded by default so you can quickly review why each policy fired on that event. Intent-Based Access Control violations do not appear here — they render on the event's **Intent** tab instead.
+
 ### Why session context matters[​](#why-session-context-matters)
 The Sessions page is ideal for investigations that require more than a single request view.
 
@@ -252,7 +345,9 @@ Use it when you need to answer questions like:
 You can filter sessions by time range and investigate specific slices of activity. The page also supports filtering by resource, model, user metadata, application metadata, and usage characteristics so teams can isolate sessions of interest quickly and focus on the conditions most relevant to the investigation.
 
 ### Session policies[​](#session-policies)
-Session-level policies can also generate AI Investigation alerts and issues. When a session policy fires, the resulting alert flows through the same Issues workflow as scanner-based and performance alerts, so session-level conditions show up alongside other quality and performance issues for the affected AI System.
+Session and monitoring policies are now created, reviewed, and managed from the [AI Runtime Policies page](/_docs/docs/applications/ai_gateway) (AI Runtime → Policies, **Session Policies** tab). This gives you a single location for configuring all runtime controls. Session-level policies can generate AI Investigation alerts and issues. When a session policy fires, the resulting alert flows through the same Issues workflow as scanner-based and performance alerts, so session-level conditions show up alongside other quality and performance issues for the affected AI System. Monitoring policies also live on the AI Runtime Policies page as a **Monitoring Policies** tab.
+
+Session policies support a **quarantine action** in addition to alert and block actions. When configuring a quarantine action, you choose an identity attribute to quarantine (such as User Email, User IP, or Application Name) and set a duration. The **Session ID** attribute is not available for quarantine actions on Session policies because quarantines are designed to track identities across sessions. If a quarantine action is configured but no identity attribute is chosen, the policy fires an alert but does not create a quarantine. For more detail on how quarantines work and how to manage them, see [Quarantines](#quarantines).
 
 For more information on configuring session-level conditions, see [Session Policies](/_docs/docs/applications/ai_monitor/session_policies).
 
@@ -313,7 +408,10 @@ Open the Performance Metrics view or an issue generated from a performance alert
 Use the Events or Sessions page to inspect a request involving tool usage, then move into the session timeline to understand available tools, tool calls, arguments, tool responses, and the runtime actions that followed.
 
 ### Review alert-driven issues[​](#review-alert-driven-issues)
-Open the Issues page to see unresolved conditions, prioritize by severity, review alert instances in the issue detail drawer, and drill into the exact time interval that triggered the issue. For end-to-end operational guidance, see the [AI Investigation Handbook](/_docs/docs/handbooks/ai_investigation_handbook).
+Open the Issues page to see unresolved conditions, prioritize by severity, review alert instances in the issue detail drawer, and drill into the exact time interval that triggered the issue. Use the **Assess** tab on an issue to understand the trigger reason and supporting evidence. For end-to-end operational guidance, see the [AI Investigation Handbook](/_docs/docs/handbooks/ai_investigation_handbook).
+
+### Review and act on a quarantine[​](#review-and-act-on-a-quarantine)
+Open the Quarantines page, select the quarantine you want to review, and open its detail drawer. Review the Trigger Event to understand what caused the quarantine, examine the Related Issue for additional context, and check the Blocked Requests tab to see what was blocked and who was affected. Based on your investigation, either **Lift Quarantine** to revoke it, or **Make Permanent** to remove the time limit and keep the quarantine active indefinitely.
 
 ## Best practices[​](#best-practices)
 To get the most value from AI Investigation:
@@ -324,5 +422,6 @@ To get the most value from AI Investigation:
 - Start broad with dashboard trends, then drill into evidence through issues, events, and sessions.
 - Use Sessions for context and Events for fast request-level inspection.
 - Expect dashboard charts to lag real time by about five minutes — a brief gap at the leading edge is normal, not missing data.
+- Set quarantine actions on Session and Monitoring policies for detections that warrant automatically holding an identity or session, then review and manage those quarantines from the Quarantines page to decide whether to lift or make them permanent.
 - For a cross-system view of the same issues across your AI inventory, see [AI 360](/_docs/docs/applications/ai_360).
-[PreviousAI MCP](/_docs/docs/applications/ai_mcp)[NextSession Policies](/_docs/docs/applications/ai_monitor/session_policies)- [Why AI Investigation matters](#why-ai-investigation-matters)- [How AI Investigation works](#how-ai-investigation-works)- [AI Investigation at a glance](#ai-investigation-at-a-glance)- [Dashboard](#dashboard)[AI System list and severity ranking](#ai-system-list-and-severity-ranking)- [Time range and interval controls](#time-range-and-interval-controls)- [Quality Metrics](#quality-metrics)- [Performance Metrics](#performance-metrics)- [Alert settings](#alert-settings)- [Issues](#issues)[Quality Issues and Performance Issues](#quality-issues-and-performance-issues)- [How issues work](#how-issues-work)- [Issue detail](#issue-detail)- [Issue lifecycle](#issue-lifecycle)- [Sessions](#sessions)[What the Sessions page shows](#what-the-sessions-page-shows)- [Session requirements](#session-requirements)- [Session timeline and event waterfall](#session-timeline-and-event-waterfall)- [Event detail within a session](#event-detail-within-a-session)- [Why session context matters](#why-session-context-matters)- [Session filtering](#session-filtering)- [Session policies](#session-policies)- [Events](#events)[What the Events page shows](#what-the-events-page-shows)- [Event detail](#event-detail)- [Relationship between Events and Sessions](#relationship-between-events-and-sessions)- [Reports](#reports)- [Common investigation workflows](#common-investigation-workflows)[Investigate a spike in scanner detections](#investigate-a-spike-in-scanner-detections)- [Investigate a latency or token spike](#investigate-a-latency-or-token-spike)- [Investigate agent or tool behavior](#investigate-agent-or-tool-behavior)- [Review alert-driven issues](#review-alert-driven-issues)- [Best practices](#best-practices)
+[PreviousAI MCP](/_docs/docs/applications/ai_mcp)[NextSession Policies](/_docs/docs/applications/ai_monitor/session_policies)- [Why AI Investigation matters](#why-ai-investigation-matters)- [How AI Investigation works](#how-ai-investigation-works)- [AI Investigation at a glance](#ai-investigation-at-a-glance)- [Dashboard](#dashboard)[AI System list and severity ranking](#ai-system-list-and-severity-ranking)- [Time range and interval controls](#time-range-and-interval-controls)- [Quality Metrics](#quality-metrics)- [Performance Metrics](#performance-metrics)- [Alert settings](#alert-settings)- [Issues](#issues)[Quality Issues and Performance Issues](#quality-issues-and-performance-issues)- [How issues work](#how-issues-work)- [Issue detail](#issue-detail)- [Assess tab: why an issue triggered](#assess-tab-why-an-issue-triggered)- [Issue lifecycle](#issue-lifecycle)- [Quarantines](#quarantines)[What a quarantine is and how it is created](#what-a-quarantine-is-and-how-it-is-created)- [Quarantines list](#quarantines-list)- [Quarantine detail](#quarantine-detail)- [Quarantine actions](#quarantine-actions)- [Quarantine scope and identity attributes](#quarantine-scope-and-identity-attributes)- [Sessions](#sessions)[What the Sessions page shows](#what-the-sessions-page-shows)- [Session requirements](#session-requirements)- [Session timeline and event waterfall](#session-timeline-and-event-waterfall)- [Event detail within a session](#event-detail-within-a-session)- [Why session context matters](#why-session-context-matters)- [Session filtering](#session-filtering)- [Session policies](#session-policies)- [Events](#events)[What the Events page shows](#what-the-events-page-shows)- [Event detail](#event-detail)- [Relationship between Events and Sessions](#relationship-between-events-and-sessions)- [Reports](#reports)- [Common investigation workflows](#common-investigation-workflows)[Investigate a spike in scanner detections](#investigate-a-spike-in-scanner-detections)- [Investigate a latency or token spike](#investigate-a-latency-or-token-spike)- [Investigate agent or tool behavior](#investigate-agent-or-tool-behavior)- [Review alert-driven issues](#review-alert-driven-issues)- [Review and act on a quarantine](#review-and-act-on-a-quarantine)- [Best practices](#best-practices)

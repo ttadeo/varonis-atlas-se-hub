@@ -362,3 +362,36 @@ Persist the cursor + lifecycle state reported by the rule-processor polling work
 - `422`: Validation Error
 
 ---
+
+## GET /v1/ingest/salesforce-agentforce-log-configurations/polling-targets — List Polling Targets
+
+**Endpoint**: `GET /v1/ingest/salesforce-agentforce-log-configurations/polling-targets`
+**Summary**: List Polling Targets
+**Tags**: ingest
+
+List every active Salesforce Agentforce log ingest configuration the rule-processor data-plane worker should poll. Each item carries the customer's My Domain URL, the ECA credential secret reference, the resolved Salesforce org id (from the customer's Salesforce discovery hosted_service; None when discovery has not been run), and cursor state so the worker can pull SOQL records without a second round-trip. Internal callback authenticated via the data-plane JWT; results are scoped to the caller's customer_id.
+
+**Responses**:
+- `200`: Successful Response
+
+---
+
+## PATCH /v1/ingest/salesforce-agentforce-log-configurations/{configuration_id}/cursor — Update Polling Cursor
+
+**Endpoint**: `PATCH /v1/ingest/salesforce-agentforce-log-configurations/{configuration_id}/cursor`
+**Summary**: Update Polling Cursor
+**Tags**: ingest
+
+Persist the cursor + lifecycle state reported by the rule-processor polling worker after one iteration. Advances ``cursor`` / ``last_synced_at`` (the watermark of the most recent successfully exported ``GenAiGatewayRequest_std__dlm.CreatedDate__c``) and, for backfill rows whose ``end_time`` has passed, transitions status to ``completed``. Internal callback authenticated via the data-plane JWT; request is scoped to the caller's customer_id.
+
+**Parameters**:
+- `configuration_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---

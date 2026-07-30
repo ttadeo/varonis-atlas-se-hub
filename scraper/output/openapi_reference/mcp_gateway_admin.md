@@ -87,8 +87,8 @@
 
 **Parameters**:
 - `gat_id` (path, required): 
-- `current_page` (query, optional): Page over the bound-server list (tool lists within a row are not paginated).
-- `per_page` (query, optional): 
+- `current_page` (query, optional): Page over the bound-server list (tool lists within a row are not paginated). Omit both current_page and per_page to return the complete, un-paginated server list.
+- `per_page` (query, optional): Items per page. Omit both current_page and per_page to return the complete, un-paginated server list.
 - `q` (query, optional): Optional case-insensitive filter on server name or credential display name.
 
 **Responses**:

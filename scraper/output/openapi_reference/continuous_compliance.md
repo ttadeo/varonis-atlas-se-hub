@@ -83,6 +83,68 @@ Bulk-deactivate every active activation policy for the specified framework acros
 
 ---
 
+## POST /v1/control-plane/continuous-compliance/activations/ignore — Ignore a compliance framework for a scope with a justification
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/activations/ignore`
+**Summary**: Ignore a compliance framework for a scope with a justification
+**Tags**: continuous-compliance
+
+Mark a regulatory framework as deliberately declined at the given scope (customer, organization, or project) with a required justification. If an active policy exists at the exact scope it is deactivated first (its coverage torn down) and then re-stamped as ignored; otherwise a new or reused row is set to ignored. Ignoring resolves the framework's Compass audit-gap finding for that scope in the same transaction. The ignoring user is derived from the JWT token. Scoped to the token's customer.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `201`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## PUT /v1/control-plane/continuous-compliance/activations/{activation_policy_id}/unignore — Restore a previously ignored framework
+
+**Endpoint**: `PUT /v1/control-plane/continuous-compliance/activations/{activation_policy_id}/unignore`
+**Summary**: Restore a previously ignored framework
+**Tags**: continuous-compliance
+
+Un-ignore a framework, transitioning the policy from ignored to inactive and clearing its justification. Restoring does not re-activate or re-discover entities — the framework must be re-activated explicitly. Reopens the framework's Compass audit-gap finding for that scope if applicable. Scoped to the token's customer.
+
+**Parameters**:
+- `activation_policy_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Policy is not ignored
+- `404`: Activation policy not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## PATCH /v1/control-plane/continuous-compliance/activations/{activation_policy_id}/ignore-justification — Edit the justification on an ignored framework
+
+**Endpoint**: `PATCH /v1/control-plane/continuous-compliance/activations/{activation_policy_id}/ignore-justification`
+**Summary**: Edit the justification on an ignored framework
+**Tags**: continuous-compliance
+
+Replace the justification on an already-ignored activation policy without changing its status. Scoped to the token's customer.
+
+**Parameters**:
+- `activation_policy_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Policy is not ignored
+- `404`: Activation policy not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
 ## GET /v1/control-plane/continuous-compliance/activations/{activation_policy_id} — Get a framework activation policy by ID
 
 **Endpoint**: `GET /v1/control-plane/continuous-compliance/activations/{activation_policy_id}`
@@ -340,6 +402,25 @@ Aggregates ``risk_levels`` across COMPLETED entity_states at the requested ``act
 **Responses**:
 - `200`: Successful Response
 - `400`: Invalid request parameters
+- `404`: Entity state or framework not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/continuous-compliance/entities/{entity_state_id}/scoping-outcomes/levels — Get scoping outcomes for every hierarchy activation level
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/entities/{entity_state_id}/scoping-outcomes/levels`
+**Summary**: Get scoping outcomes for every hierarchy activation level
+**Tags**: continuous-compliance
+
+Returns risk-level outcome categories for Customer, Organization, and Project. Each level is always present; an empty `categories` list means no completed contributing scoping outcomes exist at that level. Scoped to the token's customer.
+
+**Parameters**:
+- `entity_state_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
 - `404`: Entity state or framework not found
 - `500`: Unexpected server error
 - `422`: Validation Error
@@ -645,6 +726,426 @@ Permanently marks a PENDING suggestion as DISMISSED so it stops appearing in the
 
 ---
 
+## GET /v1/control-plane/continuous-compliance/policies/builders — List policy builders
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/builders`
+**Summary**: List policy builders
+**Tags**: continuous-compliance
+
+List the caller's policy builders, newest first, each with its rolled-up framework ids. Filter by `policy_type` and/or `status` (e.g. `IN_PROGRESS`) to find an existing draft to resume instead of starting a new one. The Knowledge-Hub Building tab narrows by active context: pass `project_id` for builders targeting that project, or `organization_id` for builders targeting that org or any project under it. Items are lightweight (no targets).
+
+**Parameters**:
+- `policy_type` (query, optional): 
+- `status` (query, optional): 
+- `organization_id` (query, optional): 
+- `project_id` (query, optional): 
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders — Start a policy builder
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders`
+**Summary**: Start a policy builder
+**Tags**: continuous-compliance
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `201`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/continuous-compliance/policies/builders/supported-policy-types — List policy types the builder can author
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/builders/supported-policy-types`
+**Summary**: List policy types the builder can author
+**Tags**: continuous-compliance
+
+Reference list of the policy types a guided build can author — the template-backed types only — each with the entity level it applies at and the frameworks that require it. Pass `entity_type` to restrict to one entity level. Ordered by the catalog order; global reference data, not customer-scoped.
+
+**Parameters**:
+- `entity_type` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id} — Get a policy builder
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}`
+**Summary**: Get a policy builder
+**Tags**: continuous-compliance
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v1/control-plane/continuous-compliance/policies/builders/{builder_id} — Update a policy builder's info
+
+**Endpoint**: `PATCH /v1/control-plane/continuous-compliance/policies/builders/{builder_id}`
+**Summary**: Update a policy builder's info
+**Tags**: continuous-compliance
+
+Edit a builder's Building-tab metadata — title, owner, and due date — from the drawer's Update Info action. Fields are patched independently: an omitted field is left unchanged, and an explicit `null` due_date clears it. Returns the full detail response.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/control-plane/continuous-compliance/policies/builders/{builder_id} — Delete a policy builder
+
+**Endpoint**: `DELETE /v1/control-plane/continuous-compliance/policies/builders/{builder_id}`
+**Summary**: Delete a policy builder
+**Tags**: continuous-compliance
+
+Permanently delete a builder and everything it owns — its questionnaire sections, scope targets, and uploaded-evidence analysis jobs all cascade. Use this to discard a build entirely; `abandon` instead keeps the row in an ABANDONED state. Returns 204 on success.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/prefill-status — Get a policy builder's evidence-analysis status
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/prefill-status`
+**Summary**: Get a policy builder's evidence-analysis status
+**Tags**: continuous-compliance
+
+Whether the builder's uploaded evidence is still being analysed. The FE polls this after uploading documentation and shows its 'analysing' state until `running` is false.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/abandon — Abandon a policy builder
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/abandon`
+**Summary**: Abandon a policy builder
+**Tags**: continuous-compliance
+
+Discard an in-progress builder (transitions it to ABANDONED) so it leaves the active list and can no longer be finalized. Idempotent if already abandoned; rejects a completed builder.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/frameworks — Add a framework to a policy builder
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/frameworks`
+**Summary**: Add a framework to a policy builder
+**Tags**: continuous-compliance
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/frameworks/{target_id} — Remove a framework from a policy builder
+
+**Endpoint**: `DELETE /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/frameworks/{target_id}`
+**Summary**: Remove a framework from a policy builder
+**Tags**: continuous-compliance
+
+**Parameters**:
+- `builder_id` (path, required): 
+- `target_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/entities — Add a target entity to a policy builder
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/entities`
+**Summary**: Add a target entity to a policy builder
+**Tags**: continuous-compliance
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/entities/{target_id} — Remove a target entity from a policy builder
+
+**Endpoint**: `DELETE /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/entities/{target_id}`
+**Summary**: Remove a target entity from a policy builder
+**Tags**: continuous-compliance
+
+**Parameters**:
+- `builder_id` (path, required): 
+- `target_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/finalize — Finalize a policy builder
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/finalize`
+**Summary**: Finalize a policy builder
+**Tags**: continuous-compliance
+
+Upload the policy document, create the Knowledge-Hub document (source POLICY_BUILDER) with the builder's framework/entity targets, mark the builder COMPLETE, and trigger document analysis. Requires at least one framework target.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `multipart/form-data`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/finalize/generate — Generate and finalize a policy builder
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/finalize/generate`
+**Summary**: Generate and finalize a policy builder
+**Tags**: continuous-compliance
+
+Enqueue document generation from the build's answers, then return immediately. Authoring every section with the LLM, rendering the document, and uploading it is slow, so it runs on a background worker. The builder is atomically claimed IN_PROGRESS → FINALIZING before enqueueing (so two concurrent finalizes can't both run), and the returned builder reflects FINALIZING; the worker marks it COMPLETE on success, or reverts it to IN_PROGRESS if generation fails before a document is created. Requires a completed detail section and at least one framework target. Unlike the upload finalize, no file is supplied — the build authors the document itself.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `202`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/sections — Get a policy builder's questionnaire sections
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/sections`
+**Summary**: Get a policy builder's questionnaire sections
+**Tags**: continuous-compliance
+
+Return every section the build's questionnaire renders: the background Yes/No questions, the documentation slots (with uploaded attachments), the detail categories (with their questions), and the report-section metadata. `risk_levels`/`risk_tags` and the `required` flags are empty/false until the background questionnaire is submitted and saved.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/{background_id}/answer — Answer a background question
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/{background_id}/answer`
+**Summary**: Answer a background question
+**Tags**: continuous-compliance
+
+Record the Yes/No answer to one background question. Send `null` to clear it back to unanswered.
+
+**Parameters**:
+- `builder_id` (path, required): 
+- `background_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/{background_id}/reset — Reset a background question
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/{background_id}/reset`
+**Summary**: Reset a background question
+**Tags**: continuous-compliance
+
+Clear one background question's answer back to unanswered.
+
+**Parameters**:
+- `builder_id` (path, required): 
+- `background_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/submit — Submit the background questionnaire
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/submit`
+**Summary**: Submit the background questionnaire
+**Tags**: continuous-compliance
+
+Evaluate the background answers into the build's risk levels and tags. This computes the outcome only — it does not persist it; follow with the save step to apply the risk levels/tags and flag the required questions.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/save — Save the background questionnaire
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/background/save`
+**Summary**: Save the background questionnaire
+**Tags**: continuous-compliance
+
+Persist the evaluated risk levels and tags, flag which detail questions, documentation slots, and report sections apply, and mark the background section complete. Returns the required detail questions still to answer.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/detail/response — Answer a detail question
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/detail/response`
+**Summary**: Answer a detail question
+**Tags**: continuous-compliance
+
+Record the authored answer to one detail question (send `null` to clear it), then roll up its category status and the build's detail-section completion.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/detail/suggested-response/action — Act on a detail suggested response
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/detail/suggested-response/action`
+**Summary**: Act on a detail suggested response
+**Tags**: continuous-compliance
+
+Apply a reviewer action to one suggested response. `USE_RESPONSE` copies the suggestion's text onto the detail question and rolls up its status.
+
+**Parameters**:
+- `builder_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/detail/suggested-response/{suggested_response_id}/attachment — Download a suggested response's attachment
+
+**Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/detail/suggested-response/{suggested_response_id}/attachment`
+**Summary**: Download a suggested response's attachment
+**Tags**: continuous-compliance
+
+Stream the evidence file backing one suggested response, tenant-scoped through its builder. Returns the raw bytes as an octet-stream with a download `Content-Disposition`. Returns 404 when the suggestion doesn't belong to the caller or carries no stored file (text-only suggestions have none).
+
+**Parameters**:
+- `builder_id` (path, required): 
+- `suggested_response_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/documentation/{documentation_id}/attachment — Upload a documentation attachment
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/policies/builders/{builder_id}/documentation/{documentation_id}/attachment`
+**Summary**: Upload a documentation attachment
+**Tags**: continuous-compliance
+
+Attach one evidence file to a documentation slot. The file is stored and its slot's last-attachment time is stamped.
+
+**Parameters**:
+- `builder_id` (path, required): 
+- `documentation_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `multipart/form-data`
+
+**Responses**:
+- `201`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/control-plane/continuous-compliance/policies/profiles — List policy profiles grouped by entity type
 
 **Endpoint**: `GET /v1/control-plane/continuous-compliance/policies/profiles`
@@ -750,7 +1251,7 @@ Return a paginated list of uploaded compliance policy documents shown in the Act
 **Summary**: Upload a compliance policy document for a policy type
 **Tags**: continuous-compliance
 
-Upload a file to the Knowledge Hub for a given policy type, covering the selected entities (organizations, projects, resources, or vendors). The document fans out across all catalog policy entries of that type for the selected entities. For the Additional-Document sentinel type, requirement_profile_ids is required and framework_ids must be omitted; for all other policy types, requirement_profile_ids is rejected (422). Triggers an asynchronous document-analysis job. uploaded_by is derived server-side from the JWT. Scoped to the token's customer.
+Upload a file to the Knowledge Hub for a given policy type, covering the selected entities (organizations, projects, resources, or vendors). The document fans out across all catalog policy entries of that type for the selected entities. For the Additional-Document sentinel type, requirement_profile_ids is required and framework_ids must be omitted; for all other policy types, requirement_profile_ids is rejected (422) and at least one framework_id is required (422). A policy type allows at most one document per framework per entity; an upload overlapping an existing document on the same framework and entity is rejected (409) with a message naming the conflict. Triggers an asynchronous document-analysis job. uploaded_by is derived server-side from the JWT. Scoped to the token's customer.
 
 **Request Body**: Required
 - Content-Type: `multipart/form-data`
@@ -758,6 +1259,7 @@ Upload a file to the Knowledge Hub for a given policy type, covering the selecte
 **Responses**:
 - `201`: Successful Response
 - `400`: Invalid request parameters
+- `409`: A document already covers this framework + entity
 - `500`: Unexpected server error
 - `422`: Validation Error
 
@@ -920,18 +1422,19 @@ Permanently delete a Knowledge-Hub policy document and cascade to its per-profil
 - `204`: Successful Response
 - `400`: Invalid request parameters
 - `404`: Policy document not found
+- `409`: Approved evidence or version conflict
 - `500`: Unexpected server error
 - `422`: Validation Error
 
 ---
 
-## PATCH /v1/control-plane/continuous-compliance/policies/documents/{document_id} — Edit a hub document's title, description, or entity scope
+## PATCH /v1/control-plane/continuous-compliance/policies/documents/{document_id} — Edit a living Knowledge-Hub document
 
 **Endpoint**: `PATCH /v1/control-plane/continuous-compliance/policies/documents/{document_id}`
-**Summary**: Edit a hub document's title, description, or entity scope
+**Summary**: Edit a living Knowledge-Hub document
 **Tags**: continuous-compliance
 
-Update editable metadata on a Knowledge-Hub policy document: title, description, summary, selected_entities, or framework_descriptions. policy_type is immutable; requirement_profile_ids is not accepted here (edit links from the Scoping Profile view). Adding entities triggers fan-out and per-requirement analysis on processed documents; removing entities triggers a suggestion sweep and, for Additional Documents, drops link rows on removed entities. Applies to the latest version of the document chain only. 404s if the document does not belong to the calling customer. Scoped to the token's customer.
+Update title, description, owner, due date, catalog policy type, frameworks, or entity scope without replacing the document or file. Owner and due date are shared policy-type metadata, so changing them updates every document of the effective policy type. Catalog scope changes reconcile profile coverage and re-run requirement analysis from the existing indexed file. Additional Document type and frameworks remain link-driven. Scoped to the token's customer.
 
 **Parameters**:
 - `document_id` (path, required): 
@@ -943,6 +1446,7 @@ Update editable metadata on a Knowledge-Hub policy document: title, description,
 - `200`: Successful Response
 - `400`: Invalid request parameters
 - `404`: Policy document not found
+- `409`: Coverage or analysis conflict
 - `500`: Unexpected server error
 - `422`: Validation Error
 
@@ -966,6 +1470,7 @@ Add a new file version to an existing Knowledge-Hub document version chain. The 
 - `201`: Successful Response
 - `400`: Invalid request parameters
 - `404`: Policy document not found
+- `409`: Document version conflict
 - `500`: Unexpected server error
 - `422`: Validation Error
 
@@ -1145,6 +1650,7 @@ Create a per-profile attachment that references an already-uploaded Knowledge-Hu
 - `201`: Successful Response
 - `400`: Invalid request parameters
 - `404`: Policy profile or source document not found
+- `409`: Profile status or document version conflict
 - `500`: Unexpected server error
 - `422`: Validation Error
 
@@ -1414,6 +1920,26 @@ Enqueue a background job that calls the external compliance service to transcrib
 - `202`: Successful Response
 - `400`: Invalid request parameters
 - `404`: Meeting not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/control-plane/continuous-compliance/entities/{entity_state_id}/report — Start generating a Continuous Compliance evidence report
+
+**Endpoint**: `POST /v1/control-plane/continuous-compliance/entities/{entity_state_id}/report`
+**Summary**: Start generating a Continuous Compliance evidence report
+**Tags**: continuous-compliance
+
+Start a background job that generates the evidence report for one compliance entity. Returns the job id; poll /v1/report/job-status/{job_id} until COMPLETED and read the download URL from return_value.render_url. The report is entity-level aware and its AUDIT FINDINGS section narrates the entity's contributing scoping sources. Rejects the request when the entity is not yet completed (scoping COMPLETED and every applicable requirement compliant).
+
+**Parameters**:
+- `entity_state_id` (path, required): 
+
+**Responses**:
+- `202`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Entity state not found
 - `500`: Unexpected server error
 - `422`: Validation Error
 

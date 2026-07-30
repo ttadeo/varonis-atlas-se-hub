@@ -24,12 +24,29 @@
 **Parameters**:
 - `provider` (query, optional): 
 - `search` (query, optional): 
+- `environment` (query, optional): 
+- `status` (query, optional): 
+- `project_id` (query, optional): 
+- `organization_id` (query, optional): 
+- `sort_by` (query, optional): 
+- `sort_dir` (query, optional): 
 - `page` (query, optional): 
 - `page_size` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
+
+---
+
+## GET /v1/llm-gateway/provider-connections/environments — List Provider Connection Environments
+
+**Endpoint**: `GET /v1/llm-gateway/provider-connections/environments`
+**Summary**: List Provider Connection Environments
+**Tags**: llm-gateway-provider-admin
+
+**Responses**:
+- `200`: Successful Response
 
 ---
 
@@ -89,6 +106,25 @@
 
 **Parameters**:
 - `provider_connection_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/llm-gateway/provider-connections/verify — Verify Provider Credential
+
+**Endpoint**: `POST /v1/llm-gateway/provider-connections/verify`
+**Summary**: Verify Provider Credential
+**Tags**: llm-gateway-provider-admin
+
+Verify a credential BEFORE the connection is saved (the Add Connection
+drawer). Stateless — nothing is persisted; ``write`` tier is deliberate
+anti-abuse since it dials the provider with a caller-supplied credential.
 
 **Request Body**: Required
 - Content-Type: `application/json`

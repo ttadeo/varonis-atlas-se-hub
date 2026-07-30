@@ -6,20 +6,20 @@
 **Summary**: List the Needs-Attention queue (grouped signals)
 **Tags**: ai-governance, needs-attention-queue
 
-Returns the primary AI-Investigation triage surface: repeated Signal firings collapsed into grouped rows keyed on (policy, resource, time-bucket), with rollups (total detections, affected users/sessions, trend, representative evidence). Paginated, filterable by severity / status / type / policy / resource / time-range, and sortable. All results are scoped to the authenticated customer.
+Returns the primary AI-Investigation triage surface: repeated Signal firings collapsed into grouped rows keyed on (policy, resource, time-bucket), with rollups (total detections, affected users/sessions, trend, representative evidence). Paginated and sortable. The filters severities / statuses / signal_types / policy_ids / resource_instance_ids are multi-value (repeat the query param to match any of several values, e.g. ?severities=HIGH&severities=CRITICAL); a start_time/end_time range further narrows results. All results are scoped to the authenticated customer.
 
 **Parameters**:
-- `severity` (query, optional): 
-- `status` (query, optional): 
-- `type` (query, optional): 
-- `policy_id` (query, optional): 
-- `resource_instance_id` (query, optional): 
-- `start_time` (query, optional): 
-- `end_time` (query, optional): 
-- `sort_field` (query, optional): 
-- `sort_order` (query, optional): 
-- `page` (query, optional): 
-- `per_page` (query, optional): 
+- `severities` (query, optional): Filter to any of these severities. Empty = no severity filter.
+- `statuses` (query, optional): Filter to any of these lifecycle statuses. Empty = no status filter.
+- `signal_types` (query, optional): Filter to any of these detection source types. Empty = no type filter.
+- `policy_ids` (query, optional): Filter to any of these policies. Empty = no policy filter.
+- `resource_instance_ids` (query, optional): Filter to any of these resources. Empty = no resource filter.
+- `start_time` (query, optional): Lower bound (inclusive) on detection time. Matches either created_at/triggered_at OR _last_updated.
+- `end_time` (query, optional): Upper bound (inclusive) on detection time. Matches either created_at/triggered_at OR _last_updated.
+- `sort_field` (query, optional): Column to sort by.
+- `sort_order` (query, optional): Sort direction.
+- `page` (query, optional): 1-based page number.
+- `per_page` (query, optional): Grouped signals per page.
 
 **Responses**:
 - `200`: Successful Response
@@ -1111,7 +1111,7 @@ Returns full detail for a single AI governance issue: resource context, associat
 **Summary**: Get AI governance alert detail
 **Tags**: ai-governance, alerting
 
-Returns full detail for a single AI governance or session-policy alert: Info-tab metadata (resource, direction, threshold, counts), triggering attributes, and Remediate deep-link IDs. Returns 404 if the alert does not exist, does not belong to the issue, or does not belong to the authenticated customer. Scoped to the token's customer.
+Returns full detail for a single AI governance, session-policy, or performance alert: Info-tab metadata (resource, direction, threshold, counts), triggering attributes, and Remediate deep-link IDs. Performance alerts return a partial response: the metric/threshold/resource/policy context populates while the governance-only fields (rule_type, direction, reason, session_id, contributing_attributes, affected_count, evaluated_count, quarantine_reference_id) are NULL. Returns 404 if the alert does not exist, does not belong to the issue, or does not belong to the authenticated customer. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_id` (path, required): 
@@ -1132,7 +1132,7 @@ Returns full detail for a single AI governance or session-policy alert: Info-tab
 **Summary**: List affected requests for an AI governance alert
 **Tags**: ai-governance, alerting
 
-Returns the paginated affected events/turns for a single AI governance or session-policy alert. Session-policy alerts return the flagged_event_ids subset (not the whole session). Governance-tag rate alerts return the violating event-blocks in the breached metric bucket (the same set the ETL counted when it fired the alert); a governance-tag alert that is not ETL-aligned returns an empty list with a 200. Performance alerts do not exist on this path and return 404. Returns 404 if the alert does not exist, does not belong to the issue, or does not belong to the authenticated customer. Scoped to the token's customer.
+Returns the paginated affected events/turns for a single AI governance or session-policy alert. Session-policy alerts return the flagged_event_ids subset (not the whole session). Governance-tag rate alerts return the violating event-blocks in the breached metric bucket (the same set the ETL counted when it fired the alert); a governance-tag alert that is not ETL-aligned returns an empty list with a 200. Performance alerts have no per-request/event linkage and return an empty list with a 200. Returns 404 if the alert does not exist, does not belong to the issue, or does not belong to the authenticated customer. Scoped to the token's customer.
 
 **Parameters**:
 - `issue_id` (path, required): 
@@ -1654,7 +1654,7 @@ Creates a centrally-managed policy definition specifying what to detect (rule ty
 **Summary**: List governance policy definitions
 **Tags**: ai-governance, policies
 
-Returns the customer's governance policy definitions. Filterable by enabled state, detection method, severity, and policy type; `search` matches a substring of the policy name. Paginated when `page`/`per_page` are supplied; returns all definitions unpaginated when omitted. Use to browse, audit, or select policies before assigning them to resources. Scoped to the token's customer.
+Returns the customer's governance policy definitions. Filterable by enabled state, detection method, severity, and policy type; `search` matches a substring of the policy name. When `project_id` is supplied, only policies whose assignments cover that project are returned — project-scoped, resource-in-project, organization, and tenant-wide (global) assignments all count (additive). When `organization_id` is supplied instead, only policies whose assignments cover that organization are returned — organization-scoped, project-under-org, resource-under-org, and global assignments all count (additive); `project_id` takes precedence if both are given. Omit both for the tenant-wide list. Paginated when `page`/`per_page` are supplied; returns all definitions unpaginated when omitted. Use to browse, audit, or select policies before assigning them to resources. Scoped to the token's customer.
 
 **Parameters**:
 - `is_enabled` (query, optional): 
@@ -1662,6 +1662,8 @@ Returns the customer's governance policy definitions. Filterable by enabled stat
 - `severity` (query, optional): 
 - `policy_type` (query, optional): 
 - `search` (query, optional): Substring match against the policy name.
+- `project_id` (query, optional): Restrict the list to policies whose assignments cover this project (project-scoped, resource-in-project, organization, and global assignments all count). Omit for the tenant-wide list.
+- `organization_id` (query, optional): Restrict the list to policies whose assignments cover this organization (organization-scoped, project/resource-under-org, and global assignments all count). Ignored if project_id is also supplied. Omit for the tenant-wide list.
 - `page` (query, optional): 
 - `per_page` (query, optional): 
 

@@ -99,7 +99,7 @@ Deprecated: customer_id in the path is redundant — the global auth chain alrea
 **Summary**: Get User
 **Tags**: admin
 
-Deprecated: keyed on Auth0 user id. Use `GET /v2/admin/user-management/users/{user_id}` (keyed on the internal `user_id` UUID) instead.
+Deprecated: keyed on Auth0 user id, and Auth0-tenant-only (returns 400 for non-Auth0 IdPs). Use `GET /v2/admin/user-management/users/{user_id}` (keyed on the internal `user_id` UUID, works for all IdPs) instead.
 
 **Parameters**:
 - `customer_id` (path, required): 
@@ -1544,6 +1544,12 @@ permission ``get /v1/admin/current-user/permissions`` is in
 ``global_permissions`` in ``permissions_roles_config.json`` so every
 role can call it once authenticated. Issue #12851.
 
+IdP-agnostic: permissions are resolved purely from the caller's roles via
+the DB role→permission map, keyed off ``user_id``. ``authorize_request``
+already guarantees the ``UserDB`` row exists for any external token
+reaching this handler, so no IdP-side identity lookup is needed (the prior
+``auth0_user_id`` existence check 401'd validly-provisioned non-Auth0 users).
+
 **Responses**:
 - `200`: Successful Response
 
@@ -2050,7 +2056,7 @@ Delete the customer-level notification settings for the token's customer, restor
 **Summary**: Get the calling user's notification settings
 **Tags**: admin
 
-Return the notification settings for the calling user, which override the customer-level defaults for that user only. Scoped to the token's user within the token's customer. Use to inspect a user's personal notification preferences.
+Return the notification settings for the calling user, which override the customer-level defaults for that user only. Scoped to the token's user within the token's customer. Use to inspect a user's personal notification preferences. ``is_user_override`` distinguishes the user's own saved settings from a fallback to the customer / platform defaults.
 
 **Responses**:
 - `200`: Successful Response
@@ -2119,6 +2125,32 @@ Delete the calling user's personal notification settings, restoring the customer
 
 ---
 
+## GET /v1/gateway/runtime-eval-defaults — Get the customer-wide runtime-evaluation defaults
+
+**Endpoint**: `GET /v1/gateway/runtime-eval-defaults`
+**Summary**: Get the customer-wide runtime-evaluation defaults
+**Tags**: admin
+
+**Responses**:
+- `200`: Successful Response
+
+---
+
+## PATCH /v1/gateway/runtime-eval-defaults — Update the customer-wide runtime-evaluation defaults
+
+**Endpoint**: `PATCH /v1/gateway/runtime-eval-defaults`
+**Summary**: Update the customer-wide runtime-evaluation defaults
+**Tags**: admin
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## DELETE /v2/admin/user-management/users/{user_id} — Delete user
 
 **Endpoint**: `DELETE /v2/admin/user-management/users/{user_id}`
@@ -2162,7 +2194,7 @@ Update the user's display name on our DB row. Accepts ``given_name`` + ``family_
 **Summary**: Get user detail
 **Tags**: admin, user-management
 
-Return the user's profile, IdP-tenant membership, and DB-resolved role list. ``customer_id`` is read from the JWT.
+Return the user's DB-sourced profile — ``email`` / ``name``, ``has_access_to_all_organizations``, the resolved role list, and project / organization assignments. IdP-side fields (``picture``, ``email_verified``, ``blocked``, ``last_login_at``) are optional enrichment. ``provider_detail`` carries the raw IdP-specific payload (the full Auth0 profile + org membership for Auth0 tenants) and is ``null`` for IdPs without a directory-read API. ``customer_id`` is read from the JWT.
 
 **Parameters**:
 - `user_id` (path, required): 

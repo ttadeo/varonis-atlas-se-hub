@@ -22,7 +22,15 @@ Scan typeWhat it scansWhat you seeCloud ConfigurationThe cloud-provider configur
 Configure a policy or select from an existing one, then track your posture against it. The Policies page exposes the policy groups that AI SPM evaluates against your inventory — currently:
 
 - **Cloud Configuration** — posture checks against the cloud-provider configuration of your AI resources.
-- **Sensitive Data** — checks for sensitive data (PII, secrets) inside scannable resources such as notebooks and datasets.
+- **Sensitive Data** — The Sensitive Data policy group includes scan-based checks for PII and secrets in notebooks and datasets, and agent governance policies that detect insufficient governance, weak sharing controls, and risky runtime identities involving sensitive data:
+
+**Sensitive Access Uses Shared or Privileged Runtime Identity** — detects sensitive-data reach via a shared or privileged runtime identity, from a declared manifest attestation or an observed dependency-graph posture.
+- **Sensitive Data Has Weak Sharing Control Path** — detects sensitive-data reach exposed through a tool with weak sharing controls (public or anonymous links, broad share/move/copy operations, ACL or permission changes).
+- **Sensitive Workflow Uses Rejected Tools** — detects a sensitive-data workflow that still carries a tool or MCP server explicitly rejected (NOT_APPROVED) during the agent's governance review.
+- **Sensitive Write Access Lacks Approved Governance** — detects write-capable access to sensitive data on an agent whose manifest declares no approval step (never approved, or human-out-of-the-loop).
+- **Sensitive Access Lacks Approved Governance** — detects access to sensitive data by an agent whose governance manifest was never approved (missing, draft, in review, or rejected).
+- **Sensitive Access Review Expired** — detects access to sensitive data by an agent whose previously-approved governance review has aged past the review window (marked STALE); remediation is re-review, distinct from never-approved.
+
 - **Agentic Threats** — posture checks targeted at agentic AI systems.
 
 For each policy:

@@ -898,10 +898,46 @@ Returns the effective set of VMCP (virtual MCP) tools assigned to each LLM endpo
 Retrieve endpoint settings. The api_provider is optional; when omitted the
 endpoint is resolved solely by endpoint_identifier.
 
+For per-agent-scope-only settings (discovered agents), use the
+dedicated ``/v1/llm-firewall/agent-settings`` endpoint instead.
+
 **Parameters**:
 - `endpoint_identifier` (query, optional): 
 - `api_provider` (query, optional): 
 - `x-alltrue-llm-api-headers` (header, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/llm-firewall/agent-settings — Retrieve per-agent-scope-only settings for a discovered agent
+
+**Endpoint**: `GET /v1/llm-firewall/agent-settings`
+**Summary**: Retrieve per-agent-scope-only settings for a discovered agent
+**Tags**: llm-firewall
+
+Retrieve the ENABLED rule set for a specific discovered agent.
+
+Resolves the per-agent resource_instance by its discovery
+``resource_identifier`` (e.g. SF Agentforce's
+``<sf_org_id>#<agent_api_name>``) and returns the rules configured
+at THAT scope only — no inheritance walk. Under the REPLACE model,
+RP applies exactly this rule set to records for the discovered
+agent, ignoring any log-source-level rules.
+
+Returns 404 when the identifier does not resolve to a per-agent
+resource for the caller's tenant. Callers should route undiscovered
+agents through the default ``/endpoint-settings`` path (log-source
+walked-inheritance) — no silent fallback happens here.
+
+Cross-tenant safety: the underlying resolver filters on
+``customer_id``, so an identifier collision across tenants cannot
+resolve to a foreign tenant's resource.
+
+**Parameters**:
+- `per_agent_identifier` (query, required): 
 
 **Responses**:
 - `200`: Successful Response
@@ -926,6 +962,27 @@ other levels are optional and can be passed as query params.
 **Responses**:
 - `200`: Successful Response
 - `422`: Validation Error
+
+---
+
+## GET /v1/llm-firewall/otel-export-settings — Retrieve the OTEL runtime-log export destination for the customer
+
+**Endpoint**: `GET /v1/llm-firewall/otel-export-settings`
+**Summary**: Retrieve the OTEL runtime-log export destination for the customer
+**Tags**: llm-firewall
+
+Customer-level DP-pull of the OTEL export config, with the decrypted
+``auth_headers`` materialised into the body (D4a). Same auth as the sibling
+endpoint-settings DP-pull routes (``token_customer_id`` — no internal
+context: a single customer-keyed defaults read must not widen trust). The
+decryption context is entered by the app-global ``with_customer_context``
+dependency from the token's ``customer_id`` claim; nothing extra to wire.
+
+``Cache-Control: no-store`` because the body carries a live third-party
+credential — it must never be cached by any intermediary.
+
+**Responses**:
+- `200`: Successful Response
 
 ---
 
@@ -1595,7 +1652,7 @@ Returns the distinct filter values (endpoints, models, users, applications) avai
 **Summary**: List individual firewall events across all sessions
 **Tags**: llm-firewall
 
-Paginated list of individual events (user prompts, tool calls, tool responses, assistant messages, agent thoughts) across all firewall sessions for the authenticated tenant. Supports rich filtering by session metadata, user metadata, application metadata, model, provider, event kind, policy state, rule/action/governance tags, tokens, event count, and time range.
+Paginated list of individual events (user prompts, tool calls, tool responses, assistant messages, agent thoughts) across all firewall sessions for the authenticated tenant. Supports rich filtering by session metadata, user metadata, application metadata, model, provider, event kind, policy state, rule/action/governance tags, tokens, event count, and time range. The `user_search` parameter is the page-level "Search by user" box: a case-insensitive substring ORed across user email, role, and id (matching whatever the User column shows).
 
 **Parameters**:
 - `start_time` (query, optional): 
@@ -1605,11 +1662,13 @@ Paginated list of individual events (user prompts, tool calls, tool responses, a
 - `resource_instance_id` (query, optional): 
 - `model` (query, optional): 
 - `provider` (query, optional): 
+- `prompt_source` (query, optional): 
 - `user_id` (query, optional): 
 - `user_ip` (query, optional): 
 - `user_role` (query, optional): 
 - `user_email` (query, optional): 
 - `user_privileges` (query, optional): 
+- `user_search` (query, optional): Page-level 'Search by user' box: case-insensitive substring match ORed across user_email, user_role, and user_id (a match on any one is enough). Mirrors the User column, which shows the email, else the role, else the id — so service-to-service traffic that has no email is still found by its role or id. ANDed with all other filters.
 - `application_id` (query, optional): 
 - `application_name` (query, optional): 
 - `application_version` (query, optional): 
@@ -1935,6 +1994,74 @@ Returns the explicit resource override, or null if inheriting admin defaults.
 
 **Endpoint**: `DELETE /v1/gateway/logging-settings`
 **Summary**: Delete Resource Logging Policy
+**Tags**: llm-firewall
+
+**Parameters**:
+- `resource_instance_id` (query, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v1/gateway/runtime-eval-settings — Get a resource's runtime-evaluation override
+
+**Endpoint**: `GET /v1/gateway/runtime-eval-settings`
+**Summary**: Get a resource's runtime-evaluation override
+**Tags**: llm-firewall
+
+Returns the explicit resource override, or null if inheriting admin defaults.
+
+**Parameters**:
+- `resource_instance_id` (query, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## POST /v1/gateway/runtime-eval-settings — Create a resource's runtime-evaluation override
+
+**Endpoint**: `POST /v1/gateway/runtime-eval-settings`
+**Summary**: Create a resource's runtime-evaluation override
+**Tags**: llm-firewall
+
+**Parameters**:
+- `resource_instance_id` (query, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `201`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v1/gateway/runtime-eval-settings — Update a resource's runtime-evaluation override
+
+**Endpoint**: `PATCH /v1/gateway/runtime-eval-settings`
+**Summary**: Update a resource's runtime-evaluation override
+**Tags**: llm-firewall
+
+**Parameters**:
+- `resource_instance_id` (query, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/gateway/runtime-eval-settings — Delete a resource's runtime-evaluation override (revert to admin defaults)
+
+**Endpoint**: `DELETE /v1/gateway/runtime-eval-settings`
+**Summary**: Delete a resource's runtime-evaluation override (revert to admin defaults)
 **Tags**: llm-firewall
 
 **Parameters**:

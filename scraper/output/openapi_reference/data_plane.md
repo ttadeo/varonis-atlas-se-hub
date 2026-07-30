@@ -62,8 +62,13 @@ Same defense-in-depth header guard as `/credentials`: `x_alltrue_credential_quer
 
 Full LLM gateway config snapshot for the calling customer. Returns Inference Endpoints, Provider Connections (without secret material), published model aliases, and the `events_ingest_ready` flag. Mirrors the MCP gateway's full-snapshot pattern: deletes are implicit by absence. The gateway polls this endpoint and replaces its in-memory state per response.
 
+**Parameters**:
+- `if-none-match` (header, optional): 
+- `x-alltrue-applied-config-generation` (header, optional): 
+
 **Responses**:
 - `200`: Successful Response
+- `422`: Validation Error
 
 ---
 
@@ -78,6 +83,7 @@ Bulk-fetch all runtime provider credentials for the calling customer (LLM provid
 Defense in depth: requires the additional header `x-alltrue-credential-query-secrets` whose value must equal the calling customer_id. Mirrors the MCP-gateway credentials pattern — a customer API key alone is not sufficient to read provider credentials.
 
 **Parameters**:
+- `if-none-match` (header, optional): 
 - `x-alltrue-credential-query-secrets` (header, optional): 
 
 **Responses**:
@@ -110,6 +116,7 @@ Defense in depth: requires the additional header `x-alltrue-credential-query-sec
 **Parameters**:
 - `data_plane_account_id` (query, optional): 
 - `is_llm_pentest_target` (query, optional): Filter registrations by whether they are marked as the LLM pentest target.
+- `is_browser_extension_target` (query, optional): Filter registrations by whether they are marked as browser-extension eligible.
 
 **Responses**:
 - `200`: Successful Response
@@ -126,6 +133,7 @@ Defense in depth: requires the additional header `x-alltrue-credential-query-sec
 **Parameters**:
 - `data_plane_account_id` (path, required): 
 - `is_llm_pentest_target` (query, optional): Filter registrations by whether they are marked as the LLM pentest target.
+- `is_browser_extension_target` (query, optional): Filter registrations by whether they are marked as browser-extension eligible.
 
 **Responses**:
 - `200`: Successful Response

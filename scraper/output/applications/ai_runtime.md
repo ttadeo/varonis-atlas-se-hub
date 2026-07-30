@@ -996,7 +996,7 @@ Enabled automations run on an evaluation schedule you configure per automation �
 When an automation's conditions are met, it applies the template only to targets where that template is not already satisfied — that is, where the template's policies are not already installed, staged, or inherited. Targets that already have the template are skipped, so an automation does not create redundant pending changes or re-install policies that are already in place.
 
 ## Policy Actions[​](#policy-actions)
-An Action is part of a Rule's settings and defines the operation AI Runtime should take when a rule is violated. Depending on the rule, each Action can be applied to the input (Input Guard), output (Output Guard), or both directions. There are three configurable Actions: Warn, Block, and Modify.
+An Action is part of a Rule's settings and defines the operation AI Runtime should take when a rule is violated. Depending on the rule, each Action can be applied to the input (Input Guard), output (Output Guard), or both directions. There are four configurable Actions: Warn, Block, Modify, and Require Approval.
 
 - WARN -
 Can be set for both input prompts and completion (Output Guard) prompts. When a rule is violated, the system allows the prompt to be processed by the configured LLM (OpenAI, Anthropic, Gemini, etc.) and creates a Warning issue along with a warning message.
@@ -1012,6 +1012,27 @@ Below is an example for 'BLOCK' Action:
 Can be set for both input prompts and completion (Output Guard) prompts. When a rule is violated, the system modifies the input prompt first and only then allows it to be processed by the configured LLM (OpenAI, Anthropic, Gemini, etc.). The same applies to outputs.
 
 Below is an example for 'MODIFY' Action:
+
+- REQUIRE APPROVAL -
+Can be set for agent tool operations on both the Input Guard and Output Guard. When a rule is violated, the system holds the in-flight operation — a tool call the model is about to make (Output Guard) or a tool result about to be returned to the model (Input Guard) — instead of letting it proceed, and creates a hold along with a configurable message. The user resolves the hold on a later turn of the conversation by approving or rejecting it. You can set an optional approval window, in seconds; if one is set, the hold expires when the window elapses with no decision.
+
+The held operation proceeds only when it is explicitly approved. Every other outcome is fail-closed — the held step never happens. What that prevents depends on the direction the rule runs in:
+
+- **Output Guard** — the tool call is held before it executes, so an unapproved hold prevents the tool from running at all.
+- **Input Guard** — the tool has already executed, so the hold withholds its result from the model. The tool's side effects have already occurred and are not undone.
+
+The four outcomes are:
+
+- Approved — the held step proceeds.
+- Denied — the user explicitly rejects the operation.
+- Expired — the approval window elapsed before anyone responded.
+- Abandoned — the user sent an unrelated request instead of resolving the hold.
+
+While a hold is unresolved, the system tracks it as an issue. Because approval arrives on a later turn, Require Approval applies to agentic, tool-using traffic (tool calls and tool responses) rather than to a single prompt on its own.
+
+Provider limitationRequire Approval is not supported for Amazon Bedrock endpoints accessed with a Bedrock API key (ABSK) in this release.
+
+For how Require Approval behaves across coding-agent integrations — and the fallback when an integration cannot enforce a hold — see [Coding Agent Protection ▸ Runtime Protection](/_docs/docs/coding_agent_protection/runtime_protection).
 
 Below is an example of combining a BLOCK Action on the InputGuard and a WARN Action on the OutputGuard:
 
@@ -1310,6 +1331,7 @@ Issues raised by AI Runtime feed into the broader risk picture across the platfo
 - **[AI 360](/_docs/docs/applications/ai_360)** surfaces AI Runtime issues as one of the risk factors that contribute to a project's overall risk score.
 - **[AI Investigation](/_docs/docs/applications/ai_monitor)** correlates AI Runtime issues with end-user behaviour and conversation context so you can drill into who triggered a violation and what they were trying to do.
 - **[AI Usage](/_docs/docs/applications/ai_usage)** can quarantine end users whose runtime violations cross thresholds you configure.
+Each issue's detail drawer includes an **Assess** tab that explains why the issue was created — a human-readable trigger reason plus supporting evidence (the detected values, such as a matched PII pattern, banned substring, or regex match), or a side-by-side scope comparison for Intent-Based Access Control issues. The tab appears only when the issue has a reason or evidence to show. When an issue produced a quarantine, the drawer also shows a **View in AI Investigation** link that opens the quarantine detail. See [Assess tab: why an issue triggered](/_docs/docs/applications/ai_monitor#assess-tab-why-an-issue-triggered) for the full reason-and-evidence model.
 
 ## Report[​](#report)
 Search through prompts and responses recorded by AI Runtime. You can filter recorded traffic by endpoint, model, user-session, and rule outcome, and export the matching prompts for offline review or sharing with another team.
@@ -1391,7 +1413,12 @@ Possible options for route settings are:
 - `/custom/{proxy+}`
 - `/prod/{proxy+}`
 
+## Exporting Runtime Logs to an Observability Platform[​](#exporting-runtime-logs-to-an-observability-platform)
+You can export your runtime logs to an external observability platform to monitor and analyze them alongside your other telemetry. Export is configured by an administrator and sends your masked runtime-log records to an OTEL-compatible destination, such as Grafana. What is exported is governed by your Runtime Logging settings, so the same masking that protects prompt content on the platform is applied before records leave the data plane.
+
+For the full setup — enabling export, setting the destination endpoint, and configuring headers — see [Runtime Logging](/_docs/docs/admin_console/runtime_logging#otel-export).
+
 ## Known limitations[​](#known-limitations)
 
 - **Streaming is not currently supported.** Streaming is not currently supported with AI Runtime. When using AI Runtime, set `streaming` to `false`. Streaming support is planned for a future release and is on the product roadmap.
-[PreviousAI SPM](/_docs/docs/applications/ai_spm)[NextAI MCP](/_docs/docs/applications/ai_mcp)- [Data Encryption on the Data Plane](#data-encryption-on-the-data-plane)- [Pointing to the Proxy](#pointing-to-the-proxy)[OpenAI](#openai)- [Azure OpenAI](#azure-openai)- [Anthropic](#anthropic)- [Gemini](#gemini)- [WatsonX](#watsonx)- [Calling Guardrails Directly](#calling-guardrails-directly)[Authentication](#authentication)- [Usage Example](#usage-example)- [Processing Inputs](#processing-inputs)- [Usage Example](#usage-example-1)- [Free Form Messages (Custom Endpoints)](#free-form-messages-custom-endpoints)- [Output Process](#output-process)- [Usage Example](#usage-example-2)- [Building Policies](#building-policies)[Policies Page Overview](#policies-page-overview)- [Policy Rule Settings](#policy-rule-settings)- [Policy Actions](#policy-actions)- [Policy Hierarchy](#policy-hierarchy)- [Policy Types](#policy-types)[Prompt Protection](#prompt-protection)- [Model Robustness](#model-robustness)- [User Experience and Tone](#user-experience-and-tone)- [Agentic Guardrails](#agentic-guardrails)- [Multimodal Guardrails](#multimodal-guardrails)- [Quality and Accuracy](#quality-and-accuracy)- [Bias and Fairness](#bias-and-fairness)- [Custom Tagging](#custom-tagging)- [Issues](#issues)- [Report](#report)- [Observability](#observability)- [Session Features](#session-features)[Parameters](#parameters)- [Passing Parameters from Clients](#passing-parameters-from-clients)- [Rate and Burst Limiting](#rate-and-burst-limiting)[Understanding Rate Limit and Burst Limit](#understanding-rate-limit-and-burst-limit)- [Configuring](#configuring)- [Known limitations](#known-limitations)
+[PreviousAI SPM](/_docs/docs/applications/ai_spm)[NextAI MCP](/_docs/docs/applications/ai_mcp)- [Data Encryption on the Data Plane](#data-encryption-on-the-data-plane)- [Pointing to the Proxy](#pointing-to-the-proxy)[OpenAI](#openai)- [Azure OpenAI](#azure-openai)- [Anthropic](#anthropic)- [Gemini](#gemini)- [WatsonX](#watsonx)- [Calling Guardrails Directly](#calling-guardrails-directly)[Authentication](#authentication)- [Usage Example](#usage-example)- [Processing Inputs](#processing-inputs)- [Usage Example](#usage-example-1)- [Free Form Messages (Custom Endpoints)](#free-form-messages-custom-endpoints)- [Output Process](#output-process)- [Usage Example](#usage-example-2)- [Building Policies](#building-policies)[Policies Page Overview](#policies-page-overview)- [Policy Rule Settings](#policy-rule-settings)- [Policy Actions](#policy-actions)- [Policy Hierarchy](#policy-hierarchy)- [Policy Types](#policy-types)[Prompt Protection](#prompt-protection)- [Model Robustness](#model-robustness)- [User Experience and Tone](#user-experience-and-tone)- [Agentic Guardrails](#agentic-guardrails)- [Multimodal Guardrails](#multimodal-guardrails)- [Quality and Accuracy](#quality-and-accuracy)- [Bias and Fairness](#bias-and-fairness)- [Custom Tagging](#custom-tagging)- [Issues](#issues)- [Report](#report)- [Observability](#observability)- [Session Features](#session-features)[Parameters](#parameters)- [Passing Parameters from Clients](#passing-parameters-from-clients)- [Rate and Burst Limiting](#rate-and-burst-limiting)[Understanding Rate Limit and Burst Limit](#understanding-rate-limit-and-burst-limit)- [Configuring](#configuring)- [Exporting Runtime Logs to an Observability Platform](#exporting-runtime-logs-to-an-observability-platform)- [Known limitations](#known-limitations)

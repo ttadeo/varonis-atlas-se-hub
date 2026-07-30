@@ -123,6 +123,8 @@ Mark an in-progress compliance audit as terminated, ending the audit workflow wi
 **Summary**: Update a compliance issue's properties
 **Tags**: compliance
 
+Deprecated: the assignee is supplied as an Auth0 subject id. Use ``PATCH /v2/posture-management/issue`` (assignee keyed on the internal user_id) instead — it updates any issue, including compliance issues.
+
 Update one or more properties (such as severity or status) of an existing compliance issue. Only the fields provided in the request body are modified. Use this to adjust issue classification or remediation metadata. Scoped to the token's customer.
 
 **Request Body**: Required
@@ -131,7 +133,7 @@ Update one or more properties (such as severity or status) of an existing compli
 **Responses**:
 - `200`: Successful Response
 - `400`: Invalid request parameters
-- `404`: Issue not found
+- `404`: Issue or assignee user not found
 - `500`: Unexpected server error
 - `422`: Validation Error
 

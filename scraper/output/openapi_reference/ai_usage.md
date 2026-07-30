@@ -393,7 +393,7 @@ Remove the policy posture override for a specific AI service identified by servi
 **Summary**: List AI access events for the customer
 **Tags**: ai-usage
 
-Return a paginated list of AI access events recorded for the token's customer, representing user interactions with AI services (e.g. browser-extension requests, API calls). Supports filtering by organization, project, AI service, user email, time range, event source, event type, device, URL substring, and IP address. Use to audit who accessed which AI services, when, and from where. Scoped to the token's customer.
+Return a paginated list of AI access events recorded for the token's customer, representing user interactions with AI services (e.g. browser-extension requests, API calls). Supports filtering by organization, project, AI service, user email, time range, event source, event type, device name substring, URL substring, and IP address. Use to audit who accessed which AI services, when, and from where. Scoped to the token's customer.
 
 **Parameters**:
 - `organization_id` (query, optional): 
@@ -403,7 +403,7 @@ Return a paginated list of AI access events recorded for the token's customer, r
 - `time_start` (query, optional): 
 - `time_end` (query, optional): 
 - `source_in` (query, optional): 
-- `device_in` (query, optional): 
+- `device_contains` (query, optional): 
 - `url_contains` (query, optional): 
 - `ip_in` (query, optional): 
 - `event_type_in` (query, optional): 

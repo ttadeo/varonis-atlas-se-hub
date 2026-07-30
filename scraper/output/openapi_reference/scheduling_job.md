@@ -178,29 +178,6 @@ Remove the AWS EventBridge schedule entry for the given schedule and nullify its
 
 ---
 
-## PATCH /v1/scheduling-jobs/{customer_id}/pentest_scan_schedule/{schedule_id} — Edit Pentest Scan Schedule
-
-**Endpoint**: `PATCH /v1/scheduling-jobs/{customer_id}/pentest_scan_schedule/{schedule_id}`
-**Summary**: Edit Pentest Scan Schedule
-**Tags**: scheduling-job
-
-Updates a customer's scheduled job by modifying its timing and associated scan template.
-If a template ID is provided, the job's endpoint is updated;
-otherwise, a new template is created and assigned.
-
-**Parameters**:
-- `customer_id` (path, required): 
-- `schedule_id` (path, required): 
-
-**Request Body**: Required
-- Content-Type: `application/json`
-
-**Responses**:
-- `200`: Successful Response
-- `422`: Validation Error
-
----
-
 ## GET /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/executions — List execution history for a scheduled job
 
 **Endpoint**: `GET /v1/scheduling-jobs/{customer_id}/jobs/{job_id}/executions`

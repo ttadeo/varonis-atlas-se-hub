@@ -1,5 +1,203 @@
 # mcp API Endpoints
 
+## POST /v1/mcp/registries/{mcp_registry_id}/requests — Request to add a server or tool to an MCP registry
+
+**Endpoint**: `POST /v1/mcp/registries/{mcp_registry_id}/requests`
+**Summary**: Request to add a server or tool to an MCP registry
+**Tags**: mcp
+
+Submit a request to add an MCP server (`request_type=ADD_SERVER` + `mcp_server_config_id`) or a specific tool (`request_type=ADD_TOOL` + `tool_resource_instance_id`) to a registry, with a required `business_justification`. The request is created PENDING for a manager to approve or deny. Scoped to the token's customer.
+
+**Parameters**:
+- `mcp_registry_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `201`: Successful Response
+- `404`: Registry not found
+- `400`: Server/tool not owned by customer
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/registries/{mcp_registry_id}/requests/mine — List my requests for an MCP registry
+
+**Endpoint**: `GET /v1/mcp/registries/{mcp_registry_id}/requests/mine`
+**Summary**: List my requests for an MCP registry
+**Tags**: mcp
+
+Return a paginated list of the caller's OWN requests for a registry, newest first, optionally filtered by `status`. Scoped to the token's customer and requesting user.
+
+**Parameters**:
+- `mcp_registry_id` (path, required): 
+- `status` (query, optional): Filter to PENDING, APPROVED, or DENIED.
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Registry not found
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/servers — Browse MCP servers by availability (Used / Available / All)
+
+**Endpoint**: `GET /v1/mcp/catalog/servers`
+**Summary**: Browse MCP servers by availability (Used / Available / All)
+**Tags**: mcp
+
+Return a paginated catalog of MCP servers for the token's customer, each tagged as **Used** or **Available**. A server is *Used* when it is assigned to the selected scope's project(s), and *Available* when it is offered by a registry visible to the selected scope but not yet used. Pass `project_id` or `organization_id` to select a scope (omit both for the whole customer); registry visibility is resolved up the hierarchy (project sees its own, its parent organization's, and customer-wide registries). At customer scope every server is Used, so `availability=AVAILABLE` returns nothing there. Supports a text search on display name. Scoped to the token's customer.
+
+**Parameters**:
+- `availability` (query, optional): Filter to USED, AVAILABLE, or ALL (default ALL).
+- `project_id` (query, optional): Select a project scope. Mutually exclusive with organization_id.
+- `organization_id` (query, optional): Select an organization scope. Mutually exclusive with project_id.
+- `search` (query, optional): Search by display name
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/tools — Browse MCP tools by availability (Used / Available / All)
+
+**Endpoint**: `GET /v1/mcp/catalog/tools`
+**Summary**: Browse MCP tools by availability (Used / Available / All)
+**Tags**: mcp
+
+Return a paginated catalog of MCP tools for the token's customer, each tagged as **Used** or **Available**. A tool is *Used* when its parent MCP server is assigned to the selected scope's project(s) or the tool itself is assigned there, and *Available* when it is offered by a registry visible to the selected scope (its parent server is a SERVER entry, or the tool is a TOOL entry) but not yet used. Pass `project_id` or `organization_id` to select a scope (omit both for the whole customer); registry visibility is resolved up the hierarchy (project sees its own, its parent organization's, and customer-wide registries). At customer scope every assigned tool is Used, so `availability=AVAILABLE` returns nothing there. Supports a text search on display name. Scoped to the token's customer.
+
+**Parameters**:
+- `availability` (query, optional): Filter to USED, AVAILABLE, or ALL (default ALL).
+- `project_id` (query, optional): Select a project scope. Mutually exclusive with organization_id.
+- `organization_id` (query, optional): Select an organization scope. Mutually exclusive with project_id.
+- `search` (query, optional): Search by display name
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/tools/{tool_resource_instance_id}/source-servers — List a tool's candidate source MCP server connections
+
+**Endpoint**: `GET /v1/mcp/catalog/tools/{tool_resource_instance_id}/source-servers`
+**Summary**: List a tool's candidate source MCP server connections
+**Tags**: mcp
+
+Return the candidate source MCP server connections for a catalog tool — the options the Add MCP Tool drawer's picker chooses among when adding the tool to a registry. Each row carries `mcp_server_config_id`, `display_name`, and `transport_fingerprint` (the Add-Server grouping key) plus an optional `description`. A tool normally resolves to exactly one connection, and to several only when duplicate server connections share it. Returns an **empty list (200)** when the tool has no resolvable source connection — a valid state, not a 404. Returns **404** only when the id is not a customer-owned MCP tool (`mcp_server_tool`) resource. Scoped to the token's customer.
+
+**Parameters**:
+- `tool_resource_instance_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Tool not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/registries — List the customer's MCP registries (developer pick-list)
+
+**Endpoint**: `GET /v1/mcp/catalog/registries`
+**Summary**: List the customer's MCP registries (developer pick-list)
+**Tags**: mcp
+
+Return a paginated, lightweight pick-list of the customer's MCP registries (name, description, and server/tool counts) so a developer can choose a target registry to submit an add-request against (`POST /v1/mcp/registries/{mcp_registry_id}/requests`). Lists **all** the customer's registries regardless of the selected hierarchy — this read is intentionally unscoped, because the admin registry-management list is admin-only and a developer would otherwise have no way to discover a registry id. Supports a case-insensitive search on registry name.
+
+`contains_mcp_server_config_id` / `contains_tool_resource_instance_id` power the developer **View Related Registries** reverse lookup (available to everyone; only adding to a registry is admin-only): pass one to return only registries that include that server/tool as an entry. Like the rest of this read the reverse lookup is **unscoped by hierarchy** — every containing registry is returned across all visibility tiers (customer-wide, organization, project), independent of the hierarchy selected in the UI. Scoped to the token's customer.
+
+**Parameters**:
+- `search` (query, optional): Search by registry name
+- `contains_mcp_server_config_id` (query, optional): Reverse lookup (View Related Registries): return only registries that contain this MCP server (by `mcp_server_config_id`) as an entry. Unscoped by hierarchy.
+- `contains_tool_resource_instance_id` (query, optional): Reverse lookup (View Related Registries): return only registries that contain this MCP tool (by tool `resource_instance_id`) as an entry. Unscoped by hierarchy.
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/registries/{mcp_registry_id} — Get an MCP registry's detail (developer view)
+
+**Endpoint**: `GET /v1/mcp/catalog/registries/{mcp_registry_id}`
+**Summary**: Get an MCP registry's detail (developer view)
+**Tags**: mcp
+
+Return one registry's detail for the developer-facing registry page: metadata (name, description, creator, created/updated timestamps), the visible-scope tree, and server/tool entry counts. Developers may open any of the customer's registries regardless of the selected hierarchy — the field-identical admin read requires registry-management permission, so without this route a developer could not view a registry before requesting an addition to it. Returns 404 for an unknown registry id. Scoped to the token's customer.
+
+**Parameters**:
+- `mcp_registry_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Registry not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/registries/{mcp_registry_id}/entries — List an MCP registry's entries (developer view)
+
+**Endpoint**: `GET /v1/mcp/catalog/registries/{mcp_registry_id}/entries`
+**Summary**: List an MCP registry's entries (developer view)
+**Tags**: mcp
+
+Return a paginated list of the registry's server/tool entries for the developer-facing registry page, optionally filtered by `entry_type` (the page's MCP Server / MCP Tools tabs). Rows carry the same enrichment as the admin read: display name, description, the source MCP server for TOOL entries, the tool count for SERVER entries, and added-by/added-at. Returns 404 for an unknown registry id. Scoped to the token's customer.
+
+**Parameters**:
+- `mcp_registry_id` (path, required): 
+- `entry_type` (query, optional): Filter to SERVER or TOOL entries.
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Registry not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/mcp/catalog/registries/{mcp_registry_id}/requests — List an MCP registry's request history (developer view)
+
+**Endpoint**: `GET /v1/mcp/catalog/registries/{mcp_registry_id}/requests`
+**Summary**: List an MCP registry's request history (developer view)
+**Tags**: mcp
+
+Return a paginated list of ALL of a registry's add-server/tool requests — every requester, every status — newest first, optionally filtered by `status`. Powers the developer registry page's Request History tab: a non-admin has read-only visibility of the whole registry's requests but cannot approve or deny them (those stay manager-only under `/v1/mcp/registries/{mcp_registry_id}/requests/...`). Rows carry the same enrichment as the admin queue: requested-/reviewed-by email, target display name, registry name, and the review comment (denial reason). Differs from `GET /v1/mcp/registries/{mcp_registry_id}/requests/mine`, which returns only the caller's own requests. Returns 404 for an unknown registry id. Scoped to the token's customer.
+
+**Parameters**:
+- `mcp_registry_id` (path, required): 
+- `status` (query, optional): Filter to PENDING, APPROVED, or DENIED.
+- `page` (query, optional): 
+- `per_page` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Registry not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
 ## POST /v1/mcp/servers —  Create Mcp Server Config
 
 **Endpoint**: `POST /v1/mcp/servers`

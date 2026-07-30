@@ -93,6 +93,37 @@ the strict dep returns 403 for that case. Tracked at
 
 ---
 
+## GET /v1/auth/tenant-lookup — Resolve a customer's Varonis tenant login URL
+
+**Endpoint**: `GET /v1/auth/tenant-lookup`
+**Summary**: Resolve a customer's Varonis tenant login URL
+**Tags**: auth, no-auth
+
+Resolve a tenant's Varonis login base URL — the ``https://…`` OIDC/JWKS
+host the pre-login UI redirects to.
+
+Provide **exactly one** identifier: the opaque Atlas ``customer_id``, or the
+tenant ``subdomain`` (the leftmost DNS label of the login host, e.g.
+``dev0256`` for ``dev0256.varonis-preprod.com``). Neither or both → 400.
+
+``no-auth``: runs before any token exists. The host is composed solely from
+trusted backend state (the caller supplies an id/subdomain, never a URL — no
+open-redirect / SSRF surface). An unknown customer/subdomain or one without a
+Varonis login URL surfaces as 401 (the platform masks the internal 404 for
+unauthenticated callers), so existence / IdP type is not leaked. A subdomain
+that matches more than one customer is a data-integrity violation and returns
+500 (subdomains are expected globally unique).
+
+**Parameters**:
+- `customer_id` (query, optional): 
+- `subdomain` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
 ## GET /v1/auth/jwks — JWKS for Atlas-minted JWTs
 
 **Endpoint**: `GET /v1/auth/jwks`

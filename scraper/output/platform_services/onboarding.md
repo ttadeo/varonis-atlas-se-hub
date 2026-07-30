@@ -34,7 +34,7 @@ If you do not plan to use AI Runtime Protection or AI Investigation right now, y
 To learn more about the Data Plane, refer to the [Architecture Overview](/_docs/docs/overview/architecture).
 
 ### Install on AWS[​](#install-on-aws)
-The AWS Data Plane is deployed into your AWS account as a CloudFormation stack. This section describes the compute, network, storage, and access requirements.
+The AWS Data Plane is deployed into your AWS account as a CloudFormation stack. This section describes the compute, network, storage, and access requirements. For the deploy and post-deployment steps themselves — the stack command, the full parameter reference, and DNS and verification — follow the canonical guides: [AWS — Direct Deploy (Console)](/_docs/docs/admin_console/data_plane/aws_direct_deploy_console) or [AWS — Deploy by Command (CLI)](/_docs/docs/admin_console/data_plane/aws_deploy_by_command_cli).
 
 #### Prerequisites[​](#prerequisites)
 Before you deploy:
@@ -79,20 +79,11 @@ SettingValueInstance class`db.t4g.medium` (2 vCPU, 4 GB RAM)EnginePostgreSQL 16.
 
 SettingValueEngineOpenSearch 2.15Instance type`r7g.medium.search` (Graviton, 2 vCPU, 8 GB RAM)Instance count2Zone awarenessEnabledEBS storage100 GB gp3 per node (3000 IOPS)Encryption at restEnabledNode-to-node encryptionEnabledTLS policy1.2 (PFS-2023-10)Fine-grained access controlEnabled (internal user `atlas-user` + JWT)
 #### Network resources[​](#network-resources)
-You can either let the template create a new VPC or point it at an existing one.
+By default the template creates a new VPC. To deploy into an existing VPC instead, see the bring-your-own-VPC options in the canonical AWS guides linked above.
 
 **Default VPC** (10.0.0.0/16 across 2 Availability Zones):
 
 SubnetCIDRAZRoutesPublic Subnet 110.0.1.0/24AZ-0NAT Gateway, Internet GatewayPublic Subnet 210.0.2.0/24AZ-1NAT Gateway, Internet GatewayPrivate Subnet 110.0.3.0/24AZ-0ECS, RDS, OpenSearch, LambdasPrivate Subnet 210.0.4.0/24AZ-1ECS, RDS, OpenSearch, Lambdas
-**Bring Your Own VPC (BYOVPC):** to use an existing VPC, provide all three of `ExistingVpcId`, `ExistingPrivateSubnet1Id`, and `ExistingPrivateSubnet2Id` as CloudFormation parameters. The subnets must be private with outbound internet access via NAT Gateway. Partial configurations are rejected — either pass all three or none.
-
-**Additional network resources:**
-
-- 2 NAT Gateways (one per AZ)
-- 2 Elastic IPs
-- 1 Internet Gateway
-- 4 Route Tables
-
 **VPC interface endpoints** (DNS-enabled, deployed in both private subnets):
 
 EndpointServiceSecrets Manager`com.amazonaws.REGION.secretsmanager`CloudWatch Logs`com.amazonaws.REGION.logs`SSM`com.amazonaws.REGION.ssm`
@@ -111,7 +102,7 @@ The AWS Data Plane exposes a single HTTP API:
 **Routes:**
 
 PathTargetPurpose`/openai/{proxy+}`Proxy (port 83)OpenAI`/anthropic/{proxy+}`Proxy (port 83)Anthropic`/google/{proxy+}`Proxy (port 83)Google Gemini`/bedrock/{proxy+}`Proxy (port 83)AWS Bedrock`/ibmwatsonx/{proxy+}`Proxy (port 83)IBM watsonx`/ibmwatsonx-assistant/{proxy+}`Proxy (port 83)IBM watsonx Assistant`/ibmwatsonx-ai-service/{proxy+}`Proxy (port 83)IBM watsonx AI Service`/custom/{proxy+}`Proxy (port 83)Custom provider`/sdk/{proxy+}`Rule API (port 81)SDK control-plane API`/opensearch/{proxy+}`OpenSearch Dashboards (port 5601)OpenSearch UI
-The AWS API Gateway prefixes all routes under `/sdk/{proxy+}` for the Rule API and `/&lt;provider&gt;/{proxy+}` for the LLM proxies. This is why the AWS verification endpoint is `/sdk/health` — see the Azure section below for the bare `/health` equivalent.
+The AWS API Gateway prefixes all routes under `/sdk/{proxy+}` for the Rule API and `/&lt;provider&gt;/{proxy+}` for the LLM proxies. This is why the AWS verification endpoint is `/sdk/health`, whereas Azure uses the bare `/health`.
 
 #### Storage, messaging, and quotas[​](#storage-messaging-and-quotas)
 **S3:**
@@ -125,54 +116,8 @@ Each queue has a corresponding dead-letter queue.
 **Service quota summary:**
 
 QuotaRequiredFargate vCPU (on-demand)17 vCPURDS instances (`db.t4g.medium`)1OpenSearch instances (`r7g.medium.search`)2Elastic IPs2NAT Gateways per AZ1VPC Endpoints3ALBs1NLBs1API Gateway HTTP APIs1Lambda concurrent executions6 functions (default 1000 quota is sufficient)SQS queues2 (1 main + 1 DLQ)S3 buckets1KMS keys1Secrets Manager secrets~9
-#### Deployment and post-deployment[​](#deployment-and-post-deployment)
-Run a single `aws cloudformation create-stack` command. Replace the angle-bracketed values with the credentials provided by Atlas, your ACM certificate ARN, and your custom domain.
-
-```
-aws cloudformation create-stack \
- --stack-name Atlas-dataplane \
- --template-url &lt;TEMPLATE_URL_PROVIDED_BY_ATLAS&gt; \
- --capabilities CAPABILITY_IAM CAPABILITY_NAMED_IAM \
- --parameters \
- ParameterKey=CustomerId,ParameterValue=&lt;CUSTOMER_ID&gt; \
- ParameterKey=JobAdminKey,ParameterValue=&lt;JOB_ADMIN_KEY&gt; \
- ParameterKey=OpenSearchPassword,ParameterValue=&lt;OPENSEARCH_PASSWORD&gt; \
- ParameterKey=CustomDomainCertificateArn,ParameterValue=&lt;ACM_CERT_ARN&gt; \
- ParameterKey=CustomDomainName,ParameterValue=atlas.customer.com
-
-```
-`CAPABILITY_IAM` and `CAPABILITY_NAMED_IAM` are required because the template creates IAM roles.
-
-**Optional parameters:**
-
-ParameterDefaultDescription`RetentionDays`30CloudWatch log retention, in days`ExistingVpcId`empty (creates new VPC)VPC ID of an existing VPC (BYOVPC)`ExistingPrivateSubnet1Id`emptyExisting private subnet ID, AZ-0`ExistingPrivateSubnet2Id`emptyExisting private subnet ID, AZ-1
-After the stack reaches `CREATE_COMPLETE`:
-
-- 
-Get the API Gateway custom-domain hostname:
-
-```
-aws cloudformation describe-stacks \
- --stack-name Atlas-dataplane \
- --query "Stacks[0].Outputs[?OutputKey=='ApiGatewayDomainName'].OutputValue" \
- --output text
-
-```
-
-- 
-Create a DNS **CNAME** record pointing your custom domain at the API Gateway domain.
-
-- 
-Verify the deployment:
-
-```
-curl https://&lt;CUSTOM_DOMAIN&gt;/sdk/health
-# Should return 200
-
-```
-
 ### Install on Azure[​](#install-on-azure)
-The Azure Data Plane is deployed into your Azure subscription as an ARM template, via `az deployment group create`. This section describes the compute, network, storage, and access requirements.
+The Azure Data Plane is deployed into your Azure subscription as an ARM template, via `az deployment group create`. This section describes the compute, network, storage, and access requirements. For the deploy and post-deployment steps themselves — the deployment command, the full parameter reference, and DNS and verification — follow the canonical guides: [Azure — Direct Deploy (Portal)](/_docs/docs/admin_console/data_plane/azure_direct_deploy_portal) or [Azure — Deploy by Command (CLI)](/_docs/docs/admin_console/data_plane/azure_deploy_by_command_cli).
 
 #### Prerequisites[​](#prerequisites-1)
 Before you deploy:
@@ -270,48 +215,6 @@ Dead-letter queues are created automatically by Service Bus for each queue.
 
 #### Quotas[​](#quotas)
 QuotaRequiredContainer Apps vCPU (Consumption)61 vCPUPostgreSQL vCPU (General Purpose Ddsv4)2 vCPUApplication Gateway (`WAF_v2`)1 instancePublic IP Addresses (Standard)2NAT Gateways1VNet address space/16 (or 4 subnets if BYON)Service Bus Namespaces (Standard)1Storage Accounts1Key Vaults1
-#### Deployment and post-deployment[​](#deployment-and-post-deployment-1)
-Run a single `az deployment group create` command:
-
-```
-az deployment group create \
- --resource-group &lt;RESOURCE_GROUP&gt; \
- --template-file mainTemplate.json \
- --parameters \
- customerId="&lt;CUSTOMER_ID&gt;" \
- jobAdminKey="&lt;JOB_ADMIN_KEY&gt;" \
- acrPassword="&lt;ACR_PASSWORD&gt;" \
- customDomainName="atlas.customer.com" \
- customDomainCertificatePfx="&lt;BASE64_ENCODED_PFX&gt;" \
- customDomainCertificatePassword="&lt;PFX_PASSWORD&gt;"
-
-```
-After the deployment completes:
-
-- 
-Get the Application Gateway public IP:
-
-```
-az deployment group show \
- -g &lt;RESOURCE_GROUP&gt; \
- -n &lt;DEPLOYMENT_NAME&gt; \
- --query "properties.outputs.applicationGatewayPublicIp.value" \
- -o tsv
-
-```
-
-- 
-Create a DNS **A** record pointing your custom domain at this IP.
-
-- 
-Verify the deployment:
-
-```
-curl https://&lt;CUSTOM_DOMAIN&gt;/health
-# Should return 200
-
-```
-
 The Azure verification endpoint is `/health`, while AWS uses `/sdk/health`. The difference is that the AWS API Gateway prefixes all routes under `/sdk/{proxy+}` for the Rule API, whereas the Azure Application Gateway routes the bare path directly.
 
 ## Create Organizations[​](#create-organizations)

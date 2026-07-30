@@ -1,7 +1,7 @@
 {
-  "regrouped_at": "2026-07-16T14:17:43.499793Z",
-  "total_threads": 262,
-  "total_messages": 460,
+  "regrouped_at": "2026-07-27T15:32:06.185287Z",
+  "total_threads": 309,
+  "total_messages": 552,
   "gap_seconds": 300,
   "channel": "AI Security - SME",
   "threads": [
@@ -6253,6 +6253,1224 @@
         "is_reply": false,
         "derived_timestamp": "2026-07-15T18:58:26.013000+00:00",
         "derived_ts_seconds": 1784141906.013
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784213916270",
+      "root": {
+        "message_id": "1784213916270",
+        "thread_id": "1784213916270",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Thank you Mike",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T14:58:36.270000+00:00",
+        "derived_ts_seconds": 1784213916.27
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784216481243",
+      "root": {
+        "message_id": "1784216481243",
+        "thread_id": "1784216481243",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Can we send runtime logs to a SIEM but not to the Control Plane? So the client is only storing prompt activity within their SIEM but not Atlas?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T15:41:21.243000+00:00",
+        "derived_ts_seconds": 1784216481.243
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784218437390",
+      "root": {
+        "message_id": "1784218437390",
+        "thread_id": "1784218437390",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Yep, hitting wall with larger opps wanting to own logging",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T16:13:57.390000+00:00",
+        "derived_ts_seconds": 1784218437.39
+      },
+      "replies": [
+        {
+          "message_id": "1784218631466",
+          "thread_id": "1784218631466",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Per Anthony",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T16:17:11.466000+00:00",
+          "derived_ts_seconds": 1784218631.466
+        },
+        {
+          "message_id": "1784218679472",
+          "thread_id": "1784218679472",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "disclaimer - if this is tied to a specific customer request I would recommend vetting with engineering/product in case they have a greater understanding of the available options/possibilities",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T16:17:59.472000+00:00",
+          "derived_ts_seconds": 1784218679.472
+        },
+        {
+          "message_id": "1784218766166",
+          "thread_id": "1784218766166",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "but just in terms of logging in general Within the Atlas Admin Console, you can fully disable prompt logging either globally or for specific high-sensitivity endpoints. When logging is disabled, the control plane does not store any prompt content. Prompt fields are fully masked. Metadata and request records are still retained. For example, if a prompt triggers a guardrail policy (such as a PII violation), Atlas will log the associated security event metadata (e.g., session context, timestamp, and matched policy rule), but the underlying sensitive payload is not stored. We can also reduce prompt retention in S3 to as little as 1 day (0-day retention is not currently supported). I think the main trade-off comes down to enabling the full functionality of Atlas. When prompt logging is enabled, Atlas can provide richer visibility and analytics across usage patterns, alerts, and sessions over time. If logging is disabled, certain capabilities, particularly the AI Investigation module, become more limited. This is because the platform no longer has access to the underlying prompt and response data needed to reconstruct full session context, correlate events, and surface detailed investigative insights within the UI.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T16:19:26.166000+00:00",
+          "derived_ts_seconds": 1784218766.166
+        },
+        {
+          "message_id": "1784218927191",
+          "thread_id": "1784218927191",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Was originally scheduled for V3.7.0 but it finished up early so pending testing it might sneak into V3.6.0",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T16:22:07.191000+00:00",
+          "derived_ts_seconds": 1784218927.191
+        },
+        {
+          "message_id": "1784219097292",
+          "thread_id": "1784219097292",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Great feature for strict customers who want more control. Not a Fedramp replacement but def meets demand",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T16:24:57.292000+00:00",
+          "derived_ts_seconds": 1784219097.292
+        },
+        {
+          "message_id": "1784219213095",
+          "thread_id": "1784219213095",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Hey folks, we have a customer here who is benchmarking us on our capacity of identifying/blocking certain FR PII data with guardrails (IBAN for example) and it seems that we are missing compared to other vendors. What is the best to do? opening a support case? Thx",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T16:26:53.095000+00:00",
+          "derived_ts_seconds": 1784219213.095
+        }
+      ],
+      "message_count": 7,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784223721818",
+      "root": {
+        "message_id": "1784223721818",
+        "thread_id": "1784223721818",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Did the integration site move?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T17:42:01.818000+00:00",
+        "derived_ts_seconds": 1784223721.818
+      },
+      "replies": [
+        {
+          "message_id": "1784223764998",
+          "thread_id": "1784223764998",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Microsoft Copilot Studio Integration | TRiSM Hub Documentation",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T17:42:44.998000+00:00",
+          "derived_ts_seconds": 1784223764.998
+        },
+        {
+          "message_id": "1784223960579",
+          "thread_id": "1784223960579",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "yeah I think what you are looking for is here now: Microsoft Copilot Studio Integration | Atlas Documentation Just as an additional fun fact - I pulled this up using the new search docs feature (the Ask AI option is pretty cool too) But yeah, looks like you may have some bookmarks to update my friend",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T17:46:00.579000+00:00",
+          "derived_ts_seconds": 1784223960.579
+        },
+        {
+          "message_id": "1784224224657",
+          "thread_id": "1784224224657",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Bingo, love the update",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T17:50:24.657000+00:00",
+          "derived_ts_seconds": 1784224224.657
+        },
+        {
+          "message_id": "1784224506900",
+          "thread_id": "1784224506900",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Hi Experts, i have a prospect using Microsoft 365 with Business standard, Premium, E3 & E5 licenses (mixed license) and as an add-on they have Microsoft 365 Copilot.. For just Response to Emails, Chats & Document creations. as there is Question from prospect is how Atlas AI can integrated with Microsoft 365 Copilot and monitor & Guardrails the prompts and file references. Which module / license from Atlas is full fill this. Down the line they have Road map to build custom models for there Legal and HR Team for some knowledge base response. The Prospect want to start with Microsoft 365 Copilot.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T17:55:06.900000+00:00",
+          "derived_ts_seconds": 1784224506.9
+        }
+      ],
+      "message_count": 5,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784230400496",
+      "root": {
+        "message_id": "1784230400496",
+        "thread_id": "1784230400496",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "does anyone have a standard demo flow they have been using demo monitoring claude? I am seeing some of the components in the all orgs",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T19:33:20.496000+00:00",
+        "derived_ts_seconds": 1784230400.496
+      },
+      "replies": [
+        {
+          "message_id": "1784230625089",
+          "thread_id": "1784230625089",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "this is the one I am looking to leverage for now",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:37:05.089000+00:00",
+          "derived_ts_seconds": 1784230625.089
+        },
+        {
+          "message_id": "1784230647112",
+          "thread_id": "1784230647112",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "saw a demo tag, so not sure if someone was building off it",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:37:27.112000+00:00",
+          "derived_ts_seconds": 1784230647.112
+        }
+      ],
+      "message_count": 3,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784231020022",
+      "root": {
+        "message_id": "1784231020022",
+        "thread_id": "1784231020022",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Looking at this Claude Code deployment, I can see it is connected to multiple skills, MCP connections, instructions, and a large number of plugin resources. How do you currently determine what data those integrations can access, what actions they can perform, whether the agent is only using the resources required for a given task, and how you would detect if a prompt injection, misconfigured plugin, or compromised MCP connection caused the agent to access sensitive data or take actions outside its intended scope?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T19:43:40.022000+00:00",
+        "derived_ts_seconds": 1784231020.022
+      },
+      "replies": [
+        {
+          "message_id": "1784231026992",
+          "thread_id": "1784231026992",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Just an example leading question",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:43:46.992000+00:00",
+          "derived_ts_seconds": 1784231026.992
+        },
+        {
+          "message_id": "1784231268550",
+          "thread_id": "1784231268550",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Today, if Claude Code made an unexpected API call, accessed sensitive information, or followed a malicious prompt injection, do you have a way to see the full chain of prompts, tool calls, responses, and policy decisions so you can determine exactly what happened and what data was exposed?",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:47:48.550000+00:00",
+          "derived_ts_seconds": 1784231268.55
+        },
+        {
+          "message_id": "1784231439641",
+          "thread_id": "1784231439641",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "you superusers that have all orgs can see more stuff than us pleebs can...is there an org we have access to that has claude code events?",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:50:39.641000+00:00",
+          "derived_ts_seconds": 1784231439.641
+        },
+        {
+          "message_id": "1784231553649",
+          "thread_id": "1784231553649",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "We have scoped to move some popular features to R&D so everyone can demo the capabilities. Should take a week or two",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:52:33.649000+00:00",
+          "derived_ts_seconds": 1784231553.649
+        },
+        {
+          "message_id": "1784231588381",
+          "thread_id": "1784231588381",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "cool, just looking for feedback if my talk track makes sense above",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:53:08.381000+00:00",
+          "derived_ts_seconds": 1784231588.381
+        },
+        {
+          "message_id": "1784231630825",
+          "thread_id": "1784231630825",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "How are you currently protecting against a scenario where a developer asks Claude Code to work on a repository containing sensitive code, secrets, or internal documentation, and the agent is manipulated through a prompt, MCP tool, or plugin into exposing that data, generating insecure code, or taking actions outside of what the developer intended?",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T19:53:50.825000+00:00",
+          "derived_ts_seconds": 1784231630.825
+        }
+      ],
+      "message_count": 7,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784231945360",
+      "root": {
+        "message_id": "1784231945360",
+        "thread_id": "1784231945360",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Some new capabilities stand out from release 3.5",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T19:59:05.360000+00:00",
+        "derived_ts_seconds": 1784231945.36
+      },
+      "replies": [
+        {
+          "message_id": "1784232016873",
+          "thread_id": "1784232016873",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "All of the new features haven’t been demoed yet but it states: “Atlas protects this through Claude Code runtime hooks, AI-SPM, MCP controls, and IBAC intent-drift detection—inspecting prompts, tool calls, plugins, and MCP activity to detect sensitive data exposure, insecure behavior, prohibited tools, or actions that deviate from the developer’s intent, then alert, block, modify, redact, or quarantine the session.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T20:00:16.873000+00:00",
+          "derived_ts_seconds": 1784232016.873
+        },
+        {
+          "message_id": "1784232125758",
+          "thread_id": "1784232125758",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "sounds in line from what I am seeing",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T20:02:05.758000+00:00",
+          "derived_ts_seconds": 1784232125.758
+        }
+      ],
+      "message_count": 3,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784243324805",
+      "root": {
+        "message_id": "1784243324805",
+        "thread_id": "1784243324805",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Do we have anything for how Atlas controls specifically align with NIST RMF / OWASP / MITRE? Customers looking for a matrix",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-16T23:08:44.805000+00:00",
+        "derived_ts_seconds": 1784243324.805
+      },
+      "replies": [
+        {
+          "message_id": "1784243389091",
+          "thread_id": "1784243389091",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "I’ll share shortly. You may want to add to it",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:09:49.091000+00:00",
+          "derived_ts_seconds": 1784243389.091
+        },
+        {
+          "message_id": "1784243429304",
+          "thread_id": "1784243429304",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "here? AI Security - Documents - All Documents",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:10:29.304000+00:00",
+          "derived_ts_seconds": 1784243429.304
+        },
+        {
+          "message_id": "1784243442775",
+          "thread_id": "1784243442775",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Yes. Search mitre",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:10:42.775000+00:00",
+          "derived_ts_seconds": 1784243442.775
+        },
+        {
+          "message_id": "1784243465841",
+          "thread_id": "1784243465841",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "it's a quick search",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:11:05.841000+00:00",
+          "derived_ts_seconds": 1784243465.841
+        },
+        {
+          "message_id": "1784243736047",
+          "thread_id": "1784243736047",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "And for AI Trism: Atlas_Gartner_Mapping.xlsx",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:15:36.047000+00:00",
+          "derived_ts_seconds": 1784243736.047
+        },
+        {
+          "message_id": "1784243890497",
+          "thread_id": "1784243890497",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "love that pyramid",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:18:10.497000+00:00",
+          "derived_ts_seconds": 1784243890.497
+        },
+        {
+          "message_id": "1784243934855",
+          "thread_id": "1784243934855",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "ah I don't think I had permissions, they're showing up now",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:18:54.855000+00:00",
+          "derived_ts_seconds": 1784243934.855
+        },
+        {
+          "message_id": "1784243976035",
+          "thread_id": "1784243976035",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "I believe you can add this chat to the share and it'll grant all in here access",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-16T23:19:36.035000+00:00",
+          "derived_ts_seconds": 1784243976.035
+        }
+      ],
+      "message_count": 9,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784246887258",
+      "root": {
+        "message_id": "1784246887258",
+        "thread_id": "1784246887258",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "first crack OWASP Top 10 for LLMs Varonis Atlas LLM01: Prompt Injection AI Red Team + AI Runtime Guardrails Pen testing proactively stress-tests systems for prompt injection and jailbreaks; runtime guardrails block malicious input at the gateway before it reaches the model. LLM02: Sensitive Information Disclosure AI Runtime Guardrails + AI Red Team Blocks sensitive-data leakage in real time, reinforced by Varonis DSP classification and least-privilege remediation that shrinks the data an AI/agent can reach (blast radius). Ad-hoc/scheduled pen tests for data leakage vulnerabilities. LLM03: Supply Chain AI TPRM + AI Inventory Maintains a living AI-BOM of models, tools, MCP servers, and dependencies, and continuously assesses third-party/open-source AI vendors via questionnaires and AIBOM analysis. LLM04: Data and Model Poisoning AI-SPM + AI Inventory Assesses models and dependencies for tampering/vulnerabilities and tracks provenance LLM05: Improper Output Handling AI Runtime Guardrails Enforces real-time output policies that block non-compliant or malicious output before it reaches downstream systems; AI Pen Testing validates output-handling defenses. LLM06: Excessive Agency AI Runtime Guardrails + AI Activity Monitoring Blocks non-compliant agent actions and, with Varonis DSP least-privilege (Data Access Governance), constrains the data and actions each agent can reach to enforce least agency. LLM07: System Prompt Leakage AI Red Team + AI Runtime Guardrails Tests whether system prompts/instructions can be extracted via injection or jailbreak, and blocks leakage of that content at runtime. LLM08: Vector and Embedding Weaknesses AI-SPM Assesses AI data sources and configurations, and secures/classifies the underlying RAG and embedding stores that feed the model (via Varonis DSP data classification and integrity). LLM09: Misinformation AI Runtime Guardrails (Partial) Guardrails can block non-compliant output and Varonis DSP supplies authoritative data context, but Atlas does not publish a dedicated factuality/hallucination-scoring feature. LLM10: Unbounded Consumption AI Activity Monitoring + AIDR (Partial) Baselines AI usage and alerts on abnormal call volume or spend (denial-of-wallet); rate limiting provides a configurable cap, though hard spend limits are an application-layer control. Roadmapped LLM Gateway for model routing, budget enforcement.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T00:08:07.258000+00:00",
+        "derived_ts_seconds": 1784246887.258
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784248890909",
+      "root": {
+        "message_id": "1784248890909",
+        "thread_id": "1784248890909",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "we have anti-hallucination and clipping guardrails",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T00:41:30.909000+00:00",
+        "derived_ts_seconds": 1784248890.909
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784289611853",
+      "root": {
+        "message_id": "1784289611853",
+        "thread_id": "1784289611853",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Known issue? expected behavior? James Kay 7/16/2026 11:06 PM we cant pentest fable in atlas, already tried it James Kay 7/16/2026 11:06 PM atlas just fails with no explanation",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T12:00:11.853000+00:00",
+        "derived_ts_seconds": 1784289611.853
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784294699473",
+      "root": {
+        "message_id": "1784294699473",
+        "thread_id": "1784294699473",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "didn't realize all these coding integrations were ready - is this supposed to be here?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T13:24:59.473000+00:00",
+        "derived_ts_seconds": 1784294699.473
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784300041560",
+      "root": {
+        "message_id": "1784300041560",
+        "thread_id": "1784300041560",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "does anyone know if Atlas support ABAC?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T14:54:01.560000+00:00",
+        "derived_ts_seconds": 1784300041.56
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784307832549",
+      "root": {
+        "message_id": "1784307832549",
+        "thread_id": "1784307832549",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Not sure if we can natively map over preexisting IAM",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T17:03:52.549000+00:00",
+        "derived_ts_seconds": 1784307832.549
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784308992092",
+      "root": {
+        "message_id": "1784308992092",
+        "thread_id": "1784308992092",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Background We built a live demo application (Atlas MCP App Gallery) that connects directly to the Atlas MCP Server at mcp.prod.alltrue-be.com using the Anthropic SDK's mcp_servers beta feature (mcp-client-2025-04-04). The application uses an Atlas Admin API key (ATLAS_API_KEY) and authenticates via Authorization: Bearer <key> per the Atlas MCP Server documentation. What We Proved Was Working Earlier today the integration was fully functional. Claude connected to mcp.prod.alltrue-be.com/mcp, called Atlas MCP tools autonomously (search_api_operations, call_api_operation), received live tenant data, and returned answers in under 60 seconds. We have screenshots of successful responses with tool call badges visible in the UI. What Broke Starting around 11:29 AM ET (July 17), all requests to the Atlas MCP Server began timing out. We observed three consecutive 504s in Vercel logs: 11:29:18 — POST /api/atlas-mcp/posture-advisor → 504 (120s timeout) 11:43:58 — POST /api/atlas-mcp/posture-advisor → 504 (120s timeout) 11:47:55 — POST /api/atlas-mcp/posture-advisor → 504 (120s timeout) All three timed out at exactly 120 seconds — our Vercel function limit at the time. We subsequently increased it to 300s and still observed timeouts. What We Ruled Out on Our Side We did a full code audit of our implementation and can confirm the following are NOT the cause: Authentication is correct — same API key that worked earlier MCP Server URL is correct — https://mcp.prod.alltrue-be.com/mcp Transport is correct — streamable-HTTP per Atlas MCP Server docs We added server-side AbortController timeouts (75–120s) and client-side timeouts — these now fire cleanly rather than hanging No changes were made to our credentials or API key between working and broken states What We Suspect The Atlas MCP Server appears to be either: Rate limiting our API key — the key is used by a shared demo environment; if there's a per-key request rate limit or concurrent connection limit, repeated calls during testing could have triggered it Throttling the tenant — the Unsanctioned-Tim-The-AI-Guy demo tenant may have hit a usage threshold Backend degradation — the Atlas API that backs the MCP Server (api.prod.alltrue-be.com) may have been slow or degraded during this window, causing all MCP tool calls to hang before completing Questions for the Atlas Team Is there a rate limit (requests/min or requests/hour) on MCP Server connections per API key? Is there a concurrent connection limit per tenant or API key? Was there any degradation or maintenance on api.prod.alltrue-be.com or mcp.prod.alltrue-be.com between 11:00–12:00 AM ET on July 17? Are there specific MCP tools (call_api_operation, search_api_operations) that are more heavily rate-limited than others? Is a dedicated API key recommended for demo/testing workloads to avoid shared limits? Request If rate limiting is in effect, we'd like to understand the specific thresholds so we can design around them. If there was a backend incident, confirmation would help us rule this out permanently. Our demo is for internal Varonis SE enablement only — not customer-facing — but consistent reliability is important for live customer demos.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T17:23:12.092000+00:00",
+        "derived_ts_seconds": 1784308992.092
+      },
+      "replies": [
+        {
+          "message_id": "1784309197742",
+          "thread_id": "1784309197742",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Working Previously:",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-17T17:26:37.742000+00:00",
+          "derived_ts_seconds": 1784309197.742
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784309813363",
+      "root": {
+        "message_id": "1784309813363",
+        "thread_id": "1784309813363",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "UPDATE: I am engaging with engineering on this, no need for a support ticket. against my better judgment, I guess I will fight AI with AI lol I ran an investigation on my side leveraging Claude Code and various pieces of tooling I have set up. This is Uncle Claude's output: Plain Text I found hard evidence, not just a plausible theory. Here's what happened. Confirmed: backend degradation, not rate limiting Querying Logfire (project production) for the control-plane service — the backend that call_api_operation/search_api_operations proxy into — shows a clear, measurable incident bracketing your reported window: ┌─────────────┬─────────────┬─────────────┬──────────┬─────────────────────────┬──────────────┐ │ Time (UTC) │ Time (ET) │ Errors/5min │ HTTP 5xx │ Max span duration │ Baseline avg │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 13:30–15:10 │ 09:30–11:10 │ 0–3 │ 0 │ 4–28s (normal outliers) │ ~0.04–0.06s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 15:15 │ 11:15 │ 74 │ 0 │ 1,090s (18 min) │ 0.42s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 15:20 │ 11:20 │ 90 │ 0 │ 924s │ 0.59s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 15:35 │ 11:35 │ 35 │ 6 │ 228s │ 0.25s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 15:40 │ 11:40 │ 11 │ 1 │ 50s │ 0.08s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 15:50 │ 11:50 │ 13 │ 2 │ 29s │ 0.12s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 15:55 │ 11:55 │ 64 │ 18 │ 113s │ 1.58s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 16:15 │ 12:15 │ 41 │ 12 │ 83s │ 2.26s │ ├─────────────┼─────────────┼─────────────┼──────────┼─────────────────────────┼──────────────┤ │ 16:35+ │ 12:35+ │ back to 0–1 │ 0 │ 4–18s │ 0.04–0.06s │ └─────────────┴─────────────┴─────────────┴──────────┴─────────────────────────┴──────────────┘ Your three 504s (11:29:18, 11:43:58, 11:47:55 ET) fall squarely inside this window. By 16:35 UTC / 12:35 ET everything was back to baseline, and it's remained healthy through the last ~30 min I checked (avg duration 0.04–0.08s, zero 5xx). Root cause: at 15:16:43 UTC a job named discover_and_add_customer_cloud_resources (job_id 0a266c26) started on the same shared customer/tenant you're using (customer_id 7df8a5a7…, \"AllTrue Varonis Lab\" — the parent of your \"Unsanctioned-Tim-The-AI-Guy\" demo project) and ran for 1,088 seconds (~18 minutes). It fanned out across GCP (Vertex AI, BigQuery) and AWS (S3, Redshift Serverless, Bedrock, Athena, OpenSearch, CodeGuru, Amazon Q) with heavy API call volume — including an OpenSearch ThrottlingException (\"reached max retries: 4: Rate exceeded\") and dozens of AWS AccessDenied/ValidationException errors from scanning demo/test cloud accounts. This is a full multi-cloud inventory discovery scan (triggerable via discoverAndAddInventory / startDiscoveryJob in the same API catalog your MCP tools use) — someone else on the shared tenant almost certainly kicked one off around that time. Why it hung instead of failing fast: I checked the dedicated control-plane-mcp service specifically — it logged zero errors and normal (sub-second) latency throughout the entire window. The MCP layer itself was fine. But call_api_operation forwards into the shared control-plane process/DB, which was saturated by the discovery job's load — so your calls sat waiting on a congested backend rather than being rejected, which is exactly consistent with hanging until your 120s (then 300s) client-side timeout fired rather than a clean, fast error. Answering your five questions 1. Rate limit per API key on MCP connections? No MCP-specific tier. General per-customer_id tiers exist (read: 30/s·600/min, write: 10/s·100/min, compute: 2/s·20/min·500/hr, corequests per 5-min bucket during this whole window — nowhere near any of these ceilings, which rules rate limiting out as the cause here. 2. Concurrent connection limit per tenant/key? Not found. The limiter (limits library + Redis) is request-rate-based, not concurrency-slot-based — no evidence of a connection cap. 3. Degradation between 11:00–12:00 ET on July 17? Yes, confirmed — see the table above. 4. Are call_api_operation/search_api_operations more heavily throttled than other tools? No distinct tier for either. call_api_operation's effective ceiling is whatever the underlying REST/GraphQL operation it targets is tagged with; search_api_operations/get_api_operation are in-memory catalog reads and weren't a factor here. 5. Dedicated API key recommended? A dedicated key on the same shared customer_id won't help — the rate limiter and this incident both key off customer_id, and the saturation here was DB/process-level, not per-key. What would actually insulate you is a separate tenant/customer (not just a separate key), since the failure mode is noisy-neighbor load from other activity on the same shared demo account, which any other SE could retrigger at any time by running a full cloud discovery scan. Bottom line for your writeup You can tell the Atlas team, with confidence: this was a backend incident (not rate limiting), root-caused to an ~18-minute multi-cloud discovery job on the shared demo tenant that saturated the control-plane API between roughly 11:15–12:20 ET on 2026-07-17. It's since fully recovered. If reliability for live demos matters, ask specifically whether \"AllTrue Varonis Lab\" / COE Enablement can get you an isolated tenant rather than a new key on the same one — that's the actual fix for this failure mode. While this is better than any investigation I would have actually been able to run by myself, I do recommend a small pinch of salt. This has been a fun little experiment, if nothing else, so thank you for sharing!",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T17:36:53.363000+00:00",
+        "derived_ts_seconds": 1784309813.363
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784311370996",
+      "root": {
+        "message_id": "1784311370996",
+        "thread_id": "1784311370996",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "do we have any updates for support with snowflake cortex agents?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T18:02:50.996000+00:00",
+        "derived_ts_seconds": 1784311370.996
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784313525639",
+      "root": {
+        "message_id": "1784313525639",
+        "thread_id": "1784313525639",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I think I saw Cortex Agent Monitor Log Ingestion at least being investigated as a tentative roadmap item. Might want to confirm with one of our project leaders before advertising that though",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T18:38:45.639000+00:00",
+        "derived_ts_seconds": 1784313525.639
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784314074756",
+      "root": {
+        "message_id": "1784314074756",
+        "thread_id": "1784314074756",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Sanity check - am I correct that we cannot pen-test Copilot Studio agents? Or is there a potential pathway to do that as a browser app pentest?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T18:47:54.756000+00:00",
+        "derived_ts_seconds": 1784314074.756
+      },
+      "replies": [
+        {
+          "message_id": "1784314274590",
+          "thread_id": "1784314274590",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "umm as of mid-May direct pentesting of Copilot Studio Agents was not supported, but our team was beginning to explore it. I thought they had received some indication is that it looks like there is a way to do it. Yup, what Monty said! lol",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-17T18:51:14.590000+00:00",
+          "derived_ts_seconds": 1784314274.59
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784315307924",
+      "root": {
+        "message_id": "1784315307924",
+        "thread_id": "1784315307924",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I have a question regarding IBM WatsonX Agents. So I have an eval going right now that the customer said they need to see if we can recognize WatsonX Agents that are wrapped in an Application package? The particular agent they are looking for is this. We haven't onboarded their WatsonX LLM yet but we dont see anything in AI inventory to reflect that we can see this agent.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T19:08:27.924000+00:00",
+        "derived_ts_seconds": 1784315307.924
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784320415583",
+      "root": {
+        "message_id": "1784320415583",
+        "thread_id": "1784320415583",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "So Forvis purchased Atlas and they have 100 Copilot Studio environments - any progress on a bulk deployment option in the product?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T20:33:35.583000+00:00",
+        "derived_ts_seconds": 1784320415.583
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784321944144",
+      "root": {
+        "message_id": "1784321944144",
+        "thread_id": "1784321944144",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "sick thank you",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T20:59:04.144000+00:00",
+        "derived_ts_seconds": 1784321944.144
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784324564380",
+      "root": {
+        "message_id": "1784324564380",
+        "thread_id": "1784324564380",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "any of the pre-sales guys around? Apparently there is a follow-up call with Microsoft in about 20 minutes. Might be some questions on Atlas. Technically speaking, I'm not supposed to be saying yes to these requests anymore. If nobody else can cover it though, I will break protocol.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T21:42:44.380000+00:00",
+        "derived_ts_seconds": 1784324564.38
+      },
+      "replies": [
+        {
+          "message_id": "1784324639493",
+          "thread_id": "1784324639493",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "We have a bunch of west coast guys around but if no one can jump on I can jump on a call.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-17T21:43:59.493000+00:00",
+          "derived_ts_seconds": 1784324639.493
+        },
+        {
+          "message_id": "1784324656699",
+          "thread_id": "1784324656699",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Already engaged",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-17T21:44:16.699000+00:00",
+          "derived_ts_seconds": 1784324656.699
+        },
+        {
+          "message_id": "1784324689128",
+          "thread_id": "1784324689128",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "ok nice, thanks boys! If you feel that I am needed to provide air cover, let me know. Will just need the account guys to send an SME request for tracking purposes.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-17T21:44:49.128000+00:00",
+          "derived_ts_seconds": 1784324689.128
+        },
+        {
+          "message_id": "1784324691551",
+          "thread_id": "1784324691551",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "If u need anything let me know and I can jump on the call",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-17T21:44:51.551000+00:00",
+          "derived_ts_seconds": 1784324691.551
+        }
+      ],
+      "message_count": 5,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784325297474",
+      "root": {
+        "message_id": "1784325297474",
+        "thread_id": "1784325297474",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I haven't yet heard anything on this being scoped as an Atlas feature",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-17T21:54:57.474000+00:00",
+        "derived_ts_seconds": 1784325297.474
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784381246536",
+      "root": {
+        "message_id": "1784381246536",
+        "thread_id": "1784381246536",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "https://agenticresourcediscovery.org/ One to watch imo",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-18T13:27:26.536000+00:00",
+        "derived_ts_seconds": 1784381246.536
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784548360220",
+      "root": {
+        "message_id": "1784548360220",
+        "thread_id": "1784548360220",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Team, if we onboard Azure Infra in to the Atlas AI, its looking for the Tenant ID & the Subscription id to be entered at Atlas and other end prospect has to run a bash script to create the successful connection.. Prospect is asking, is the integration will be cost for their cloud infra for the POC ?? As per my understanding its going to cost them by Azure.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T11:52:40.220000+00:00",
+        "derived_ts_seconds": 1784548360.22
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784562188430",
+      "root": {
+        "message_id": "1784562188430",
+        "thread_id": "1784562188430",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Are there plans to migrate \"alltrue-be.com\" to \"varonis.com?\"",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T15:43:08.430000+00:00",
+        "derived_ts_seconds": 1784562188.43
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784563286184",
+      "root": {
+        "message_id": "1784563286184",
+        "thread_id": "1784563286184",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Good afternoon all...I have a customer's graphics team who wants to use Higgsfield.ai plug-ins with Adobe Creative Suite for packaging/marketing design. Security is concerned about IP leaving the environment. Can Varonis help provide visibility, governance, monitoring, or controls around what content is being sent to a third-party AI service, either through Atlas or another Varonis capability? Any recommended approach for this use case? Varonis for Third Party Apps, maybe, with proper labeling of Sensitive IP Data after we perform classification?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T16:01:26.184000+00:00",
+        "derived_ts_seconds": 1784563286.184
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784563739397",
+      "root": {
+        "message_id": "1784563739397",
+        "thread_id": "1784563739397",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Guardrails can assist with governance on what type of data is sent to the 3rd party",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T16:08:59.397000+00:00",
+        "derived_ts_seconds": 1784563739.397
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784564346489",
+      "root": {
+        "message_id": "1784564346489",
+        "thread_id": "1784564346489",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I have a customer who want to do an eval on Anthropic following my presentation today, do we spin up a data plane for the eval? is there any specific process for that part? Thx",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T16:19:06.489000+00:00",
+        "derived_ts_seconds": 1784564346.489
+      },
+      "replies": [
+        {
+          "message_id": "1784564399349",
+          "thread_id": "1784564399349",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Jerome Soyer I will message you on the side",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-20T16:19:59.349000+00:00",
+          "derived_ts_seconds": 1784564399.349
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784567593672",
+      "root": {
+        "message_id": "1784567593672",
+        "thread_id": "1784567593672",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Anyone had any licensing discussions where the org is mainly focused on Copilot Studio? Thus the Use Case method doesn't exactly jive for licensing.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T17:13:13.672000+00:00",
+        "derived_ts_seconds": 1784567593.672
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784568541589",
+      "root": {
+        "message_id": "1784568541589",
+        "thread_id": "1784568541589",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "the way i understand it is we license copilot studio as 1 \"use case\" but i could be wrong",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-20T17:29:01.589000+00:00",
+        "derived_ts_seconds": 1784568541.589
+      },
+      "replies": [
+        {
+          "message_id": "1784568779240",
+          "thread_id": "1784568779240",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "oh, interesting. Is that a common understanding for others as well?",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-20T17:32:59.240000+00:00",
+          "derived_ts_seconds": 1784568779.24
+        },
+        {
+          "message_id": "1784569066524",
+          "thread_id": "1784569066524",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "No - we can't license all of copilot studio as a single use case - that's not how it works.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-20T17:37:46.524000+00:00",
+          "derived_ts_seconds": 1784569066.524
+        },
+        {
+          "message_id": "1784569154200",
+          "thread_id": "1784569154200",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Messaging should be released soon how we will license GenAI products including CoPilot",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-20T17:39:14.200000+00:00",
+          "derived_ts_seconds": 1784569154.2
+        },
+        {
+          "message_id": "1784569180229",
+          "thread_id": "1784569180229",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Ok, have a customer asking as we speak.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-20T17:39:40.229000+00:00",
+          "derived_ts_seconds": 1784569180.229
+        }
+      ],
+      "message_count": 5,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784900708831",
+      "root": {
+        "message_id": "1784900708831",
+        "thread_id": "1784900708831",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "any way coming to block custom models or alert that a rejected resource was found in a custom model? maybe via the LLM gateway?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T13:45:08.831000+00:00",
+        "derived_ts_seconds": 1784900708.831
+      },
+      "replies": [
+        {
+          "message_id": "1784900882587",
+          "thread_id": "1784900882587",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Moody's is asking if they can block a model or its derivatives regardless of where its hosted - not just marketplace models - for use in a project or org-wide",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-24T13:48:02.587000+00:00",
+          "derived_ts_seconds": 1784900882.587
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784901197215",
+      "root": {
+        "message_id": "1784901197215",
+        "thread_id": "1784901197215",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "LLM Gateway - you add Provider and then scope the provider connection to a certain project or org and add Available Models alongside Endpoint usage creating definition of available models, so if there will be multiple models under a provider then my assumption to your question is yes assuming we support their provider - do you know who that is to ensure I got the right answer?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T13:53:17.215000+00:00",
+        "derived_ts_seconds": 1784901197.215
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784902967507",
+      "root": {
+        "message_id": "1784902967507",
+        "thread_id": "1784902967507",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Danilo Uchoa Araujo ideally we are not installing anything in the customers environment for an eval. Unless they absolutely require us to install a dataplane in their environment, Varonis should host it.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T14:22:47.507000+00:00",
+        "derived_ts_seconds": 1784902967.507
+      },
+      "replies": [
+        {
+          "message_id": "1784903169532",
+          "thread_id": "1784903169532",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "is there any documentation for how to set this up? Toll Brothers is doing an eval and we want to bring in classification from SaaS on Sharepoint sites to show them what sensitive agents they have, but I don't see setup docs for this. where is this done? What's New in V3.5.0 - Release Date: July 13, 2026 Dataset Sensitive Data Scanning Deprecation Dataset sensitive data scanning is deprecated. Sensitive data classification should now rely on DCE classifications from Varonis DSPM.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-24T14:26:09.532000+00:00",
+          "derived_ts_seconds": 1784903169.532
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784904073465",
+      "root": {
+        "message_id": "1784904073465",
+        "thread_id": "1784904073465",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "they do, and yes",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T14:41:13.465000+00:00",
+        "derived_ts_seconds": 1784904073.465
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784919563284",
+      "root": {
+        "message_id": "1784919563284",
+        "thread_id": "1784919563284",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Patrick Lynch is this for Verint?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T18:59:23.284000+00:00",
+        "derived_ts_seconds": 1784919563.284
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784920762919",
+      "root": {
+        "message_id": "1784920762919",
+        "thread_id": "1784920762919",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I don't know who owns this diagram, but should it be updated to include both AWS and Azure logos in the top-right corner of the Data Plane?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T19:19:22.919000+00:00",
+        "derived_ts_seconds": 1784920762.919
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784922348318",
+      "root": {
+        "message_id": "1784922348318",
+        "thread_id": "1784922348318",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I believe new diagrams are being produced and will be distributed soon",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T19:45:48.318000+00:00",
+        "derived_ts_seconds": 1784922348.318
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784925998109",
+      "root": {
+        "message_id": "1784925998109",
+        "thread_id": "1784925998109",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "We normally spin up a sandbox environment for them with the in-scope resources. We can also add some of the customer’s data if it’s absolutely necessary, but most of the time we’re running things in a sandbox. I have seen many examples where we’ve connected to the customers infrastructure while VRNS is hosting the data plane. Cale do you know what’s happening?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T20:46:38.109000+00:00",
+        "derived_ts_seconds": 1784925998.109
+      },
+      "replies": [
+        {
+          "message_id": "1784926085257",
+          "thread_id": "1784926085257",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "It requests that information in all tenants but we just skip the setup wizard. It does not impact any part of the sandbox data",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-24T20:48:05.257000+00:00",
+          "derived_ts_seconds": 1784926085.257
+        },
+        {
+          "message_id": "1784926236459",
+          "thread_id": "1784926236459",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Every time we’ve done this I haven’t had to install the data ✈️ locally.",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-24T20:50:36.459000+00:00",
+          "derived_ts_seconds": 1784926236.459
+        }
+      ],
+      "message_count": 3,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1784927734244",
+      "root": {
+        "message_id": "1784927734244",
+        "thread_id": "1784927734244",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "when you say connect to AWS account, you mean add their data store?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-24T21:15:34.244000+00:00",
+        "derived_ts_seconds": 1784927734.244
+      },
+      "replies": [
+        {
+          "message_id": "1784927749314",
+          "thread_id": "1784927749314",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "That is correct - the data plane is not required to onboard resources",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-24T21:15:49.314000+00:00",
+          "derived_ts_seconds": 1784927749.314
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1785154377581",
+      "root": {
+        "message_id": "1785154377581",
+        "thread_id": "1785154377581",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I know we can enable guardrails to block, redact, etc. based on prompt content itself. When will we be able to block based on sensitivity of attachment / file uploaded?",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-27T12:12:57.581000+00:00",
+        "derived_ts_seconds": 1785154377.581
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1785155337715",
+      "root": {
+        "message_id": "1785155337715",
+        "thread_id": "1785155337715",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "I believe all the data, attachments or in prompt is treated the same and passed through the evaluator but curious to get confirmation",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-27T12:28:57.715000+00:00",
+        "derived_ts_seconds": 1785155337.715
+      },
+      "replies": [
+        {
+          "message_id": "1785155435582",
+          "thread_id": "1785155435582",
+          "author": "Unknown",
+          "timestamp": "",
+          "text": "Daniela Lulli Anthony Vanoni 6/26/2026 11:45 AM we have multimodal guardrails that can detect sensitive data in files etc. personally have not tested with zipped files before, but I would expect that Monty's answer in terms of depending whether or not the agent itself has the ability to unzip the files in the first place is key. definitely encourage any of us with these sorts of questions to go ahead and experiment with the guardrails and the demo chatbot where possible",
+          "is_reply": false,
+          "derived_timestamp": "2026-07-27T12:30:35.582000+00:00",
+          "derived_ts_seconds": 1785155435.582
+        }
+      ],
+      "message_count": 2,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1785158389770",
+      "root": {
+        "message_id": "1785158389770",
+        "thread_id": "1785158389770",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "thank you so much! missed that",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-27T13:19:49.770000+00:00",
+        "derived_ts_seconds": 1785158389.77
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1785163612125",
+      "root": {
+        "message_id": "1785163612125",
+        "thread_id": "1785163612125",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Is there anyone here, particularly in the know, about the EU AI Act? The EMEA marketing team is updating a guide on the EU AI Act from December 25 and looking for someone to gut check their updates and make sure it's accurate.",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-27T14:46:52.125000+00:00",
+        "derived_ts_seconds": 1785163612.125
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1785163949122",
+      "root": {
+        "message_id": "1785163949122",
+        "thread_id": "1785163949122",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "Thanks, Ryan",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-27T14:52:29.122000+00:00",
+        "derived_ts_seconds": 1785163949.122
+      },
+      "replies": [],
+      "message_count": 1,
+      "scraped_at": ""
+    },
+    {
+      "thread_id": "1785165885978",
+      "root": {
+        "message_id": "1785165885978",
+        "thread_id": "1785165885978",
+        "author": "Unknown",
+        "timestamp": "",
+        "text": "any ETA for Jfrog Artifactory in Atlas? we support it in DAC and customer Foresters Financial is asking if we could see AI and vulns Dockerized apps in Artifactory - they are scanning containers with Xrage but the code interacting with serverless endpoints in Bedrock or Foundry will be in Github or Jfrog",
+        "is_reply": false,
+        "derived_timestamp": "2026-07-27T15:24:45.978000+00:00",
+        "derived_ts_seconds": 1785165885.978
       },
       "replies": [],
       "message_count": 1,

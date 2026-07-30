@@ -53,7 +53,7 @@ Click a row to open a details drawer with the data plane's full registration rec
 
 Changes are confirmed in a dialog before they are saved.
 
-**Install a new data plane.** Use the install action on this tab to start onboarding a new data plane; the install flow dispatches to the AWS or Azure path depending on your choice. For the full install walkthrough, see [Onboarding — Install the data plane](/_docs/docs/platform_services/onboarding#install-the-data-plane).
+**Install a new data plane.** Use the install action on this tab to start onboarding a new data plane; the install flow dispatches to the AWS or Azure path depending on your choice. For the full install walkthrough, see [Onboarding — Install the data plane](/_docs/docs/platform_services/onboarding#install-data-plane).
 
 ## AWS data plane[​](#aws-data-plane)
 ### Prerequisites[​](#prerequisites)
@@ -111,6 +111,8 @@ ServicePurpose`rule-api`Configuration and policy API for the data plane.`rule-wo
 **Auth.** Data-plane services obtain JWTs from the control plane endpoint `POST /v1/auth/issue-jwt-token` using the `JobAdminKey` parameter.
 
 **Resource sizing.** Task vCPU and memory, autoscaling minimum and maximum replica counts, and queue retention values follow the CloudFormation template Varonis provides. Review the template before deployment to confirm it fits your account quotas.
+
+For the deploy and post-deployment steps — the stack command, DNS, and verification — follow the canonical guides: [AWS — Direct Deploy (Console)](/_docs/docs/admin_console/data_plane/aws_direct_deploy_console) or [AWS — Deploy by Command (CLI)](/_docs/docs/admin_console/data_plane/aws_deploy_by_command_cli).
 
 For multi-data-plane-account trust patterns (when one IAM role spans multiple data-plane accounts), see [AWS Bedrock](/_docs/docs/providers/aws_bedrock).
 
@@ -214,50 +216,14 @@ The following resources are protected with `CanNotDelete` locks to prevent accid
 Ensure your subscription has sufficient quota in the target region:
 
 ResourceMinimum RequiredContainer Apps vCPU (Consumption)61 vCPU (to allow max autoscaling)PostgreSQL vCPU (General Purpose Ddsv4)2 vCPUApplication Gateway (WAF_v2)1 instancePublic IP Addresses (Standard)2NAT Gateways1VNet address space`/16` (or 4 subnets if BYON)Service Bus Namespaces (Standard)1Storage Accounts1Key Vaults1
-### Deployment command[​](#deployment-command)
-```
-az deployment group create \
- --resource-group &lt;RESOURCE_GROUP&gt; \
- --template-file mainTemplate.json \
- --parameters \
- customerId="&lt;CUSTOMER_ID&gt;" \
- jobAdminKey="&lt;JOB_ADMIN_KEY&gt;" \
- acrPassword="&lt;ACR_PASSWORD&gt;" \
- customDomainName="varonis-atlas.customer.com" \
- customDomainCertificatePfx="&lt;BASE64_ENCODED_PFX&gt;" \
- customDomainCertificatePassword="&lt;PFX_PASSWORD&gt;"
-
-```
-### Post-deployment[​](#post-deployment)
-
-- 
-Get the Application Gateway public IP:
-
-```
-az deployment group show \
- -g &lt;RESOURCE_GROUP&gt; \
- -n &lt;DEPLOYMENT_NAME&gt; \
- --query "properties.outputs.applicationGatewayPublicIp.value" -o tsv
-
-```
-
-- 
-Create a DNS **A record** pointing your custom domain to this IP.
-
-- 
-Verify:
-
-```
-curl https://&lt;CUSTOM_DOMAIN&gt;/health # Should return 200
-
-```
+For the deploy and post-deployment steps — the deployment command, the full parameter reference, and DNS and verification — follow the canonical guides: [Azure — Direct Deploy (Portal)](/_docs/docs/admin_console/data_plane/azure_direct_deploy_portal) or [Azure — Deploy by Command (CLI)](/_docs/docs/admin_console/data_plane/azure_deploy_by_command_cli).
 
 ## Related pages[​](#related-pages)
 
 - [Architecture](/_docs/docs/overview/architecture) — conceptual control-plane / data-plane split.
 - [Admin Console](/_docs/docs/admin_console/) — landing page for the Admin Console section.
-- [Onboarding](/_docs/docs/platform_services/onboarding#install-the-data-plane) — step-by-step install walkthrough.
+- [Onboarding](/_docs/docs/platform_services/onboarding#install-data-plane) — step-by-step install walkthrough.
 - [AI Runtime](/_docs/docs/applications/ai_gateway#data-encryption-on-the-data-plane) — encryption model used between data plane and control plane.
 - [AI Runtime — rate and burst limiting](/_docs/docs/applications/ai_gateway#rate-and-burst-limiting) — AWS-only rate limit configuration.
 - [AWS Bedrock](/_docs/docs/providers/aws_bedrock) — multi-data-plane-account trust patterns.
-[PreviousLog Sources](/_docs/docs/admin_console/log_sources)[NextRuntime Evaluator LLM](/_docs/docs/admin_console/runtime_evaluator_llm)- [Overview](#overview)- [In the Admin Console](#in-the-admin-console)[Status](#status)- [Management](#management)- [AWS data plane](#aws-data-plane)[Prerequisites](#prerequisites)- [Required CloudFormation parameters](#required-cloudformation-parameters)- [Networking](#networking)- [What Varonis creates via CloudFormation](#what-varonis-creates-via-cloudformation)- [Azure data plane](#azure-data-plane)[Prerequisites](#prerequisites-1)- [Required Azure RBAC roles for the deploying user](#required-azure-rbac-roles-for-the-deploying-user)- [Required Azure resource providers](#required-azure-resource-providers)- [Compute resources](#compute-resources)- [Network resources](#network-resources)- [Storage and Key Vault](#storage-and-key-vault)- [Messaging (Service Bus)](#messaging-service-bus)- [Monitoring](#monitoring)- [Resource locks](#resource-locks)- [Subscription quota summary](#subscription-quota-summary)- [Deployment command](#deployment-command)- [Post-deployment](#post-deployment)- [Related pages](#related-pages)
+[PreviousLog Sources](/_docs/docs/admin_console/log_sources)[NextAzure — Direct Deploy (Portal)](/_docs/docs/admin_console/data_plane/azure_direct_deploy_portal)- [Overview](#overview)- [In the Admin Console](#in-the-admin-console)[Status](#status)- [Management](#management)- [AWS data plane](#aws-data-plane)[Prerequisites](#prerequisites)- [Required CloudFormation parameters](#required-cloudformation-parameters)- [Networking](#networking)- [What Varonis creates via CloudFormation](#what-varonis-creates-via-cloudformation)- [Azure data plane](#azure-data-plane)[Prerequisites](#prerequisites-1)- [Required Azure RBAC roles for the deploying user](#required-azure-rbac-roles-for-the-deploying-user)- [Required Azure resource providers](#required-azure-resource-providers)- [Compute resources](#compute-resources)- [Network resources](#network-resources)- [Storage and Key Vault](#storage-and-key-vault)- [Messaging (Service Bus)](#messaging-service-bus)- [Monitoring](#monitoring)- [Resource locks](#resource-locks)- [Subscription quota summary](#subscription-quota-summary)- [Related pages](#related-pages)

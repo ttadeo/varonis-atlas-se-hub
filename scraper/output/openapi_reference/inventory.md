@@ -35,7 +35,6 @@ Apply a partial update to the simple (header) governance fields of an agent's ma
 
 **Responses**:
 - `200`: Successful Response
-- `400`: Invalid request (e.g. security reviewer not in tenant)
 - `404`: Agent not found
 - `500`: Unexpected server error
 - `422`: Validation Error
@@ -48,7 +47,7 @@ Apply a partial update to the simple (header) governance fields of an agent's ma
 **Summary**: List tools and MCP servers for an agent's manifest review
 **Tags**: inventory
 
-Paginated list of the tools and MCP servers associated with the agent, combining the live observed set with any recorded review decisions. Includes capability classifications where available, per-item drift indicators, and previously approved targets that are no longer observed. `search` matches substrings of the display name and tool name; `archetype` filters to tools or MCP servers. Scoped to the token's customer.
+List of the tools and MCP servers associated with the agent, combining the live observed set, the member MCP servers fronted by the manifest's declared VMCPs (tagged with `via_vmcp` attribution), and any recorded review decisions. Includes capability classifications where available, per-item drift indicators, and previously approved targets that are no longer observed. Omit `page`/`per_page` to receive the full list in one response (page the section client-side); send either to page server-side. `search` matches substrings of the display name and tool name; `archetype` filters to tools or MCP servers. `source` is a multi-select facet (repeat the param) — a row matches if ANY of its applicable sources is requested; the six values are independent, not mutually exclusive (a directly-attached managed-platform tool is both DIRECTLY_ASSIGNED and MANAGED_PLATFORM). Values: DIRECTLY_ASSIGNED / MCP_INSPECTION / VMCP_IMPORT / MANAGED_PLATFORM / CODE_SCANNING / MANUALLY_ENTERED. When `source=VMCP_IMPORT`, `source_vmcp_resource_instance_id` narrows to a single declared VMCP's members. Scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -56,6 +55,8 @@ Paginated list of the tools and MCP servers associated with the agent, combining
 - `per_page` (query, optional): 
 - `search` (query, optional): 
 - `archetype` (query, optional): 
+- `source` (query, optional): 
+- `source_vmcp_resource_instance_id` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -71,7 +72,7 @@ Paginated list of the tools and MCP servers associated with the agent, combining
 **Summary**: Record a tool/MCP-server review decision for an agent
 **Tags**: inventory
 
-Upsert the per-agent governance review for one tool or MCP server: the approval decision (APPROVED / NOT_APPROVED / NEEDS_REVIEW / ...) plus optional notes. The reviewer identity, the tool's capability classification at review time, and the MCP continuity key are captured server-side, so a later change to the tool's definition surfaces as capability drift. The target must be a tool or MCP server currently connected to the agent (400 otherwise). Recording the first review materialises the manifest and moves NOT_STARTED to DRAFT. Returns the updated tool row plus the recomputed governance section (status, version, completion). Requires a user-bound token; scoped to the token's customer.
+Upsert the per-agent governance review for one tool or MCP server: the approval decision (APPROVED / NOT_APPROVED / NEEDS_REVIEW / ...) plus optional notes. The reviewer identity, the tool's capability classification at review time, and the MCP continuity key are captured server-side, so a later change to the tool's definition surfaces as capability drift. The target must be a tool or MCP server currently connected to the agent, or a member server fronted by one of the manifest's declared VMCPs (400 otherwise). Recording the first review materialises the manifest and moves NOT_STARTED to DRAFT. Returns the updated tool row plus the recomputed governance section (status, version, completion). Requires a user-bound token; scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -89,13 +90,13 @@ Upsert the per-agent governance review for one tool or MCP server: the approval 
 
 ---
 
-## POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries — Add an approved-entry allowlist value to an agent's manifest
+## PUT /v1/inventory/resources/agent-manifest/{resource_instance_id}/tools/review — Record review decisions for many tools/MCP servers on an agent
 
-**Endpoint**: `POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries`
-**Summary**: Add an approved-entry allowlist value to an agent's manifest
+**Endpoint**: `PUT /v1/inventory/resources/agent-manifest/{resource_instance_id}/tools/review`
+**Summary**: Record review decisions for many tools/MCP servers on an agent
 **Tags**: inventory
 
-Add one value to the manifest's data-boundary allowlist — an approved destination / data source, or a DCE-backed (sensitive/prohibited) data category, selected by `entry_type`. The first edit materialises the manifest and moves NOT_STARTED to DRAFT. Returns the full recomputed manifest detail. 409 if the same (entry_type, value) already exists; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+Record the per-agent governance review for a batch of tools or MCP servers in one request and one transaction — the bulk form of the single-tool review, for reviewing many tools at once instead of one call per tool. Each item carries a target plus the approval decision (APPROVED / NOT_APPROVED / NEEDS_REVIEW / ...) and optional notes and sensitivity; the reviewer identity, each tool's capability classification at review time, and the MCP continuity key are captured server-side, so a later change to a tool's definition surfaces as capability drift. All-or-nothing: every target must be a tool or MCP server currently connected to the agent, or a member server fronted by one of the manifest's declared VMCPs — if any target is not reviewable the whole batch is rejected (400) and nothing is written. A target may not repeat within one batch (422). Recording the first review materialises the manifest and moves NOT_STARTED to DRAFT. Returns one updated tool row per reviewed target plus the recomputed governance section (status, version, completion), computed once after all writes. Requires a user-bound token; scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -105,10 +106,58 @@ Add one value to the manifest's data-boundary allowlist — an approved destinat
 
 **Responses**:
 - `200`: Successful Response
+- `400`: One or more targets are not a tool/MCP server connected to the agent (nothing written)
+- `404`: Agent not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries — Add an approved-entry allowlist value to an agent's manifest
+
+**Endpoint**: `POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries`
+**Summary**: Add an approved-entry allowlist value to an agent's manifest
+**Tags**: inventory
+
+Add one value to the manifest's data-boundary allowlist — an approved destination / data source, or a DCE-backed (sensitive/prohibited) data category, selected by `entry_type`. An approved data source can instead be linked to an observed connection via `target_resource_instance_id` (the pick-from-observed path); the resource must be an observed data/knowledge source of the agent and its display name becomes the entry label. The first edit materialises the manifest and moves NOT_STARTED to DRAFT. Returns the full recomputed manifest detail. 409 if the source is already approved (by resource id) or the same (entry_type, value) already exists; 400 if the linked target is not an observed data source; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid linked data source
 - `404`: Agent not found
 - `409`: Entry already exists
 - `500`: Unexpected server error
 - `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries/bulk — Add many approved-entry allowlist values to an agent's manifest
+
+**Endpoint**: `POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/approved-entries/bulk`
+**Summary**: Add many approved-entry allowlist values to an agent's manifest
+**Tags**: inventory
+
+Add a batch of values to the manifest's data-boundary allowlist in one request and one transaction — the bulk form of the single approved-entry add, for adding many entries at once instead of one call per entry. Each entry is an approved destination / data source or a DCE-backed (sensitive/prohibited) data category selected by `entry_type`, or an approved data source linked to an observed connection via `target_resource_instance_id` (the pick-from-observed path; the resource must be an observed data/knowledge source of the agent and its display name becomes the entry label). All-or-nothing: every entry is validated first — if any entry duplicates an existing one (409, by resource id for a linked source, else by (entry_type, value)) or links a target that is not an observed data source (400), the whole batch is rejected and nothing is written. An entry may not repeat within one batch (422). The first added entry materialises the manifest and moves NOT_STARTED to DRAFT. Returns the full recomputed manifest detail (reflecting every new entry). 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: One or more linked targets are not an observed data source (nothing written)
+- `404`: Agent not found
+- `409`: One or more entries already exist (nothing written)
+- `422`: Empty batch, or a duplicate entry within the batch
+- `500`: Unexpected server error
 
 ---
 
@@ -127,6 +176,50 @@ Remove one allowlist entry by its id. Returns the full recomputed manifest detai
 **Responses**:
 - `200`: Successful Response
 - `404`: Agent or entry not found
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/declared-vmcps — Declare a VMCP the agent relies on as its MCP gateway
+
+**Endpoint**: `POST /v1/inventory/resources/agent-manifest/{resource_instance_id}/declared-vmcps`
+**Summary**: Declare a VMCP the agent relies on as its MCP gateway
+**Tags**: inventory
+
+Add a manual, governance-only declaration that this agent relies on a VMCP as its MCP gateway to downstream MCP servers (v1). It records the relationship in the manifest for the MCP Servers tab; it does not wire the gateway — the customer updates the agent to route through the VMCP in their own application. VMCPs are not part of the observed reachability graph, so a declaration is the only way a VMCP appears on an agent today. The target must be one of the customer's VMCP resources (400 otherwise). The first edit materialises the manifest and moves NOT_STARTED to DRAFT. Returns the full recomputed manifest detail. 409 if the VMCP is already declared; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Target is not a customer VMCP
+- `404`: Agent not found
+- `409`: VMCP already declared
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## DELETE /v1/inventory/resources/agent-manifest/{resource_instance_id}/declared-vmcps/{declared_vmcp_id} — Remove a declared VMCP from an agent's manifest
+
+**Endpoint**: `DELETE /v1/inventory/resources/agent-manifest/{resource_instance_id}/declared-vmcps/{declared_vmcp_id}`
+**Summary**: Remove a declared VMCP from an agent's manifest
+**Tags**: inventory
+
+Remove one declared-VMCP governance entry by its id. Returns the full recomputed manifest detail. 404 if the declaration does not exist on this agent's manifest. Requires a user-bound token; scoped to the token's customer.
+
+**Parameters**:
+- `resource_instance_id` (path, required): 
+- `declared_vmcp_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `404`: Agent or declaration not found
 - `500`: Unexpected server error
 - `422`: Validation Error
 
@@ -184,7 +277,7 @@ Remove the stance for one capability node (by taxonomy label type and value). Re
 **Summary**: Transition an agent's manifest through its governance lifecycle
 **Tags**: inventory
 
-Apply a governance lifecycle action: SUBMIT (move a draft — or a rejected / stale / needs-re-review — manifest into review), APPROVE, APPROVE_WITH_EXCEPTIONS, or REJECT (each valid only while in review). APPROVE enforces the approval gate: every required completion item (both owners, a security reviewer, an approved purpose, and all observed tools and MCP servers reviewed) must be satisfied — 422 with the missing items otherwise. APPROVE_WITH_EXCEPTIONS bypasses the gate but requires a documented exception note in `notes` (400 if absent), stored as the manifest's exception notes. Approval stamps the last-reviewed time. Each transition bumps the manifest version and is recorded in the change history. Returns the full recomputed manifest detail. 409 if the action is not valid from the current status; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
+Apply a governance lifecycle action: SUBMIT (move a draft — or a rejected / stale / needs-re-review — manifest into review), APPROVE, APPROVE_WITH_EXCEPTIONS, or REJECT (each valid only while in review). The review decisions — APPROVE, APPROVE_WITH_EXCEPTIONS, and REJECT — are restricted to the Admin and Security Analyst roles (403 otherwise); SUBMIT is not restricted. The acting reviewer is recorded automatically as the manifest's security reviewer on approve/reject, so a security reviewer never needs to be assigned before approval. Both APPROVE and APPROVE_WITH_EXCEPTIONS enforce the approval gate: every required completion item (both owners, an approved purpose, and all observed tools and MCP servers reviewed) must be satisfied — 422 with the missing items otherwise. APPROVE_WITH_EXCEPTIONS is not a gate bypass; it additionally requires a documented justification in `notes` (400 if absent) — recording why the fully-reviewed agent is being approved despite its residual risks — stored as the manifest's exception notes. Approval stamps the last-reviewed time. Each transition bumps the manifest version and is recorded in the change history. Returns the full recomputed manifest detail. 409 if the action is not valid from the current status; 404 if the resource is missing or not an AGENT archetype. Requires a user-bound token; scoped to the token's customer.
 
 **Parameters**:
 - `resource_instance_id` (path, required): 
@@ -195,6 +288,7 @@ Apply a governance lifecycle action: SUBMIT (move a draft — or a rejected / st
 **Responses**:
 - `200`: Successful Response
 - `400`: Exception justification required for approve-with-exceptions
+- `403`: Approve/reject requires the Admin or Security Analyst role
 - `404`: Agent not found
 - `409`: Action not valid from the current status
 - `422`: Manifest incomplete — required items missing for approval
@@ -700,6 +794,27 @@ Delete one or more previously created manual dependency relationships between AI
 **Responses**:
 - `200`: Successful Response
 - `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v1/inventory/resources/merge — Merge two AI resources (redirect the loser into the winner)
+
+**Endpoint**: `POST /v1/inventory/resources/merge`
+**Summary**: Merge two AI resources (redirect the loser into the winner)
+**Tags**: inventory
+
+Merge one AI resource instance (the loser) into another (the winner) using redirect semantics: every reference to the loser is repointed at the winner and the loser is tombstoned. Properties are not field-merged — the winner keeps its own attributes. On a uniqueness collision the winner's row wins and the loser's is discarded (not reversible); the response summary reports how many rows were repointed and discarded. Same-archetype only unless force_cross_type is set. Scoped to the token's customer.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `404`: Winner or loser not found
+- `409`: Resource already merged
 - `500`: Unexpected server error
 - `422`: Validation Error
 

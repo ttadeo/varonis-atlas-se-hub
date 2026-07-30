@@ -6,6 +6,8 @@
 **Summary**: Create a new posture incident with linked issues
 **Tags**: posture-management, incidents
 
+Deprecated: the assignee is supplied as an Auth0 subject id. Use ``POST /v2/posture-management/incidents`` (assignee keyed on the internal user_id) instead.
+
 Create a posture incident for the token's customer, setting its type, severity, status, assignee, due date, and an optional list of posture issue IDs to link immediately. Use this when an agent needs to open a new incident to track one or more related posture findings. Scoped to the token's customer.
 
 **Request Body**: Required
@@ -14,6 +16,7 @@ Create a posture incident for the token's customer, setting its type, severity, 
 **Responses**:
 - `200`: Successful Response
 - `400`: Invalid request parameters
+- `404`: Assignee user not found
 - `500`: Unexpected server error
 - `422`: Validation Error
 
@@ -24,6 +27,8 @@ Create a posture incident for the token's customer, setting its type, severity, 
 **Endpoint**: `GET /v1/posture-management/incidents`
 **Summary**: List all posture incidents for the authenticated customer
 **Tags**: posture-management, incidents
+
+Deprecated: each incident's assignee is returned as an Auth0 subject id. Use ``GET /v2/posture-management/incidents`` (assignee keyed on the internal user_id) instead.
 
 Return all posture incidents belonging to the token's customer, each with their associated issues. Filter by project_id or organization_id to narrow scope; when project_id is provided, organization_id is ignored.
 
@@ -81,6 +86,8 @@ Delete an Incident and its associated IncidentIssue records
 **Summary**: Get a single posture incident with its associated issues
 **Tags**: posture-management, incidents
 
+Deprecated: the assignee is returned as an Auth0 subject id. Use ``GET /v2/posture-management/incidents/{incident_id}`` (assignee keyed on the internal user_id) instead.
+
 Return the full detail of one posture incident — status, severity, assignee, timestamps, and the list of linked posture issues — scoped to the token's customer. Returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
@@ -100,6 +107,8 @@ Return the full detail of one posture incident — status, severity, assignee, t
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}`
 **Summary**: Update metadata fields on a posture incident
 **Tags**: posture-management, incidents
+
+Deprecated: the assignee is supplied as an Auth0 subject id. Use ``PATCH /v2/posture-management/incidents/{incident_id}`` (assignee keyed on the internal user_id) instead.
 
 Update editable fields — title, description, severity, or other metadata — on a posture incident owned by the token's customer. Returns 404 when the incident does not exist or belongs to a different tenant.
 
@@ -123,6 +132,8 @@ Update editable fields — title, description, severity, or other metadata — o
 **Endpoint**: `DELETE /v1/posture-management/incidents/{incident_id}`
 **Summary**:  Delete Incident
 **Tags**: posture-management, incidents
+
+Deprecated: returns an untyped ``dict`` acknowledgement. Use ``DELETE /v2/posture-management/incidents/{incident_id}`` (204 No Content) instead.
 
 **Parameters**:
 - `incident_id` (path, required): 
@@ -179,6 +190,8 @@ Update Incident with issues
 **Summary**: Link one or more posture issues to an incident
 **Tags**: posture-management, incidents
 
+Deprecated: returns an untyped ``dict`` acknowledgement. Use ``PATCH /v2/posture-management/incidents/{incident_id}/update-issues`` (returns the updated incident detail) instead.
+
 Assign a list of posture issue IDs to the specified incident, creating issue-to-incident associations. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
@@ -222,6 +235,8 @@ Delete Issues from Incident
 **Endpoint**: `PATCH /v1/posture-management/incidents/{incident_id}/delete-issues`
 **Summary**: Unlink one or more posture issues from an incident
 **Tags**: posture-management, incidents
+
+Deprecated: returns an untyped ``dict`` acknowledgement. Use ``PATCH /v2/posture-management/incidents/{incident_id}/delete-issues`` (returns the updated incident detail) instead.
 
 Remove the association between a list of posture issue IDs and the specified incident. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
@@ -267,6 +282,8 @@ Update Incident status, with a required comment if status is changed to CLOSED
 **Summary**: Transition the status of a posture incident
 **Tags**: posture-management, incidents
 
+Deprecated: part of the v1 incident surface superseded by v2. Use ``PATCH /v2/posture-management/incidents/{incident_id}/status`` instead.
+
 Update the lifecycle status of a posture incident (e.g. open, in-progress, closed). Closing an incident requires a comment. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
@@ -311,6 +328,8 @@ Assign an Incident to a user
 **Summary**: Assign a posture incident to a user
 **Tags**: posture-management, incidents
 
+Deprecated: the assignee is supplied as an Auth0 subject id. Use ``PATCH /v2/posture-management/incidents/{incident_id}/assign`` (assignee keyed on the internal user_id) instead.
+
 Set or change the assignee of a posture incident by specifying the user's ID. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
 
 **Parameters**:
@@ -334,6 +353,8 @@ Set or change the assignee of a posture incident by specifying the user's ID. Sc
 **Summary**: Update status, severity, or triage state of a single posture issue
 **Tags**: posture-management
 
+Deprecated: the assignee is supplied as an Auth0 subject id. Use ``PATCH /v2/posture-management/issue`` (assignee keyed on the internal user_id) instead.
+
 Modify fields on a single posture finding — such as status, severity, or in-progress flag — scoped to the token's customer. Use this to triage or acknowledge an individual issue. Returns 404 when the issue does not exist or belongs to a different tenant.
 
 **Request Body**: Required
@@ -353,6 +374,8 @@ Modify fields on a single posture finding — such as status, severity, or in-pr
 **Endpoint**: `PATCH /v1/posture-management/issues`
 **Summary**: Bulk-update status or severity on multiple posture issues
 **Tags**: posture-management
+
+Deprecated: the assignee is supplied as an Auth0 subject id. Use ``PATCH /v2/posture-management/issues`` (assignee keyed on the internal user_id) instead.
 
 Apply the same field changes — status, severity, in-progress flag — to a list of posture issue IDs in one request. Scoped to the token's customer; issues that do not belong to the customer are rejected. Useful for bulk triage or acknowledgement workflows.
 
@@ -512,6 +535,26 @@ Return the full posture management policy catalog (across all policy types, or a
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
 - `policy_type` (query, optional): 
+
+**Responses**:
+- `200`: Successful Response
+- `400`: Invalid request parameters
+- `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## GET /v1/posture-management/policies/configuration/sensitive-data — List sensitive-data posture policies with the customer's enablement state
+
+**Endpoint**: `GET /v1/posture-management/policies/configuration/sensitive-data`
+**Summary**: List sensitive-data posture policies with the customer's enablement state
+**Tags**: posture-management
+
+Return the posture policy catalog narrowed to the Sensitive Data page's policy-type family (jupyter_notebook_configuration_policy, dataset_configuration_policy, sensitive_data_policy) merged with the token customer's per-scope enablement state, ordered ascending by the visible policy label (display_name, nulls last) across the whole merged list. The server owns the type family, so clients need one call and no per-type merge or re-sort. Item shape and semantics are identical to listPosturePolicyConfiguration. Scoped to the token's customer.
+
+**Parameters**:
+- `organization_id` (query, optional): 
+- `project_id` (query, optional): 
 
 **Responses**:
 - `200`: Successful Response
@@ -1099,21 +1142,20 @@ Enqueue an asynchronous component-based posture scan for the token's customer. R
 
 ---
 
-## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies — Trigger a dataset posture scan for a customer
+## POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies — Trigger a sensitive-data posture scan for a customer
 
 **Endpoint**: `POST /v1/posture-management/customers/{customer_id}/dataset-scanning/check-policies`
-**Summary**: Trigger a dataset posture scan for a customer
+**Summary**: Trigger a sensitive-data posture scan for a customer
 **Tags**: posture-management
 
-Enqueue an asynchronous dataset scanning job for the customer. The scan checks dataset resources for policy violations and creates posture issues for findings. Optionally scope to a specific resource_instance_id or org/project. Set skip_unchanged_resources=true to skip unchanged datasets. Returns a job_id for polling. Scoped to the token's customer.
+Enqueue an asynchronous sensitive-data posture scan for the customer. The scan dispatches the customer's enabled sensitive-data component-based policies and creates posture issues for findings. Optionally scope to a specific resource_instance_id or org/project, or narrow to specific policy names via policies_to_scan. The deprecated legacy dataset content scan no longer runs on this endpoint. Returns a job_id for polling. Scoped to the token's customer.
 
 **Parameters**:
 - `customer_id` (path, required): 
 - `resource_instance_id` (query, optional): 
 - `organization_id` (query, optional): 
 - `project_id` (query, optional): 
-- `allow_partial_success` (query, optional): If true, will create notebook issues even if some dataset files fail to scan. If false (default) - will only create issues if all files are scanned successfully.
-- `skip_unchanged_resources` (query, optional): If true, will skip scanning resources that have not changed since the last scan.
+- `allow_partial_success` (query, optional): Controls per-policy failure isolation in the engine dispatch loop. When true (lenient), a raising policy is logged and the scan continues with the remaining enabled sensitive-data policies. When false (default, strict), the first per-policy raise fails the scan.
 
 **Request Body**: Optional
 - Content-Type: `application/json`
@@ -1741,6 +1783,211 @@ Persist the shadow AI issue policy for the token's customer, controlling which r
 - `200`: Successful Response
 - `400`: Invalid request parameters
 - `500`: Unexpected server error
+- `422`: Validation Error
+
+---
+
+## POST /v2/posture-management/incidents — Create a new posture incident with linked issues
+
+**Endpoint**: `POST /v2/posture-management/incidents`
+**Summary**: Create a new posture incident with linked issues
+**Tags**: posture-management
+
+Create a posture incident for the token's customer. The assignee is specified as an internal user_id. Optionally link posture issue IDs on creation. Scoped to the token's customer.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `201`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/posture-management/incidents — List posture incidents for the authenticated customer
+
+**Endpoint**: `GET /v2/posture-management/incidents`
+**Summary**: List posture incidents for the authenticated customer
+**Tags**: posture-management
+
+Return a page of posture incidents belonging to the token's customer, each with their associated issues. Filter by project_id or organization_id; when project_id is provided, organization_id is ignored. Results are page-based (page/per_page) and ordered by creation time, newest first; the response carries the total match count in its pagination envelope.
+
+**Parameters**:
+- `project_id` (query, optional): 
+- `organization_id` (query, optional): 
+- `page` (query, optional): Page number (1-based).
+- `per_page` (query, optional): Results per page.
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## GET /v2/posture-management/incidents/{incident_id} — Get a single posture incident with its associated issues
+
+**Endpoint**: `GET /v2/posture-management/incidents/{incident_id}`
+**Summary**: Get a single posture incident with its associated issues
+**Tags**: posture-management
+
+Return the full detail of one posture incident — status, severity, assignee (internal user_id), timestamps, and the list of linked posture issues. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/incidents/{incident_id} — Update metadata fields on a posture incident
+
+**Endpoint**: `PATCH /v2/posture-management/incidents/{incident_id}`
+**Summary**: Update metadata fields on a posture incident
+**Tags**: posture-management
+
+Update editable metadata — title, description, severity, assignee (internal user_id), workflow, or due date — on a posture incident. Lifecycle status is not changed here; use ``PATCH /v2/posture-management/incidents/{incident_id}/status`` to transition status. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## DELETE /v2/posture-management/incidents/{incident_id} — Delete a posture incident
+
+**Endpoint**: `DELETE /v2/posture-management/incidents/{incident_id}`
+**Summary**: Delete a posture incident
+**Tags**: posture-management
+
+Soft-delete a posture incident by transitioning it to DELETED. Scoped to the token's customer; returns 404 when the incident does not exist or belongs to a different tenant.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Responses**:
+- `204`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/incidents/{incident_id}/status — Transition the status of a posture incident
+
+**Endpoint**: `PATCH /v2/posture-management/incidents/{incident_id}/status`
+**Summary**: Transition the status of a posture incident
+**Tags**: posture-management
+
+Update the lifecycle status of a posture incident. Closing an incident requires a comment. Scoped to the token's customer.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/incidents/{incident_id}/assign — Assign a posture incident to a user
+
+**Endpoint**: `PATCH /v2/posture-management/incidents/{incident_id}/assign`
+**Summary**: Assign a posture incident to a user
+**Tags**: posture-management
+
+Set or change the assignee of a posture incident by internal user_id. Scoped to the token's customer.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/incidents/{incident_id}/update-issues — Link one or more posture issues to an incident
+
+**Endpoint**: `PATCH /v2/posture-management/incidents/{incident_id}/update-issues`
+**Summary**: Link one or more posture issues to an incident
+**Tags**: posture-management
+
+Associate a list of posture issue IDs with the incident and return the updated incident with its full issue set. Scoped to the token's customer.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/incidents/{incident_id}/delete-issues — Unlink one or more posture issues from an incident
+
+**Endpoint**: `PATCH /v2/posture-management/incidents/{incident_id}/delete-issues`
+**Summary**: Unlink one or more posture issues from an incident
+**Tags**: posture-management
+
+Remove the association between a list of posture issue IDs and the incident and return the updated incident with its remaining issue set. Scoped to the token's customer.
+
+**Parameters**:
+- `incident_id` (path, required): 
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/issue — Update status, severity, assignee, or triage state of a single issue
+
+**Endpoint**: `PATCH /v2/posture-management/issue`
+**Summary**: Update status, severity, assignee, or triage state of a single issue
+**Tags**: posture-management
+
+Modify fields on a single posture finding — status, severity, assignee (internal user_id), or in-progress flag — scoped to the token's customer.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
+- `422`: Validation Error
+
+---
+
+## PATCH /v2/posture-management/issues — Bulk-update status, severity, or assignee on multiple issues
+
+**Endpoint**: `PATCH /v2/posture-management/issues`
+**Summary**: Bulk-update status, severity, or assignee on multiple issues
+**Tags**: posture-management
+
+Apply the same field changes — status, severity, assignee (internal user_id), in-progress flag — to a list of posture issue IDs in one request. Scoped to the token's customer.
+
+**Request Body**: Required
+- Content-Type: `application/json`
+
+**Responses**:
+- `200`: Successful Response
 - `422`: Validation Error
 
 ---
