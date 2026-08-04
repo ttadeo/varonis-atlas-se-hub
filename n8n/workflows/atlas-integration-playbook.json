@@ -1,0 +1,238 @@
+{
+  "name": "Atlas - Integration Playbook",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "atlas-integration-playbook",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [0, 0],
+      "id": "webhook-integration-playbook",
+      "name": "Webhook",
+      "webhookId": "atlas-integration-playbook-001"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Extract selected stack components from the webhook payload\nconst body = $input.first().json.body;\nconst jobId = body.jobId;\nconst cloudProvider   = body.cloudProvider   || null;\nconst llmProviders    = body.llmProviders    || []; // array\nconst codingAgents    = body.codingAgents    || []; // array\nconst securityTools   = body.securityTools   || []; // array\nconst useCase         = body.useCase         || 'POC';\nconst customerContext = body.customerContext || '';\n\n// Build one search query per section — these will be embedded in parallel\nconst sections = [];\n\nif (cloudProvider) {\n  sections.push({\n    key: 'cloud',\n    label: 'Cloud Provider',\n    query: `How to connect ${cloudProvider} to Atlas AI Security runtime protection proxy and configure log sources`,\n    components: [cloudProvider]\n  });\n}\n\nif (llmProviders.length > 0) {\n  sections.push({\n    key: 'llm',\n    label: 'LLM Providers',\n    query: `Atlas AI Security integration setup for ${llmProviders.join(', ')} — proxy configuration, policy enforcement, runtime guardrails`,\n    components: llmProviders\n  });\n}\n\nif (codingAgents.length > 0) {\n  sections.push({\n    key: 'coding',\n    label: 'Coding Agents',\n    query: `Atlas runtime protection for coding agents ${codingAgents.join(', ')} — MCP server setup, tool governance, policy enforcement`,\n    components: codingAgents\n  });\n}\n\nif (securityTools.length > 0) {\n  sections.push({\n    key: 'security',\n    label: 'Security Integrations',\n    query: `Atlas integration with ${securityTools.join(', ')} — log source configuration, alert forwarding, enforcement layer`,\n    components: securityTools\n  });\n}\n\n// Always include a summary/overview section\nsections.push({\n  key: 'overview',\n  label: 'Deployment Overview',\n  query: `Atlas AI Security deployment architecture overview onboarding setup ${cloudProvider || ''} ${useCase}`,\n  components: ['Atlas Overview']\n});\n\nreturn sections.map(s => ({\n  json: {\n    ...s,\n    jobId,\n    useCase,\n    customerContext,\n    cloudProvider,\n    llmProviders,\n    codingAgents,\n    securityTools,\n    totalSections: sections.length\n  }\n}));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 0],
+      "id": "split-sections",
+      "name": "Split Into Sections"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/embeddings",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\"model\": \"text-embedding-3-small\", \"input\": {{ JSON.stringify($json.query) }}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [480, 0],
+      "id": "embed-section-query",
+      "name": "Embed Section Query",
+      "credentials": {
+        "openAiApi": {
+          "id": "QKOKask5bV39Hn2N",
+          "name": "OpenAI - Atlas"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build Neo4j vector query — filter to integration source chunks only\nconst embedding = $input.first().json.data[0].embedding;\nconst sectionKey = $input.first().json.key;\n\n// Map section key to Neo4j section filter for precision\nconst sectionMap = {\n  cloud:    'integration_cloud',\n  llm:      'integration_llm',\n  coding:   'integration_coding_agent',\n  security: 'integration_security',\n  overview: null // overview pulls from all integration + platform docs\n};\nconst sectionFilter = sectionMap[sectionKey];\n\nlet statement;\nif (sectionFilter) {\n  statement = `CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 12, $embedding)\n    YIELD node AS c, score\n    WHERE c.source = 'integration' AND c.section = '${sectionFilter}' AND score > 0.35\n    RETURN c.heading AS heading, c.text AS text, c.title AS title, c.section AS section, score\n    ORDER BY score DESC\n    LIMIT 8`;\n} else {\n  // Overview: pull from all integration + platform chunks\n  statement = `CALL db.index.vector.queryNodes('atlas_chunk_embeddings', 12, $embedding)\n    YIELD node AS c, score\n    WHERE c.source = 'integration' AND score > 0.35\n    RETURN c.heading AS heading, c.text AS text, c.title AS title, c.section AS section, score\n    ORDER BY score DESC\n    LIMIT 6`;\n}\n\nconst body = JSON.stringify({\n  statements: [{ statement, parameters: { embedding } }]\n});\n\n// Pass all section metadata forward\nconst item = $input.first().json;\nreturn [{ json: { requestBody: body, ...item, embedding } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 0],
+      "id": "prepare-neo4j-query",
+      "name": "Prepare Neo4j Query"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://uncompendious-unpurchased-shanita.ngrok-free.dev/db/neo4j/tx/commit",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Content-Type", "value": "application/json" },
+            { "name": "ngrok-skip-browser-warning", "value": "true" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "=json",
+        "specifyBody": "json",
+        "bodyParameters": { "parameters": [{}] },
+        "jsonBody": "={{ $json.requestBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [960, 0],
+      "id": "query-neo4j",
+      "name": "Query Neo4j",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "lgILDx4ml8xXy6yX",
+          "name": "Header Auth account"
+        },
+        "httpBasicAuth": {
+          "id": "kENlY4V8sLKJinYH",
+          "name": "Neo4j-Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Build context string from Neo4j results and generate this section\nconst item = $input.first();\nconst results = item.json.results?.[0]?.data || [];\n\nconst chunks = results.map(row => {\n  const cols = row.row;\n  return { heading: cols[0], text: cols[1], title: cols[2], section: cols[3], score: cols[4] };\n});\n\n// Deduplicate by heading+title\nconst seen = new Set();\nconst unique = chunks.filter(c => {\n  const k = `${c.title}::${c.heading}`;\n  if (seen.has(k)) return false;\n  seen.add(k);\n  return true;\n});\n\nconst context = unique.length > 0\n  ? unique.map(c => `### ${c.title} — ${c.heading}\\n${c.text}`).join('\\n\\n---\\n\\n')\n  : '(No specific documentation found for this component — use general Atlas knowledge)';\n\nconst sectionKey   = item.json.key;\nconst sectionLabel = item.json.label;\nconst components   = item.json.components || [];\nconst useCase      = item.json.useCase;\nconst customerContext = item.json.customerContext;\nconst cloudProvider   = item.json.cloudProvider;\nconst llmProviders    = item.json.llmProviders;\nconst codingAgents    = item.json.codingAgents;\nconst securityTools   = item.json.securityTools;\nconst jobId           = item.json.jobId;\nconst totalSections   = item.json.totalSections;\n\nreturn [{\n  json: {\n    sectionKey,\n    sectionLabel,\n    components,\n    context,\n    useCase,\n    customerContext,\n    cloudProvider,\n    llmProviders,\n    codingAgents,\n    securityTools,\n    jobId,\n    totalSections,\n    chunkCount: unique.length\n  }\n}];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1200, 0],
+      "id": "build-section-context",
+      "name": "Build Section Context"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-6",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-6"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Generate the **{{ $json.sectionLabel }}** section of an Atlas Integration Playbook.\n\nCUSTOMER STACK:\n- Cloud Provider: {{ $json.cloudProvider || 'Not specified' }}\n- LLM Providers: {{ $json.llmProviders?.join(', ') || 'Not specified' }}\n- Coding Agents: {{ $json.codingAgents?.join(', ') || 'Not specified' }}\n- Security Integrations: {{ $json.securityTools?.join(', ') || 'Not specified' }}\n- Use Case: {{ $json.useCase }}\n- Additional Context: {{ $json.customerContext || 'None' }}\n\nFOCUS COMPONENTS FOR THIS SECTION: {{ $json.components.join(', ') }}\n\n---\n\nATLAS INTEGRATION DOCUMENTATION:\n{{ $json.context }}\n\n---\n\nWrite a complete, actionable **{{ $json.sectionLabel }}** section in markdown.\n\nRequirements:\n- Step-by-step integration instructions specific to the components listed\n- Prerequisites and dependencies\n- What Atlas monitors/enforces for each component\n- Common gotchas or configuration pitfalls\n- Verification steps to confirm integration is working\n- Keep it tactical — this is a field playbook, not marketing content\n\nReturn JSON: { \"sectionKey\": \"{{ $json.sectionKey }}\", \"sectionLabel\": \"{{ $json.sectionLabel }}\", \"content\": \"<full markdown section>\" }"
+            }
+          ]
+        },
+        "options": {
+          "system": "You are an expert Varonis Atlas AI Security platform engineer writing field-ready integration playbooks for Sales Engineers.\n\nYour playbook sections are:\n- Grounded in the provided Atlas documentation — never fabricate steps or capabilities\n- Tactical and specific — exact config values, exact UI paths, exact API calls where known\n- Structured with clear headers: Prerequisites → Integration Steps → What Atlas Enforces → Verification → Common Issues\n- Written for an SE doing a POC or production deployment, not for marketing\n- Honest about limitations — if Atlas doesn't support something, say so\n\nAlways return valid JSON with the sectionKey, sectionLabel, and content fields.",
+          "maxTokens": 4096,
+          "temperature": 0
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [1440, 0],
+      "id": "generate-section",
+      "name": "Generate Section",
+      "credentials": {
+        "anthropicApi": {
+          "id": "WioShNHmyXcJmy8m",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse generated section and pass forward cleanly\nconst raw = $input.first().json.content[0].text;\nconst cleaned = raw.replace(/^```json\\n?/, '').replace(/\\n?```$/, '').trim();\n\nlet parsed;\ntry {\n  parsed = JSON.parse(cleaned);\n} catch (e) {\n  // Claude returned raw markdown — wrap it\n  parsed = {\n    sectionKey: $input.first().json.key || 'unknown',\n    sectionLabel: $input.first().json.label || 'Section',\n    content: raw\n  };\n}\n\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1680, 0],
+      "id": "parse-section",
+      "name": "Parse Section"
+    },
+    {
+      "parameters": {
+        "aggregate": "aggregateAllItemData",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [1920, 0],
+      "id": "aggregate-sections",
+      "name": "Aggregate Sections"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Merge all sections into a single ordered playbook\nconst items = $input.first().json.data;\n\n// Define desired section order\nconst ORDER = ['overview', 'cloud', 'llm', 'coding', 'security'];\n\nconst sorted = [...items].sort((a, b) => {\n  const ai = ORDER.indexOf(a.sectionKey);\n  const bi = ORDER.indexOf(b.sectionKey);\n  return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);\n});\n\n// Get jobId from Webhook\nconst jobId = $('Webhook').first().json.body.jobId;\nconst body  = $('Webhook').first().json.body;\n\n// Build full playbook markdown\nconst header = [\n  '# Atlas Integration Playbook',\n  '',\n  '**Generated for:**',\n  body.cloudProvider   ? `- Cloud Provider: ${body.cloudProvider}` : '',\n  body.llmProviders?.length   ? `- LLM Providers: ${body.llmProviders.join(', ')}` : '',\n  body.codingAgents?.length   ? `- Coding Agents: ${body.codingAgents.join(', ')}` : '',\n  body.securityTools?.length  ? `- Security Integrations: ${body.securityTools.join(', ')}` : '',\n  `- Use Case: ${body.useCase || 'POC'}`,\n  body.customerContext ? `- Context: ${body.customerContext}` : '',\n  '',\n  '---',\n  ''\n].filter(l => l !== undefined && !(l === '' && false)).join('\\n');\n\nconst sections = sorted\n  .filter(s => s && s.content)\n  .map(s => s.content)\n  .join('\\n\\n---\\n\\n');\n\nconst playbook = header + sections;\n\n// Write to Upstash KV\nconst kvValue = JSON.stringify({ status: 'done', playbook });\nconst kvBody  = JSON.stringify([['SET', 'playbook:' + jobId, kvValue, 'EX', '7200']]);\n\nreturn [{ json: { playbook, jobId, kvBody } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2160, 0],
+      "id": "merge-playbook",
+      "name": "Merge Playbook"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://viable-cod-105917.upstash.io/pipeline",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "Authorization", "value": "={{ 'Bearer ' + $vars.UPSTASH_KV_TOKEN }}" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={{ $json.kvBody }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [2400, 0],
+      "id": "write-playbook-to-kv",
+      "name": "Write Playbook to KV"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [[{ "node": "Split Into Sections", "type": "main", "index": 0 }]]
+    },
+    "Split Into Sections": {
+      "main": [[{ "node": "Embed Section Query", "type": "main", "index": 0 }]]
+    },
+    "Embed Section Query": {
+      "main": [[{ "node": "Prepare Neo4j Query", "type": "main", "index": 0 }]]
+    },
+    "Prepare Neo4j Query": {
+      "main": [[{ "node": "Query Neo4j", "type": "main", "index": 0 }]]
+    },
+    "Query Neo4j": {
+      "main": [[{ "node": "Build Section Context", "type": "main", "index": 0 }]]
+    },
+    "Build Section Context": {
+      "main": [[{ "node": "Generate Section", "type": "main", "index": 0 }]]
+    },
+    "Generate Section": {
+      "main": [[{ "node": "Parse Section", "type": "main", "index": 0 }]]
+    },
+    "Parse Section": {
+      "main": [[{ "node": "Aggregate Sections", "type": "main", "index": 0 }]]
+    },
+    "Aggregate Sections": {
+      "main": [[{ "node": "Merge Playbook", "type": "main", "index": 0 }]]
+    },
+    "Merge Playbook": {
+      "main": [[{ "node": "Write Playbook to KV", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "meta": {
+    "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
+  },
+  "id": "atlas-integration-playbook",
+  "tags": []
+}

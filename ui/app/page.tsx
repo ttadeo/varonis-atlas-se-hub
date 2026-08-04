@@ -297,6 +297,27 @@ export default function Home() {
                 5 guide types · Internal or customer-facing · Export PDF →
               </p>
             </Link>
+
+            <Link
+              href="/playbook"
+              className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 rounded-2xl p-6 transition-all group col-span-2"
+            >
+              <div className="flex items-center gap-4">
+                <div className="text-3xl">📋</div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h3 className="font-semibold text-white">Integration Playbook</h3>
+                    <span className="text-xs font-bold text-indigo-400 bg-indigo-900/40 border border-indigo-700/50 rounded px-1.5 py-0.5">NEW</span>
+                  </div>
+                  <p className="text-sm text-gray-400">
+                    Select the customer&apos;s cloud provider, LLM providers, coding agents, and security tools — get a step-by-step Atlas integration playbook grounded in real documentation.
+                  </p>
+                </div>
+                <p className="text-xs text-indigo-400 group-hover:text-indigo-300 shrink-0">
+                  63 integration docs · Parallel generation →
+                </p>
+              </div>
+            </Link>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
