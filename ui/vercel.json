@@ -9,6 +9,7 @@
     "app/api/atlas-mcp/posture-advisor/route.ts": { "maxDuration": 300 },
     "app/api/atlas-mcp/risk-briefing/route.ts": { "maxDuration": 150 },
     "app/api/atlas-mcp/endpoint-audit/route.ts": { "maxDuration": 150 },
-    "app/api/atlas-mcp/shadow-ai/route.ts": { "maxDuration": 150 }
+    "app/api/atlas-mcp/shadow-ai/route.ts": { "maxDuration": 150 },
+    "app/api/playbook/chat/route.ts": { "maxDuration": 30 }
   }
 }

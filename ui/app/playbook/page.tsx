@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -112,6 +112,14 @@ export default function PlaybookPage() {
   const [error,     setError]     = useState<string | null>(null);
   const [copied,    setCopied]    = useState(false);
 
+  // Chat state
+  const [chatMessages,  setChatMessages]  = useState<{ role: "user" | "assistant"; content: string }[]>([]);
+  const [chatInput,     setChatInput]     = useState("");
+  const [chatLoading,   setChatLoading]   = useState(false);
+  const [attachedFile,  setAttachedFile]  = useState<{ name: string; file: File } | null>(null);
+  const fileInputRef   = useRef<HTMLInputElement>(null);
+  const chatBottomRef  = useRef<HTMLDivElement>(null);
+
   const pollRef    = useRef<ReturnType<typeof setInterval> | null>(null);
   const startedRef = useRef<number>(0);
   const elapsedRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -208,7 +216,55 @@ export default function PlaybookPage() {
     setError(null);
     setLoading(false);
     setElapsed(0);
+    setChatMessages([]);
+    setChatInput("");
+    setAttachedFile(null);
   }
+
+  const sendChat = useCallback(async () => {
+    if (!chatInput.trim() || !playbook || chatLoading) return;
+
+    const userMsg = { role: "user" as const, content: chatInput.trim() };
+    setChatMessages((prev) => [...prev, userMsg]);
+    setChatInput("");
+    setChatLoading(true);
+
+    try {
+      let res: Response;
+
+      if (attachedFile) {
+        const fd = new FormData();
+        fd.append("question", userMsg.content);
+        fd.append("playbook", playbook);
+        fd.append("history", JSON.stringify(chatMessages));
+        fd.append("file", attachedFile.file);
+        setAttachedFile(null);
+        res = await fetch("/api/playbook/chat", { method: "POST", body: fd });
+      } else {
+        res = await fetch("/api/playbook/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: userMsg.content, playbook, history: chatMessages }),
+        });
+      }
+
+      const data = await res.json();
+      if (!res.ok || data.error) throw new Error(data.error ?? `HTTP ${res.status}`);
+      setChatMessages((prev) => [...prev, { role: "assistant", content: data.answer }]);
+    } catch (err) {
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: `Error: ${String(err)}` },
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
+  }, [chatInput, playbook, chatLoading, chatMessages, attachedFile]);
+
+  // Scroll to bottom when new chat messages arrive
+  useEffect(() => {
+    chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [chatMessages]);
 
   function copyPlaybook() {
     if (!playbook) return;
@@ -240,7 +296,7 @@ export default function PlaybookPage() {
 
       <div className="flex flex-1 min-h-0">
         {/* ── Left panel — stack selector ─────────────────────────────────── */}
-        <div className="w-80 flex-shrink-0 border-r border-gray-800 flex flex-col overflow-y-auto">
+        <div className="w-80 shrink-0 border-r border-gray-800 flex flex-col overflow-y-auto">
           <div className="px-5 py-5 space-y-6">
             <div>
               <p className="text-sm font-semibold text-gray-200 mb-1">Customer Stack</p>
@@ -395,7 +451,7 @@ export default function PlaybookPage() {
             </div>
           )}
 
-          {/* Playbook output */}
+          {/* Playbook output + chat */}
           {playbook && !loading && (
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* Toolbar */}
@@ -415,8 +471,9 @@ export default function PlaybookPage() {
                 </button>
               </div>
 
-              {/* Markdown output */}
+              {/* Scrollable area: playbook + chat messages */}
               <div className="flex-1 overflow-y-auto px-8 py-6">
+                {/* Playbook markdown */}
                 <div className="max-w-3xl mx-auto prose prose-invert prose-sm prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 prose-strong:text-white prose-code:text-blue-300 prose-code:bg-gray-800 prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-700 prose-blockquote:border-indigo-500 prose-blockquote:text-gray-400">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -441,6 +498,112 @@ export default function PlaybookPage() {
                     {playbook}
                   </ReactMarkdown>
                 </div>
+
+                {/* Chat messages */}
+                {chatMessages.length > 0 && (
+                  <div className="max-w-3xl mx-auto mt-10 space-y-4 border-t border-gray-800 pt-8">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Playbook Q&amp;A</p>
+                    {chatMessages.map((msg, i) => (
+                      <div
+                        key={i}
+                        className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                      >
+                        {msg.role === "assistant" && (
+                          <div className="w-7 h-7 rounded-full bg-indigo-700 flex items-center justify-center text-xs shrink-0 mt-0.5">A</div>
+                        )}
+                        <div
+                          className={`max-w-xl rounded-xl px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap ${
+                            msg.role === "user"
+                              ? "bg-indigo-600 text-white"
+                              : "bg-gray-800 text-gray-200 border border-gray-700"
+                          }`}
+                        >
+                          {msg.content}
+                        </div>
+                        {msg.role === "user" && (
+                          <div className="w-7 h-7 rounded-full bg-gray-700 flex items-center justify-center text-xs shrink-0 mt-0.5">U</div>
+                        )}
+                      </div>
+                    ))}
+                    {chatLoading && (
+                      <div className="flex gap-3 justify-start">
+                        <div className="w-7 h-7 rounded-full bg-indigo-700 flex items-center justify-center text-xs shrink-0 mt-0.5">A</div>
+                        <div className="bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 flex gap-1 items-center">
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "0ms" }} />
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "150ms" }} />
+                          <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce" style={{ animationDelay: "300ms" }} />
+                        </div>
+                      </div>
+                    )}
+                    <div ref={chatBottomRef} />
+                  </div>
+                )}
+              </div>
+
+              {/* Chat input bar */}
+              <div className="border-t border-gray-800 bg-gray-900 px-6 py-4">
+                {/* Attached file chip */}
+                {attachedFile && (
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-900/50 border border-indigo-700 text-xs text-indigo-300">
+                      📎 {attachedFile.name}
+                      <button
+                        onClick={() => setAttachedFile(null)}
+                        className="ml-1 text-indigo-400 hover:text-white"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex gap-3 items-end">
+                  {/* File attach button */}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    title="Attach a file for additional context"
+                    className="shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white transition-colors border border-gray-700"
+                  >
+                    📎
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.txt,.md,.csv,.docx"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) setAttachedFile({ name: f.name, file: f });
+                      e.target.value = "";
+                    }}
+                  />
+
+                  {/* Text input */}
+                  <textarea
+                    rows={1}
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" && !e.shiftKey) {
+                        e.preventDefault();
+                        sendChat();
+                      }
+                    }}
+                    placeholder="Ask a question about this playbook…"
+                    className="flex-1 bg-gray-800 border border-gray-700 rounded-xl px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 resize-none focus:outline-none focus:border-indigo-500 transition-colors min-h-[40px] max-h-32 overflow-y-auto"
+                    style={{ fieldSizing: "content" } as React.CSSProperties}
+                  />
+
+                  {/* Send button */}
+                  <button
+                    onClick={sendChat}
+                    disabled={!chatInput.trim() || chatLoading}
+                    className="shrink-0 px-4 py-2.5 rounded-xl text-sm font-semibold bg-indigo-600 hover:bg-indigo-700 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    Send
+                  </button>
+                </div>
+                <p className="text-xs text-gray-600 mt-2">Attach a customer doc or architecture diagram for additional context · Shift+Enter for new line</p>
               </div>
             </div>
           )}
