@@ -283,7 +283,7 @@ export default function PlaybookPage() {
   ].reduce((a, b) => a + b, 0);
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-950 text-gray-100">
+    <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
       {/* Header */}
       <header className="border-b border-gray-800 px-6 py-4 flex items-center gap-3">
         <Link href="/" className="text-gray-400 hover:text-white text-sm mr-2">← Back</Link>
