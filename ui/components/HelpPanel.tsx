@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-export type HelpPage = "learn" | "ask" | "meeting" | "demo" | "architect" | "runtime" | "guides" | "analytics" | "knowledge" | "atlas-mcp";
+export type HelpPage = "learn" | "ask" | "meeting" | "demo" | "architect" | "runtime" | "guides" | "analytics" | "knowledge" | "atlas-mcp" | "playbook";
 
 interface Step {
   title: string;
@@ -91,6 +91,11 @@ const HELP_CONTENT: Record<HelpPage, HelpContent> = {
       {
         title: "Copy Any Answer",
         body: "Every AI response has a 'Copy' button in the bottom-right corner. Click it to copy the full response as plain text — paste it directly into an email, Slack, or a customer document.",
+      },
+      {
+        title: "Quick Answer Mode",
+        body: "Click the ⚡ Quick Answer button in the header to toggle short-answer mode. Instead of a full multi-paragraph response, the AI gives you 4–5 focused sentences — enough to answer a question out loud in a customer call without losing the room.\n\nUse Quick Answer for:\n• Live conversations where you need a fast, verbal answer\n• Simple factual lookups ('Where is the AI Investigation view?')\n• Sanity checks before you say something to a customer\n\nTurn it OFF when you need full depth — architecture questions, compliance comparisons, or anything you'll paste into a document.",
+        tip: "Quick Answer doesn't skip retrieval — the AI still searches the full knowledge base. Only the response length changes.",
       },
       {
         title: "Use It for Pre-Meeting Prep",
@@ -293,7 +298,7 @@ const HELP_CONTENT: Record<HelpPage, HelpContent> = {
       },
       {
         title: "Generate, Review & Export",
-        body: "Click 'Generate Guide'. Once complete:\n• Review the guide in the preview pane — it's full Markdown with headers, code blocks, and tables\n• 'Download .md' — save as Markdown for Notion, Confluence, or GitHub\n• 'Export PDF' — browser print to PDF (enable Print Backgrounds, use A4/Letter portrait)\n\nGuides are grounded in Atlas v3.4.0 documentation — not hallucinated from general AI knowledge.",
+        body: "Click 'Generate Guide'. Once complete:\n• Review the guide in the preview pane — it's full Markdown with headers, code blocks, and tables\n• 'Download .md' — save as Markdown for Notion, Confluence, or GitHub\n• 'Export PDF' — browser print to PDF (enable Print Backgrounds, use A4/Letter portrait)\n\nGuides are grounded in Atlas v3.6.0 documentation — not hallucinated from general AI knowledge.",
       },
     ],
     proTip: "The Problem → Solution Write-Up guide type is underused. After a successful POC, use it to document what the customer was struggling with and how Atlas solved it — takes 60 seconds and gives you a draft case study.",
@@ -400,6 +405,46 @@ const HELP_CONTENT: Record<HelpPage, HelpContent> = {
       },
     ],
     proTip: "The strongest demo moment: ask the Posture Advisor 'what should I fix first today?' — Claude calls multiple Atlas MCP tools, cross-references findings, and gives a prioritized recommendation with real project names. Then point to the tool badge and say 'this is exactly what happens when your security team connects Claude Code to the Atlas MCP Server.'",
+  },
+
+  // ─── Integration Playbook ─────────────────────────────────────────────────────
+  playbook: {
+    heading: "Integration Playbook — How It Works",
+    intro: "The Integration Playbook Generator creates a step-by-step Atlas integration guide tailored to a specific customer's stack — cloud provider, LLM providers, coding agents, and security tools. Every section is grounded in real Atlas integration documentation (63 PDFs, 265 chunks). Generation typically takes 1–3 minutes.",
+    steps: [
+      {
+        title: "Select the Customer Stack",
+        body: "Use the left panel to select the components in the customer's environment:\n• Cloud Provider (single-select) — AWS, Azure, Google Cloud, Databricks, Snowflake\n• LLM Providers (multi-select) — OpenAI, Azure OpenAI, Bedrock, Gemini, Anthropic, IBM WatsonX, LiteLLM, Custom Endpoint\n• Coding Agents (multi-select) — Claude Code, GitHub Copilot, Devin, VS Code, Cursor, Codex, Kiro\n• Security Integrations (multi-select) — Cloudflare, Netskope, Kong Konnect, Island Browser\n• Use Case — POC, Production Deployment, Compliance Audit, Security Assessment",
+        tip: "Select only what the customer actually has. Each selection generates a dedicated section — more components = longer generation time.",
+      },
+      {
+        title: "Add Additional Context",
+        body: "The 'Additional Context' text field lets you pass anything that doesn't fit the chip selectors:\n• 'Customer is Azure-only, no AWS data plane — important for Log Source scoping'\n• 'HIPAA compliance is the primary driver'\n• 'They're doing a 2-week POC, need the fastest path to visible enforcement'\n\nThis context is woven into every generated section.",
+      },
+      {
+        title: "Generate the Playbook",
+        body: "Click 'Generate Playbook'. Each selected component runs in parallel — the system embeds a search query for that component, retrieves the most relevant Atlas integration documentation from Neo4j, and generates a dedicated section using Claude Sonnet.\n\nThe right panel shows the generation in progress. Once all sections are assembled, the full playbook renders as formatted markdown.",
+      },
+      {
+        title: "Read the Playbook Structure",
+        body: "Each generated section follows the same structure:\n• Prerequisites — what must be in place before integration\n• Integration Steps — exact UI paths, config values, and sequences\n• What Atlas Enforces — policies, detection, and enforcement for this component\n• Verification — how to confirm the integration is working\n• Common Issues — known gotchas and how to resolve them\n\nThe playbook opens with a summary header listing the full stack and use case.",
+      },
+      {
+        title: "Ask Follow-Up Questions",
+        body: "After the playbook generates, a Q&A chat input appears at the bottom of the right panel. Ask any question about the playbook:\n• 'What's the difference between inline and log source coverage for OpenAI?'\n• 'Which of these steps require an AWS data plane?'\n• 'Can you expand on the Claude Code OTEL setup?'\n\nThe AI answers using the full playbook as context — no re-generation needed.",
+        tip: "Type your question and press Enter to send. Shift+Enter for a new line.",
+      },
+      {
+        title: "Attach a File for More Context",
+        body: "Click the 📎 button next to the chat input to attach a customer document. Supported formats:\n• PDF — customer architecture docs, existing runbooks, RFPs\n• TXT, MD — notes, requirements, config snippets\n• CSV — inventory sheets, tool lists\n\nThe file content is extracted and included as additional context for your question. It's never stored — only used for that message.",
+        tip: "Attach the customer's existing network diagram and ask 'where does Atlas fit in this architecture?' for a targeted integration recommendation.",
+      },
+      {
+        title: "Copy or Start Over",
+        body: "• 'Copy Markdown' in the toolbar copies the full playbook to clipboard — paste directly into Confluence, Notion, or a customer email.\n• '← New Playbook' resets everything — stack selections, playbook output, and chat history — so you can generate for a different customer.",
+      },
+    ],
+    proTip: "The playbook is most effective when you select exactly the customer's confirmed stack — not everything that might apply. A focused 2-component playbook is more useful in a POC kickoff than a 6-component one that covers irrelevant integrations.",
   },
 };
 

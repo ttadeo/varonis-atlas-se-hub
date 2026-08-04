@@ -4,6 +4,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import HelpPanel from "@/components/HelpPanel";
 
 // ── Stack options ─────────────────────────────────────────────────────────────
 
@@ -111,6 +112,7 @@ export default function PlaybookPage() {
   const [elapsed,   setElapsed]   = useState(0);
   const [error,     setError]     = useState<string | null>(null);
   const [copied,    setCopied]    = useState(false);
+  const [helpOpen,  setHelpOpen]  = useState(false);
 
   // Chat state
   const [chatMessages,  setChatMessages]  = useState<{ role: "user" | "assistant"; content: string }[]>([]);
@@ -288,11 +290,17 @@ export default function PlaybookPage() {
       <header className="border-b border-gray-800 px-6 py-4 flex items-center gap-3">
         <Link href="/" className="text-gray-400 hover:text-white text-sm mr-2">← Back</Link>
         <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-sm font-bold">📋</div>
-        <div>
+        <div className="flex-1">
           <h1 className="font-semibold text-white">Integration Playbook</h1>
           <p className="text-xs text-gray-400">Step-by-step Atlas integration guide for your customer's stack</p>
         </div>
+        <button
+          onClick={() => setHelpOpen(true)}
+          className="w-8 h-8 rounded-full bg-gray-800 hover:bg-gray-700 border border-gray-700 flex items-center justify-center text-sm font-bold text-gray-300 hover:text-white transition-colors"
+          title="Help"
+        >?</button>
       </header>
+      <HelpPanel page="playbook" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <div className="flex flex-1 min-h-0">
         {/* ── Left panel — stack selector ─────────────────────────────────── */}

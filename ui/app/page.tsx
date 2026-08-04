@@ -165,20 +165,20 @@ export default function Home() {
             <div className="flex items-center gap-2 mb-3">
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest">What&apos;s New</span>
               <span className="text-xs text-gray-600">—</span>
-              <span className="text-xs text-gray-500">July 2026</span>
+              <span className="text-xs text-gray-500">August 2026</span>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
+                <p className="text-xs font-semibold text-white mb-1">📋 Integration Playbook</p>
+                <p className="text-xs text-gray-400">New module — select the customer's stack and generate a step-by-step Atlas integration guide grounded in 63 integration PDFs. Includes follow-up Q&A chat and file attachments.</p>
+              </div>
+              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
+                <p className="text-xs font-semibold text-white mb-1">⚡ Quick Answer Mode</p>
+                <p className="text-xs text-gray-400">Ask Atlas now has a Quick Answer toggle — 4–5 sentence responses for live customer conversations. Same RAG retrieval, purpose-built for verbal delivery.</p>
+              </div>
+              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
                 <p className="text-xs font-semibold text-white mb-1">📄 Atlas v3.6.0 Docs</p>
                 <p className="text-xs text-gray-400">Knowledge base updated — Require Approval, Agent Manifest, Salesforce Agentforce, MCP credentials, AI SPM Sensitive Data policies.</p>
-              </div>
-              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
-                <p className="text-xs font-semibold text-white mb-1">📚 3 New Lessons</p>
-                <p className="text-xs text-gray-400">Agent Manifest & Governance, AI TPRM, and AI SPM Sensitive Data Policies — plus L23 rewritten for v3.6.0.</p>
-              </div>
-              <div className="rounded-lg bg-gray-800/60 border border-gray-700/60 px-3 py-2.5">
-                <p className="text-xs font-semibold text-white mb-1">🎯 Agentic Demo Expanded</p>
-                <p className="text-xs text-gray-400">Three live sub-demos: AI Deal Research, Red Team Attack Agent, and MCP Quarantine — all fire through Atlas Gateway.</p>
               </div>
             </div>
           </div>
@@ -261,10 +261,10 @@ export default function Home() {
               <div className="text-3xl mb-3">💬</div>
               <h3 className="font-semibold text-white mb-1">Ask a Question</h3>
               <p className="text-sm text-gray-400">
-                Free-form Q&A about Atlas configuration, policies, and API endpoints.
+                Free-form Q&A about Atlas configuration, policies, and API endpoints. Toggle ⚡ Quick Answer for 4–5 sentence responses during live calls.
               </p>
               <p className="text-xs text-blue-400 mt-4 group-hover:text-blue-300">
-                RAG-powered · Ask anything →
+                RAG-powered · Quick Answer mode →
               </p>
             </Link>
           </div>
