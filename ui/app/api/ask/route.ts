@@ -310,10 +310,11 @@ export async function POST(req: NextRequest) {
   if (auth instanceof NextResponse) return auth;
 
   try {
-    const { question, history = [], attachments = [] }: {
+    const { question, history = [], attachments = [], quickMode = false }: {
       question: string;
       history: { role: "user" | "assistant"; content: string }[];
       attachments: IncomingAttachment[];
+      quickMode: boolean;
     } = await req.json();
 
     if (!question?.trim() && attachments.length === 0) {
@@ -361,6 +362,17 @@ export async function POST(req: NextRequest) {
       { role: "user" as const, content: userContent as Anthropic.Messages.ContentBlockParam[] },
     ];
 
+    // ── System prompt — append quick mode constraint if active ────────────────
+    const systemPrompt: Anthropic.Messages.TextBlockParam[] = quickMode
+      ? [
+          ...SYSTEM_PROMPT,
+          {
+            type: "text",
+            text: "QUICK ANSWER MODE: Respond in exactly 4-5 sentences. Be direct and concise. Still include source references (doc section or page name) at the end of your answer.",
+          },
+        ]
+      : SYSTEM_PROMPT;
+
     // ── Agentic RAG loop ──────────────────────────────────────────────────────
     let currentMessages: Anthropic.Messages.MessageParam[] = messages;
     let finalAnswer = "";
@@ -371,8 +383,8 @@ export async function POST(req: NextRequest) {
       iterations++;
       const response = await anthropic.messages.create({
         model: "claude-sonnet-4-6",
-        max_tokens: 4096,
-        system: SYSTEM_PROMPT,
+        max_tokens: quickMode ? 512 : 4096,
+        system: systemPrompt,
         tools: TOOLS,
         messages: currentMessages,
       });
@@ -416,8 +428,8 @@ export async function POST(req: NextRequest) {
     if (!finalAnswer.trim()) {
       const finalResponse = await anthropic.messages.create({
         model: "claude-sonnet-4-6",
-        max_tokens: 4096,
-        system: SYSTEM_PROMPT,
+        max_tokens: quickMode ? 512 : 4096,
+        system: systemPrompt,
         tool_choice: { type: "none" },
         tools: TOOLS,
         messages: currentMessages,

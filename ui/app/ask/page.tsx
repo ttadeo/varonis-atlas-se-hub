@@ -82,6 +82,9 @@ export default function AskPage() {
   const [sessionsLoading, setSessionsLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
+  // Quick Answer mode
+  const [quickMode, setQuickMode] = useState(false);
+
   // Copy button
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
@@ -261,6 +264,7 @@ export default function AskPage() {
         body: JSON.stringify({
           question,
           history,
+          quickMode,
           attachments: sentAttachments.map(({ name, mediaType, data, isExtracted, size }) => ({
             name, mediaType, data, isExtracted, size,
           })),
@@ -367,6 +371,17 @@ export default function AskPage() {
             <p className="text-xs text-gray-400">Free-form Q&A — Atlas AI Security Platform</p>
           </div>
           <div className="ml-auto flex items-center gap-2">
+            <button
+              onClick={() => setQuickMode((v) => !v)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                quickMode
+                  ? "bg-green-600 text-white hover:bg-green-700"
+                  : "bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700"
+              }`}
+              title="Quick Answer mode — concise 4-5 sentence responses for live customer conversations"
+            >
+              ⚡ Quick Answer {quickMode && "ON"}
+            </button>
             <button
               onClick={() => { setShowHistory((v) => !v); if (!showHistory) loadSessionList(); }}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
@@ -485,7 +500,7 @@ export default function AskPage() {
           {loading && (
             <div className="flex justify-start">
               <div className="bg-gray-800 rounded-2xl px-4 py-3 text-sm text-gray-400">
-                Searching Atlas docs…
+                {quickMode ? "Getting quick answer…" : "Searching Atlas docs…"}
               </div>
             </div>
           )}
@@ -549,7 +564,7 @@ export default function AskPage() {
               <textarea
                 className="flex-1 bg-gray-800 text-gray-100 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-600 placeholder-gray-500"
                 rows={1}
-                placeholder="Ask about Atlas AI Gateway, policies, guardrails..."
+                placeholder={quickMode ? "Ask a quick question — concise answer in seconds…" : "Ask about Atlas AI Gateway, policies, guardrails..."}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
