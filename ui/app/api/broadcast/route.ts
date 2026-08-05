@@ -39,7 +39,10 @@ export async function POST(req: NextRequest) {
   let userEmails: string[] = [];
   try {
     const result = await session.run(`MATCH (u:User) RETURN u.id AS id ORDER BY u.id ASC`);
-    userEmails = result.records.map((r) => r.get("id") as string);
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    userEmails = result.records
+      .map((r) => (r.get("id") as string | null) ?? "")
+      .filter((e) => EMAIL_RE.test(e));
   } finally {
     await session.close();
     await driver.close();
