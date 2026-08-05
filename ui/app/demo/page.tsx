@@ -930,7 +930,7 @@ export default function DemoPage() {
             body: JSON.stringify(body),
           });
           const applyData = await applyRes.json();
-          if (!applyRes.ok) throw new Error(applyData.error ?? `HTTP ${applyRes.status}`);
+          if (!applyRes.ok) throw new Error(applyData.message ?? applyData.error ?? `HTTP ${applyRes.status}`);
           setApplied(applyData);
           setStep("applied");
         } catch (err) {
@@ -968,7 +968,7 @@ export default function DemoPage() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? `HTTP ${res.status}`);
+      if (!res.ok) throw new Error(data.message ?? data.error ?? `HTTP ${res.status}`);
       setApplied(data);
       setStep("applied");
     } catch (err) {

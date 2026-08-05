@@ -34,6 +34,10 @@ export async function POST(req: NextRequest) {
   }
 
   if (!upstream.ok) {
+    // 404 = template not found — pass through n8n's clean error message
+    if (upstream.status === 404 && data && typeof data === "object") {
+      return NextResponse.json(data, { status: 404 });
+    }
     return NextResponse.json(
       { error: "Upstream workflow error", detail: data ?? text },
       { status: 502 }
