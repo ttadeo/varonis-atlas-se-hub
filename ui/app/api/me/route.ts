@@ -1,8 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 
+const ADMIN_EMAIL = "ttadeo@varonis.com";
+
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
   if (auth instanceof NextResponse) return auth;
-  return NextResponse.json({ userId: auth.email });
+  return NextResponse.json({
+    email: auth.email,
+    isAdmin: auth.email === ADMIN_EMAIL,
+  });
 }

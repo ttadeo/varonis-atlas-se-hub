@@ -7,13 +7,47 @@ export default function Home() {
   const [securityOpen, setSecurityOpen] = useState(false);
   const [truelensOpen, setTruelensOpen] = useState(false);
   const [userCount, setUserCount] = useState<number | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [broadcastSubject, setBroadcastSubject] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [broadcastSending, setBroadcastSending] = useState(false);
+  const [broadcastStatus, setBroadcastStatus] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
     fetch("/api/users/count")
       .then(r => r.json())
       .then(d => { if (d.total !== null) setUserCount(d.total); })
       .catch(() => {});
+    fetch("/api/me")
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d?.isAdmin) setIsAdmin(true); })
+      .catch(() => {});
   }, []);
+
+  async function sendBroadcast() {
+    if (!broadcastMessage.trim()) return;
+    setBroadcastSending(true);
+    setBroadcastStatus(null);
+    try {
+      const res = await fetch("/api/broadcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setBroadcastStatus({ ok: true, text: `Sent to ${data.sent_to} users.` });
+        setBroadcastMessage("");
+        setBroadcastSubject("");
+      } else {
+        setBroadcastStatus({ ok: false, text: data.error ?? "Send failed." });
+      }
+    } catch {
+      setBroadcastStatus({ ok: false, text: "Network error." });
+    } finally {
+      setBroadcastSending(false);
+    }
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-950 text-gray-100">
@@ -159,6 +193,47 @@ export default function Home() {
             <h2 className="text-2xl font-semibold text-white">Welcome to Atlas Learning Platform</h2>
             <p className="text-gray-400 mt-2">Your AI-powered guide to Varonis Atlas AI Security</p>
           </div>
+
+          {/* Broadcast email card — admin only */}
+          {isAdmin && (
+            <div className="rounded-xl border border-amber-700/50 bg-amber-900/10 px-5 py-4 mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-bold text-amber-400 uppercase tracking-widest">📢 Broadcast Email</span>
+                <span className="text-xs text-gray-600">—</span>
+                <span className="text-xs text-gray-500">All registered users · Admin only</span>
+              </div>
+              <input
+                type="text"
+                placeholder="Subject (optional — defaults to 'Atlas Learning Platform — Update')"
+                value={broadcastSubject}
+                onChange={e => setBroadcastSubject(e.target.value)}
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:border-amber-500 mb-2"
+              />
+              <textarea
+                rows={3}
+                placeholder="Message to send to all users…"
+                value={broadcastMessage}
+                onChange={e => setBroadcastMessage(e.target.value)}
+                className="w-full bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 text-sm text-gray-100 placeholder-gray-600 focus:outline-none focus:border-amber-500 resize-none mb-3"
+              />
+              <div className="flex items-center justify-between">
+                <div>
+                  {broadcastStatus && (
+                    <span className={`text-xs ${broadcastStatus.ok ? "text-emerald-400" : "text-red-400"}`}>
+                      {broadcastStatus.ok ? "✓ " : "✗ "}{broadcastStatus.text}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={sendBroadcast}
+                  disabled={broadcastSending || !broadcastMessage.trim()}
+                  className="px-4 py-1.5 text-xs font-semibold rounded-lg bg-amber-600 hover:bg-amber-500 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  {broadcastSending ? "Sending…" : "Send to All Users"}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* What's New banner */}
           <div className="rounded-xl border border-emerald-700/50 bg-emerald-900/10 px-5 py-4 mb-6">
