@@ -4,19 +4,16 @@
     {
       "parameters": {
         "httpMethod": "POST",
-        "path": "atlas-demo-provisioning",
+        "path": "atlas-demo-discover",
         "responseMode": "responseNode",
         "options": {}
       },
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
-      "position": [
-        -864,
-        144
-      ],
-      "id": "64ea14c1-77fd-4118-8d11-9d52691dd377",
+      "position": [-800, 0],
+      "id": "f6ff5ce9-daa3-423e-b923-1237ab12d370",
       "name": "Webhook",
-      "webhookId": "atlas-demo-provisioning"
+      "webhookId": "990ef56d-f974-4354-812c-5323deed2d12"
     },
     {
       "parameters": {
@@ -24,94 +21,82 @@
         "url": "https://api.prod.alltrue-be.com/v1/auth/issue-jwt-token",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\"api_key\": \"zCnCRkSfcRUaoLBo5rtLiU4qsBOjTRvG\"}\n\n",
+        "jsonBody": "={\"api_key\": \"zCnCRkSfcRUaoLBo5rtLiU4qsBOjTRvG\"}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
-      "position": [
-        -416,
-        -128
-      ],
-      "id": "24f6b067-4205-4692-ad2b-2b550ea905d5",
+      "position": [-560, 0],
+      "id": "a1b2c3d4-1111-2222-3333-aabbccddeeff",
       "name": "Get Atlas Token"
     },
     {
       "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ JSON.stringify($json) }}",
-        "options": {
-          "responseHeaders": {
-            "entries": [
-              {
-                "name": "Content-Type",
-                "value": "application/json"
-              },
-              {
-                "name": "Access-Control-Allow-Origin",
-                "value": "*"
-              }
-            ]
-          }
-        }
+        "url": "https://api.prod.alltrue-be.com/v1/llm-firewall/templates",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.1,
-      "position": [
-        480,
-        16
-      ],
-      "id": "047a6139-8402-4d6a-9a96-2b273617a17a",
-      "name": "Respond"
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [-320, 0],
+      "id": "b2c3d4e5-2222-3333-4444-bbccddeeff00",
+      "name": "Fetch Live Templates"
     },
     {
       "parameters": {
-        "jsCode": "const token = $input.item.json.access_token;\nconst org = '82d61b63-ca61-4705-b62d-02266001c6bc';\nconst project = '28c96091-b86b-438f-b702-7f2f368423d8';\nconst useCase = $('Webhook').item.json.body.use_case;\nconst industry = $('Webhook').item.json.body.industry;\nconst meetingType = $('Webhook').item.json.body.meeting_type;\nconst anthropicKey = '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';\n\n// Fetch templates\nconst templatesRes = await this.helpers.request({\n  method: 'GET',\n  url: `https://api.prod.alltrue-be.com/v1/llm-firewall/templates?organization=${org}&project=${project}`,\n  headers: { Authorization: `Bearer ${token}` },\n  json: true\n});\n\n// Fetch rules\nconst rulesRes = await this.helpers.request({\n  method: 'GET',\n  url: 'https://api.prod.alltrue-be.com/v1/llm-firewall/rules',\n  headers: { Authorization: `Bearer ${token}` },\n  json: true\n});\n\nconst rules = rulesRes.llm_firewall_rules.map(r => ({\n  rule_type: r.rule_type,\n  category: r.category,\n  description: r.description\n}));\n\n// Call Claude\nconst claudeRes = await this.helpers.request({\n  method: 'POST',\n  url: 'https://api.anthropic.com/v1/messages',\n  headers: {\n    'x-api-key': anthropicKey,\n    'anthropic-version': '2023-06-01',\n    'content-type': 'application/json'\n  },\n  body: JSON.stringify({\n    model: 'claude-sonnet-4-6',\n    max_tokens: 2048,\n    system: 'You are an Atlas AI Security demo advisor. Return structured JSON only — no prose outside the JSON.\\n\\nRespond with this exact structure:\\n{\"existing_matches\":[{\"template_name\":\"...\",\"match_score\":0,\"match_reason\":\"...\",\"rules_included\":[\"...\"]}],\"custom_recommendation\":{\"suggested_name\":\"...\",\"description\":\"...\",\"rules\":[{\"rule_type\":\"...\",\"reason\":\"...\"}]},\"recommendation\":\"existing or custom\",\"recommendation_reason\":\"one sentence\"}',\n    messages: [{\n      role: 'user',\n      content: `CUSTOMER USE CASE:\\n${useCase}\\n\\nINDUSTRY: ${industry}\\nMEETING TYPE: ${meetingType}\\n\\nEXISTING TEMPLATES:\\n${JSON.stringify(templatesRes, null, 2)}\\n\\nAVAILABLE RULES:\\n${JSON.stringify(rules, null, 2)}\\n\\nIf an existing template scores 75+, recommend it. Otherwise recommend a custom build with 3-8 rules.`\n    }]\n  })\n});\n\nconst parsed = JSON.parse(claudeRes);\nconst text = parsed.content[0].text;\n\nlet result;\ntry {\n  const match = text.match(/```json\\n?([\\s\\S]*?)\\n?```/) || text.match(/({[\\s\\S]*})/);\n  result = JSON.parse(match ? match[1] : text);\n} catch(e) {\n  result = { error: 'Parse failed', raw: text };\n}\n\nreturn {\n  json: {\n    ...result,\n    use_case: useCase,\n    industry,\n    meeting_type: meetingType\n  }\n};\n"
+        "jsCode": "// Build the live template list string for the Claude prompt\nconst items = $input.all();\nconst templates = items.map(i => i.json);\n\nconst useCase     = $('Webhook').first().json.body.use_case;\nconst industry    = $('Webhook').first().json.body.industry;\nconst meetingType = $('Webhook').first().json.body.meeting_type;\nconst token       = $('Get Atlas Token').first().json.access_token;\n\n// Format live templates for the prompt\nconst templateList = templates\n  .map(t => `- \"${t.template_name}\" — rules: ${(t.llm_firewall_rules || []).map(r => r.rule_type).join(', ')}`)\n  .join('\\n');\n\nconst systemPrompt = `You are an Atlas AI Security Platform demo specialist. Given a customer use case, you analyze it and recommend Atlas runtime protection templates.\nYou MUST return ONLY valid JSON — no markdown, no explanation, just the JSON object.\n\nAtlas has these LIVE templates (use exact names as listed):\n${templateList}\n\nReturn this exact JSON structure:\n{\n  \"existing_matches\": [\n    {\n      \"template_name\": \"<exact template name from list above>\",\n      \"match_score\": <integer 0-100>,\n      \"match_reason\": \"<one sentence why this fits>\",\n      \"rules_included\": [\"<rule1>\", \"<rule2>\"]\n    }\n  ],\n  \"custom_recommendation\": {\n    \"suggested_name\": \"<custom template name>\",\n    \"description\": \"<one sentence describing the custom template>\",\n    \"rules\": [\n      { \"rule_type\": \"<rule name>\", \"reason\": \"<why this rule applies>\" }\n    ]\n  },\n  \"recommendation\": \"<existing or custom>\",\n  \"recommendation_reason\": \"<one sentence explaining the overall recommendation>\"\n}\n\nInclude 2-3 existing_matches ranked by score. Always include a custom_recommendation even if existing templates fit well.`;\n\nconst userMessage = `Customer Use Case: ${useCase}\\nIndustry: ${industry}\\nMeeting Type: ${meetingType}`;\n\n// Call Claude directly with the live template list\nconst claudeRes = await this.helpers.request({\n  method: 'POST',\n  url: 'https://api.anthropic.com/v1/messages',\n  headers: {\n    'x-api-key': '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',\n    'anthropic-version': '2023-06-01',\n    'content-type': 'application/json'\n  },\n  body: JSON.stringify({\n    model: 'claude-sonnet-4-6',\n    max_tokens: 2048,\n    system: systemPrompt,\n    messages: [{ role: 'user', content: userMessage }]\n  })\n});\n\nconst parsed = JSON.parse(claudeRes);\nconst text = parsed.content[0].text;\n\nreturn [{ json: { text } }];\n"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        80,
-        176
-      ],
-      "id": "c511327b-c09d-4de9-a884-a60fa4c68723",
-      "name": "Fetch Templates + Rules"
+      "position": [-80, 0],
+      "id": "c3d4e5f6-3333-4444-5555-ccddeeff0011",
+      "name": "Build Prompt + Call Claude"
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text;\nconst cleaned = raw.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\nreturn [{ json: JSON.parse(cleaned) }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [160, 0],
+      "id": "d4aeaab4-9069-400b-9099-ab4f4d24cf34",
+      "name": "Parse Response"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [400, 0],
+      "id": "6165146f-6b53-499b-835e-6983d2d2ad1b",
+      "name": "Respond to Webhook"
     }
   ],
   "pinData": {},
   "connections": {
     "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Get Atlas Token",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Get Atlas Token", "type": "main", "index": 0 }]]
     },
     "Get Atlas Token": {
-      "main": [
-        [
-          {
-            "node": "Fetch Templates + Rules",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+      "main": [[{ "node": "Fetch Live Templates", "type": "main", "index": 0 }]]
     },
-    "Fetch Templates + Rules": {
-      "main": [
-        [
-          {
-            "node": "Respond",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
+    "Fetch Live Templates": {
+      "main": [[{ "node": "Build Prompt + Call Claude", "type": "main", "index": 0 }]]
+    },
+    "Build Prompt + Call Claude": {
+      "main": [[{ "node": "Parse Response", "type": "main", "index": 0 }]]
+    },
+    "Parse Response": {
+      "main": [[{ "node": "Respond to Webhook", "type": "main", "index": 0 }]]
     }
   },
   "active": true,
@@ -119,10 +104,9 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "2bf62c16-1404-46ba-a2bc-6d4596de2412",
   "meta": {
     "instanceId": "aacd7227e8f45038ab916ee813e1b22234b21d0d9a07539b220bb92fdf765338"
   },
-  "id": "H9EHJLfVWkHrGnjX",
+  "id": "GTKEaTlin6tVAWv5",
   "tags": []
 }
