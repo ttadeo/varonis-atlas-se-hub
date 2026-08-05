@@ -20,6 +20,64 @@
     },
     {
       "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "condition-valid",
+              "leftValue": "={{ $json.is_valid }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        368
+      ],
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "Template Valid?"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ JSON.stringify({ \"success\": false, \"message\": \"Template '\" + $('Webhook').item.json.body.template_name + \"' no longer exists in Atlas. Please re-run template discovery to get current templates.\", \"valid_templates\": $('Validate Template Name').item.json.valid_names }) }}",
+        "options": {
+          "responseCode": 404,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        528
+      ],
+      "id": "b2c3d4e5-f6a7-8901-bcde-f12345678901",
+      "name": "Respond — Template Not Found"
+    },
+    {
+      "parameters": {
         "method": "POST",
         "url": "https://api.prod.alltrue-be.com/v1/auth/issue-jwt-token",
         "sendBody": true,
@@ -296,7 +354,25 @@
       "main": [
         [
           {
+            "node": "Template Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Template Valid?": {
+      "main": [
+        [
+          {
             "node": "Existing or Custom?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond — Template Not Found",
             "type": "main",
             "index": 0
           }
