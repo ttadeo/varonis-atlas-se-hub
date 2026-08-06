@@ -1192,7 +1192,7 @@ export default function DemoPage() {
       <HelpPanel page="demo" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
       <main className="flex-1 overflow-y-auto px-6 py-8">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-5xl mx-auto">
 
           {/* ── Chain of Custody mode ─────────────────────────────────────── */}
           {mode === "chain" && <ChainView scanning={scanning} scanError={scanError} chainResult={chainResult} onScan={handleChainScan} projects={chainProjects} />}

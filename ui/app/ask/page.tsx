@@ -509,7 +509,7 @@ export default function AskPage() {
 
         {/* Input area */}
         <div className="border-t border-gray-800 px-4 py-4">
-          <div className="max-w-3xl mx-auto space-y-2">
+          <div className="max-w-4xl mx-auto space-y-2">
 
             {/* Attachment chips */}
             {attachments.length > 0 && (

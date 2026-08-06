@@ -586,7 +586,7 @@ export default function GuidesPage() {
 
         {/* Result */}
         {result && !generating && (
-          <div className="px-8 py-6 max-w-4xl mx-auto print:px-0 print:py-0">
+          <div className="px-8 py-6 max-w-6xl mx-auto print:px-0 print:py-0">
             {/* Print header */}
             <div className="hidden print:block mb-6">
               <h1 className="text-2xl font-bold text-black">

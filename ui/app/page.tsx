@@ -173,7 +173,7 @@ export default function Home() {
       </header>
 
       <main className="flex-1 px-6 py-6">
-        <div className="max-w-3xl mx-auto space-y-4">
+        <div className="max-w-6xl mx-auto space-y-4">
 
           {/* Welcome */}
           <div className="text-center mb-2">
@@ -247,11 +247,11 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Feature cards */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Feature cards — 3-column grid */}
+          <div className="grid grid-cols-3 gap-3">
 
             {/* Demo Center — full width */}
-            <Link href="/demo" className="col-span-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-emerald-500 rounded-xl p-4 transition-all group flex items-center gap-4">
+            <Link href="/demo" className="col-span-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-emerald-500 rounded-xl p-4 transition-all group flex items-center gap-4">
               <div className="text-2xl shrink-0">🎯</div>
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-white text-sm">Demo Center</h3>
@@ -260,7 +260,7 @@ export default function Home() {
               <p className="text-xs text-emerald-400 group-hover:text-emerald-300 shrink-0">3 live demos →</p>
             </Link>
 
-            {/* MCP App Gallery — full width */}
+            {/* MCP App Gallery — 2/3 width */}
             <Link href="/atlas-mcp" className="col-span-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 rounded-xl p-4 transition-all group flex items-center gap-4">
               <div className="text-2xl shrink-0">⚡</div>
               <div className="flex-1 min-w-0">
@@ -268,12 +268,22 @@ export default function Home() {
                   <h3 className="font-semibold text-white text-sm">Atlas MCP App Gallery</h3>
                   <span className="text-xs font-bold text-indigo-400 bg-indigo-900/40 border border-indigo-700/50 rounded px-1.5 py-0.5">LIVE ATLAS DATA</span>
                 </div>
-                <p className="text-xs text-gray-400">3 working apps built on the Atlas REST API — AI Risk Briefing, LLM Endpoint Audit, and Shadow AI Report. Real tenant data, real AI insights.</p>
+                <p className="text-xs text-gray-400">3 working apps built on the Atlas REST API — AI Risk Briefing, LLM Endpoint Audit, and Shadow AI Report.</p>
               </div>
               <p className="text-xs text-indigo-400 group-hover:text-indigo-300 shrink-0">3 apps →</p>
             </Link>
 
-            {/* Integration Playbook — full width */}
+            {/* AI Runtime Demo — 1/3 width */}
+            <Link href="/runtime" className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-red-500 rounded-xl p-4 transition-all group flex flex-col justify-between">
+              <div>
+                <div className="text-2xl mb-2">🚦</div>
+                <h3 className="font-semibold text-white text-sm">AI Runtime Demo</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Simulate real AI traffic through Atlas Gateway — fire prompts and trigger guardrails live.</p>
+              </div>
+              <p className="text-xs text-red-400 group-hover:text-red-300 mt-3">Live Gateway →</p>
+            </Link>
+
+            {/* Integration Playbook — 2/3 width */}
             <Link href="/playbook" className="col-span-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-indigo-500 rounded-xl p-4 transition-all group flex items-center gap-4">
               <div className="text-2xl shrink-0">📋</div>
               <div className="flex-1 min-w-0">
@@ -281,9 +291,19 @@ export default function Home() {
                   <h3 className="font-semibold text-white text-sm">Integration Playbook</h3>
                   <span className="text-xs font-bold text-indigo-400 bg-indigo-900/40 border border-indigo-700/50 rounded px-1.5 py-0.5">NEW</span>
                 </div>
-                <p className="text-xs text-gray-400">Select the customer&apos;s cloud provider, LLM providers, coding agents, and security tools — get a step-by-step Atlas integration playbook grounded in real documentation.</p>
+                <p className="text-xs text-gray-400">Select the customer&apos;s stack — cloud, LLMs, coding agents, security tools — and get a step-by-step Atlas integration guide grounded in real docs.</p>
               </div>
-              <p className="text-xs text-indigo-400 group-hover:text-indigo-300 shrink-0">63 integration docs →</p>
+              <p className="text-xs text-indigo-400 group-hover:text-indigo-300 shrink-0">63 docs →</p>
+            </Link>
+
+            {/* SME Knowledge Base — 1/3 */}
+            <Link href="/knowledge" className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-teal-500 rounded-xl p-4 transition-all group flex flex-col justify-between">
+              <div>
+                <div className="text-2xl mb-2">💡</div>
+                <h3 className="font-semibold text-white text-sm">SME Knowledge Base</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Field-validated Q&A from the AI Security SME Teams channel.</p>
+              </div>
+              <p className="text-xs text-teal-400 group-hover:text-teal-300 mt-3">118 entries →</p>
             </Link>
 
             {/* Learn Atlas */}
@@ -294,7 +314,7 @@ export default function Home() {
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-900/40 border border-emerald-700/50 rounded px-1.5 py-0.5">Coding Agents</span>
               </div>
               <p className="text-xs text-gray-400">Structured course — Beginner, Intermediate, Advanced + Coding Agents tiers covering hooks, fleet, IBAC, and MCP Server.</p>
-              <p className="text-xs text-blue-400 mt-3 group-hover:text-blue-300">31 lessons · 3 tiers →</p>
+              <p className="text-xs text-blue-400 mt-3 group-hover:text-blue-300">31 lessons · 4 tiers →</p>
             </Link>
 
             {/* Meeting Readiness */}
@@ -309,7 +329,7 @@ export default function Home() {
             <Link href="/ask" className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-blue-500 rounded-xl p-4 transition-all group">
               <div className="text-2xl mb-2">💬</div>
               <h3 className="font-semibold text-white text-sm mb-0.5">Ask a Question</h3>
-              <p className="text-xs text-gray-400">Free-form Q&A about Atlas configuration, policies, and API endpoints. Toggle ⚡ Quick Answer for 4–5 sentence responses during live calls.</p>
+              <p className="text-xs text-gray-400">Free-form Q&A about Atlas config, policies, and APIs. Toggle ⚡ Quick Answer for 4–5 sentence responses during live calls.</p>
               <p className="text-xs text-blue-400 mt-3 group-hover:text-blue-300">RAG-powered · Quick Answer →</p>
             </Link>
 
@@ -325,28 +345,8 @@ export default function Home() {
             <Link href="/guides" className="bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-violet-500 rounded-xl p-4 transition-all group">
               <div className="text-2xl mb-2">📄</div>
               <h3 className="font-semibold text-white text-sm mb-0.5">Technical Guide Producer</h3>
-              <p className="text-xs text-gray-400">Generate polished Atlas technical guides — MCP, Gateway, compliance, or custom problem-solution write-ups.</p>
+              <p className="text-xs text-gray-400">Generate polished Atlas technical guides — MCP, Gateway, compliance, or custom write-ups.</p>
               <p className="text-xs text-violet-400 mt-3 group-hover:text-violet-300">5 guide types · Export PDF →</p>
-            </Link>
-
-            {/* AI Runtime Demo — full width */}
-            <Link href="/runtime" className="col-span-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-red-500 rounded-xl p-4 transition-all group flex items-center gap-4">
-              <div className="text-2xl shrink-0">🚦</div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-white text-sm">AI Runtime Demo</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Simulate real AI traffic through Atlas Gateway — fire prompts, trigger guardrails, and show policy enforcement live in Atlas Runtime.</p>
-              </div>
-              <p className="text-xs text-red-400 group-hover:text-red-300 shrink-0">Live Gateway →</p>
-            </Link>
-
-            {/* SME Knowledge Base — full width */}
-            <Link href="/knowledge" className="col-span-2 bg-gray-800 hover:bg-gray-700 border border-gray-700 hover:border-teal-500 rounded-xl p-4 transition-all group flex items-center gap-4">
-              <div className="text-2xl shrink-0">💡</div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-white text-sm">SME Knowledge Base</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Field-validated Q&A from the AI Security SME Teams channel — deployment gotchas, competitive intel, roadmap, licensing, and more.</p>
-              </div>
-              <p className="text-xs text-teal-400 group-hover:text-teal-300 shrink-0">118 entries →</p>
             </Link>
 
             {/* Resource Library */}

@@ -1798,7 +1798,7 @@ export default function MeetingPage() {
         <div className="border-t border-gray-800 px-6 py-4">
           {quickMode ? (
             /* ── Quick Answer input ── */
-            <div className="max-w-4xl mx-auto space-y-2">
+            <div className="max-w-5xl mx-auto space-y-2">
               <div className="flex gap-3">
                 <textarea
                   className="flex-1 bg-gray-800 border border-green-800 text-gray-100 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-600 placeholder-gray-500"
@@ -1850,7 +1850,7 @@ export default function MeetingPage() {
                   ))}
                 </div>
               )}
-              <div className="flex gap-3 max-w-4xl mx-auto">
+              <div className="flex gap-3 max-w-5xl mx-auto">
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={attachments.length >= MAX_FILES}

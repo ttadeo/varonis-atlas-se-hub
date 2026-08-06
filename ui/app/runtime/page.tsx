@@ -641,7 +641,7 @@ export default function RuntimePage() {
       </header>
       <HelpPanel page="runtime" open={helpOpen} onClose={() => setHelpOpen(false)} />
 
-      <main className="flex-1 px-6 py-8 max-w-4xl mx-auto w-full">
+      <main className="flex-1 px-6 py-8 max-w-6xl mx-auto w-full">
 
         {/* Simulation Type */}
         <div className="mb-8">

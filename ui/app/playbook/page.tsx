@@ -482,7 +482,7 @@ export default function PlaybookPage() {
               {/* Scrollable area: playbook + chat messages */}
               <div className="flex-1 overflow-y-auto px-8 py-6">
                 {/* Playbook markdown */}
-                <div className="max-w-3xl mx-auto prose prose-invert prose-sm prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 prose-strong:text-white prose-code:text-blue-300 prose-code:bg-gray-800 prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-700 prose-blockquote:border-indigo-500 prose-blockquote:text-gray-400">
+                <div className="max-w-5xl mx-auto prose prose-invert prose-sm prose-headings:text-white prose-p:text-gray-300 prose-li:text-gray-300 prose-strong:text-white prose-code:text-blue-300 prose-code:bg-gray-800 prose-pre:bg-gray-800 prose-pre:border prose-pre:border-gray-700 prose-blockquote:border-indigo-500 prose-blockquote:text-gray-400">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
@@ -509,7 +509,7 @@ export default function PlaybookPage() {
 
                 {/* Chat messages */}
                 {chatMessages.length > 0 && (
-                  <div className="max-w-3xl mx-auto mt-10 space-y-4 border-t border-gray-800 pt-8">
+                  <div className="max-w-5xl mx-auto mt-10 space-y-4 border-t border-gray-800 pt-8">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-4">Playbook Q&amp;A</p>
                     {chatMessages.map((msg, i) => (
                       <div

@@ -476,7 +476,7 @@ export default function ArchitectPage() {
 
         {/* Result */}
         {result && !generating && (
-          <div ref={printRef} className="px-8 py-6 max-w-4xl mx-auto space-y-8 print:px-0 print:py-0">
+          <div ref={printRef} className="px-8 py-6 max-w-6xl mx-auto space-y-8 print:px-0 print:py-0">
 
             {/* Print header */}
             <div className="hidden print:block mb-4">
