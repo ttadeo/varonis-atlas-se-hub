@@ -9,7 +9,7 @@ section: log_sources
 - [](/_docs/)- [Log Sources](/_docs/docs/log_sources/overview)- Anthropic OTEL LogsExport PDFOn this page# Anthropic OTEL Logs
 This Log Source ingests OpenTelemetry (OTEL) logs emitted by **Anthropic Claude Code** and **Claude Cowork** clients into Atlas for offline runtime-policy evaluation, alerting, and a unified investigation view. It is a **push** source: each client exports telemetry to a collector endpoint that Atlas provisions for your data plane. You point the client at that collector with a few environment variables; the setup is the same for Claude Code and Claude Cowork.
 
-This Log Source requires an **AWS data plane**; Azure data planes are not yet supported (see [Log Sources](/_docs/docs/log_sources/overview)).
+This push-based integration uses a Data Plane with an OTEL collector already provisioned. Collectors are provisioned on AWS Data Planes only, so an Azure Data Plane cannot be used for this source yet (see [Log Sources](/_docs/docs/log_sources/overview)).
 
 ## Get your collector endpoint and token[​](#get-your-collector-endpoint-and-token)
 After you create the integration (see [Configuring Log Sources](/_docs/docs/log_sources/configuration)), open the integration's **Destination** details. They provide:

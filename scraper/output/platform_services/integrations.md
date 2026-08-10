@@ -44,7 +44,7 @@ To use inbound listeners, generate an API key of the appropriate type, have the 
 ## API Integration[​](#api-integration)
 There are two types of API-based integrations - inbound or outbound.
 
-Inbound API integration means that you can use all Atlas published APIs to perform activities in Atlas without using the GUI, allowing you to integrate with Atlas using scripts and DevOps processes. All functions in Atlas are exposed through APIs. [Click here to see](/_docs/api/overview) how to call APIs and what APIs are available.
+Inbound API integration means that you can use all Atlas published APIs to perform activities in Atlas without using the GUI, allowing you to integrate with Atlas using scripts and DevOps processes. All functions in Atlas are exposed through APIs. See the [OpenAPI API Reference](/_docs/api/openapi) for every available endpoint and for how to authorize your requests.
 
 Outbound API integrations are APIs in other systems that the platform calls to collect additional information about AI systems.
 

@@ -15,6 +15,7 @@ Shadow AI Usage Monitoring currently supports:
 
 - [Cloudflare](/_docs/docs/shadow_ai_usage_monitoring/cloudflare)
 - [Netskope](/_docs/docs/shadow_ai_usage_monitoring/netskope)
+- [Palo Alto Prisma](/_docs/docs/shadow_ai_usage_monitoring/prisma)
 
 ## What Shadow AI Usage Monitoring does[​](#what-shadow-ai-usage-monitoring-does)
 Employees may access AI services directly from a browser, through a corporate network path, or through a security service such as a Zero Trust Network Access or Secure Web Gateway provider. These services often generate network request or access logs that show when a user attempted to reach a specific website, domain, or URL.
@@ -173,6 +174,7 @@ Shadow AI Usage Monitoring currently supports the following integrations:
 
 - [Cloudflare](/_docs/docs/shadow_ai_usage_monitoring/cloudflare)
 - [Netskope](/_docs/docs/shadow_ai_usage_monitoring/netskope)
+- [Palo Alto Prisma](/_docs/docs/shadow_ai_usage_monitoring/prisma)
 
 Each supported integration has its own setup page with configuration steps and source-specific requirements.
 
@@ -180,7 +182,8 @@ Each supported integration has its own setup page with configuration steps and s
 
 - [Cloudflare](/_docs/docs/shadow_ai_usage_monitoring/cloudflare) — push-based Shadow AI monitoring via Cloudflare Zero Trust Logpush.
 - [Netskope](/_docs/docs/shadow_ai_usage_monitoring/netskope) — pull-based Shadow AI monitoring via the Netskope data export iterator.
+- [Palo Alto Prisma](/_docs/docs/shadow_ai_usage_monitoring/prisma) — push-to-storage Shadow AI monitoring via Strata Logging Service S3 log forwarding.
 - [AI Usage](/_docs/docs/applications/ai_usage) — where detected AI service usage, policies, and unauthorized-usage issues are reviewed.
 - [AI Inventory](/_docs/docs/applications/ai_inventory) — where discovered AI Services appear as inventory resources.
 - [AI Investigation](/_docs/docs/applications/ai_monitor) — where individual access events are reviewed.
-[PreviousSalesforce Agentforce](/_docs/docs/log_sources/salesforce_agentforce)[NextCloudflare](/_docs/docs/shadow_ai_usage_monitoring/cloudflare)- [What Shadow AI Usage Monitoring does](#what-shadow-ai-usage-monitoring-does)- [What data Atlas collects](#what-data-atlas-collects)- [What Shadow AI Usage Monitoring does not collect](#what-shadow-ai-usage-monitoring-does-not-collect)- [How it works](#how-it-works)- [AI Service detection](#ai-service-detection)- [AI Service policies](#ai-service-policies)[Silence](#silence)- [Audit](#audit)- [Unauthorized](#unauthorized)- [Default posture for new AI Services](#default-posture-for-new-ai-services)- [Where Shadow AI usage appears](#where-shadow-ai-usage-appears)[AI Usage Dashboard](#ai-usage-dashboard)- [AI Usage Users](#ai-usage-users)- [AI Usage Policies](#ai-usage-policies)- [Unauthorized AI Usage Issues](#unauthorized-ai-usage-issues)- [AI Inventory](#ai-inventory)- [AI Investigation Access Events](#ai-investigation-access-events)- [Understanding request counts](#understanding-request-counts)- [Recommended workflow](#recommended-workflow)- [Supported integrations](#supported-integrations)- [Related](#related)
+[PreviousGemini App](/_docs/docs/log_sources/gemini_app)[NextCloudflare](/_docs/docs/shadow_ai_usage_monitoring/cloudflare)- [What Shadow AI Usage Monitoring does](#what-shadow-ai-usage-monitoring-does)- [What data Atlas collects](#what-data-atlas-collects)- [What Shadow AI Usage Monitoring does not collect](#what-shadow-ai-usage-monitoring-does-not-collect)- [How it works](#how-it-works)- [AI Service detection](#ai-service-detection)- [AI Service policies](#ai-service-policies)[Silence](#silence)- [Audit](#audit)- [Unauthorized](#unauthorized)- [Default posture for new AI Services](#default-posture-for-new-ai-services)- [Where Shadow AI usage appears](#where-shadow-ai-usage-appears)[AI Usage Dashboard](#ai-usage-dashboard)- [AI Usage Users](#ai-usage-users)- [AI Usage Policies](#ai-usage-policies)- [Unauthorized AI Usage Issues](#unauthorized-ai-usage-issues)- [AI Inventory](#ai-inventory)- [AI Investigation Access Events](#ai-investigation-access-events)- [Understanding request counts](#understanding-request-counts)- [Recommended workflow](#recommended-workflow)- [Supported integrations](#supported-integrations)- [Related](#related)

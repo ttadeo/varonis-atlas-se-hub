@@ -488,6 +488,14 @@
     "file": "log_sources/salesforce_agentforce.md"
   },
   {
+    "title": "Gemini App",
+    "url": "https://prod.alltrue-be.com/_docs/docs/log_sources/gemini_app",
+    "section": "log_sources",
+    "path": "log_sources/gemini_app",
+    "status": "success",
+    "file": "log_sources/gemini_app.md"
+  },
+  {
     "title": "Shadow AI Usage Monitoring",
     "url": "https://prod.alltrue-be.com/_docs/docs/shadow_ai_usage_monitoring/overview",
     "section": "shadow_ai_usage_monitoring",
@@ -512,12 +520,12 @@
     "file": "shadow_ai_usage_monitoring/netskope.md"
   },
   {
-    "title": "LiteLLM Proxy Integration",
-    "url": "https://prod.alltrue-be.com/_docs/docs/integration_examples/litellm",
-    "section": "integration_examples",
-    "path": "integration_examples/litellm",
+    "title": "Palo Alto Prisma",
+    "url": "https://prod.alltrue-be.com/_docs/docs/shadow_ai_usage_monitoring/prisma",
+    "section": "shadow_ai_usage_monitoring",
+    "path": "shadow_ai_usage_monitoring/prisma",
     "status": "success",
-    "file": "integration_examples/litellm_proxy_integration.md"
+    "file": "shadow_ai_usage_monitoring/palo_alto_prisma.md"
   },
   {
     "title": "LLM Pentest Execution Workflow Using REST API",
@@ -568,12 +576,28 @@
     "file": "handbooks/aws_ai_security_handbook.md"
   },
   {
+    "title": "Using the Atlas APIs",
+    "url": "https://prod.alltrue-be.com/_docs/docs/api/usage_and_limits",
+    "section": "api",
+    "path": "api/usage_and_limits",
+    "status": "success",
+    "file": "api/using_the_atlas_apis.md"
+  },
+  {
     "title": "GraphQL API Reference",
     "url": "https://prod.alltrue-be.com/_docs/docs/",
     "section": "",
     "path": "",
     "status": "success",
     "file": "/graphql_api_reference.md"
+  },
+  {
+    "title": "What's New in V3.7.0",
+    "url": "https://prod.alltrue-be.com/_docs/docs/release_notes/370",
+    "section": "release_notes",
+    "path": "release_notes/370",
+    "status": "success",
+    "file": "release_notes/whats_new_in_v370.md"
   },
   {
     "title": "What's New in V3.6.0",

@@ -7,7 +7,7 @@ section: log_sources
 # Anthropic Compliance API
 
 - [](/_docs/)- [Log Sources](/_docs/docs/log_sources/overview)- Anthropic Compliance APIExport PDFOn this page# Anthropic Compliance API
-The **Anthropic Compliance API** integration is a pull-based Log Source that ingests Claude usage history into Atlas for offline policy evaluation. Atlas polls Anthropic's Compliance API on a schedule, reconstructs the returned chats into sessions, and evaluates them against your configured policies — so Claude activity that happens outside the Atlas gateway still shows up in AI Investigation and can raise policy violations.
+The **Anthropic Compliance API** integration is a pull-based Log Source that ingests Claude usage history into Atlas for offline policy evaluation. The data plane you select polls Anthropic's Compliance API on a schedule, and Atlas reconstructs the returned chats into sessions and evaluates them against your configured policies — so Claude activity that happens outside the Atlas gateway still shows up in AI Investigation and can raise policy violations.
 
 This page walks through the integration end to end: what it is and its one important limitation, the prerequisites, how to configure it, how to pull historical activity, how ongoing sync works, what Atlas captures, and where the activity appears once it is flowing.
 
@@ -22,6 +22,7 @@ You need three things before you add the integration:
 - **An Anthropic Compliance Access Key.** This key is generated in claude.ai (under **Organization settings &gt; API**), not in Atlas, and only the **Primary Owner of your Anthropic organization** can create one — so coordinate with whoever holds that role. See [Generate the Compliance Access Key](#generate-the-compliance-access-key) below for the steps. You enter the key in a required **API Key** field during setup; Atlas stores it securely and never displays it again.
 - **An eligible data plane.** The integration runs against a provisioned data plane. If none is available, the wizard blocks with a "No data plane provisioned for this customer" message. See [Data Plane](/_docs/docs/admin_console/data_plane) for how data planes are set up.
 - **A project to assign the integration to.** Log Source integrations are scoped per project, not tenant-wide, so you pick the owning project as part of setup. The project you choose also controls **who can view the ingested data** — visibility is scoped to the project, so only users with access to that project can see the Claude activity Atlas pulls in. Pick the project whose members should be able to see this activity.
+- **Outbound access to Anthropic from your data plane.** This is a pull-based integration, so the data plane you select is what calls Anthropic — it needs outbound HTTPS access to `api.anthropic.com`. That is the only host this integration contacts. See [Configuring Log Sources](/_docs/docs/log_sources/configuration) for why the data plane is the originating caller.
 
 ### Generate the Compliance Access Key[​](#generate-the-compliance-access-key)
 Generate the key in claude.ai before you start setup in Atlas. These steps are performed by the Anthropic organization's **Primary Owner**; for the full reference, see Anthropic's [Get access to the Compliance API](https://platform.claude.com/docs/en/manage-claude/compliance-api-access).
@@ -65,7 +66,7 @@ A backfill window is bounded:
 A backfill runs against the existing integration: it reuses the same API key and feeds the same resource, rather than creating a separate one. The Backfill tab lists the backfill jobs for the integration, and you can cancel a running job from there (Atlas confirms with a "Backfill job cancelled." message).
 
 ## Ongoing sync[​](#ongoing-sync)
-Once the integration is active, Atlas pulls new Claude activity automatically on a recurring schedule. Sync advances only after a full interval has closed, so activity appears in near-real time rather than instantly.
+Once the integration is active, the data plane pulls new Claude activity automatically on a recurring schedule. Sync advances only after a full interval has closed, so activity appears in near-real time rather than instantly.
 
 You control the integration through its status:
 
@@ -100,4 +101,7 @@ Beyond the Sessions view, the activity this integration ingests rolls up into th
 - **AI Investigation Events** — individual events can be viewed and searched on the Events page. See [AI Investigation](/_docs/docs/applications/ai_monitor#events).
 - **AI Usage dashboard** — usage metrics for the integration. The ingested activity appears as a provider (for example, "Anthropic Compliance API Log Source") in **Top AI Activity by Provider**, with per-user and per-application breakdowns, total request counts, and the integration's tracking status. See [AI Usage](/_docs/docs/applications/ai_usage).
 
-[PreviousConfiguring Log Sources](/_docs/docs/log_sources/configuration)[NextCopilot events from Varonis Data Security Platform](/_docs/docs/log_sources/copilot_varonis_dspm)- [Overview](#overview)- [Before you begin](#before-you-begin)[Generate the Compliance Access Key](#generate-the-compliance-access-key)- [Configure the integration](#configure-the-integration)- [Configuring policies](#configuring-policies)- [Backfill historical activity](#backfill-historical-activity)- [Ongoing sync](#ongoing-sync)- [What gets captured](#what-gets-captured)- [Observe activity in Sessions](#observe-activity-in-sessions)- [Where activity appears across Atlas](#where-activity-appears-across-atlas)
+## Troubleshooting[​](#troubleshooting)
+SymptomWhat it meansWhat to doThe integration shows no error, but no new Claude activity appears in Atlas.The data plane could not reach Anthropic's Compliance API. A failed poll is not surfaced anywhere in the interface — there is no error badge and no failed job — so the absence of new activity is the only sign.Allow outbound HTTPS from the data plane to `api.anthropic.com`, then wait for the next scheduled poll. If access is confirmed open and activity still does not appear, contact Atlas support.
+For the shared explanation of why the data plane makes this call, see [Configuring Log Sources](/_docs/docs/log_sources/configuration).
+[PreviousConfiguring Log Sources](/_docs/docs/log_sources/configuration)[NextCopilot events from Varonis Data Security Platform](/_docs/docs/log_sources/copilot_varonis_dspm)- [Overview](#overview)- [Before you begin](#before-you-begin)[Generate the Compliance Access Key](#generate-the-compliance-access-key)- [Configure the integration](#configure-the-integration)- [Configuring policies](#configuring-policies)- [Backfill historical activity](#backfill-historical-activity)- [Ongoing sync](#ongoing-sync)- [What gets captured](#what-gets-captured)- [Observe activity in Sessions](#observe-activity-in-sessions)- [Where activity appears across Atlas](#where-activity-appears-across-atlas)- [Troubleshooting](#troubleshooting)

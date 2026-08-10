@@ -11,7 +11,7 @@ Log Sources let you bring AI activity that happens outside the Atlas inline gate
 
 You still manage them from **Admin Console &gt; System Settings &gt; Log Sources**. For how they work and how to configure each source type, see the **[Log Sources](/_docs/docs/log_sources/overview)** section:
 
-- [Log Sources overview](/_docs/docs/log_sources/overview) — what Log Sources do, how pull and push sync work, the offline limitation, and the data-plane requirement.
+- [Log Sources overview](/_docs/docs/log_sources/overview) — what Log Sources do, how pull and push sync work, the offline limitation, and source-specific Data Plane requirements.
 - [Configuring Log Sources](/_docs/docs/log_sources/configuration) — adding an integration, ongoing sync, backfill, applying policies, and project scoping.
 - [Anthropic Compliance API](/_docs/docs/log_sources/anthropic_compliance_api)
 - [Copilot events from Varonis Data Security Platform](/_docs/docs/log_sources/copilot_varonis_dspm)

@@ -10,7 +10,7 @@ section: admin_console
 Various elements in the system use LLMs to generate content and apply reasoning or decision-making. This includes report generation, pentest evaluations, and guardrails that evaluate prompts and responses. You can set which LLM you prefer to use within the context of your system, and the system does not ship with any predefined LLMs.
 
 ## Where to find it[​](#where-to-find-it)
-Open **Admin Console &gt; Runtime Evaluator LLM** to configure the evaluator LLM provider and your usage budget. The area has two tabs: **Credentials** and **Budget**.
+Open **Admin Console &gt; Evaluator Credentials** to configure evaluator LLM providers, and **Admin Console &gt; Evaluator Budget** to track and cap your usage. **Evaluator Credentials** holds two tabs: **Runtime Policy Evaluator**, for the per-data-plane credentials described below, and **Session Policy Evaluator**, for the customer-level evaluator that LLM-based session policies use.
 
 ## Credentials tab[​](#credentials-tab)
 The **Credentials** tab is where you wire up the LLM endpoint or endpoints that the platform should use as the runtime evaluator. The tab is scoped to a single **Data Plane** — the data-plane selector at the top of the page is the first control, and everything below is scoped to your selection.
@@ -35,6 +35,8 @@ When Fallbacks is on, a **Fallback Settings** card appears with four tunables:
 Click **Add LLM Endpoint** on any group to open the endpoint editor. Every endpoint requires an **Endpoint Name**, a **Model** identifier, a **Provider**, and the credentials that provider needs. The supported providers and their credential fields are:
 
 ProviderRequired credentialsOptional credentials**OpenAI**API KeyOrganization, Project, Base URL**Azure AI Foundry**Azure endpoint, API KeyAPI version**Anthropic**API KeyBase URL**Gemini Generative Language**API Key—**Gemini Vertex AI**Service Account JSON (must include `type`, `client_email`, `private_key`)Location, Project**Bedrock Meta**AWS Access Key ID, AWS Secret Access Key, Region—**Bedrock Anthropic**AWS Access Key ID, AWS Secret Access Key, Region—
+This list is fixed — you select one of these providers, not an arbitrary endpoint. In particular, the Bedrock options are **Bedrock Anthropic** and **Bedrock Meta**; a model from another vendor that happens to be hosted on Bedrock cannot be configured as an evaluator. This is independent of which models you can protect at runtime: any Bedrock foundation model reachable through the Converse API can be routed through the AI Runtime proxy. See [AWS Bedrock runtime integration options](/_docs/docs/providers/aws_bedrock#runtime-integration-options).
+
 Most providers have a recommended default model that is filled in for you when you select the provider. For example, OpenAI defaults to `gpt-4o-mini` and Anthropic defaults to `claude-3-5-haiku-20241022`. You can change the model identifier before saving, but we recommend keeping the default unless you have a specific requirement to use another model. Azure AI Foundry has no default — supply the deployment name yourself.
 
 ### Choosing an evaluator model[​](#choosing-an-evaluator-model)
@@ -139,4 +141,28 @@ Under your Google Cloud project:
 Once saved, you will receive alert emails when the filtered spend crosses your thresholds. Use Reports -&gt; Filter by project/service/label to verify that you are actually capturing the spend for that key. If costs appear from unintended resources, adjust labels/filters.
 
 Optional automation for enforcement: If you want to automatically stop usage once the budget is exceeded, use the budget's Pub/Sub notification to trigger a Cloud Function. The function can disable the API key or disable the resource/service endpoint tied to that key.
-[PreviousAWS — Deploy by Command (CLI)](/_docs/docs/admin_console/data_plane/aws_deploy_by_command_cli)[NextOnboarding](/_docs/docs/platform_services/onboarding)- [Where to find it](#where-to-find-it)- [Credentials tab](#credentials-tab)[Endpoint groups and fallbacks](#endpoint-groups-and-fallbacks)- [Adding an endpoint](#adding-an-endpoint)- [Choosing an evaluator model](#choosing-an-evaluator-model)- [Publishing changes](#publishing-changes)- [Budget tab](#budget-tab)[Manage Budget](#manage-budget)- [Setting a provider-side budget alert](#setting-a-provider-side-budget-alert)[AWS Bedrock Setup](#aws-bedrock-setup)- [Azure AI Foundry Setup](#azure-ai-foundry-setup)- [OpenAI Setup](#openai-setup)- [Google Gemini Setup](#google-gemini-setup)
+
+## Session Policy Evaluator[​](#session-policy-evaluator)
+The Session Policy Evaluator is the evaluator LLM used by LLM-based session policies. Certain session policies rely on a large language model to assess session activity rather than deterministic rules alone; these policies cannot run unless an evaluator LLM is configured.
+
+LLM-based session policies review an entire session and judge intent, rather than firing on a fixed signal like a banned word or a PII match. Examples include **Gradual Data Extraction** (a user steadily coaxing out secrets or bulk sensitive data across several turns), **Repeated Jailbreak Attempts** or **Repeated Prompt Injection** that unfold over multiple messages, and **Session Purpose Drift** where a session moves away from its intended use. Because these determinations require an LLM, the affected policies cannot run without a configured evaluator.
+
+Unlike the runtime evaluator described above, which is configured per data plane, the Session Policy Evaluator is configured once at the customer level and applies across your entire account. It is invoked by the control plane during session policy evaluation and does not inherit from, or fall back to, any data-plane evaluator configuration — configuring one does not satisfy the other.
+
+If no Session Policy Evaluator is configured, the LLM-backed portion of session-policy evaluation does not run. Your session-policy settings — whether a policy is on and its configured actions — are not changed or removed; only the LLM step stops running.
+
+### Where to find it[​](#where-to-find-it-1)
+In the Admin Console, open **Evaluator Credentials** from the left navigation, then select the **Session Policy Evaluator** tab.
+
+The adjacent **Runtime Policy Evaluator** tab holds the per-data-plane evaluator configuration described above and is managed separately.
+
+### Configuring the evaluator[​](#configuring-the-evaluator)
+
+- On the **Session Policy Evaluator** tab, select **Add Evaluator LLM**.
+- In the drawer, choose the **Provider** and **Model**, and enter the provider credential (for example, an API key) along with any provider-specific fields such as Organization ID, Project ID, Region, or Base URL.
+- Select **Save**.
+
+Only one Session Policy Evaluator may be configured per customer.
+
+See [Session Policies](/_docs/docs/applications/ai_monitor/session_policies) for what these policies are and how they behave.
+[PreviousAWS — Deploy by Command (CLI)](/_docs/docs/admin_console/data_plane/aws_deploy_by_command_cli)[NextOnboarding](/_docs/docs/platform_services/onboarding)- [Where to find it](#where-to-find-it)- [Credentials tab](#credentials-tab)[Endpoint groups and fallbacks](#endpoint-groups-and-fallbacks)- [Adding an endpoint](#adding-an-endpoint)- [Choosing an evaluator model](#choosing-an-evaluator-model)- [Publishing changes](#publishing-changes)- [Budget tab](#budget-tab)[Manage Budget](#manage-budget)- [Setting a provider-side budget alert](#setting-a-provider-side-budget-alert)[AWS Bedrock Setup](#aws-bedrock-setup)- [Azure AI Foundry Setup](#azure-ai-foundry-setup)- [OpenAI Setup](#openai-setup)- [Google Gemini Setup](#google-gemini-setup)- [Session Policy Evaluator](#session-policy-evaluator)[Where to find it](#where-to-find-it-1)- [Configuring the evaluator](#configuring-the-evaluator)

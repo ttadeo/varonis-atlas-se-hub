@@ -34,7 +34,7 @@ Refer to the code snippets below for how to set the base URL for different model
 
 Supported integration pathsAI Runtime supports the major integration paths customers reach for first:
 
-- [LiteLLM](/_docs/docs/integration_examples/litellm) — proxy traffic from any LiteLLM-compatible client.
+- [LiteLLM](/_docs/providers/litellm_proxy_integration) — proxy traffic from any LiteLLM-compatible client.
 - [Microsoft Copilot Studio](/_docs/docs/providers/copilot_studio) — point a Copilot Studio agent at AI Runtime.
 - [Coding agents (Cursor, Claude Code, and similar)](/_docs/docs/coding_agent_protection/runtime_protection) — route developer-tool LLM traffic through AI Runtime.
 For the full provider-specific examples (OpenAI, Azure OpenAI, Anthropic, Gemini, WatsonX), see the sections below.
@@ -403,6 +403,77 @@ response = model.generate_content("The opposite of hot is")
 print(response.text)
 
 ```
+### Amazon Bedrock[​](#amazon-bedrock)
+AI Runtime supports Amazon Bedrock's [Converse](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_Converse.html) and [ConverseStream](https://docs.aws.amazon.com/bedrock/latest/APIReference/API_runtime_ConverseStream.html) APIs. To route either API through AI Runtime, configure your client to use the proxy URL instead of the Bedrock Runtime URL. Configure the Bedrock endpoint credentials in Atlas; AI Runtime re-signs the request with those credentials after applying guardrails.
+
+- Rest API (cURL)- Python SDK```
+curl --request POST \
+ --url "https://&lt;YOUR-PROXY-BASE-URL&gt;/bedrock/model/&lt;MODEL-ID&gt;/converse" \
+ --aws-sigv4 "aws:amz:&lt;AWS-REGION&gt;:bedrock" \
+ --user "$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY" \
+ --header "x-amz-security-token: $AWS_SESSION_TOKEN" \
+ --header "Content-Type: application/json" \
+ --header "x-alltrue-llm-proxy-type: bedrock" \
+ --header "x-alltrue-llm-endpoint-identifier: &lt;YOUR-ENDPOINT-IDENTIFIER&gt;" \
+ --header 'x-alltrue-llm-firewall-user-session: {"user-session-id":"abc123","user-session-user-id":"user1"}' \
+ --data '{
+ "messages": [
+ {
+ "role": "user",
+ "content": [{"text": "Say this is a test"}]
+ }
+ ]
+ }'
+
+```Drop the `x-amz-security-token` header if you are signing with long-lived access keys; it is required only when you sign with temporary credentials, such as those from an assumed role or AWS IAM Identity Center.
+Replace `/converse` with `/converse-stream` to use ConverseStream, provided the model supports response streaming — see [Model coverage](#model-coverage).
+```
+import boto3
+import os
+
+client = boto3.client(
+ "bedrock-runtime",
+ region_name=os.environ["AWS_REGION"],
+ aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
+ aws_secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
+ aws_session_token=os.environ.get("AWS_SESSION_TOKEN"),
+ endpoint_url="https://&lt;YOUR-PROXY-BASE-URL&gt;/bedrock",
+)
+
+def add_runtime_headers(request, **kwargs):
+ request.headers["x-alltrue-llm-proxy-type"] = "bedrock"
+ request.headers["x-alltrue-llm-endpoint-identifier"] = "&lt;YOUR-ENDPOINT-IDENTIFIER&gt;"
+ request.headers["x-alltrue-llm-firewall-user-session"] = (
+ '{"user-session-id":"abc123","user-session-user-id":"user1"}'
+ )
+
+client.meta.events.register("before-sign.bedrock-runtime.*", add_runtime_headers)
+
+response = client.converse(
+ modelId="&lt;MODEL-ID&gt;",
+ messages=[
+ {
+ "role": "user",
+ "content": [{"text": "Say this is a test"}],
+ }
+ ],
+)
+
+````aws_session_token` applies only to temporary credentials and resolves to `None` for long-lived access keys, which boto3 accepts. If you omit all three credential arguments, boto3 falls back to its default credential chain.
+
+For ConverseStream, AI Runtime buffers the complete event-stream response, evaluates it with guardrails, and returns a valid event stream after processing. Responses are not released incrementally.
+
+#### Supported Bedrock operations[​](#supported-bedrock-operations)
+Bedrock operationAI Runtime support`Converse`Supported. The request and the response are evaluated by guardrails.`ConverseStream`Supported for models that support response streaming. The response is buffered, evaluated, and then returned as a re-encoded event stream.`InvokeModel`Not supported. The request is not evaluated.`InvokeModelWithResponseStream`Not supported. The request is not evaluated.
+InvokeModel traffic is not protectedThe Bedrock proxy processes only the Converse operation paths — `/model/&lt;MODEL-ID&gt;/converse` and `/model/&lt;MODEL-ID&gt;/converse-stream`. An `InvokeModel` or `InvokeModelWithResponseStream` request sent to the proxy is forwarded to Bedrock without guardrail evaluation rather than being rejected, so no policy is enforced on that traffic. Use the Converse operations for any traffic that must be governed.
+
+#### Model coverage[​](#model-coverage)
+AI Runtime does not restrict which Bedrock model IDs you may route through the proxy. Any foundation model you can call through the Converse API works, whichever vendor publishes it. Whether a particular model is reachable depends on that model being available and enabled in the AWS region configured on your Bedrock endpoint. A model that Bedrock exposes only through `InvokeModel` cannot be governed by the proxy.
+
+Converse support and ConverseStream support are separate model capabilities: a model can support `Converse` without supporting `ConverseStream`. Use `/converse-stream` only for a model whose Bedrock capabilities report `responseStreamingSupported` as `true` — call Bedrock's `GetFoundationModel` operation for the model ID to check, or consult AWS's [supported models and model features](https://docs.aws.amazon.com/bedrock/latest/userguide/conversation-inference-supported-models-features.html) table. For a model that supports `Converse` only, use `/converse`.
+
+Choosing the model your application calls is separate from choosing the model that evaluates policies. The Runtime Evaluator LLM accepts a fixed set of providers, which does not include arbitrary Bedrock-hosted models — see [Runtime Evaluator LLM](/_docs/docs/admin_console/runtime_evaluator_llm#adding-an-endpoint).
+
 ## WatsonX[​](#watsonx)
 Calling the WatsonX Model APIs requires a two-step process:
 
@@ -802,7 +873,7 @@ The following headers can be set on requests going through the proxy to control 
 
 HeaderDescription`x-alltrue-llm-endpoint-identifier`Associates the request with a specific endpoint configured in the platform`x-alltrue-llm-base-url`The target LLM URL to forward the request to`x-alltrue-llm-proxy-type`The provider type for the policy evaluation system to use (`openai`, `azure-openai`, `anthropic`, `google`, `bedrock`, `ibmwatsonx`, `any`)`x-alltrue-llm-request-processor`JSON processor configuration for extracting/injecting text content (used with `any` proxy type)`x-alltrue-llm-cache-control`Set to `no-cache` to disable caching`x-alltrue-llm-domain-matchers`JSON array of regex patterns for matching request URL domains (e.g., `[".*"]`)`x-alltrue-llm-path-matchers`JSON array of regex patterns for matching request URL paths (e.g., `["/v1/chat/.*"]`)`x-alltrue-llm-authorization`Override the `Authorization` header sent to the target LLM
 #### Endpoint Spec Fallback[​](#endpoint-spec-fallback)
-If the `x-alltrue-llm-request-processor` header is not provided, the system falls back to the endpoint specification configured in the platform. When configuring an endpoint in the platform, you can define a body template that includes a `&lt;&lt;PROMPT&gt;&gt;` placeholder. The system automatically discovers the JSONPath to the placeholder and uses it for extraction. Additionally, you can configure `response_jsonpaths` on the endpoint to specify where to find the response text.
+If the `x-alltrue-llm-request-processor` header is not provided, the system falls back to the endpoint specification configured in the platform. When configuring an endpoint in the platform, you can define a body template that includes the `&lt;&lt;PROMPT&gt;&gt;` token. The system automatically discovers the JSONPath to the token and uses it for extraction. Additionally, you can configure `response_jsonpaths` on the endpoint to specify where to find the response text.
 
 This means that for endpoints configured in the platform with the correct body template, no per-request header is needed — the JSONPath extraction is determined automatically from the endpoint configuration.
 
@@ -908,7 +979,7 @@ Rule changes follow a **staged install and rollback** workflow so you can previe
 - Turn on the rule using the toggle switch under Tags. This will:
 
 Change the toggle position and color.
-- Change the Status to **Pending**, meaning the Rule and Settings are staged — saved temporarily and awaiting approval, but not yet enforced.
+- Change the Status to **Pending**, meaning the Rule and Settings are staged — saved temporarily and awaiting approval, and not enforced until applied.
 
 - Click the **View Pending Changes** button in the upper right corner. This opens the **Pending Policy Changes** page, where you can review every staged change since the last approval. Pending changes appear with a status of "Pending Install."
 - Click **Apply Changes** to approve and install all pending changes. They move from staging to **Active** and are enforced from that point forward.
@@ -1014,7 +1085,7 @@ Can be set for both input prompts and completion (Output Guard) prompts. When a 
 Below is an example for 'MODIFY' Action:
 
 - REQUIRE APPROVAL -
-Can be set for agent tool operations on both the Input Guard and Output Guard. When a rule is violated, the system holds the in-flight operation — a tool call the model is about to make (Output Guard) or a tool result about to be returned to the model (Input Guard) — instead of letting it proceed, and creates a hold along with a configurable message. The user resolves the hold on a later turn of the conversation by approving or rejecting it. You can set an optional approval window, in seconds; if one is set, the hold expires when the window elapses with no decision.
+Can be set for agent tool operations on both the Input Guard and Output Guard. When a rule is violated, the system holds the in-flight operation — a tool call the model is about to make (Output Guard) or a tool result about to be returned to the model (Input Guard) — instead of letting it proceed, and creates a hold along with a configurable message. The user resolves the hold on a later turn of the conversation by replying in plain language — see **Resolving a hold** below. You can set an optional approval window, in seconds; if one is set, the hold expires when the window elapses with no decision.
 
 The held operation proceeds only when it is explicitly approved. Every other outcome is fail-closed — the held step never happens. What that prevents depends on the direction the rule runs in:
 
@@ -1026,9 +1097,23 @@ The four outcomes are:
 - Approved — the held step proceeds.
 - Denied — the user explicitly rejects the operation.
 - Expired — the approval window elapsed before anyone responded.
-- Abandoned — the user sent an unrelated request instead of resolving the hold.
+- Abandoned — the user replied in terms the system could not read as an approval or a denial, or sent an unrelated request instead of resolving the hold.
 
 While a hold is unresolved, the system tracks it as an issue. Because approval arrives on a later turn, Require Approval applies to agentic, tool-using traffic (tool calls and tool responses) rather than to a single prompt on its own.
+
+**Resolving a hold.** The replies below are the ones the system always recognizes; other clearly-worded replies may also be understood, and the reply must be the user's next message in the conversation.
+
+Reply typeRepliesOutcomeSingle words`yes`, `yeah`, `yep`, `yup`, `yea`, `ya`, `ok`, `okay`, `k`, `kk`, `sure`, `proceed`, `approve`, `approved`, `confirm`, `confirmed`, `absolutely`, `definitely`, `affirmative`, `agreed`, `agree`, `fine`, `lgtm`**Approved** — the held step proceedsPhrases`go ahead`, `go for it`, `do it`, `do that`, `sounds good`, `looks good`, `will do`, `let's do it`, `make it happen`**Approved** — the held step proceedsSingle words`no`, `nope`, `nah`, `stop`, `cancel`, `don't`, `deny`, `denied`, `reject`, `rejected`, `abort`, `decline`, `declined`, `refuse`, `refused`, `negative`, `skip`, `block`**Denied** — the held step never happensPhrases`do not`, `hold off`, `hard no`, `no thanks`, `no way`**Denied** — the held step never happensSingle words`allow`, `allowed`**Neither** — not recognized as an approval, so the hold is not approved and the operation stays blocked
+A few tolerances worth knowing:
+
+- A leading pleasantry is skipped, so `please proceed` resolves exactly as `proceed` does.
+- A listed phrase may lead the reply — `do it now`, `go ahead and run it`, and `ok thanks` all approve.
+- An approval word followed by a denial word does not approve — `ok cancel it` does not release the held operation.
+- A negated approval term is a denial, not an approval — `absolutely not` and `don't approve` both deny the operation.
+
+"Allow" does not approve a hold`allow` and `allowed` are **not** approval terms. The hold is not approved and the operation stays blocked. Use `approve` or `yes` instead.
+
+A reply the system cannot confidently read as either an approval or a denial is treated as neither: the hold is not approved, the operation remains blocked, and the hold is recorded as **Abandoned**.
 
 Provider limitationRequire Approval is not supported for Amazon Bedrock endpoints accessed with a Bedrock API key (ABSK) in this release.
 
@@ -1420,5 +1505,7 @@ For the full setup — enabling export, setting the destination endpoint, and co
 
 ## Known limitations[​](#known-limitations)
 
-- **Streaming is not currently supported.** Streaming is not currently supported with AI Runtime. When using AI Runtime, set `streaming` to `false`. Streaming support is planned for a future release and is on the product roadmap.
-[PreviousAI SPM](/_docs/docs/applications/ai_spm)[NextAI MCP](/_docs/docs/applications/ai_mcp)- [Data Encryption on the Data Plane](#data-encryption-on-the-data-plane)- [Pointing to the Proxy](#pointing-to-the-proxy)[OpenAI](#openai)- [Azure OpenAI](#azure-openai)- [Anthropic](#anthropic)- [Gemini](#gemini)- [WatsonX](#watsonx)- [Calling Guardrails Directly](#calling-guardrails-directly)[Authentication](#authentication)- [Usage Example](#usage-example)- [Processing Inputs](#processing-inputs)- [Usage Example](#usage-example-1)- [Free Form Messages (Custom Endpoints)](#free-form-messages-custom-endpoints)- [Output Process](#output-process)- [Usage Example](#usage-example-2)- [Building Policies](#building-policies)[Policies Page Overview](#policies-page-overview)- [Policy Rule Settings](#policy-rule-settings)- [Policy Actions](#policy-actions)- [Policy Hierarchy](#policy-hierarchy)- [Policy Types](#policy-types)[Prompt Protection](#prompt-protection)- [Model Robustness](#model-robustness)- [User Experience and Tone](#user-experience-and-tone)- [Agentic Guardrails](#agentic-guardrails)- [Multimodal Guardrails](#multimodal-guardrails)- [Quality and Accuracy](#quality-and-accuracy)- [Bias and Fairness](#bias-and-fairness)- [Custom Tagging](#custom-tagging)- [Issues](#issues)- [Report](#report)- [Observability](#observability)- [Session Features](#session-features)[Parameters](#parameters)- [Passing Parameters from Clients](#passing-parameters-from-clients)- [Rate and Burst Limiting](#rate-and-burst-limiting)[Understanding Rate Limit and Burst Limit](#understanding-rate-limit-and-burst-limit)- [Configuring](#configuring)- [Exporting Runtime Logs to an Observability Platform](#exporting-runtime-logs-to-an-observability-platform)- [Known limitations](#known-limitations)
+- **Amazon Bedrock ConverseStream is supported with buffered processing, for models that support response streaming.** AI Runtime evaluates the complete response before returning it to the client. A model that supports `Converse` but not `ConverseStream` must be called through `/converse`.
+- **Amazon Bedrock InvokeModel operations are not evaluated.** `InvokeModel` and `InvokeModelWithResponseStream` requests pass through the proxy without guardrail evaluation. Use `Converse` or `ConverseStream` for traffic that must be governed.
+- **Streaming (SSE) is not currently supported for other providers.** When using AI Runtime with those providers, set `streaming` to `false`.
+[PreviousAI SPM](/_docs/docs/applications/ai_spm)[NextAI MCP](/_docs/docs/applications/ai_mcp)- [Data Encryption on the Data Plane](#data-encryption-on-the-data-plane)- [Pointing to the Proxy](#pointing-to-the-proxy)[OpenAI](#openai)- [Azure OpenAI](#azure-openai)- [Anthropic](#anthropic)- [Gemini](#gemini)- [Amazon Bedrock](#amazon-bedrock)- [WatsonX](#watsonx)- [Calling Guardrails Directly](#calling-guardrails-directly)[Authentication](#authentication)- [Usage Example](#usage-example)- [Processing Inputs](#processing-inputs)- [Usage Example](#usage-example-1)- [Free Form Messages (Custom Endpoints)](#free-form-messages-custom-endpoints)- [Output Process](#output-process)- [Usage Example](#usage-example-2)- [Building Policies](#building-policies)[Policies Page Overview](#policies-page-overview)- [Policy Rule Settings](#policy-rule-settings)- [Policy Actions](#policy-actions)- [Policy Hierarchy](#policy-hierarchy)- [Policy Types](#policy-types)[Prompt Protection](#prompt-protection)- [Model Robustness](#model-robustness)- [User Experience and Tone](#user-experience-and-tone)- [Agentic Guardrails](#agentic-guardrails)- [Multimodal Guardrails](#multimodal-guardrails)- [Quality and Accuracy](#quality-and-accuracy)- [Bias and Fairness](#bias-and-fairness)- [Custom Tagging](#custom-tagging)- [Issues](#issues)- [Report](#report)- [Observability](#observability)- [Session Features](#session-features)[Parameters](#parameters)- [Passing Parameters from Clients](#passing-parameters-from-clients)- [Rate and Burst Limiting](#rate-and-burst-limiting)[Understanding Rate Limit and Burst Limit](#understanding-rate-limit-and-burst-limit)- [Configuring](#configuring)- [Exporting Runtime Logs to an Observability Platform](#exporting-runtime-logs-to-an-observability-platform)- [Known limitations](#known-limitations)

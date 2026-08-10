@@ -288,6 +288,7 @@ If Cloudflare activity does not appear in Atlas, check the following:
 
 - [Shadow AI Usage Monitoring](/_docs/docs/shadow_ai_usage_monitoring/overview) — how Atlas detects unmanaged AI service usage, and the shared AI Service policy model.
 - [Netskope](/_docs/docs/shadow_ai_usage_monitoring/netskope) — the pull-based Shadow AI monitoring integration.
+- [Palo Alto Prisma](/_docs/docs/shadow_ai_usage_monitoring/prisma) — the push-to-storage Shadow AI monitoring integration for Palo Alto firewalls.
 - [AI Usage](/_docs/docs/applications/ai_usage) — where detected AI service usage and policies are reviewed.
 - [AI Inventory](/_docs/docs/applications/ai_inventory) — where discovered AI Services appear as inventory resources.
 - [AI Investigation](/_docs/docs/applications/ai_monitor) — where individual access events are reviewed.
