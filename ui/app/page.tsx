@@ -86,7 +86,7 @@ export default function Home() {
                 <button onClick={() => setTruelensOpen(false)} className="text-gray-500 hover:text-gray-300 text-xs">✕</button>
               </div>
               <div className="px-5 py-4 space-y-4">
-                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.6.0 docs, July 2026.</span></p>
+                <p className="text-xs text-gray-400">TrueLens is an independent open-source RAG evaluation framework. It scores AI systems across three dimensions using a separate LLM as an impartial judge. Evaluated against <span className="text-white font-medium">52 golden questions</span> covering Atlas core concepts, deployment, policies, and integrations. Baseline: <span className="text-white font-medium">Atlas v3.6.0 docs, July 2026.</span> Knowledge base updated to <span className="text-amber-400 font-medium">v3.7.0</span> — re-evaluation in progress.</p>
                 <div className="grid grid-cols-3 gap-3">
                   <div className="rounded-lg border border-emerald-800/60 bg-emerald-900/15 px-4 py-3 text-center">
                     <div className="text-2xl font-bold text-emerald-400">0.987</div>
@@ -239,11 +239,11 @@ export default function Home() {
               <span className="text-xs font-bold text-emerald-400 uppercase tracking-widest shrink-0">What&apos;s New</span>
               <span className="text-xs text-gray-600 shrink-0">Aug 2026</span>
               <span className="text-gray-700">·</span>
-              <span className="text-xs text-gray-300">📋 <span className="font-medium">Integration Playbook</span> — stack-matched Atlas guide + Q&A chat</span>
+              <span className="text-xs text-gray-300">📄 <span className="font-medium">Atlas v3.7.0 docs</span> — Claude Inference Hooks, MCP Registries, AI Compliance redesign</span>
               <span className="text-gray-700">·</span>
-              <span className="text-xs text-gray-300">⚡ <span className="font-medium">Quick Answer Mode</span> — 4–5 sentence RAG responses for live calls</span>
+              <span className="text-xs text-gray-300">📚 <span className="font-medium">7 lessons updated</span> — L21–L26, L29 reflect v3.7.0 features</span>
               <span className="text-gray-700">·</span>
-              <span className="text-xs text-gray-300">📄 <span className="font-medium">Atlas v3.6.0 docs</span> — MCP, Agentforce, AI SPM</span>
+              <span className="text-xs text-gray-300">🌐 <span className="font-medium">Gemini + Azure log sources</span> — new in this release</span>
             </div>
           </div>
 
