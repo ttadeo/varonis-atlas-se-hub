@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
 
   const normalized = email.trim().toLowerCase();
 
-  if (!normalized.endsWith("@varonis.com")) {
+  if (normalized !== "ttadeo@timthecoder.net") {
     return NextResponse.json(
-      { error: "Only @varonis.com email addresses are allowed" },
+      { error: "Access restricted." },
       { status: 403 }
     );
   }

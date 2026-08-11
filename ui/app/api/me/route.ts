@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
 
-const ADMIN_EMAIL = "ttadeo@varonis.com";
+const ADMIN_EMAIL = "ttadeo@timthecoder.net";
 
 export async function GET(req: NextRequest) {
   const auth = await requireAuth(req);
