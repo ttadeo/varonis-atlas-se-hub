@@ -22,10 +22,10 @@ export async function POST(req: NextRequest) {
   const normalized = email.trim().toLowerCase();
 
   if (normalized !== "ttadeo@timthecoder.net") {
-    return NextResponse.json(
-      { error: "Access restricted." },
-      { status: 403 }
-    );
+    const message = normalized.endsWith("@varonis.com")
+      ? "The Atlas Learning Platform has been discontinued, contact Adam Keslowitz or Mike Thompson for further Information"
+      : "Access restricted.";
+    return NextResponse.json({ error: message }, { status: 403 });
   }
 
   // Rate limit: max 3 requests per email per 10 minutes
