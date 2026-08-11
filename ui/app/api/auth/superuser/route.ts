@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { SignJWT } from "jose";
 import neo4j from "neo4j-driver";
 
-const SUPERUSER_EMAIL = "ttadeo@timthecoder.net";
+const SUPERUSERS: Record<string, string | undefined> = {
+  "ttadeo@timthecoder.net": process.env.SUPERUSER_PASSWORD,
+  "khuram.work@gmail.com": process.env.KHURAM_PASSWORD,
+};
 const COOKIE_NAME = "atlas_session";
 const SESSION_HOURS = 8;
 
@@ -13,21 +16,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Email and password are required" }, { status: 400 });
   }
 
-  // Only allowed for the superuser email
-  if (email.trim().toLowerCase() !== SUPERUSER_EMAIL) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
-  const superuserPassword = process.env.SUPERUSER_PASSWORD;
-  if (!superuserPassword) {
-    return NextResponse.json({ error: "Superuser not configured" }, { status: 503 });
-  }
-
-  if (password !== superuserPassword) {
-    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
-  }
-
   const normalized = email.trim().toLowerCase();
+  const expectedPassword = SUPERUSERS[normalized];
+
+  if (!expectedPassword) {
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  }
+
+  if (password !== expectedPassword) {
+    return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+  }
 
   // Sign a JWT
   const secret = new TextEncoder().encode(process.env.SESSION_SECRET);

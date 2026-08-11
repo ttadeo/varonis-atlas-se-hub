@@ -9,7 +9,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const from = searchParams.get("from") ?? "/";
 
-  const SUPERUSER = "ttadeo@timthecoder.net";
+  const SUPERUSERS = ["ttadeo@timthecoder.net", "khuram.work@gmail.com"];
 
   const [step, setStep] = useState<"email" | "code" | "password">("email");
   const [email, setEmail] = useState("");
@@ -23,7 +23,7 @@ function LoginForm() {
     setError("");
 
     // Superuser bypass — go straight to password prompt
-    if (email.trim().toLowerCase() === SUPERUSER) {
+    if (SUPERUSERS.includes(email.trim().toLowerCase())) {
       setStep("password");
       return;
     }
