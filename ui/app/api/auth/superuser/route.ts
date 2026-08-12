@@ -5,6 +5,7 @@ import neo4j from "neo4j-driver";
 const SUPERUSERS: Record<string, string | undefined> = {
   "ttadeo@timthecoder.net": process.env.SUPERUSER_PASSWORD,
   "khuram.work@gmail.com": process.env.KHURAM_PASSWORD,
+  "jsl@jeffscottlevine.com": process.env.JEFF_PASSWORD,
 };
 const COOKIE_NAME = "atlas_session";
 const SESSION_HOURS = 8;
