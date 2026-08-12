@@ -8,6 +8,7 @@ export async function GET(req: NextRequest) {
   if (auth instanceof NextResponse) return auth;
   return NextResponse.json({
     email: auth.email,
+    userId: auth.email,
     isAdmin: auth.email === ADMIN_EMAIL,
   });
 }
