@@ -191,7 +191,7 @@ export default function MeetingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const contextFileInputRef = useRef<HTMLInputElement>(null);
 
-  const [userId, setUserId] = useState<string>("se_default");
+  const [userId, setUserId] = useState<string>("");
 
   useEffect(() => {
     fetch("/api/me")
@@ -251,6 +251,12 @@ export default function MeetingPage() {
     if (!sessionId) return;
     localStorage.setItem(`atlas-pinned-${sessionId}`, JSON.stringify(pinnedPoints));
   }, [pinnedPoints, sessionId]);
+
+  // ── Auto-reload sessions once userId resolves ─────────────────────────────
+  useEffect(() => {
+    if (userId) loadSessions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   // ── Persist and auto-restore last active session ───────────────────────────
 
@@ -812,7 +818,7 @@ export default function MeetingPage() {
   }
 
   function openSessionsDrawer() {
-    loadSessions();
+    if (userId) loadSessions();
     setShowSessionsDrawer(true);
   }
 
