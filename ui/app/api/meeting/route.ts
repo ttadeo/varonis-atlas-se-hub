@@ -1047,7 +1047,7 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const action = searchParams.get("action");
-  const userId = searchParams.get("userId") ?? "anonymous";
+  const userId = auth.email;
 
   if (action === "list") {
     const driver = getNeo4jDriver();
