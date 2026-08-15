@@ -69,6 +69,14 @@ export default function Home() {
           </div>
         )}
 
+        {/* Logout */}
+        <a
+          href="/api/auth/logout"
+          className="flex items-center gap-1.5 text-xs font-medium text-gray-400 hover:text-white border border-gray-700 hover:border-gray-500 rounded-lg px-3 py-1.5 transition-colors"
+        >
+          Sign out
+        </a>
+
         {/* TrueLens */}
         <div className="relative">
           <button
