@@ -7,6 +7,7 @@ const SUPERUSERS: Record<string, string | undefined> = {
   "khuram.work@gmail.com": process.env.KHURAM_PASSWORD,
   "jsl@jeffscottlevine.com": process.env.JEFF_PASSWORD,
   "timothysteward1@gmail.com": process.env.TIMOTHY_PASSWORD,
+  "martin@martinkysel.com": process.env.MARTIN_PASSWORD,
 };
 const COOKIE_NAME = "atlas_session";
 const SESSION_HOURS = 8;

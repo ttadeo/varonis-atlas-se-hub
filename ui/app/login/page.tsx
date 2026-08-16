@@ -9,7 +9,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const from = searchParams.get("from") ?? "/";
 
-  const SUPERUSERS = ["ttadeo@timthecoder.net", "khuram.work@gmail.com", "jsl@jeffscottlevine.com", "timothysteward1@gmail.com"];
+  const SUPERUSERS = ["ttadeo@timthecoder.net", "khuram.work@gmail.com", "jsl@jeffscottlevine.com", "timothysteward1@gmail.com", "martin@martinkysel.com"];
 
   const [step, setStep] = useState<"email" | "code" | "password">("email");
   const [email, setEmail] = useState("");
