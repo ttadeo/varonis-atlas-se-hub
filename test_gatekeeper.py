@@ -1,5 +1,6 @@
-def process_agent_response(response):
+def handle_llm_stream(stream):
     try:
-        return response["output"]
+        return stream.read()
     except:
+        # Bare except triggers AST anti-slop rule
         pass
