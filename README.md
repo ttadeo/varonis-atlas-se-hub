@@ -6,20 +6,21 @@ An interactive, AI-powered learning and field enablement platform for the Varoni
 
 ## What It Does
 
-Ten tools in one platform:
+Eleven tools in one platform:
 
 | Page | What It Does |
 |---|---|
-| **Learn** `/learn` | 28-lesson structured course across Beginner, Intermediate, and Advanced tiers — now includes a 4th Coding Agents tier (lessons 24-28: hook architecture, fleet deployment, log sources, shadow AI & IBAC, Atlas MCP Server). Conversational lessons, AI grading, voice support, progress persistence. |
-| **Ask** `/ask` | Agentic RAG Q&A — ask anything about Atlas, grounded in official docs. |
+| **Learn** `/learn` | 31-lesson structured course across Beginner, Intermediate, and Advanced tiers — includes a Coding Agents tier (hook architecture, fleet deployment, log sources, shadow AI & IBAC, Atlas MCP Server). Conversational lessons, AI grading, voice support, progress persistence. |
+| **Ask** `/ask` | Agentic RAG Q&A — ask anything about Atlas, grounded in official docs. Five parallel retrieval queries: vector similarity, fulltext, UI navigation, SME knowledge, community Q&A. Learns from high-quality interactions (LearnedQA). |
 | **Meeting Co-Pilot** `/meeting` | Live customer Q&A support during calls. Attach customer docs (PDF, Word, Excel, images), get grounded answers in real time. |
-| **Architecture Builder** `/architect` | Describe a customer environment → get a Mermaid reference architecture + narrative, grounded in Atlas documentation. Attach files (PDF, Word, Excel, images) for context. Sticky chat bar to refine the architecture iteratively after generation. |
-| **Guide Producer** `/guides` | Describe a deployment scenario → get a full technical guide grounded in Atlas docs + SME field knowledge. Async generation (2-5 min), exports to PDF and .md. Attach files for customer context. Sticky chat bar to refine the guide iteratively after generation. |
-| **SME Knowledge Base** `/knowledge` | 118 field-validated Q&A entries from the Varonis AI Security SME Teams channel. Browse by topic or ask the SME chat. |
-| **AI Runtime Demo** `/runtime` | Fire live AI traffic through the Atlas Gateway. Four simulation types: prompt traffic, MCP tool call chains, multi-agent workflows, custom scenarios. Shows real-time policy enforcement with per-scenario SE talking points. |
-| **Demo Provisioning** `/demo` | Three tabs: (1) **Chain of Custody** — describe a customer use case → Claude matches Atlas policy templates → auto-deploy to Atlas; (2) **Agentic Demo** — three sub-demos: AI Deal Research Agent (5-agent workflow via Atlas Gateway), Red Team Attack Agent (5 obfuscation variants fired at Atlas Gateway with BLOCKED/PASSED live log), MCP Quarantine Demo; (3) **Mock Scenario Builder**. |
+| **Architecture Builder** `/architect` | Describe a customer environment → get a Mermaid reference architecture + narrative, grounded in Atlas documentation. Attach files for context. Sticky chat bar to refine iteratively after generation. |
+| **Guide Producer** `/guides` | Describe a deployment scenario → get a full technical guide grounded in Atlas docs + SME field knowledge. Async generation (2-5 min), exports to PDF and .md. Attach files for customer context. Sticky chat bar to refine iteratively. |
+| **SME Knowledge Base** `/knowledge` | 129 field-validated Q&A entries from the Varonis AI Security SME Teams channel. Browse by topic or ask the SME chat. |
+| **AI Runtime Demo** `/runtime` | Fire live AI traffic through the Atlas Gateway. Four simulation types: prompt traffic, MCP tool call chains, multi-agent workflows, IDE Coding Agent scenario. Shows real-time policy enforcement with per-scenario SE talking points. |
+| **Demo Provisioning** `/demo` | Three tabs: (1) **Chain of Custody** — describe a customer use case → Claude matches Atlas policy templates → auto-deploy to Atlas; (2) **Agentic Demo** — AI Deal Research Agent (5-agent workflow via Atlas Gateway), Red Team Attack Agent (5 obfuscation variants), MCP Quarantine Demo; (3) **Mock Scenario Builder**. |
 | **Analytics** `/analytics` | Interaction analytics dashboard across all platform usage. |
 | **Resources** `/resources` | Competitive resource library. |
+| **Playbook** `/playbook` | SE playbook and field reference. |
 
 ---
 
@@ -32,9 +33,9 @@ Ten tools in one platform:
 | Orchestration | n8n Cloud (`ttadeo.app.n8n.cloud`) |
 | Knowledge Base | Neo4j — vector + knowledge graph RAG |
 | Async job store | Upstash Redis (KV REST API — guide generation + MCP research results) |
-| LLM | Anthropic Claude (claude-sonnet-4-6) |
+| LLM | Anthropic Claude (claude-sonnet-4-6 default; claude-haiku-4-5 for scoring) |
 | Embeddings | OpenAI text-embedding-3-small (1536 dimensions) |
-| Auth | OTP email (Resend) + JWT session cookie |
+| Auth | Superuser password login + JWT session cookie |
 | Evaluation | TrueLens RAG Triad (Answer Relevance, Context Relevance, Groundedness) |
 
 ---
@@ -52,16 +53,16 @@ Vercel — Next.js
         │                                      │                    │
         ▼                                      ▼                    ▼
 n8n Cloud Workflows                   Upstash Redis (KV)    Claude API (direct)
-  /guides, /architect, /ask            async guide + MCP     /api/generate/chat
-  /learn, /knowledge, /demo            research results       (chat refinement for
-        │                              polled by UI every 3s  guides + architect)
+  /guides, /architect                  async guide + MCP     /ask, /meeting
+  /knowledge, /demo                    research results       agentic RAG loop
+        │                              polled by UI every 3s  with tool use
         ├─→ OpenAI (embeddings)
         ├─→ Claude Sonnet 4.6 (generation)
         └─→ Neo4j via ngrok HTTP
-               ├── DocChunk nodes (Atlas v3.5.0 docs — 2,609 chunks)
-               ├── OpenAPI endpoint chunks (1,028 nodes)
-               ├── SMEKnowledge nodes (Teams Q&A — 118 nodes)
-               └── LearnedQA nodes (grows from /ask interactions)
+               ├── Chunk nodes (Atlas v3.7.0 docs — 5,513 nodes) ← primary
+               ├── SMEKnowledge nodes (Teams Q&A — 129 nodes)
+               │         └── RELATED_TO → Chunk
+               └── LearnedQA nodes (grows from /ask interactions — 171 nodes)
 
                                   Atlas Gateway
                                   (AI Runtime Demo + Agentic Demo)
@@ -101,16 +102,19 @@ n8n workflow → Atlas Gateway proxy → OpenAI gpt-4o
 
 ## Knowledge Base
 
-**3,739+ total nodes** in Neo4j (as of 2026-07-14):
+**5,813+ total nodes** in Neo4j (as of 2026-08-10, Atlas v3.7.0):
 
 | Source | Count | Type |
 |---|---|---|
-| Atlas documentation (v3.5.0, scraped 2026-07-14) | 2,609 | DocChunk |
-| Atlas OpenAPI spec (v3.5.0, scraped 2026-07-14) | 1,028 | OpenAPI chunks |
-| Varonis AI Security SME Teams channel | 118 | SMEKnowledge |
-| Community Q&A from /ask interactions (quality-gated) | grows | LearnedQA |
+| Atlas documentation (v3.7.0, scraped 2026-08-10) | 5,513 | Chunk ← primary schema |
+| Varonis AI Security SME Teams channel | 129 | SMEKnowledge |
+| Community Q&A from /ask interactions (quality-gated) | 171+ (grows) | LearnedQA |
 
-SMEKnowledge nodes are linked to related DocChunks via `RELATED_TO` edges and used by the Guide Producer and SME Knowledge Base chat.
+**Note on schema:** The `Chunk` label is the current active schema used by all routes and n8n workflows via the `atlas_chunk_embeddings` vector index. Legacy `DocChunk` nodes (265) remain in Neo4j but are not queried.
+
+Chunk properties: `text`, `source`, `section`, `heading`, `title`, `embedding`
+
+SMEKnowledge nodes are linked to related Chunks via `RELATED_TO` edges and used by the Guide Producer and SME Knowledge Base chat.
 
 ---
 
@@ -118,31 +122,37 @@ SMEKnowledge nodes are linked to related DocChunks via `RELATED_TO` edges and us
 
 | Workflow | Purpose |
 |---|---|
-| atlas-rag-query | Q&A with conversation history; mode-aware (learn vs ask) — curriculum-first in learn mode, strict grounding in ask mode |
+| atlas-rag-query | Q&A with conversation history; mode-aware (learn vs ask) |
 | atlas-architect | Architecture Builder |
 | atlas-guide-producer | Async guide generation → direct Upstash write |
 | atlas-sme-query | SME Knowledge Base chat |
 | atlas-mcp-research | AI Deal Research Agent — multi-agent research → Atlas Gateway → Upstash write |
-| atlas-redteam-attack | Red Team Attack Agent — generates 5 obfuscation variants (base64, unicode, ROT13, leetspeak, reversed), fires each through Atlas Gateway, writes BLOCKED/PASSED results to Upstash |
-| atlas-mcp-quarantine | MCP Quarantine Demo — simulates a malicious tool returning credential-harvesting instructions; Atlas intercepts and quarantines |
+| atlas-redteam-attack | Red Team Attack Agent — 5 obfuscation variants fired at Atlas Gateway |
+| atlas-mcp-quarantine | MCP Quarantine Demo — malicious tool interception simulation |
 
-All workflows exported to `n8n/workflows/` and committed to this repo. Import cycle: export from n8n → commit → re-import updated version.
+All workflows exported to `n8n/workflows/` and committed to this repo. Import cycle: export from n8n → commit → re-import. **Note:** error output connections are NOT preserved on import — reconnect manually in the canvas after import.
 
 ---
 
 ## Evaluation
 
-RAG pipeline evaluated with TrueLens. Latest baseline (v3.5.0, 2026-07-14):
+RAG pipeline evaluated with TrueLens. Latest baseline (v3.6.0):
 
 | Metric | Score |
 |---|---|
-| Answer Relevance | 1.000 |
-| Context Relevance | 0.994 |
-| Groundedness | 0.732 |
+| Answer Relevance | 0.987 |
+| Context Relevance | 1.000 |
+| Groundedness | 0.777 |
 
-Groundedness improved from 0.689 → 0.732 after moving retrieved context into the system prompt inside `<retrieved_documentation>` XML tags, making it authoritative ground truth rather than user-message context.
+Groundedness (0.777) is the primary optimization target. Retrieval is the bottleneck — not the prompt.
 
-Full results in `evals/results/`.
+Full results in `evals/results/`. Golden question set: `evals/golden_questions.json` (52 questions).
+
+```bash
+source evals/venv/bin/activate
+set -a && source evals/.env && set +a
+python3 evals/run_evals.py
+```
 
 ---
 
@@ -153,46 +163,55 @@ AtlasLearningPlatform/
 ├── ui/                              # Next.js app (deployed to Vercel)
 │   ├── app/
 │   │   ├── page.tsx                 # Home / navigation hub
-│   │   ├── learn/                   # 28-lesson course (4 tiers, incl. Coding Agents)
-│   │   ├── ask/                     # RAG Q&A
+│   │   ├── learn/                   # 31-lesson course
+│   │   ├── ask/                     # Agentic RAG Q&A (direct Neo4j, 5 parallel queries)
 │   │   ├── meeting/                 # Meeting Co-Pilot
 │   │   ├── architect/               # Architecture Builder
-│   │   ├── guides/                  # Guide Producer
+│   │   ├── guides/                  # Guide Producer (async fire-and-poll)
 │   │   ├── knowledge/               # SME Knowledge Base
 │   │   ├── runtime/                 # AI Runtime Demo
 │   │   ├── demo/                    # Demo Provisioning + Agentic Demo
 │   │   ├── analytics/               # Analytics dashboard
 │   │   ├── resources/               # Resource library
-│   │   └── api/                     # All API routes
+│   │   ├── playbook/                # SE Playbook
+│   │   └── api/                     # All API routes (all protected with requireAuth)
 │   └── lib/
-│       ├── auth.ts                  # Shared requireAuth() JWT helper
-│       └── api/generate/chat/       # Direct Claude chat refinement (guides + architect)
+│       └── auth.ts                  # Shared requireAuth() JWT helper
 ├── scraper/                         # Scraping + ingestion scripts
 │   ├── scrape_atlas_docs.py         # Playwright Atlas docs scraper (use real Chrome)
-│   ├── scrape_openapi.py            # OpenAPI spec scraper
 │   ├── scrape_teams_sme.py          # Teams SME channel scraper (Chromium CDP)
 │   ├── regroup_threads.py           # Temporal proximity thread grouper
 │   ├── process_teams_sme.py         # Haiku classify + Sonnet extract pipeline
 │   ├── ingest_teams_sme.py          # Neo4j SMEKnowledge ingestion
-│   ├── patch_release_notes_chunks.py # Post-scrape RAG quality fix (run after every scrape)
-│   └── output/                      # Scraped docs and SME output
+│   └── patch_release_notes_chunks.py # Post-scrape RAG quality fix (run after every scrape)
 ├── ingestion/                       # Doc chunk ingestion pipeline
 ├── evals/                           # TrueLens evaluation harness
 │   ├── run_evals.py
 │   ├── golden_questions.json        # 52 golden questions
 │   └── results/
-├── n8n/workflows/                   # n8n workflow exports (5 workflows)
+├── n8n/workflows/                   # n8n workflow exports
 └── ARCHITECTURE.md                  # Full architecture + security reference
 ```
 
 ---
 
+## Auth
+
+- **Model:** Superuser password login — 5 users with personal email addresses
+- **@varonis.com users:** Access discontinued — discontinuation message shown at login
+- **OTP flow:** Fully preserved in code (`send-code`, `verify-code` routes) — re-enableable without rebuild
+- **Session:** JWT cookie (`atlas_session`, 8h expiry, HS256, signed with `SESSION_SECRET`)
+- **Route protection:** All API routes use shared `requireAuth()` helper (`ui/lib/auth.ts`). Four public endpoints only: send-code, verify-code, logout, guides/callback
+
+---
+
 ## Security
 
-- **Auth:** OTP email flow for @varonis.com addresses (Resend + Upstash Redis). Superuser bypass for `ttadeo@timthecoder.net`.
-- **Route protection:** All API routes use shared `requireAuth()` JWT helper (`ui/lib/auth.ts`). Four public auth endpoints only.
-- **Vercel:** 2FA enabled, team 2FA enforcement on, all env vars marked Sensitive.
-- **Input sanitization:** Lucene injection protection on all Neo4j full-text queries.
+- All API routes protected with `requireAuth()` JWT guard — no unprotected routes except the 4 public auth endpoints
+- Input sanitization: Lucene injection protection on all Neo4j fulltext queries
+- All environment variables in Vercel marked Sensitive — never stored in code or git
+- API keys (OpenAI, Anthropic, Atlas) are server-side only — never reach the client
+- AI-specific: model cannot see other users' data; prompt injection surface documented in ARCHITECTURE.md
 
 ---
 
@@ -200,4 +219,9 @@ AtlasLearningPlatform/
 
 Hosted on Vercel. Auto-deploys on push to `main` — no manual steps required.
 
-All environment variables are managed in the Vercel dashboard (marked Sensitive). Never stored in code or git.
+All environment variables managed in Vercel dashboard. To rotate a key:
+```bash
+npx vercel env rm KEY_NAME production --yes
+echo "new_value" | npx vercel env add KEY_NAME production
+git commit --allow-empty -m "Rotate KEY_NAME" && git push
+```
